@@ -5,11 +5,17 @@
     "api/generate.js": {
       "maxDuration": 300
     },
-    "api/export-docx.py": {
+    "api/export_docx.py": {
       "includeFiles": "lib/**",
       "maxDuration": 30
     }
   },
+  "rewrites": [
+    {
+      "source": "/api/export-docx",
+      "destination": "/api/export_docx"
+    }
+  ],
   "headers": [
     {
       "source": "/(.*)",

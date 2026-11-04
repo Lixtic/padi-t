@@ -1,2 +1,2 @@
 [tool.vercel]
-entrypoint = "api.export-docx:handler"
+entrypoint = "api.export_docx:handler"
