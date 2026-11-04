@@ -1,0 +1,22 @@
+{
+  "name": "Padi-T",
+  "short_name": "Padi-T",
+  "description": "Weekly lesson plans for Ghana JHS: two lessons, study notes, BECE practice and a marking guide, ready for Word.",
+  "id": "/",
+  "start_url": "/?source=pwa",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#F5E6CA",
+  "theme_color": "#006A4E",
+  "lang": "en-GH",
+  "categories": ["education", "productivity"],
+  "icons": [
+    { "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "icons/maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ],
+  "shortcuts": [
+    { "name": "New plan", "short_name": "New plan", "url": "/?new=1", "icons": [{ "src": "icons/icon-192.png", "sizes": "192x192" }] }
+  ]
+}

@@ -1,0 +1,11 @@
+{
+  "name": "padi-t",
+  "version": "2.0.0",
+  "private": true,
+  "description": "GES lesson planner: static UI in public/, streaming AI function and Word export in api/.",
+  "engines": { "node": ">=20" },
+  "scripts": {
+    "build:prompt": "node scripts/build-prompt.js",
+    "dev": "vercel dev"
+  }
+}
