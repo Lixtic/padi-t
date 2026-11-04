@@ -21,10 +21,14 @@ Your API key and the master prompt stay on the server. The browser never sees th
 ## Deploy to Vercel
 
 1. Push this folder to a GitHub repository.
-2. In Vercel choose **Add New → Project** and import it. Leave the framework as **Other** and leave the build settings empty. `vercel.json` already points Vercel at `public/`.
-3. Open **Settings → Environment Variables** and add **one** key (see `.env.example`):
+2. In Vercel choose **Add New → Project** and import the repository.
+3. In the project setup, set **Root Directory** to `hearth-planner`. Leave the framework as **Other**, the build command empty, and the output directory empty. The repository keeps the app inside this subdirectory, and [`vercel.json`](./vercel.json) points Vercel at `public/`.
+4. Open **Settings → Environment Variables** and add **one** key (see [`.env.example`](./.env.example)):
    - `ANTHROPIC_API_KEY`, or `OPENAI_API_KEY`, or `GEMINI_API_KEY`
-4. Click **Deploy** (or redeploy after adding the key).
+5. Add `ACCESS_CODE` before deploying to a public site. This prevents unauthorised visitors from using your provider quota.
+6. Click **Deploy** (or redeploy after adding the key).
+
+The first deployment can be made without an AI key to verify the interface in demo mode. Add the provider key and redeploy when you are ready to generate real plans.
 
 With no key, the site still runs in **demo mode**: it shows a sample plan on a fixed topic so you can check the layout. Demo content is not real curriculum for other subjects.
 
