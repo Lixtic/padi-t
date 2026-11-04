@@ -10,12 +10,6 @@
       "maxDuration": 30
     }
   },
-  "rewrites": [
-    {
-      "source": "/api/export-docx",
-      "destination": "/api/export_docx"
-    }
-  ],
   "headers": [
     {
       "source": "/(.*)",

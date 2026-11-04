@@ -1,6 +1,6 @@
 /* Padi-T · GES lesson planner · app.js
    Vanilla JS, no dependencies, no build step.
-   Talks to /api/config, /api/generate (streaming) and /api/export-docx. */
+   Talks to /api/config, /api/generate (streaming) and /api/export_docx. */
 (() => {
   'use strict';
 
@@ -558,7 +558,7 @@
         toast('Saved ' + name + hintProfile());
         return;
       }
-      const res = await fetch('/api/export-docx', {
+      const res = await fetch('/api/export_docx', {
         method: 'POST', headers: { 'content-type': 'application/json' },
         body: JSON.stringify({ title, layout, content: splitElic(text).body, teacher: profile().teacher || '', school: profile().school || '' }),
       });

@@ -1,4 +1,4 @@
-"""POST /api/export-docx  { "title": "...", "content": "<markdown>" }  ->  .docx download
+"""POST /api/export_docx  { "title": "...", "content": "<markdown>" }  ->  .docx download
 
 Uses the same GES layout builder as the Django app (lib/ges_docx_export.py).
 """
