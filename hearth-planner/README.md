@@ -10,7 +10,7 @@ It works on phones and desktops, has light and dark themes, and keeps a history 
 public/            the website (HTML, CSS, vanilla JS, no build step)
 api/config.js      tells the site whether an AI key is set (never returns keys)
 api/generate.js    streams the lesson package from your AI provider (Node)
-api/export-docx.py builds the Word file (Python, python-docx)
+api/export_docx.py builds the Word file (Python, python-docx)
 lib/               the Word layout builder (landscape tables, shaded headers)
 prompts/           the master prompt (edit this to change what Padi-T writes)
 scripts/           build-prompt.js turns the prompt into api/_prompt.js
