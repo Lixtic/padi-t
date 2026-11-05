@@ -10,7 +10,7 @@ It works on phones and desktops, has light and dark themes, and keeps a history 
 public/            the website (HTML, CSS, vanilla JS, no build step)
 api/config.js      tells the site whether an AI key is set (never returns keys)
 api/generate.js    streams the lesson package from your AI provider (Node)
-api/export_docx.py builds the Word file (Python, python-docx)
+api/export-docx.py builds the Word file (Python, python-docx)
 lib/               the Word layout builder (landscape tables, shaded headers)
 prompts/           the master prompt (edit this to change what Padi-T writes)
 scripts/           build-prompt.js turns the prompt into api/_prompt.js
@@ -21,14 +21,10 @@ Your API key and the master prompt stay on the server. The browser never sees th
 ## Deploy to Vercel
 
 1. Push this folder to a GitHub repository.
-2. In Vercel choose **Add New → Project** and import the repository.
-3. In the project setup, set **Root Directory** to `hearth-planner`. Leave the framework as **Other**, the build command empty, and the output directory empty. The repository keeps the app inside this subdirectory, and [`vercel.json`](./vercel.json) points Vercel at `public/`.
-4. Open **Settings → Environment Variables** and add **one** key (see [`.env.example`](./.env.example)):
+2. In Vercel choose **Add New → Project** and import it. Leave the framework as **Other** and leave the build settings empty. `vercel.json` already points Vercel at `public/`.
+3. Open **Settings → Environment Variables** and add **one** key (see `.env.example`):
    - `ANTHROPIC_API_KEY`, or `OPENAI_API_KEY`, or `GEMINI_API_KEY`
-5. Add `ACCESS_CODE` before deploying to a public site. This prevents unauthorised visitors from using your provider quota.
-6. Click **Deploy** (or redeploy after adding the key).
-
-The first deployment can be made without an AI key to verify the interface in demo mode. Add the provider key and redeploy when you are ready to generate real plans.
+4. Click **Deploy** (or redeploy after adding the key).
 
 With no key, the site still runs in **demo mode**: it shows a sample plan on a fixed topic so you can check the layout. Demo content is not real curriculum for other subjects.
 
@@ -93,3 +89,24 @@ Files: `public/manifest.webmanifest`, `public/sw.js`, `public/pwa.js`, `public/i
 ## Brand
 
 Savannah Green `#006A4E`, School Bus Gold `#F4B400`, Padi Indigo `#1B365D`, Warm Sand `#F5E6CA`, Clay Terracotta `#D95D39`, Nurtured Leaf `#8EA625`, Charcoal Ink `#2C2C2C`. Theme variables are at the top of `public/styles.css`.
+
+## Accounts and sync (optional, Neon)
+
+Teachers can sign in with their email (a 6-digit code, no password) and their plans and teacher details follow them across phone and laptop. Plans always stay on the device first; sync copies them to that teacher's own rows in your Neon database. Every query is scoped to the signed-in teacher, so nobody can read anyone else's plans.
+
+Set these environment variables in Vercel (Settings > Environment Variables), then redeploy:
+
+| Variable | What to put |
+|---|---|
+| `DATABASE_URL` | Neon Console > your project > **Connect** > copy the connection string (pooled is fine). |
+| `AUTH_SECRET` | A long random string (24+ characters). Generate one with `openssl rand -base64 32`. Changing it signs everyone out. |
+| `SMTP_URL` | How to send the code emails, e.g. `smtps://USER:PASSWORD@smtp-relay.brevo.com:465` (Brevo free plan: 300 emails a day) or `smtps://you%40gmail.com:APP_PASSWORD@smtp.gmail.com:465` (Gmail with an app password). Any SMTP provider works. |
+| `MAIL_FROM` | The sender shown on the email, e.g. `Padi-T <hello@yourdomain.com>`. Most providers require this address to be verified. |
+
+The tables (`users`, `otp_codes`, `plans`, `profiles`) are created automatically the first time someone signs in; `db/schema.sql` shows them if you prefer to create them yourself in the Neon SQL Editor. When all three of `DATABASE_URL`, `AUTH_SECRET` and `SMTP_URL` are set, a "Sign in to sync your plans" button appears in the sidebar. Without them the app works exactly as before.
+
+Notes: codes last 10 minutes, allow 5 tries, and can be requested once a minute (5 an hour) per email. A sign-in lasts 90 days on a device; "Sign out" only removes it from that device.
+
+## Word export
+
+Word files are built in the browser (`public/vendor/docx.iife.js` + `public/docx-export.js`), so export works even if the Python function is unavailable. The server route `api/export-docx.py` is kept as a fallback.

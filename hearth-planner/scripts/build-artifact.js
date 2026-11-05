@@ -38,6 +38,7 @@ const out = [
   '<script>', safe(sampleSrc), '</script>',
   '<script>', safe(read('public/docx-export.js')), '</script>',
   '<script>', safe(adapter), '</script>',
+  '<script>', safe(read('public/editor.js')), '</script>',
   '<script>', safe(read('public/app.js')), '</script>',
   ''
 ].join('\n');

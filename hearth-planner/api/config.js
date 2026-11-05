@@ -1,5 +1,6 @@
 'use strict';
 const { sendJson, accessRequired } = require('./_lib');
+const { syncConfigured } = require('./_auth');
 const { activeProvider } = require('./_providers');
 
 // Tells the browser whether a model is connected. Never returns keys.
@@ -9,5 +10,7 @@ module.exports = (req, res) => {
     return sendJson(res, 405, { error: 'method', message: 'Use GET.' });
   }
   const provider = activeProvider();
-  sendJson(res, 200, { demo: !provider, provider: provider || null, accessRequired: accessRequired() });
+  // Accounts and sync are on when DATABASE_URL (Neon), AUTH_SECRET and SMTP_URL are all set.
+  const sync = syncConfigured() ? { enabled: true } : null;
+  sendJson(res, 200, { demo: !provider, provider: provider || null, accessRequired: accessRequired(), sync });
 };

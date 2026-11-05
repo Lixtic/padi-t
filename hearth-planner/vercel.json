@@ -5,7 +5,7 @@
     "api/generate.js": {
       "maxDuration": 300
     },
-    "api/export_docx.py": {
+    "api/export-docx.py": {
       "includeFiles": "lib/**",
       "maxDuration": 30
     }

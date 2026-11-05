@@ -1,0 +1,49 @@
+'use strict';
+const crypto = require('crypto');
+const db = require('./_db');
+
+const TOKEN_DAYS = 90;
+const secret = () => process.env.AUTH_SECRET || '';
+
+// Sign-in needs three things: a database, a signing secret and a way to send email.
+const syncConfigured = () => !!(db.configured() && secret().length >= 24 && process.env.SMTP_URL);
+
+const b64 = (b) => Buffer.from(b).toString('base64url');
+const mac = (s) => crypto.createHmac('sha256', secret()).update(s).digest('base64url');
+
+function issue(user) {
+  const exp = Math.floor(Date.now() / 1000) + TOKEN_DAYS * 86400;
+  const body = b64(JSON.stringify({ uid: user.id, email: user.email, exp }));
+  return { token: body + '.' + mac(body), expires_at: exp };
+}
+
+// Returns { uid, email } for a valid, unexpired bearer token, otherwise null.
+function authed(req) {
+  const m = /^Bearer\s+([\w-]+\.[\w-]+)$/.exec(String(req.headers.authorization || ''));
+  if (!m || !secret()) return null;
+  const [body, sig] = m[1].split('.');
+  const want = Buffer.from(mac(body)), got = Buffer.from(sig);
+  if (want.length !== got.length || !crypto.timingSafeEqual(want, got)) return null;
+  try {
+    const p = JSON.parse(Buffer.from(body, 'base64url').toString('utf8'));
+    return p && p.uid && p.exp > Date.now() / 1000 ? { uid: String(p.uid), email: String(p.email || '') } : null;
+  } catch (e) { return null; }
+}
+
+const hashCode = (email, code) => crypto.createHash('sha256').update(email + ':' + code + ':' + secret()).digest('hex');
+const newCode = () => String(crypto.randomInt(0, 1000000)).padStart(6, '0');
+
+async function sendMail(to, code) {
+  const nodemailer = require('nodemailer');
+  const json = process.env.SMTP_URL === 'json';                         // tests: capture instead of sending
+  const transport = nodemailer.createTransport(json ? { jsonTransport: true } : process.env.SMTP_URL);
+  const info = await transport.sendMail({
+    from: process.env.MAIL_FROM || 'Padi-T <no-reply@localhost>',
+    to,
+    subject: 'Your Padi-T code: ' + code,
+    text: 'Your Padi-T sign-in code is ' + code + '.\n\nIt works for 10 minutes. If you did not ask for it, you can ignore this email.',
+  });
+  if (json) global.__lastMail = { to, code, info };
+}
+
+module.exports = { syncConfigured, issue, authed, hashCode, newCode, sendMail };
