@@ -58,13 +58,18 @@ async function authed(req) {
       // Log why the token was refused (no secrets: only the error and the token's public claims) so it shows in Vercel logs.
       let claims = {};
       try { const c = JSON.parse(Buffer.from(m[1].split('.')[1], 'base64url').toString('utf8')); claims = { iss: c.iss, aud: c.aud, exp: c.exp, has_sub: !!c.sub }; } catch (x) { /* not decodable */ }
-      console.error('token rejected:', e && e.code, e && e.message, JSON.stringify(claims), 'expected issuers:', JSON.stringify(issuers()));
+      req.authFail = [e && e.code, e && e.message, JSON.stringify(claims), 'expected issuers: ' + JSON.stringify(issuers())].join(' | ');
+      console.error('token rejected:', req.authFail);
       return null;
     }
   } else if (m) {
-    console.error('token rejected: NEON_AUTH_JWKS_URL is not set on this deployment');
+    req.authFail = 'NEON_AUTH_JWKS_URL is not set on this deployment';
+    console.error('token rejected:', req.authFail);
   } else if (req.headers.authorization) {
-    console.error('token rejected: Authorization header is not a three-part JWT or a legacy token');
+    req.authFail = 'Authorization header is not a three-part JWT or a legacy token';
+    console.error('token rejected:', req.authFail);
+  } else {
+    req.authFail = 'no Authorization header was sent';
   }
   return legacyAuthed(req);
 }

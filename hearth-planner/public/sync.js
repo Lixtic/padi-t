@@ -24,6 +24,7 @@
     var body = null;
     try { body = await res.json(); } catch (e) { /* empty or not JSON */ }
     if (!res.ok) {
+      console.warn('[Padi-T sync] ' + path + ' ->', res.status, body);
       var err = new Error((body && body.message) || 'Something went wrong. Try again.');
       err.status = res.status;
       if (res.status === 401 && opts.auth) { session = null; store(); }
