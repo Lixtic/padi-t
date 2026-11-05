@@ -32,6 +32,19 @@
     return body;
   }
 
+  // Runs a sign-in or sign-up request and turns every failure into a readable message.
+  async function authCall(fn, fallback) {
+    var result;
+    try { result = await fn(); }
+    catch (e) { throw new Error('Could not reach the sign-in service. Check your connection and try again.'); }
+    if (!result) throw new Error(fallback);
+    if (result.error) {
+      var m = String(result.error.message || '');
+      throw new Error(/failed to fetch|networkerror|load failed/i.test(m) || !m ? 'Could not reach the sign-in service. Check your connection and try again.' : m);
+    }
+    return result;
+  }
+
   window.PadiSync = {
     available: function () { return enabled; },
     authConfigured: function () { return !!authClient; },
@@ -41,21 +54,27 @@
       realtime = !!(c && c.realtime);
       if (enabled) {
         authClient = window.NeonAuth.createAuthClient(c.authUrl);
-        var current = await authClient.getSession();
-        session = current.data && current.data.user ? { user: current.data.user } : null;
+        try {
+          var current = await authClient.getSession();
+          session = current && current.data && current.data.user ? { user: current.data.user } : null;
+        } catch (e) { session = null; }                                // a failed check just means "not signed in"
       }
       return enabled;
     },
     syncAvailable: function () { return syncEnabled; },
     user: function () { return enabled && session && session.user ? session.user : null; },
     signUp: async function (email, password) {
-      var result = await authClient.signUp.email({ email: email, password: password, name: email.split('@')[0] });
-      if (result.error) throw new Error(result.error.message || 'Could not create the account.');
-      session = { user: result.data.user }; return session.user;
+      var result = await authCall(function () { return authClient.signUp.email({ email: email, password: password, name: email.split('@')[0] }); }, 'Could not create the account.');
+      var user = result.data && result.data.user;
+      if (!user || !(result.data.token || result.data.session)) {      // no session yet (e.g. email check on): sign in right away
+        try { user = (await authCall(function () { return authClient.signIn.email({ email: email, password: password }); }, 'Could not sign in.')).data.user; }
+        catch (e) { if (!user) throw e; throw new Error('Account created. Check your email to confirm it, then sign in.'); }
+      }
+      session = { user: user }; return user;
     },
     signIn: async function (email, password) {
-      var result = await authClient.signIn.email({ email: email, password: password });
-      if (result.error) throw new Error(result.error.message || 'Could not sign in.');
+      var result = await authCall(function () { return authClient.signIn.email({ email: email, password: password }); }, 'Could not sign in.');
+      if (!result.data || !result.data.user) throw new Error('Could not sign in. Please try again.');
       session = { user: result.data.user }; return session.user;
     },
     signOut: async function () { if (authClient) await authClient.signOut(); session = null; store(); },

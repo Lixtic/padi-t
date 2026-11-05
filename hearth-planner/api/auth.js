@@ -11,7 +11,7 @@ const MAX_ATTEMPTS = 5;
 //                 { action: 'verify', email, code } -> { token, expires_at, user }
 module.exports = async (req, res) => {
   if (req.method !== 'POST') { res.setHeader('Allow', 'POST'); return sendJson(res, 405, { error: 'method', message: 'Use POST.' }); }
-  if (!A.syncConfigured()) return sendJson(res, 503, { error: 'not_configured', message: 'Sign-in is not set up on this server.' });
+  if (!A.legacyConfigured()) return sendJson(res, 503, { error: 'not_configured', message: 'Sign-in is not set up on this server.' });
   let body;
   try { body = await readJson(req, 4000); } catch (e) { return sendJson(res, e.status || 400, { error: 'bad_request', message: e.message }); }
   const email = String(body.email || '').trim().toLowerCase();
