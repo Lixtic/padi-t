@@ -1133,7 +1133,7 @@
   const ago = (t) => { const s = Math.round((Date.now() - t) / 1000); return s < 20 ? 'just now' : s < 90 ? 'a minute ago' : s < 3600 ? Math.round(s / 60) + ' minutes ago' : Math.round(s / 3600) + ' hours ago'; };
   function acctStatus(t) { acct.status.textContent = t; }
   function refreshAcct() {
-    if (!window.PadiSync || !window.PadiSync.available()) { acct.root.hidden = true; return; }
+    if (!window.PadiSync) { acct.root.hidden = true; return; }
     acct.root.hidden = false;
     const u = window.PadiSync.user();
     acct.out.hidden = !!u; acct.inn.hidden = !u;
@@ -1227,7 +1227,10 @@
     }).catch((e) => acctMsg(e.message, true));
   }
 
-  acct.open.addEventListener('click', () => { acct.form.hidden = !acct.form.hidden; if (!acct.form.hidden) acct.email.focus(); });
+  acct.open.addEventListener('click', () => {
+    if (!window.PadiSync.authConfigured()) { acctMsg('Sign-in is not configured on this deployment. Add NEON_AUTH_BASE_URL in Vercel and redeploy.', true); return; }
+    acct.form.hidden = !acct.form.hidden; if (!acct.form.hidden) acct.email.focus();
+  });
   acct.form.addEventListener('submit', async (e) => {
     e.preventDefault();
     const email = acct.email.value.trim().toLowerCase();

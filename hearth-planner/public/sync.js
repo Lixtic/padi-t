@@ -34,6 +34,7 @@
 
   window.PadiSync = {
     available: function () { return enabled; },
+    authConfigured: function () { return !!authClient; },
     init: async function (c) {
       enabled = !!(c && c.enabled && c.authUrl && window.NeonAuth);
       syncEnabled = !!(c && c.syncEnabled);
