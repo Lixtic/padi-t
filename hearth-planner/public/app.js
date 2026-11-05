@@ -1106,7 +1106,7 @@
       if (!res.ok) throw new Error('no api');
       const j = await res.json();
       state.config = { loaded: true, demo: !!j.demo, provider: j.provider || null, accessRequired: !!j.accessRequired };
-      initAccount(j.sync);
+      initAccount(Object.assign({}, j.sync || {}, { enabled: !!(j.auth && j.auth.enabled), syncEnabled: !!j.sync, authUrl: j.auth && j.auth.url }));
     } catch (e) {
       state.config = { loaded: true, demo: true, provider: null, accessRequired: false };   // static preview, no server
     }
@@ -1123,7 +1123,7 @@
   const saveTomb = (t) => { try { localStorage.setItem(TOMB_KEY, JSON.stringify(t)); } catch (e) { /* ignore */ } };
   const acct = {
     root: $('#accountRow'), out: $('#acctOut'), inn: $('#acctIn'), open: $('#acctOpen'), form: $('#acctForm'),
-    email: $('#acctEmail'), send: $('#acctSend'), codeWrap: $('#acctCodeWrap'), code: $('#acctCode'), verify: $('#acctVerify'),
+    email: $('#acctEmail'), password: $('#acctPassword'), send: $('#acctSend'), signIn: $('#acctSignIn'),
     who: $('#acctWho'), status: $('#acctStatus'), now: $('#acctSyncNow'), signOut: $('#acctSignOut'), msg: $('#acctMsg'),
   };
   const signedIn = () => !!(window.PadiSync && window.PadiSync.available() && window.PadiSync.user());
@@ -1139,7 +1139,7 @@
     acct.out.hidden = !!u; acct.inn.hidden = !u;
     if (u) { acct.who.textContent = u.email || 'Signed in'; if (lastSync) acctStatus('Synced ' + ago(lastSync)); }
   }
-  function scheduleSync() { if (!signedIn()) return; clearTimeout(syncTimer); syncTimer = setTimeout(() => syncNow(), 3000); }
+  function scheduleSync() { if (!signedIn() || !window.PadiSync.syncAvailable()) return; clearTimeout(syncTimer); syncTimer = setTimeout(() => syncNow(), 3000); }
 
   const cleanRemote = (r) => {
     const d = r && r.data;
@@ -1149,7 +1149,7 @@
   };
 
   async function syncNow(manual) {
-    if (!signedIn()) return;
+    if (!signedIn() || !window.PadiSync.syncAvailable()) return;
     if (syncing) { syncAgain = true; return; }
     if (state.streaming) { scheduleSync(); return; }                 // never change plans while one is being written
     syncing = true; acctStatus('Syncing…'); if (manual) acctMsg('');
@@ -1215,46 +1215,43 @@
   let stopLive = null;
   async function watchLive() {
     if (stopLive) { stopLive(); stopLive = null; }
-    if (!signedIn() || !window.PadiSync.watch) return;
+    if (!signedIn() || !window.PadiSync.syncAvailable() || !window.PadiSync.watch) return;
     try { stopLive = await window.PadiSync.watch(() => { if (!syncing && !state.streaming) syncNow(); }); }
     catch (e) { /* polling remains available when Realtime is unavailable */ }
   }
   function initAccount(cfg) {
     if (!window.PadiSync || !cfg) return;
-    window.PadiSync.init(cfg);
-    refreshAcct();
-    if (signedIn()) { syncNow(); watchLive(); }
+    window.PadiSync.init(cfg).then(() => {
+      refreshAcct();
+      if (signedIn() && window.PadiSync.syncAvailable()) { syncNow(); watchLive(); }
+    }).catch((e) => acctMsg(e.message, true));
   }
 
-  let cooldown = 0;
   acct.open.addEventListener('click', () => { acct.form.hidden = !acct.form.hidden; if (!acct.form.hidden) acct.email.focus(); });
   acct.form.addEventListener('submit', async (e) => {
     e.preventDefault();
     const email = acct.email.value.trim().toLowerCase();
+    const password = acct.password.value;
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { acctMsg('Enter a valid email address.', true); return; }
-    acct.send.disabled = true; acctMsg('Sending…');
+    if (password.length < 8) { acctMsg('Use a password with at least 8 characters.', true); return; }
+    acct.send.disabled = true; acctMsg('Creating account…');
     try {
-      await window.PadiSync.sendCode(email);
-      acct.codeWrap.hidden = false; acct.code.focus();
-      acctMsg('We sent a 6-digit code to ' + email + '. Check your inbox and spam folder.');
-      cooldown = 60; const tick = () => { acct.send.firstElementChild.textContent = cooldown > 0 ? 'Send again in ' + cooldown-- + 's' : 'Send me a new code'; if (cooldown >= 0) setTimeout(tick, 1000); else acct.send.disabled = false; };
-      tick();
+      await window.PadiSync.signUp(email, password);
+      acct.form.hidden = true; acctMsg('Account created. Your plans will now sync.');
+      refreshAcct(); syncNow(true); watchLive();
     } catch (err) { acct.send.disabled = false; acctMsg(err.message, true); }
   });
-  async function verifyCode() {
-    const email = acct.email.value.trim().toLowerCase(), code = acct.code.value.replace(/\s+/g, '');
-    if (!/^\d{6,8}$/.test(code)) { acctMsg('Enter the 6-digit code from the email.', true); return; }
-    acct.verify.disabled = true; acctMsg('Checking…');
+  acct.signIn.addEventListener('click', async () => {
+    const email = acct.email.value.trim().toLowerCase(), password = acct.password.value;
+    if (!email || !password) { acctMsg('Enter your email and password.', true); return; }
+    acct.signIn.disabled = true; acctMsg('Signing in…');
     try {
-      await window.PadiSync.verify(email, code);
-      acct.code.value = ''; acct.codeWrap.hidden = true; acct.form.hidden = true;
-      acctMsg('Signed in. Your plans will now sync.');
+      await window.PadiSync.signIn(email, password);
+      acct.form.hidden = true; acctMsg('Signed in. Your plans will now sync.');
       refreshAcct(); syncNow(true); watchLive();
     } catch (err) { acctMsg(err.message, true); }
-    finally { acct.verify.disabled = false; }
-  }
-  acct.verify.addEventListener('click', verifyCode);
-  acct.code.addEventListener('keydown', (e) => { if (e.key === 'Enter') { e.preventDefault(); verifyCode(); } });
+    finally { acct.signIn.disabled = false; }
+  });
   acct.now.addEventListener('click', () => syncNow(true));
   acct.signOut.addEventListener('click', async () => {
     await window.PadiSync.signOut();

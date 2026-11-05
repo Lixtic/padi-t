@@ -12,5 +12,6 @@ module.exports = (req, res) => {
   const provider = activeProvider();
   // Accounts and sync are on when DATABASE_URL (Neon), AUTH_SECRET and SMTP_URL are all set.
   const sync = syncConfigured() ? { enabled: true, realtime: require('./_auth').realtimeConfigured() } : null;
-  sendJson(res, 200, { demo: !provider, provider: provider || null, accessRequired: accessRequired(), sync });
+  const auth = process.env.NEON_AUTH_BASE_URL ? { enabled: true, url: process.env.NEON_AUTH_BASE_URL } : null;
+  sendJson(res, 200, { demo: !provider, provider: provider || null, accessRequired: accessRequired(), sync, auth });
 };

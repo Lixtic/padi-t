@@ -1,11 +1,10 @@
 /* Padi-T · sync.js
-   Email sign-in (one-time code) and plan sync through the app's own /api/auth and /api/sync routes
-   (stored in the Neon database). Only active when the server reports that accounts are set up.
+   Managed Neon Auth email/password sign-in and plan sync.
    Plans stay on the device first; signing in copies them to the teacher's own private rows. */
 (function () {
   'use strict';
   var AUTH_KEY = 'schoolpadi.auth';
-  var enabled = false, realtime = false, session = null, live = null;
+  var enabled = false, syncEnabled = false, realtime = false, session = null, live = null, authClient = null;
 
   function load() { try { session = JSON.parse(localStorage.getItem(AUTH_KEY)); } catch (e) { session = null; } }
   function store() { try { if (session) localStorage.setItem(AUTH_KEY, JSON.stringify(session)); else localStorage.removeItem(AUTH_KEY); } catch (e) { /* storage blocked */ } }
@@ -14,8 +13,10 @@
     opts = opts || {};
     var headers = { 'content-type': 'application/json' };
     if (opts.auth) {
-      if (!session || session.expires_at < Date.now() / 1000) { session = null; store(); var gone = new Error('Please sign in again.'); gone.status = 401; throw gone; }
-      headers.authorization = 'Bearer ' + session.token;
+      if (!authClient) { var gone = new Error('Please sign in again.'); gone.status = 401; throw gone; }
+      var tokenResult = await authClient.token();
+      if (tokenResult.error || !tokenResult.data || !tokenResult.data.token) { session = null; store(); throw new Error('Please sign in again.'); }
+      headers.authorization = 'Bearer ' + tokenResult.data.token;
     }
     var res;
     try { res = await fetch(path, { method: opts.method || 'GET', headers: headers, body: opts.body ? JSON.stringify(opts.body) : undefined }); }
@@ -33,15 +34,29 @@
 
   window.PadiSync = {
     available: function () { return enabled; },
-    init: function (c) { enabled = !!(c && c.enabled); realtime = !!(c && c.realtime); load(); return enabled; },
-    user: function () { return enabled && session && session.user && session.expires_at > Date.now() / 1000 ? session.user : null; },
-    sendCode: function (email) { return call('/api/auth', { method: 'POST', body: { action: 'request', email: email } }); },
-    verify: async function (email, code) {
-      var j = await call('/api/auth', { method: 'POST', body: { action: 'verify', email: email, code: code } });
-      session = { token: j.token, expires_at: j.expires_at, user: j.user }; store();
-      return session.user;
+    init: async function (c) {
+      enabled = !!(c && c.enabled && c.authUrl && window.NeonAuth);
+      syncEnabled = !!(c && c.syncEnabled);
+      realtime = !!(c && c.realtime);
+      if (enabled) {
+        authClient = window.NeonAuth.createAuthClient(c.authUrl);
+        var current = await authClient.getSession();
+        session = current.data && current.data.user ? { user: current.data.user } : null;
+      }
+      return enabled;
     },
-    signOut: async function () { session = null; store(); },
+    syncAvailable: function () { return syncEnabled; },
+    signUp: async function (email, password) {
+      var result = await authClient.signUp.email({ email: email, password: password, name: email.split('@')[0] });
+      if (result.error) throw new Error(result.error.message || 'Could not create the account.');
+      session = { user: result.data.user }; return session.user;
+    },
+    signIn: async function (email, password) {
+      var result = await authClient.signIn.email({ email: email, password: password });
+      if (result.error) throw new Error(result.error.message || 'Could not sign in.');
+      session = { user: result.data.user }; return session.user;
+    },
+    signOut: async function () { if (authClient) await authClient.signOut(); session = null; store(); },
     watch: async function (onChange) {
       if (!realtime || !window.NeonRealtime || !session) return function () {};
       if (live) { live.unsubscribe(); live = null; }

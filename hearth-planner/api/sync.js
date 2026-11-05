@@ -12,7 +12,7 @@ const MAX_ROWS = 20, MAX_ROW_BYTES = 400000;
 module.exports = async (req, res) => {
   if (req.method !== 'GET' && req.method !== 'POST') { res.setHeader('Allow', 'GET, POST'); return sendJson(res, 405, { error: 'method', message: 'Use GET or POST.' }); }
   if (!A.syncConfigured()) return sendJson(res, 503, { error: 'not_configured', message: 'Sync is not set up on this server.' });
-  const me = A.authed(req);
+  const me = await A.authed(req);
   if (!me) return sendJson(res, 401, { error: 'auth', message: 'Please sign in again.' });
   try {
     await db.ensure();

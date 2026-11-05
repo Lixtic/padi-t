@@ -19,7 +19,7 @@ function issue(user) {
 }
 
 // Returns { uid, email } for a valid, unexpired bearer token, otherwise null.
-function authed(req) {
+function legacyAuthed(req) {
   const m = /^Bearer\s+([\w-]+\.[\w-]+)$/.exec(String(req.headers.authorization || ''));
   if (!m || !secret()) return null;
   const [body, sig] = m[1].split('.');
@@ -29,6 +29,23 @@ function authed(req) {
     const p = JSON.parse(Buffer.from(body, 'base64url').toString('utf8'));
     return p && p.uid && p.exp > Date.now() / 1000 ? { uid: String(p.uid), email: String(p.email || '') } : null;
   } catch (e) { return null; }
+}
+
+let jwks;
+async function authed(req) {
+  const m = /^Bearer\s+([\w-]+\.[\w-]+\.[\w-]+)$/.exec(String(req.headers.authorization || ''));
+  if (m && process.env.NEON_AUTH_JWKS_URL) {
+    try {
+      const { jwtVerify, createRemoteJWKSet } = require('jose');
+      jwks = jwks || createRemoteJWKSet(new URL(process.env.NEON_AUTH_JWKS_URL));
+      const result = await jwtVerify(m[1], jwks, process.env.NEON_AUTH_BASE_URL ? { issuer: process.env.NEON_AUTH_BASE_URL } : {});
+      const p = result.payload;
+      if (p.sub) return { uid: String(p.sub), email: String(p.email || '') };
+    } catch (e) {
+      return null;
+    }
+  }
+  return legacyAuthed(req);
 }
 
 const hashCode = (email, code) => crypto.createHash('sha256').update(email + ':' + code + ':' + secret()).digest('hex');

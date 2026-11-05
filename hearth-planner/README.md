@@ -92,22 +92,24 @@ Savannah Green `#006A4E`, School Bus Gold `#F4B400`, Padi Indigo `#1B365D`, Warm
 
 ## Accounts and sync (optional, Neon)
 
-Teachers can sign in with their email (a 6-digit code, no password) and their plans and teacher details follow them across phone and laptop. Plans always stay on the device first; sync copies them to that teacher's own rows in your Neon database. Every query is scoped to the signed-in teacher, so nobody can read anyone else's plans.
+Teachers can create an account and sign in with email and password through Neon Managed Better Auth. Plans always stay on the device first; when database sync is enabled, sync copies them to that teacher's own rows in Neon. Every query is scoped to the signed-in teacher.
 
 Set these environment variables in Vercel (Settings > Environment Variables), then redeploy:
 
 | Variable | What to put |
 |---|---|
 | `DATABASE_URL` | Neon Console > your project > **Connect** > copy the connection string (pooled is fine). |
+| `NEON_AUTH_BASE_URL` | Branch Managed Auth URL pulled by `neon deploy`. |
+| `NEON_AUTH_JWKS_URL` | Managed Auth JWKS URL pulled by `neon deploy`; keep it server-side. |
 | `NEON_REALTIME_URL` | The Realtime WebSocket URL provisioned by Neon. |
 | `NEON_REALTIME_SECRET` | The Realtime secret provisioned by Neon. Keep this server-only. |
 | `AUTH_SECRET` | A long random string (24+ characters). Generate one with `openssl rand -base64 32`. Changing it signs everyone out. |
 | `SMTP_URL` | How to send the code emails, e.g. `smtps://USER:PASSWORD@smtp-relay.brevo.com:465` (Brevo free plan: 300 emails a day) or `smtps://you%40gmail.com:APP_PASSWORD@smtp.gmail.com:465` (Gmail with an app password). Any SMTP provider works. |
 | `MAIL_FROM` | The sender shown on the email, e.g. `Padi-T <hello@yourdomain.com>`. Most providers require this address to be verified. |
 
-The tables (`users`, `otp_codes`, `plans`, `profiles`) are created automatically the first time someone signs in; `db/schema.sql` shows them if you prefer to create them yourself in the Neon SQL Editor. When all three of `DATABASE_URL`, `AUTH_SECRET` and `SMTP_URL` are set, a "Sign in to sync your plans" button appears in the sidebar. If the Realtime variables are also set, signed-in browsers receive live plan updates; polling remains as a fallback. Without the database variables, the app works exactly as before.
+Managed Auth stores identity and sessions in Neon's `neon_auth` schema. The application tables (`users`, `otp_codes`, `plans`, `profiles`) are created automatically when legacy database sync is used; `db/schema.sql` shows them if you prefer to create them yourself in the Neon SQL Editor. If the Realtime variables are also set, signed-in browsers receive live plan updates. Without the Neon variables, the app works in local/demo mode.
 
-Notes: codes last 10 minutes, allow 5 tries, and can be requested once a minute (5 an hour) per email. A sign-in lasts 90 days on a device; "Sign out" only removes it from that device.
+Managed Auth controls password sessions and email delivery. Use Neon’s production SMTP configuration before launch.
 
 ## Word export
 

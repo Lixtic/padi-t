@@ -21,6 +21,7 @@
   <link rel="stylesheet" href="styles.css">
   <script src="plan-join.js" defer></script>
   <script src="vendor/neon-realtime.js" defer></script>
+  <script src="vendor/neon-auth.js" defer></script>
   <script src="sync.js" defer></script>
   <script src="docx-export.js" defer></script>
   <script src="schemes.js" defer></script>
@@ -107,12 +108,10 @@
           <form class="acct-form" id="acctForm" hidden autocomplete="on">
             <label class="sr-only" for="acctEmail">Email address</label>
             <input id="acctEmail" type="email" inputmode="email" autocomplete="email" placeholder="Your email address" maxlength="120" required>
-            <button type="submit" class="btn acct-btn" id="acctSend"><span>Send me a code</span></button>
-            <div id="acctCodeWrap" hidden>
-              <label class="sr-only" for="acctCode">6-digit code</label>
-              <input id="acctCode" type="text" inputmode="numeric" autocomplete="one-time-code" placeholder="6-digit code" maxlength="8">
-              <button type="button" class="btn acct-btn" id="acctVerify"><span>Sign in</span></button>
-            </div>
+            <label class="sr-only" for="acctPassword">Password</label>
+            <input id="acctPassword" type="password" autocomplete="new-password" placeholder="Password (8+ characters)" minlength="8" required>
+            <button type="submit" class="btn acct-btn" id="acctSend"><span>Create account</span></button>
+            <button type="button" class="btn acct-btn" id="acctSignIn"><span>Sign in instead</span></button>
           </form>
         </div>
         <div id="acctIn" hidden>

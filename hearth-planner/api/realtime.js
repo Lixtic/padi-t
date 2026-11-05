@@ -13,7 +13,7 @@ module.exports = async (req, res) => {
     return sendJson(res, 405, { error: 'method', message: 'Use GET.' });
   }
   if (!configured()) return sendJson(res, 503, { error: 'not_configured', message: 'Realtime is not set up on this server.' });
-  const me = A.authed(req);
+  const me = await A.authed(req);
   if (!me) return sendJson(res, 401, { error: 'auth', message: 'Please sign in again.' });
 
   try {
