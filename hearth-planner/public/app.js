@@ -1,6 +1,6 @@
 /* Padi-T · GES lesson planner · app.js
    Vanilla JS, no dependencies, no build step.
-   Talks to /api/config, /api/generate (streaming) and /api/export_docx. */
+   Talks to /api/config, /api/generate (streaming) and /api/export-docx. */
 (() => {
   'use strict';
 
@@ -139,11 +139,13 @@
     if (joined) cls.push('joined');
     let html = '<div class="tbl-wrap"><table class="' + cls.join(' ') + '">';
     if (joined) {
+      let inLesson = false;
       html += '<tbody>' + rows.slice(1).map((r) => {
         const only = r[0] && cols > 1 && r.slice(1).every((c) => !c);
         if (only) return '<tr class="' + (/^\**\s*lesson\s*(\d|one|two)\b/i.test(r[0]) ? 'lt' : 'sp') + '"><td colspan="' + cols + '">' + cellHtml(r[0]) + '</td></tr>';
-        if (isPhaseRow(r)) return '<tr class="ph">' + pad(r).map((c) => '<th>' + cellHtml(c) + '</th>').join('') + '</tr>';
-        return '<tr>' + pad(r).map((c) => '<td>' + cellHtml(c) + '</td>').join('') + '</tr>';
+        if (isPhaseRow(r)) { inLesson = true; return '<tr class="ph">' + pad(r).map((c) => '<th>' + cellHtml(c) + '</th>').join('') + '</tr>'; }
+        const names = ['', 'Learning activities', 'Resources'];
+        return '<tr' + (inLesson ? ' class="phase"' : '') + '>' + pad(r).map((c, ci) => '<td' + (inLesson && names[ci] ? ' data-l="' + names[ci] + '"' : '') + '>' + cellHtml(c) + '</td>').join('') + '</tr>';
       }).join('') + '</tbody></table></div>';
       return html;
     }
@@ -187,8 +189,8 @@
           flushP(); flushL();
           const opts = [];
           while (i + 1 < lines.length && opt.test(lines[i + 1])) { i++; opts.push(lines[i].trim().match(/^([A-Da-d])[.)]\s+(.*)$/)); }
-          html += '<div class="mcq"><p class="q"><span class="qn">' + m[1] + '.</span> ' + inline(m[2]) + '</p><div class="opts">'
-            + opts.map((o) => '<div class="opt"><span class="ol">' + o[1].toUpperCase() + '.</span><span>' + inline(o[2]) + '</span></div>').join('') + '</div></div>';
+          html += '<div class="mcq"><p class="q"><span class="qn">' + m[1] + '.</span> <span class="qt">' + inline(m[2]) + '</span></p><div class="opts">'
+            + opts.map((o) => '<div class="opt"><span class="ol">' + o[1].toUpperCase() + '.</span><span class="ot">' + inline(o[2]) + '</span></div>').join('') + '</div></div>';
           continue;
         }
         flushP(); if (!list || list.t !== 'ol') { flushL(); list = { t: 'ol', start: Number(m[1]), items: [] }; } list.items.push(m[2]); continue;
@@ -233,11 +235,12 @@
 
   const store = {
     load() { try { return JSON.parse(localStorage.getItem(KEY)); } catch (e) { return null; } },
-    save() {
+    save(quiet) {
       const keep = state.sessions.filter((s) => s.messages.length).sort((a, b) => b.updatedAt - a.updatedAt).slice(0, MAX_SESSIONS);
       for (let n = keep.length; n >= 0; n--) {
         try {
           localStorage.setItem(KEY, JSON.stringify({ sessions: keep.slice(0, n), params: state.params }));
+          if (!quiet && typeof scheduleSync === 'function') scheduleSync();
           return;
         } catch (e) { /* quota: drop the oldest and retry */ }
       }
@@ -262,7 +265,8 @@
   /* Teacher details: saved once on this device, printed under the title of every Word file. */
   const profile = () => { try { return JSON.parse(localStorage.getItem(PROFILE_KEY)) || {}; } catch (e) { return {}; } };
   function saveProfile() {
-    try { localStorage.setItem(PROFILE_KEY, JSON.stringify({ teacher: teacherInput.value.trim(), school: schoolInput.value.trim() })); } catch (e) { /* storage blocked */ }
+    try { localStorage.setItem(PROFILE_KEY, JSON.stringify({ teacher: teacherInput.value.trim(), school: schoolInput.value.trim(), updatedAt: Date.now() })); } catch (e) { /* storage blocked */ }
+    if (typeof scheduleSync === 'function') scheduleSync();
   }
   [teacherInput, schoolInput].forEach((el) => el.addEventListener('input', saveProfile));
   { const p = profile(); teacherInput.value = p.teacher || ''; schoolInput.value = p.school || ''; }
@@ -378,6 +382,7 @@
     const wasCurrent = id === state.currentId;
     if (wasCurrent) stopStreaming();
     state.sessions = state.sessions.filter((s) => s.id !== id);
+    { const t = tomb(); t[id] = Date.now(); saveTomb(t); }
     store.save();
     if (wasCurrent) { const s = makeSession(); state.sessions.unshift(s); showSession(s.id); }
     else renderSessions();
@@ -444,39 +449,66 @@
         mk('bece', '10 more BECE questions', 'cap'));
     }
 
+    let editor = null;
+    const DRAFT = 'schoolpadi.draft';
+    const draftKey = () => (api.msg && api.msg.id) || session.id || baseTitle;
+    function readDrafts() { try { return JSON.parse(localStorage.getItem(DRAFT) || '{}'); } catch (e) { return {}; } }
+    function writeDraft(md) { try { const d = readDrafts(); if (md === null) delete d[draftKey()]; else d[draftKey()] = md; localStorage.setItem(DRAFT, JSON.stringify(d)); } catch (e) { /* storage unavailable */ } }
+
     function closeEdit() {
       if (editBox) { editBox.remove(); editBox = null; ta = null; }
+      editor = null;
       bodyEl.hidden = false;
       if (autoCollapsed) setComposer(false, true);
       $('span', btnEdit).textContent = 'Edit';
     }
 
-    function startEdit() {
+    function commit(text) {
+      const tail = (api.text.match(/<ElicitationsGroup>[\s\S]*$/i) || [''])[0];
+      const raw = text.trim() + (tail ? '\n\n' + tail : '');
+      if (api.msg) { api.msg.content = raw; api.msg.edited = true; api.msg.demo = false; }
+      writeDraft(null);
+      closeEdit();
+      api.set(raw, true, api.msg);
+      store.save();
+      toast('Changes saved. Word export now uses your version.');
+    }
+
+    function startRawEdit(initial) {
       if (state.streaming || editBox) return;
       ta = h('textarea', { class: 'doc-edit', spellcheck: 'false', 'aria-label': 'Edit plan text' });
-      ta.value = splitElic(api.text).body;
+      ta.value = (initial != null ? initial : splitElic(api.text).body).trim();
       const save = h('button', { type: 'button', class: 'tool tool-main', 'data-act': 'save' }, icon('check'), h('span', { text: 'Save changes' }));
       const cancel = h('button', { type: 'button', class: 'tool', 'data-act': 'cancel' }, icon('x'), h('span', { text: 'Cancel' }));
-      save.addEventListener('click', () => {
-        const text = ta.value.trim();
-        if (!text) { toast('The plan cannot be empty.'); return; }
-        const tail = (api.text.match(/<ElicitationsGroup>[\s\S]*$/i) || [''])[0];
-        const raw = text + (tail ? '\n\n' + tail : '');
-        if (api.msg) { api.msg.content = raw; api.msg.edited = true; api.msg.demo = false; }
-        closeEdit();
-        api.set(raw, true, api.msg);
-        store.save();
-        toast('Changes saved. Word export now uses your version.');
-      });
-      cancel.addEventListener('click', closeEdit);
+      save.addEventListener('click', () => { if (!ta.value.trim()) { toast('The plan cannot be empty.'); return; } commit(ta.value); });
+      cancel.addEventListener('click', () => { closeEdit(); api.set(api.text, true, api.msg); });
       editBox = h('div', { class: 'edit-box' },
-        h('p', { class: 'edit-hint', text: 'Edit the plan as text. In a table, separate cells with | and start a new line inside a cell with <br>.' }),
+        h('p', { class: 'edit-hint', text: 'Text mode. In a table, separate cells with | and start a new line inside a cell with <br>.' }),
         ta, h('div', { class: 'edit-actions' }, save, cancel));
       bodyEl.hidden = true;
       if (!zone.classList.contains('is-collapsed')) setComposer(true, true);
       bodyEl.after(editBox);
       $('span', btnEdit).textContent = 'Editing';
       ta.focus();
+    }
+
+    function startEdit() {
+      if (state.streaming || editor || editBox) return;
+      if (!window.PadiEditor) { startRawEdit(); return; }
+      if (!zone.classList.contains('is-collapsed')) setComposer(true, true);
+      const draft = readDrafts()[draftKey()];
+      if (draft) { bodyEl.innerHTML = renderMd(draft); toast('Restored your unsaved edits.'); }
+      editor = window.PadiEditor.begin({
+        body: bodyEl, toast,
+        onDraft: writeDraft,
+        onSave: (md) => commit(md),
+        onCancel: () => { writeDraft(null); closeEdit(); api.set(api.text, true, api.msg); },
+        onRaw: (md) => { editor = null; startRawEdit(md); },
+      });
+      bodyEl.parentNode.insertBefore(editor.bar, bodyEl);
+      $('span', btnEdit).textContent = 'Editing';
+      const first = bodyEl.querySelector('p:not(.q), td .ln, h2');
+      if (first && window.matchMedia('(hover: hover)').matches) first.focus();
     }
 
     const api = {
@@ -513,7 +545,11 @@
       if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(t).then(done, () => toast('Copy was blocked by the browser'));
       else toast('Copy is not available in this browser');
     });
-    btnEdit.addEventListener('click', () => (editBox ? closeEdit() : startEdit()));
+    btnEdit.addEventListener('click', () => {
+      if (editor) editor.cancel();
+      else if (editBox) { closeEdit(); api.set(api.text, true, api.msg); }
+      else startEdit();
+    });
     btnReuse.addEventListener('click', () => reuseSession());
     btnRegen.addEventListener('click', () => regenerate());
     btnDocx.addEventListener('click', () => exportDocx(api.text, api.title, btnDocx, kind));
@@ -547,6 +583,24 @@
 
   /* ───────── Export ───────── */
   const hintProfile = () => { const p = profile(); return p.teacher || p.school ? '' : '. Tip: add your name and school in the menu to print them on every file.'; };
+  let docxLoading = null;
+  function loadDocxLib() {
+    if (window.docx && window.SchoolPadiDocx) return Promise.resolve();
+    if (!docxLoading) docxLoading = new Promise((ok, no) => {
+      const s = document.createElement('script');
+      s.src = 'vendor/docx.iife.js';
+      s.onload = () => (window.docx && window.SchoolPadiDocx ? ok() : no(new Error('docx missing')));
+      s.onerror = () => { docxLoading = null; no(new Error('docx failed to load')); };
+      document.head.append(s);
+    });
+    return docxLoading;
+  }
+  function saveBlob(blob, title) {
+    const url = URL.createObjectURL(blob);
+    const a = h('a', { href: url, download: title.replace(/[^A-Za-z0-9._-]+/g, '_').replace(/^_+|_+$/g, '') + '.docx' });
+    document.body.append(a); a.click(); a.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 4000);
+  }
   async function exportDocx(text, title, btn, kind) {
     const layout = kind === 'worksheet' || kind === 'homework' ? 'portrait' : 'landscape';
     const label = $('span', btn);
@@ -558,7 +612,16 @@
         toast('Saved ' + name + hintProfile());
         return;
       }
-      const res = await fetch('/api/export_docx', {
+      // Build the Word file right here in the browser (no server round trip, works offline once loaded).
+      try {
+        await loadDocxLib();
+        const who = profile();
+        const blob = await window.SchoolPadiDocx.toFile(window.docx, title, splitElic(text).body, { portrait: layout === 'portrait', teacher: who.teacher, school: who.school });
+        saveBlob(blob, title);
+        toast('Downloaded ' + title + '.docx' + hintProfile());
+        return;
+      } catch (e) { /* fall back to the server below */ }
+      const res = await fetch('/api/export-docx', {
         method: 'POST', headers: { 'content-type': 'application/json' },
         body: JSON.stringify({ title, layout, content: splitElic(text).body, teacher: profile().teacher || '', school: profile().school || '' }),
       });
@@ -567,11 +630,7 @@
         try { const j = await res.json(); if (j.message) msg = j.message; } catch (e) { /* not JSON */ }
         throw new Error(res.status === 404 ? 'Word export needs the deployed server. It is not available in this preview.' : msg);
       }
-      const blob = await res.blob();
-      const url = URL.createObjectURL(blob);
-      const a = h('a', { href: url, download: title.replace(/[^A-Za-z0-9._-]+/g, '_').replace(/^_+|_+$/g, '') + '.docx' });
-      document.body.append(a); a.click(); a.remove();
-      setTimeout(() => URL.revokeObjectURL(url), 4000);
+      saveBlob(await res.blob(), title);
       toast('Downloaded ' + title + '.docx' + hintProfile());
     } catch (e) {
       toast(e.message || 'Could not export.');
@@ -1047,12 +1106,156 @@
       if (!res.ok) throw new Error('no api');
       const j = await res.json();
       state.config = { loaded: true, demo: !!j.demo, provider: j.provider || null, accessRequired: !!j.accessRequired };
+      initAccount(j.sync);
     } catch (e) {
       state.config = { loaded: true, demo: true, provider: null, accessRequired: false };   // static preview, no server
     }
     showAccess(state.config.accessRequired && !state.config.demo);
     updateView(); updateTopbar();
   }
+
+
+  /* ───────── Accounts and sync ───────── */
+  /* Plans live on the device first. When a teacher signs in, they are also copied to that teacher's own
+     private rows (Neon) and merged across devices: the newest edit of each plan wins. */
+  const TOMB_KEY = 'schoolpadi.deleted';
+  const tomb = () => { try { return JSON.parse(localStorage.getItem(TOMB_KEY)) || {}; } catch (e) { return {}; } };
+  const saveTomb = (t) => { try { localStorage.setItem(TOMB_KEY, JSON.stringify(t)); } catch (e) { /* ignore */ } };
+  const acct = {
+    root: $('#accountRow'), out: $('#acctOut'), inn: $('#acctIn'), open: $('#acctOpen'), form: $('#acctForm'),
+    email: $('#acctEmail'), send: $('#acctSend'), codeWrap: $('#acctCodeWrap'), code: $('#acctCode'), verify: $('#acctVerify'),
+    who: $('#acctWho'), status: $('#acctStatus'), now: $('#acctSyncNow'), signOut: $('#acctSignOut'), msg: $('#acctMsg'),
+  };
+  const signedIn = () => !!(window.PadiSync && window.PadiSync.available() && window.PadiSync.user());
+  let syncing = false, syncAgain = false, syncTimer = 0, lastSync = 0;
+
+  const acctMsg = (t, bad) => { acct.msg.textContent = t || ''; acct.msg.classList.toggle('err', !!bad); };
+  const ago = (t) => { const s = Math.round((Date.now() - t) / 1000); return s < 20 ? 'just now' : s < 90 ? 'a minute ago' : s < 3600 ? Math.round(s / 60) + ' minutes ago' : Math.round(s / 3600) + ' hours ago'; };
+  function acctStatus(t) { acct.status.textContent = t; }
+  function refreshAcct() {
+    if (!window.PadiSync || !window.PadiSync.available()) { acct.root.hidden = true; return; }
+    acct.root.hidden = false;
+    const u = window.PadiSync.user();
+    acct.out.hidden = !!u; acct.inn.hidden = !u;
+    if (u) { acct.who.textContent = u.email || 'Signed in'; if (lastSync) acctStatus('Synced ' + ago(lastSync)); }
+  }
+  function scheduleSync() { if (!signedIn()) return; clearTimeout(syncTimer); syncTimer = setTimeout(() => syncNow(), 3000); }
+
+  const cleanRemote = (r) => {
+    const d = r && r.data;
+    if (!d || typeof d !== 'object' || !Array.isArray(d.messages) || !d.messages.length) return null;
+    return Object.assign({}, d, { id: String(r.id), updatedAt: Number(r.updated_at) || 0, title: typeof d.title === 'string' ? d.title : 'Plan', params: d.params && typeof d.params === 'object' ? d.params : null,
+      messages: d.messages.filter((m) => m && (m.role === 'user' || m.role === 'assistant') && typeof m.content === 'string') });
+  };
+
+  async function syncNow(manual) {
+    if (!signedIn()) return;
+    if (syncing) { syncAgain = true; return; }
+    if (state.streaming) { scheduleSync(); return; }                 // never change plans while one is being written
+    syncing = true; acctStatus('Syncing…'); if (manual) acctMsg('');
+    try {
+      const P = window.PadiSync;
+      const remote = await P.list(60);
+      const t = tomb(), local = new Map(state.sessions.filter((s) => s.messages.length).map((s) => [s.id, s]));
+      const push = [], take = new Map(), drop = new Set(), seen = new Set();
+      for (const r of remote) {
+        seen.add(r.id);
+        const l = local.get(r.id), ts = Number(r.updated_at) || 0;
+        if (r.deleted) {
+          if (t[r.id] && t[r.id] <= ts) delete t[r.id];
+          if (l && l.updatedAt <= ts) drop.add(r.id); else if (l) push.push({ id: l.id, data: l, updated_at: l.updatedAt });
+        } else if (t[r.id]) {                                         // deleted on this device
+          if (t[r.id] >= ts) push.push({ id: r.id, data: {}, updated_at: t[r.id], deleted: true });
+          else { delete t[r.id]; const c = cleanRemote(r); if (c) take.set(r.id, c); }
+        } else if (!l) { const c = cleanRemote(r); if (c) take.set(r.id, c); }
+        else if (ts > l.updatedAt) { const c = cleanRemote(r); if (c) take.set(r.id, c); }
+        else if (l.updatedAt > ts) push.push({ id: l.id, data: l, updated_at: l.updatedAt });
+      }
+      local.forEach((l, id) => { if (!seen.has(id) && !t[id]) push.push({ id, data: l, updated_at: l.updatedAt }); });
+      Object.keys(t).forEach((id) => { if (!seen.has(id)) push.push({ id, data: {}, updated_at: t[id], deleted: true }); });
+      Object.keys(t).forEach((id) => { if (Date.now() - t[id] > 30 * 864e5) delete t[id]; });
+      await P.push(push);
+      saveTomb(t);
+
+      // teacher details
+      try {
+        const rp = await P.getProfile(), lp = profile(), lts = lp.updatedAt || 0, empty = !lp.teacher && !lp.school;
+        if (rp && (empty || rp.updated_at > lts)) {
+          const d = rp.data || {};
+          teacherInput.value = String(d.teacher || '').slice(0, 80); schoolInput.value = String(d.school || '').slice(0, 100);
+          try { localStorage.setItem(PROFILE_KEY, JSON.stringify({ teacher: teacherInput.value, school: schoolInput.value, updatedAt: rp.updated_at })); } catch (e) { /* ignore */ }
+        } else if (!empty && (!rp || lts > rp.updated_at)) {
+          await P.setProfile({ teacher: lp.teacher || '', school: lp.school || '' }, lts || Date.now());
+        }
+      } catch (e) { if (e.offline) throw e; }
+
+      if ((take.size || drop.size) && !state.streaming) {
+        const keepCur = state.currentId;
+        let list = state.sessions.filter((s) => !drop.has(s.id)).map((s) => take.get(s.id) || s);
+        const have = new Set(list.map((s) => s.id));
+        take.forEach((c, id) => { if (!have.has(id)) list.push(c); });
+        state.sessions = list;
+        const cur = current();
+        if (!cur) { const f = makeSession(); state.sessions.unshift(f); showSession(f.id); }
+        else if (take.has(keepCur)) showSession(keepCur);
+        renderSessions(); updateTopbar(); store.save(true);
+      } else if (take.size || drop.size) syncAgain = true;
+      lastSync = Date.now();
+      acctStatus('Synced just now');
+    } catch (e) {
+      if (e.offline) acctStatus('Offline. Will sync when you are back online.');
+      else if (e.status === 401 || !signedIn()) { refreshAcct(); acctMsg('Please sign in again.', true); }
+      else acctStatus('Could not sync: ' + e.message);
+    } finally {
+      syncing = false;
+      if (syncAgain) { syncAgain = false; scheduleSync(); }
+    }
+  }
+
+  function initAccount(cfg) {
+    if (!window.PadiSync || !cfg) return;
+    window.PadiSync.init(cfg);
+    refreshAcct();
+    if (signedIn()) syncNow();
+  }
+
+  let cooldown = 0;
+  acct.open.addEventListener('click', () => { acct.form.hidden = !acct.form.hidden; if (!acct.form.hidden) acct.email.focus(); });
+  acct.form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const email = acct.email.value.trim().toLowerCase();
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { acctMsg('Enter a valid email address.', true); return; }
+    acct.send.disabled = true; acctMsg('Sending…');
+    try {
+      await window.PadiSync.sendCode(email);
+      acct.codeWrap.hidden = false; acct.code.focus();
+      acctMsg('We sent a 6-digit code to ' + email + '. Check your inbox and spam folder.');
+      cooldown = 60; const tick = () => { acct.send.firstElementChild.textContent = cooldown > 0 ? 'Send again in ' + cooldown-- + 's' : 'Send me a new code'; if (cooldown >= 0) setTimeout(tick, 1000); else acct.send.disabled = false; };
+      tick();
+    } catch (err) { acct.send.disabled = false; acctMsg(err.message, true); }
+  });
+  async function verifyCode() {
+    const email = acct.email.value.trim().toLowerCase(), code = acct.code.value.replace(/\s+/g, '');
+    if (!/^\d{6,8}$/.test(code)) { acctMsg('Enter the 6-digit code from the email.', true); return; }
+    acct.verify.disabled = true; acctMsg('Checking…');
+    try {
+      await window.PadiSync.verify(email, code);
+      acct.code.value = ''; acct.codeWrap.hidden = true; acct.form.hidden = true;
+      acctMsg('Signed in. Your plans will now sync.');
+      refreshAcct(); syncNow(true);
+    } catch (err) { acctMsg(err.message, true); }
+    finally { acct.verify.disabled = false; }
+  }
+  acct.verify.addEventListener('click', verifyCode);
+  acct.code.addEventListener('keydown', (e) => { if (e.key === 'Enter') { e.preventDefault(); verifyCode(); } });
+  acct.now.addEventListener('click', () => syncNow(true));
+  acct.signOut.addEventListener('click', async () => {
+    await window.PadiSync.signOut();
+    lastSync = 0; refreshAcct(); acctMsg('Signed out. Your plans stay on this device.');
+  });
+  document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible') scheduleSync(); });
+  window.addEventListener('online', () => scheduleSync());
+  setInterval(() => { if (signedIn() && document.visibilityState === 'visible' && !syncing) { if (lastSync) acctStatus('Synced ' + ago(lastSync)); if (Date.now() - lastSync > 5 * 60000) syncNow(); } }, 30000);
 
   function init() {
     const saved = store.load();

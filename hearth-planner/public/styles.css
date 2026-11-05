@@ -426,7 +426,7 @@ a { color: inherit; }
 .meta { margin-top: 8px; font-size: 12px; color: var(--muted); }
 .meta:empty { display: none; }
 
-.doc { border: 1px solid var(--card-line); border-radius: 16px; background: var(--card); overflow: hidden; box-shadow: var(--shadow); }
+.doc { border: 1px solid var(--card-line); border-radius: 16px; background: var(--card); overflow: clip; box-shadow: var(--shadow); }
 .doc-bar { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px 12px; padding: 10px 12px 10px 16px; border-bottom: 1px solid var(--line); }
 .doc-id { min-width: 0; display: flex; flex-direction: column; }
 .doc-title { overflow: hidden; white-space: nowrap; text-overflow: ellipsis; font-weight: 600; font-size: 14.5px; }
@@ -549,3 +549,84 @@ html { overscroll-behavior-y: none; }
 .also-label { font-size: 13px; color: var(--muted); }
 .also .pill { height: 32px; padding: 0 12px; font-size: 13px; }
 [data-view="chat"] .also { display: none; }
+
+/* ───────── Account and sync ───────── */
+.acct-row { gap: 8px; }
+.acct-open { width: 100%; justify-content: flex-start; }
+.acct-form { display: flex; flex-direction: column; gap: 8px; margin-top: 8px; }
+.acct-form > div { display: flex; flex-direction: column; gap: 8px; }
+.acct-btn { width: 100%; justify-content: center; }
+.acct-who { font-size: 13.5px; font-weight: 600; overflow-wrap: anywhere; }
+.acct-status { font-size: 12.5px; color: var(--muted); margin-top: 2px; }
+.acct-actions { display: flex; gap: 8px; margin-top: 8px; }
+.acct-actions .acct-btn { flex: 1; }
+.acct-msg { margin: 0; font-size: 12.5px; line-height: 1.45; color: var(--muted); }
+.acct-msg:empty { display: none; }
+.acct-msg.err { color: var(--del); }
+
+/* ───────── Mobile polish ───────── */
+@media (max-width: 640px) {
+  /* The plan table becomes stacked cards: no sideways scrolling to read a lesson. */
+  .tbl-wrap:has(> .tbl.joined) { border: 0; border-radius: 0; overflow: visible; margin-top: .4em; }
+  .tbl.joined, .tbl.joined tbody { display: block; width: 100%; min-width: 0; }
+  .tbl.joined tr { display: block; margin: 0 0 8px; border: 1px solid var(--tbl-line); border-radius: 12px; overflow: hidden; background: var(--card); }
+  .tbl.joined td, .tbl.joined th { display: block; width: auto !important; border: 0; border-bottom: 1px solid var(--tbl-line); padding: 9px 12px; }
+  .tbl.joined tr > :last-child { border-bottom: 0; }
+  .tbl.joined tr.ph { display: none; }
+  .tbl.joined tr.lt { margin-top: 18px; border: 0; }
+  .tbl.joined tr.lt td { font-size: 15px; padding: 12px 14px; border-radius: 12px; }
+  .tbl.joined tr.phase td:first-child { background: var(--label); font-weight: 700; }
+  .tbl.joined td[data-l]::before { content: attr(data-l); display: block; margin-bottom: 3px; font-size: 11px; font-weight: 600; letter-spacing: .05em; text-transform: uppercase; color: var(--muted); }
+  .tbl.joined td:empty { display: none; }
+  /* Other tables keep a scrollable wrapper, with a hint that there is more to the right. */
+  .tbl-wrap { background: linear-gradient(to right, var(--card) 30%, transparent), linear-gradient(to left, rgba(0,0,0,.14), transparent) 100% 0 / 14px 100% no-repeat; background-attachment: local, scroll; }
+}
+
+@media (max-width: 560px) {
+  /* Landing: let the page scroll on short phones instead of clipping the heading. */
+  .stage { overflow-y: auto; overscroll-behavior: contain; }
+  [data-view="landing"] .grow { flex: 0 0 8px; }
+  [data-view="landing"] .hero { max-height: none; flex: none; margin-bottom: 16px; }
+  [data-view="landing"] .messages-wrap { flex: none; }
+  [data-view="landing"] .composer-zone { flex: none; }
+  .hero-mark { width: 34px; height: 34px; margin-bottom: 8px; }
+  .hero h1 { font-size: 27px; }
+  /* Reading a plan: give it the screen. The notice and fine print move out of the way. */
+  [data-view="chat"] .demo-banner, [data-view="chat"] .fineprint { display: none; }
+  [data-view="chat"] .composer-zone { padding-bottom: max(8px, env(safe-area-inset-bottom)); }
+  [data-view="chat"] .composer-toggle { margin: 2px 0 6px auto; }
+  .extras-label { width: 100%; }
+  /* Dropdowns open as a bottom sheet with large tap targets. */
+  .dd .menu { position: fixed; left: 8px; right: 8px; top: auto !important; bottom: calc(8px + env(safe-area-inset-bottom)) !important; max-width: none; max-height: 62vh; border-radius: 18px; padding: 8px; z-index: 50; box-shadow: 0 -8px 40px rgba(0,0,0,.28); }
+  .dd .menu-item { min-height: 48px; font-size: 16px; }
+  .chips .chip, .extras .extra-btn { min-height: 40px; }
+  .icon-btn { min-width: 44px; min-height: 44px; }
+}
+@media (max-width: 640px) { .tbl-wrap:has(> .tbl.joined) { background: none; } }
+@media (max-width: 560px) {
+  /* Easier tapping: action buttons are at least 40px tall. */
+  .doc-bar .tool, .tool { min-height: 40px; padding-left: 14px; padding-right: 14px; }
+  [data-view="chat"] .composer-toggle { min-height: 36px; }
+}
+
+/* ── In-place editor ── */
+.edit-bar { position: sticky; top: 0; z-index: 20; display: grid; gap: 6px; padding: 10px 14px 8px; background: var(--card); border-bottom: 2px solid var(--accent); box-shadow: 0 6px 14px -10px rgba(0,0,0,.35); }
+.eb-top { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.eb-title { font-weight: 700; font-size: 14px; color: var(--accent); }
+.eb-tools { display: flex; align-items: center; gap: 6px; overflow-x: auto; scrollbar-width: none; padding-bottom: 2px; }
+.eb-tools::-webkit-scrollbar { display: none; }
+.eb-btn { flex: none; min-height: 38px; min-width: 40px; padding: 0 12px; border: 1px solid var(--card-line); border-radius: 10px; background: var(--card); color: var(--text); font: inherit; font-size: 13px; cursor: pointer; }
+.eb-btn.is-b { font-weight: 800; } .eb-btn.is-i { font-style: italic; }
+.eb-btn:disabled { opacity: .4; cursor: default; }
+.eb-btn:not(:disabled):hover { border-color: var(--accent); }
+.eb-sep { flex: none; width: 1px; align-self: stretch; margin: 4px 2px; background: var(--card-line); }
+.eb-hint { margin: 0; font-size: 12.5px; color: var(--muted); }
+.tool.is-danger { background: var(--terracotta, #D95D39); color: #fff; border-color: transparent; }
+.doc-body.editing [contenteditable="true"] { outline: 1px dashed transparent; outline-offset: 2px; border-radius: 4px; min-height: 1.4em; cursor: text; caret-color: var(--accent); }
+.doc-body.editing [contenteditable="true"]:hover { outline-color: var(--card-line); background: rgba(244,180,0,.08); }
+.doc-body.editing [contenteditable="true"]:focus { outline: 2px solid var(--accent); background: rgba(244,180,0,.12); }
+.doc-body.editing .tbl td { cursor: text; }
+@media (max-width: 640px) {
+  .doc-body.editing [contenteditable="true"] { font-size: 16px; outline-color: var(--card-line); }
+  .edit-bar { padding: 8px 10px 6px; }
+}

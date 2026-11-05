@@ -6,9 +6,7 @@
       "maxDuration": 300
     },
     "api/export_docx.py": {
-      "includeFiles": [
-        "lib/ges_docx_export.py"
-      ],
+      "includeFiles": "lib/**",
       "maxDuration": 30
     }
   },

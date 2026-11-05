@@ -1,7 +1,7 @@
 /* Padi-T service worker: caches the app shell so it opens instantly and works offline
    for reading saved plans. API calls (/api/*) are never cached. Bump VERSION to force an update. */
-const VERSION = 'schoolpadi-v5';
-const SHELL = ['./', 'index.html', 'styles.css', 'app.js', 'schemes.js', 'sample.js', 'plan-join.js', 'theme-init.js', 'pwa.js',
+const VERSION = 'schoolpadi-v8';
+const SHELL = ['./', 'index.html', 'styles.css', 'app.js', 'editor.js', 'schemes.js', 'sample.js', 'plan-join.js', 'sync.js', 'docx-export.js', 'icons/apple-touch-icon.png', 'theme-init.js', 'pwa.js',
   'favicon.svg', 'manifest.webmanifest', 'icons/icon-192.png', 'icons/icon-512.png'];
 
 self.addEventListener('install', (e) => {
