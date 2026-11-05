@@ -1242,7 +1242,8 @@
       await window.PadiSync.signUp(email, password);
       acct.form.hidden = true; acctMsg(window.PadiSync.syncAvailable() ? 'Account created. Your plans will now sync.' : 'Account created. You are signed in.');
       refreshAcct(); syncNow(true); watchLive();
-    } catch (err) { acct.send.disabled = false; acctMsg(err.message, true); }
+    } catch (err) { acctMsg(err.message, true); }
+    finally { acct.send.disabled = false; }
   });
   acct.signIn.addEventListener('click', async () => {
     const email = acct.email.value.trim().toLowerCase(), password = acct.password.value;

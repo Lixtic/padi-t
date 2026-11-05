@@ -103,8 +103,8 @@ Set these environment variables in Vercel (Settings > Environment Variables), th
 | `NEON_AUTH_JWKS_URL` | Managed Auth JWKS URL pulled by `neon deploy`; keep it server-side. |
 | `NEON_REALTIME_URL` | The Realtime WebSocket URL provisioned by Neon. |
 | `NEON_REALTIME_SECRET` | The Realtime secret provisioned by Neon. Keep this server-only. |
-| `AUTH_SECRET` | A long random string (24+ characters). Generate one with `openssl rand -base64 32`. Changing it signs everyone out. |
-| `SMTP_URL` | How to send the code emails, e.g. `smtps://USER:PASSWORD@smtp-relay.brevo.com:465` (Brevo free plan: 300 emails a day) or `smtps://you%40gmail.com:APP_PASSWORD@smtp.gmail.com:465` (Gmail with an app password). Any SMTP provider works. |
+| `AUTH_SECRET` | Only for the old email-code sign-in. A long random string (24+ characters). Generate one with `openssl rand -base64 32`. Changing it signs everyone out. |
+| `SMTP_URL` | Only for the old email-code sign-in; not needed with Managed Auth. How to send the code emails, e.g. `smtps://USER:PASSWORD@smtp-relay.brevo.com:465` (Brevo free plan: 300 emails a day) or `smtps://you%40gmail.com:APP_PASSWORD@smtp.gmail.com:465` (Gmail with an app password). Any SMTP provider works. |
 | `MAIL_FROM` | The sender shown on the email, e.g. `Padi-T <hello@yourdomain.com>`. Most providers require this address to be verified. |
 
 Managed Auth stores identity and sessions in Neon's `neon_auth` schema. The application tables (`users`, `otp_codes`, `plans`, `profiles`) are created automatically when legacy database sync is used; `db/schema.sql` shows them if you prefer to create them yourself in the Neon SQL Editor. If the Realtime variables are also set, signed-in browsers receive live plan updates. Without the Neon variables, the app works in local/demo mode.

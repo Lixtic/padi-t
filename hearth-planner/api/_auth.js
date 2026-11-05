@@ -5,8 +5,20 @@ const db = require('./_db');
 const TOKEN_DAYS = 90;
 const secret = () => process.env.AUTH_SECRET || '';
 
-// Sign-in needs three things: a database, a signing secret and a way to send email.
-const syncConfigured = () => !!(db.configured() && secret().length >= 24 && process.env.SMTP_URL);
+// Old email-code sign-in needs a database, a signing secret and a way to send email.
+const legacyConfigured = () => !!(db.configured() && secret().length >= 24 && process.env.SMTP_URL);
+// Neon Managed Auth only needs a database and the JWKS URL used to verify its tokens.
+const managedConfigured = () => !!(db.configured() && process.env.NEON_AUTH_JWKS_URL);
+const syncConfigured = () => legacyConfigured() || managedConfigured();
+
+// The token issuer may be the full auth URL or just its origin, so accept both.
+function issuers() {
+  const base = String(process.env.NEON_AUTH_BASE_URL || '').trim().replace(/\/+$/, '');
+  if (!base) return null;
+  const list = [base, base + '/'];
+  try { list.push(new URL(base).origin, new URL(base).origin + '/'); } catch (e) { /* keep what we have */ }
+  return Array.from(new Set(list));
+}
 const realtimeConfigured = () => !!(db.configured() && process.env.NEON_REALTIME_URL && process.env.NEON_REALTIME_SECRET);
 
 const b64 = (b) => Buffer.from(b).toString('base64url');
@@ -38,7 +50,8 @@ async function authed(req) {
     try {
       const { jwtVerify, createRemoteJWKSet } = require('jose');
       jwks = jwks || createRemoteJWKSet(new URL(process.env.NEON_AUTH_JWKS_URL));
-      const result = await jwtVerify(m[1], jwks, process.env.NEON_AUTH_BASE_URL ? { issuer: process.env.NEON_AUTH_BASE_URL } : {});
+      const iss = issuers();
+      const result = await jwtVerify(m[1], jwks, iss ? { issuer: iss } : {});
       const p = result.payload;
       if (p.sub) return { uid: String(p.sub), email: String(p.email || '') };
     } catch (e) {
@@ -64,4 +77,4 @@ async function sendMail(to, code) {
   if (json) global.__lastMail = { to, code, info };
 }
 
-module.exports = { syncConfigured, realtimeConfigured, issue, authed, hashCode, newCode, sendMail };
+module.exports = { syncConfigured, legacyConfigured, realtimeConfigured, issue, authed, hashCode, newCode, sendMail };
