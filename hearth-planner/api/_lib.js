@@ -81,6 +81,8 @@ function validate(body) {
   const notes = String(p.notes || '').replace(/\s+/g, ' ').trim();
   const hook = p.hook !== false;
   const light = p.light === true;
+  const studyNotes = p.studyNotes !== false;     // study notes and BECE practice are on unless switched off
+  const bece = p.bece !== false;
   const size = p.size === undefined || p.size === '' ? '' : String(p.size);
   if (size && !SIZES.includes(size)) return { error: 'Please choose a class size from the list.' };
 
@@ -108,7 +110,7 @@ function validate(body) {
   if (thread.length && thread[thread.length - 1].role !== 'user') return { error: 'The last message must be a request.' };
 
   return {
-    params: { subject, cls, week, notes, hook, light, size, scheme },
+    params: { subject, cls, week, notes, hook, light, studyNotes, bece, size, scheme },
     thread: thread.map((t) => ({ role: t.role, content: t.content })),
   };
 }
@@ -121,6 +123,8 @@ function firstMessage(p) {
     'Week: ' + p.week,
     'Hook: ' + (p.hook === false ? 'off' : 'on'),
     'Resources: ' + (p.light ? 'light' : 'standard'),
+    'Study notes: ' + (p.studyNotes === false ? 'off' : 'on'),
+    'BECE practice: ' + (p.bece === false ? 'off' : 'on'),
   ];
   if (p.size) lines.push('Class size: ' + p.size + ' learners');
   Schemes.describe(p.scheme).forEach((l) => lines.push(l));

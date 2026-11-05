@@ -357,7 +357,7 @@
       }
     });
     state.bots.forEach((b, i) => { if (i < state.bots.length - 1) b.demote(); });
-    if (s.params) { state.params = Object.assign({ size: '31–45', light: false, hook: true }, s.params); syncPills(); }
+    if (s.params) { state.params = Object.assign({ size: '31–45', light: false, hook: true, studyNotes: true, bece: true }, s.params); syncPills(); }
     updateView(); updateTopbar(); renderSessions(); updateSend(); scrollBottom(true);
   }
 
@@ -397,7 +397,9 @@
           h('div', { class: 'req-tags' },
             h('span', { class: 'tag', text: p.subject }), h('span', { class: 'tag', text: p.cls }), h('span', { class: 'tag', text: 'Week ' + p.week }),
             p.size ? h('span', { class: 'tag', text: p.size + ' learners' }) : null,
-            p.light ? h('span', { class: 'tag', text: 'Low-resource' }) : null),
+            p.light ? h('span', { class: 'tag', text: 'Low-resource' }) : null,
+            p.studyNotes === false ? h('span', { class: 'tag', text: 'No study notes' }) : null,
+            p.bece === false ? h('span', { class: 'tag', text: 'No BECE questions' }) : null),
           m.content ? h('div', { class: 'req-notes', text: m.content }) : null));
     }
     return h('div', { class: 'msg user' }, h('div', { class: 'bubble', text: m.content }));
@@ -647,10 +649,12 @@
   async function* apiStream(session, signal) {
     if (window.SchoolPadiArtifact) { yield* window.SchoolPadiArtifact.stream(session, signal); return; }
     const p = session.params;
+    const fresh = state.fresh === true; state.fresh = false;        // Regenerate asks for a new answer, not the saved one
+    const who = window.PadiSync && window.PadiSync.authHeader ? await window.PadiSync.authHeader() : {};
     const res = await fetch('/api/generate', {
       method: 'POST', signal,
-      headers: { 'content-type': 'application/json', 'x-access-code': state.access || '' },
-      body: JSON.stringify({ params: { subject: p.subject, cls: p.cls, week: p.week, hook: p.hook !== false, light: p.light === true, size: p.size || '', notes: session.messages[0].content || '' }, thread: threadOf(session) }),
+      headers: Object.assign({ 'content-type': 'application/json', 'x-access-code': state.access || '' }, who),
+      body: JSON.stringify({ params: { subject: p.subject, cls: p.cls, week: p.week, hook: p.hook !== false, light: p.light === true, studyNotes: p.studyNotes !== false, bece: p.bece !== false, size: p.size || '', notes: session.messages[0].content || '' }, thread: threadOf(session), fresh }),
     });
     if (!res.ok) {
       let j = {};
@@ -761,6 +765,7 @@
     s.messages.pop();
     const last = state.bots.pop();
     if (last) last.root.remove();
+    state.fresh = true;
     runGenerate(s);
   }
 
@@ -771,7 +776,7 @@
     const wk = text.match(/\bweek\s*(\d{1,2})\b/i);
     if (wk && /^(generate|create|plan|write)/i.test(text) && s && s.params) {
       const n = Math.min(Math.max(parseInt(wk[1], 10), 1), WEEKS.length);
-      state.params = { subject: s.params.subject, cls: s.params.cls, week: n, hook: s.params.hook !== false, size: s.params.size || state.params.size, light: s.params.light === true };
+      state.params = { subject: s.params.subject, cls: s.params.cls, week: n, hook: s.params.hook !== false, size: s.params.size || state.params.size, light: s.params.light === true, studyNotes: s.params.studyNotes !== false, bece: s.params.bece !== false };
       syncPills();
       const fresh = makeSession();
       state.sessions.unshift(fresh);
@@ -969,6 +974,14 @@
     $('.dd-label', lightBtn).textContent = 'Resources: ' + (on ? 'Light' : 'Standard');
   }
   lightBtn.addEventListener('click', () => { state.params.light = state.params.light !== true; syncLight(); store.save(); });
+  const notesBtn = $('#notesToggle'), beceBtn = $('#beceToggle');
+  function syncContent() {
+    const n = state.params.studyNotes !== false, b = state.params.bece !== false;
+    notesBtn.setAttribute('aria-checked', String(n)); $('.dd-label', notesBtn).textContent = 'Study notes: ' + (n ? 'On' : 'Off');
+    beceBtn.setAttribute('aria-checked', String(b)); $('.dd-label', beceBtn).textContent = 'BECE questions: ' + (b ? 'On' : 'Off');
+  }
+  notesBtn.addEventListener('click', () => { state.params.studyNotes = state.params.studyNotes === false; syncContent(); store.save(); });
+  beceBtn.addEventListener('click', () => { state.params.bece = state.params.bece === false; syncContent(); store.save(); });
   /* The school's NaCCA scheme for the chosen subject, class and week (when one is loaded). */
   const schemeStrip = $('#schemeStrip');
   const schemeFor = (p) => (window.SchoolPadiSchemes ? window.SchoolPadiSchemes.lookup(p.subject, p.cls, p.week) : null);
@@ -1026,7 +1039,7 @@
     const n = 1 + state.params.also.length;
     sendBtn.title = n > 1 ? 'Write ' + n + ' plans' : '';
   }
-  function syncPills() { dropdowns.forEach((d) => d.build()); syncHook(); syncLight(); syncScheme(); syncAlso(); }
+  function syncPills() { dropdowns.forEach((d) => d.build()); syncHook(); syncLight(); syncContent(); syncScheme(); syncAlso(); }
 
   /* ───────── Sidebar behaviour ───────── */
   const navOpen = () => (isMobile() ? app.classList.contains('nav-open') : !app.classList.contains('sb-collapsed'));
@@ -1270,7 +1283,7 @@
     const saved = store.load();
     state.sessions = saved && Array.isArray(saved.sessions) ? saved.sessions.filter((s) => s && Array.isArray(s.messages)) : [];
     if (saved && saved.params && SUBJECTS.includes(saved.params.subject) && CLASSES.includes(saved.params.cls) && WEEKS.includes(saved.params.week)) {
-      state.params = { subject: saved.params.subject, cls: saved.params.cls, week: saved.params.week, hook: saved.params.hook !== false, size: SIZES.includes(saved.params.size) ? saved.params.size : state.params.size, light: saved.params.light === true };
+      state.params = { subject: saved.params.subject, cls: saved.params.cls, week: saved.params.week, hook: saved.params.hook !== false, size: SIZES.includes(saved.params.size) ? saved.params.size : state.params.size, light: saved.params.light === true, studyNotes: saved.params.studyNotes !== false, bece: saved.params.bece !== false };
     }
     try { state.access = localStorage.getItem(ACCESS_KEY) || ''; accessInput.value = state.access; } catch (e) { /* ignore */ }
 
@@ -1281,7 +1294,7 @@
     makeDropdown($('#ddWeek'), { name: 'Week', items: WEEKS.map((x) => ({ id: x, label: 'Week ' + x })), get: () => state.params.week, set: (v) => { state.params.week = v; store.save(); syncScheme(); }, label: (x) => 'Week ' + x });
 
     makeDropdown($('#ddSize'), { name: 'Class size', items: SIZES.map((x) => ({ id: x, label: x + ' learners' })), get: () => state.params.size, set: (v) => { state.params.size = v; store.save(); }, label: (x) => x + ' learners' });
-    syncHook(); syncLight(); syncScheme(); syncAlso();
+    syncHook(); syncLight(); syncContent(); syncScheme(); syncAlso();
     syncNav();
     const s = makeSession();
     state.sessions.unshift(s);

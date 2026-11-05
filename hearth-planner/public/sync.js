@@ -68,6 +68,14 @@
     },
     syncAvailable: function () { return syncEnabled; },
     user: function () { return enabled && session && session.user ? session.user : null; },
+    // A bearer header for other API calls (such as plan generation), or nothing when signed out. Never throws.
+    authHeader: async function () {
+      if (!enabled || !authClient || !session) return {};
+      try {
+        var t = await authClient.token();
+        return t && t.data && t.data.token ? { authorization: 'Bearer ' + t.data.token } : {};
+      } catch (e) { return {}; }
+    },
     signUp: async function (email, password) {
       var result = await authCall(function () { return authClient.signUp.email({ email: email, password: password, name: email.split('@')[0] }); }, 'Could not create the account.');
       var user = result.data && result.data.user;
