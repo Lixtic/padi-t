@@ -24,6 +24,7 @@
     var body = null;
     try { body = await res.json(); } catch (e) { /* empty or not JSON */ }
     if (!res.ok) {
+      console.warn('[Padi-T sync] ' + path + ' ->', res.status, body);
       var err = new Error((body && body.message) || 'Something went wrong. Try again.');
       err.status = res.status;
       if (res.status === 401 && opts.auth) { session = null; store(); }
@@ -35,12 +36,16 @@
   // Runs a sign-in or sign-up request and turns every failure into a readable message.
   async function authCall(fn, fallback) {
     var result;
+    var where = location.origin;
     try { result = await fn(); }
-    catch (e) { throw new Error('Could not reach the sign-in service. Check your connection and try again.'); }
+    catch (e) { console.error('[Padi-T sign-in] request threw:', e); throw new Error('Could not reach the sign-in service from ' + where + '. If this site is new or a preview link, add it as a trusted origin in Neon Auth. (' + (e && e.message ? e.message : 'network error') + ')'); }
     if (!result) throw new Error(fallback);
     if (result.error) {
-      var m = String(result.error.message || '');
-      throw new Error(/failed to fetch|networkerror|load failed/i.test(m) || !m ? 'Could not reach the sign-in service. Check your connection and try again.' : m);
+      console.error('[Padi-T sign-in] server/client error:', result.error);
+      var m = String(result.error.message || result.error.statusText || '');
+      var st = result.error.status ? ' (' + result.error.status + ')' : '';
+      if (/failed to fetch|networkerror|load failed/i.test(m) || (!m && !result.error.status)) throw new Error('Could not reach the sign-in service from ' + where + '. If this site is new or a preview link, add it as a trusted origin in Neon Auth.');
+      throw new Error((m || 'Sign-in was refused') + st);
     }
     return result;
   }
