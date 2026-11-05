@@ -5,7 +5,7 @@
 (function () {
   'use strict';
   var AUTH_KEY = 'schoolpadi.auth';
-  var enabled = false, session = null;
+  var enabled = false, realtime = false, session = null, live = null;
 
   function load() { try { session = JSON.parse(localStorage.getItem(AUTH_KEY)); } catch (e) { session = null; } }
   function store() { try { if (session) localStorage.setItem(AUTH_KEY, JSON.stringify(session)); else localStorage.removeItem(AUTH_KEY); } catch (e) { /* storage blocked */ } }
@@ -33,7 +33,7 @@
 
   window.PadiSync = {
     available: function () { return enabled; },
-    init: function (c) { enabled = !!(c && c.enabled); load(); return enabled; },
+    init: function (c) { enabled = !!(c && c.enabled); realtime = !!(c && c.realtime); load(); return enabled; },
     user: function () { return enabled && session && session.user && session.expires_at > Date.now() / 1000 ? session.user : null; },
     sendCode: function (email) { return call('/api/auth', { method: 'POST', body: { action: 'request', email: email } }); },
     verify: async function (email, code) {
@@ -42,6 +42,20 @@
       return session.user;
     },
     signOut: async function () { session = null; store(); },
+    watch: async function (onChange) {
+      if (!realtime || !window.NeonRealtime || !session) return function () {};
+      if (live) { live.unsubscribe(); live = null; }
+      var j = await call('/api/realtime', { auth: true });
+      var client = window.NeonRealtime.createRealtimeClient({ url: j.url });
+      live = client.subscribe(j.query);
+      var off = live.onChange(function () { if (typeof onChange === 'function') onChange(); });
+      return function () {
+        off();
+        live.unsubscribe();
+        live = null;
+        client.close();
+      };
+    },
     list: function (limit) { return call('/api/sync?what=plans&limit=' + (limit || 60), { auth: true }); },
     push: async function (rows) {
       for (var i = 0; i < rows.length; i += 5) {                       // small batches keep each request light

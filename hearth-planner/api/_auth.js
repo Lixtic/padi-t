@@ -7,6 +7,7 @@ const secret = () => process.env.AUTH_SECRET || '';
 
 // Sign-in needs three things: a database, a signing secret and a way to send email.
 const syncConfigured = () => !!(db.configured() && secret().length >= 24 && process.env.SMTP_URL);
+const realtimeConfigured = () => !!(db.configured() && process.env.NEON_REALTIME_URL && process.env.NEON_REALTIME_SECRET);
 
 const b64 = (b) => Buffer.from(b).toString('base64url');
 const mac = (s) => crypto.createHmac('sha256', secret()).update(s).digest('base64url');
@@ -46,4 +47,4 @@ async function sendMail(to, code) {
   if (json) global.__lastMail = { to, code, info };
 }
 
-module.exports = { syncConfigured, issue, authed, hashCode, newCode, sendMail };
+module.exports = { syncConfigured, realtimeConfigured, issue, authed, hashCode, newCode, sendMail };

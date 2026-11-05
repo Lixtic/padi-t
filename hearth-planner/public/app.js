@@ -1212,11 +1212,18 @@
     }
   }
 
+  let stopLive = null;
+  async function watchLive() {
+    if (stopLive) { stopLive(); stopLive = null; }
+    if (!signedIn() || !window.PadiSync.watch) return;
+    try { stopLive = await window.PadiSync.watch(() => { if (!syncing && !state.streaming) syncNow(); }); }
+    catch (e) { /* polling remains available when Realtime is unavailable */ }
+  }
   function initAccount(cfg) {
     if (!window.PadiSync || !cfg) return;
     window.PadiSync.init(cfg);
     refreshAcct();
-    if (signedIn()) syncNow();
+    if (signedIn()) { syncNow(); watchLive(); }
   }
 
   let cooldown = 0;
@@ -1242,7 +1249,7 @@
       await window.PadiSync.verify(email, code);
       acct.code.value = ''; acct.codeWrap.hidden = true; acct.form.hidden = true;
       acctMsg('Signed in. Your plans will now sync.');
-      refreshAcct(); syncNow(true);
+      refreshAcct(); syncNow(true); watchLive();
     } catch (err) { acctMsg(err.message, true); }
     finally { acct.verify.disabled = false; }
   }
@@ -1251,6 +1258,7 @@
   acct.now.addEventListener('click', () => syncNow(true));
   acct.signOut.addEventListener('click', async () => {
     await window.PadiSync.signOut();
+    if (stopLive) { stopLive(); stopLive = null; }
     lastSync = 0; refreshAcct(); acctMsg('Signed out. Your plans stay on this device.');
   });
   document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible') scheduleSync(); });

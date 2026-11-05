@@ -10,7 +10,7 @@ It works on phones and desktops, has light and dark themes, and keeps a history 
 public/            the website (HTML, CSS, vanilla JS, no build step)
 api/config.js      tells the site whether an AI key is set (never returns keys)
 api/generate.js    streams the lesson package from your AI provider (Node)
-api/export-docx.py builds the Word file (Python, python-docx)
+api/export_docx.py builds the Word file (Python, python-docx)
 lib/               the Word layout builder (landscape tables, shaded headers)
 prompts/           the master prompt (edit this to change what Padi-T writes)
 scripts/           build-prompt.js turns the prompt into api/_prompt.js
@@ -99,14 +99,16 @@ Set these environment variables in Vercel (Settings > Environment Variables), th
 | Variable | What to put |
 |---|---|
 | `DATABASE_URL` | Neon Console > your project > **Connect** > copy the connection string (pooled is fine). |
+| `NEON_REALTIME_URL` | The Realtime WebSocket URL provisioned by Neon. |
+| `NEON_REALTIME_SECRET` | The Realtime secret provisioned by Neon. Keep this server-only. |
 | `AUTH_SECRET` | A long random string (24+ characters). Generate one with `openssl rand -base64 32`. Changing it signs everyone out. |
 | `SMTP_URL` | How to send the code emails, e.g. `smtps://USER:PASSWORD@smtp-relay.brevo.com:465` (Brevo free plan: 300 emails a day) or `smtps://you%40gmail.com:APP_PASSWORD@smtp.gmail.com:465` (Gmail with an app password). Any SMTP provider works. |
 | `MAIL_FROM` | The sender shown on the email, e.g. `Padi-T <hello@yourdomain.com>`. Most providers require this address to be verified. |
 
-The tables (`users`, `otp_codes`, `plans`, `profiles`) are created automatically the first time someone signs in; `db/schema.sql` shows them if you prefer to create them yourself in the Neon SQL Editor. When all three of `DATABASE_URL`, `AUTH_SECRET` and `SMTP_URL` are set, a "Sign in to sync your plans" button appears in the sidebar. Without them the app works exactly as before.
+The tables (`users`, `otp_codes`, `plans`, `profiles`) are created automatically the first time someone signs in; `db/schema.sql` shows them if you prefer to create them yourself in the Neon SQL Editor. When all three of `DATABASE_URL`, `AUTH_SECRET` and `SMTP_URL` are set, a "Sign in to sync your plans" button appears in the sidebar. If the Realtime variables are also set, signed-in browsers receive live plan updates; polling remains as a fallback. Without the database variables, the app works exactly as before.
 
 Notes: codes last 10 minutes, allow 5 tries, and can be requested once a minute (5 an hour) per email. A sign-in lasts 90 days on a device; "Sign out" only removes it from that device.
 
 ## Word export
 
-Word files are built in the browser (`public/vendor/docx.iife.js` + `public/docx-export.js`), so export works even if the Python function is unavailable. The server route `api/export-docx.py` is kept as a fallback.
+Word files are built in the browser (`public/vendor/docx.iife.js` + `public/docx-export.js`), so export works even if the Python function is unavailable. The server route `api/export_docx.py` is kept as a fallback.

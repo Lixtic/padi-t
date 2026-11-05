@@ -7,11 +7,18 @@
     "node": ">=20"
   },
   "scripts": {
+    "build": "npm run build:prompt && node scripts/build-schemes.js && node scripts/build-realtime.js",
     "build:prompt": "node scripts/build-prompt.js",
+    "build:realtime": "node scripts/build-realtime.js",
     "dev": "vercel dev"
   },
   "dependencies": {
+    "@neon/config": "^1.11.3",
+    "@neon/env": "^1.6.15",
+    "@neon/realtime": "^0.2.0",
     "@neondatabase/serverless": "^1.2.0",
-    "nodemailer": "^10.3.1"
+    "esbuild": "^0.25.0",
+    "nodemailer": "^10.3.1",
+    "ws": "^8.22.1"
   }
 }
