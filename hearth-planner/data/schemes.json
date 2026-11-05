@@ -2778,6 +2778,332 @@
    },
    "term": "1st Term",
    "source": "Career Technology Basic 7-9 Week 1-12"
+  },
+  "Religious and Moral Education": {
+   "term": "1st Term",
+   "source": "NaCCA Common Core Programme (CCP) RME curriculum",
+   "classes": {
+    "Basic 7": [
+     {
+      "weeks": [
+       1,
+       2
+      ],
+      "type": "teach",
+      "strand": "Strand 1: God, His Creation and Attributes",
+      "substrand": "Sub-Strand 1: God's Creation and Attributes",
+      "standard": "",
+      "indicators": [
+       "B7.1.1.1: Outline the attributes of God according to the three major religions in Ghana.",
+       "B7.1.1.2: Explain the nature of God as revealed through His creation."
+      ]
+     },
+     {
+      "weeks": [
+       3,
+       4
+      ],
+      "type": "teach",
+      "strand": "Strand 2: Religious Practices",
+      "substrand": "Sub-Strand 1: Religious Worship and Prayer",
+      "standard": "",
+      "indicators": [
+       "B7.2.1.1: Explain the modes of worship and prayer in the three major religions.",
+       "B7.2.1.2: Discuss the moral significance and benefits of worship and prayer."
+      ]
+     },
+     {
+      "weeks": [
+       5,
+       6
+      ],
+      "type": "teach",
+      "strand": "Strand 3: The Family and the Community",
+      "substrand": "Sub-Strand 1: Roles and Relationships",
+      "standard": "",
+      "indicators": [
+       "B7.3.1.1: Explain the roles, duties, and responsibilities of family members.",
+       "B7.3.1.2: Discuss the importance of healthy relationships and obedience in the family."
+      ]
+     },
+     {
+      "weeks": [
+       7,
+       8
+      ],
+      "type": "teach",
+      "strand": "Strand 4: Religious Leaders and Personalities",
+      "substrand": "Sub-Strand 1: Prophets and Caliphs",
+      "standard": "",
+      "indicators": [
+       "B7.4.1.1: Narrate the early life, call, and ministry of the leaders of the three major religions.",
+       "B7.4.1.2: Identify the moral lessons from the call of these religious leaders."
+      ]
+     },
+     {
+      "weeks": [
+       9,
+       10
+      ],
+      "type": "teach",
+      "strand": "Strand 5: Ethics and Moral Life",
+      "substrand": "Sub-Strand 1: Moral Teachings in the Three Major Religions",
+      "standard": "",
+      "indicators": [
+       "B7.5.1.1: Explain the moral teachings derived from the three major religions.",
+       "B7.5.1.2: Apply the moral teachings of the three major religions to daily life."
+      ]
+     },
+     {
+      "weeks": [
+       11,
+       12
+      ],
+      "type": "teach",
+      "strand": "Strand 6: Religion and Social Cohesion",
+      "substrand": "Sub-Strand 1: Religion and Peaceful Coexistence",
+      "standard": "",
+      "indicators": [
+       "B7.6.1.1: Discuss the role of religion in promoting peaceful coexistence in the community."
+      ]
+     },
+     {
+      "weeks": [
+       13
+      ],
+      "type": "revision",
+      "strand": "Revision",
+      "substrand": "",
+      "standard": "",
+      "indicators": []
+     },
+     {
+      "weeks": [
+       14,
+       15
+      ],
+      "type": "exam",
+      "strand": "Examination",
+      "substrand": "",
+      "standard": "",
+      "indicators": []
+     }
+    ],
+    "Basic 8": [
+     {
+      "weeks": [
+       1,
+       2
+      ],
+      "type": "teach",
+      "strand": "Strand 1: God, His Creation and Attributes",
+      "substrand": "Sub-Strand 1: The Purpose of Creation",
+      "standard": "",
+      "indicators": [
+       "B8.1.1.1: Explain the significance of the creation stories and the moral lessons they teach.",
+       "B8.1.1.2: Demonstrate understanding of humankind's role as stewards of God's creation."
+      ]
+     },
+     {
+      "weeks": [
+       3,
+       4
+      ],
+      "type": "teach",
+      "strand": "Strand 2: Religious Practices",
+      "substrand": "Sub-Strand 1: Rites of Passage",
+      "standard": "",
+      "indicators": [
+       "B8.2.1.1: Describe the rites of passage (birth, puberty, marriage, and death) in the three major religions.",
+       "B8.2.1.2: Explain the moral and spiritual significance of the rites of passage."
+      ]
+     },
+     {
+      "weeks": [
+       5,
+       6
+      ],
+      "type": "teach",
+      "strand": "Strand 3: The Family and the Community",
+      "substrand": "Sub-Strand 1: Personal Safety in the Community",
+      "standard": "",
+      "indicators": [
+       "B8.3.1.1: Describe various ways of promoting personal safety and security in the community.",
+       "B8.3.1.2: Discuss the religious and moral teachings on the sanctity of life."
+      ]
+     },
+     {
+      "weeks": [
+       7,
+       8
+      ],
+      "type": "teach",
+      "strand": "Strand 4: Religious Leaders and Personalities",
+      "substrand": "Sub-Strand 1: Moral Lessons from Religious Leaders",
+      "standard": "",
+      "indicators": [
+       "B8.4.1.1: Examine the exemplary lives of key religious personalities and leaders.",
+       "B8.4.1.2: Demonstrate how to apply the moral virtues of religious leaders in daily living."
+      ]
+     },
+     {
+      "weeks": [
+       9,
+       10
+      ],
+      "type": "teach",
+      "strand": "Strand 5: Ethics and Moral Life",
+      "substrand": "Sub-Strand 1: Good Manners and Decency",
+      "standard": "",
+      "indicators": [
+       "B8.5.1.1: Discuss the importance of good manners, chastity, and decent behavior in society.",
+       "B8.5.1.2: Explain the consequences of bad manners and indecent behavior."
+      ]
+     },
+     {
+      "weeks": [
+       11,
+       12
+      ],
+      "type": "teach",
+      "strand": "Strand 6: Religion and Social Cohesion",
+      "substrand": "Sub-Strand 1: Religious Tolerance",
+      "standard": "",
+      "indicators": [
+       "B8.6.1.1: Explain the need for religious tolerance and its role in national development.",
+       "B8.6.1.2: Identify ways of preventing religious conflicts in the community."
+      ]
+     },
+     {
+      "weeks": [
+       13
+      ],
+      "type": "revision",
+      "strand": "Revision",
+      "substrand": "",
+      "standard": "",
+      "indicators": []
+     },
+     {
+      "weeks": [
+       14,
+       15
+      ],
+      "type": "exam",
+      "strand": "Examination",
+      "substrand": "",
+      "standard": "",
+      "indicators": []
+     }
+    ],
+    "Basic 9": [
+     {
+      "weeks": [
+       1,
+       2
+      ],
+      "type": "teach",
+      "strand": "Strand 1: God, His Creation and Attributes",
+      "substrand": "Sub-Strand 1: The Environment and Human Survival",
+      "standard": "",
+      "indicators": [
+       "B9.1.1.1: Examine the relationship between human survival and the care for the environment.",
+       "B9.1.1.2: Discuss religious teachings on environmental degradation and preservation."
+      ]
+     },
+     {
+      "weeks": [
+       3,
+       4
+      ],
+      "type": "teach",
+      "strand": "Strand 2: Religious Practices",
+      "substrand": "Sub-Strand 1: Religious Festivals",
+      "standard": "",
+      "indicators": [
+       "B9.2.1.1: Identify the various religious festivals celebrated in Ghana and their background.",
+       "B9.2.1.2: Discuss the social, moral, and religious importance of celebrating festivals."
+      ]
+     },
+     {
+      "weeks": [
+       5,
+       6
+      ],
+      "type": "teach",
+      "strand": "Strand 3: The Family and the Community",
+      "substrand": "Sub-Strand 1: Community Support and Development",
+      "standard": "",
+      "indicators": [
+       "B9.3.1.1: Examine the role of the individual in promoting peace, unity, and development in the community.",
+       "B9.3.1.2: Discuss the importance of communal labor and civic responsibilities."
+      ]
+     },
+     {
+      "weeks": [
+       7,
+       8
+      ],
+      "type": "teach",
+      "strand": "Strand 4: Religious Leaders and Personalities",
+      "substrand": "Sub-Strand 1: Call and Commitment of Religious Personalities",
+      "standard": "",
+      "indicators": [
+       "B9.4.1.1: Discuss the commitment and sacrifices of religious personalities to their faith.",
+       "B9.4.1.2: Explain how the youth can emulate the commitment of religious personalities."
+      ]
+     },
+     {
+      "weeks": [
+       9,
+       10
+      ],
+      "type": "teach",
+      "strand": "Strand 5: Ethics and Moral Life",
+      "substrand": "Sub-Strand 1: Reward, Punishment and Repentance",
+      "standard": "",
+      "indicators": [
+       "B9.5.1.1: Examine the concepts of reward, punishment, and repentance in the three major religions.",
+       "B9.5.1.2: Discuss the need for forgiveness, reconciliation, and living a righteous life."
+      ]
+     },
+     {
+      "weeks": [
+       11,
+       12
+      ],
+      "type": "teach",
+      "strand": "Strand 6: Religion and Social Cohesion",
+      "substrand": "Sub-Strand 1: Work and Entrepreneurship",
+      "standard": "",
+      "indicators": [
+       "B9.6.1.1: Discuss the religious and moral perspectives on work and entrepreneurship.",
+       "B9.6.1.2: Explain the ethical values required in the workplace and business operations."
+      ]
+     },
+     {
+      "weeks": [
+       13
+      ],
+      "type": "revision",
+      "strand": "Revision",
+      "substrand": "",
+      "standard": "",
+      "indicators": []
+     },
+     {
+      "weeks": [
+       14,
+       15
+      ],
+      "type": "exam",
+      "strand": "Examination",
+      "substrand": "",
+      "standard": "",
+      "indicators": []
+     }
+    ]
+   }
   }
  }
 }
