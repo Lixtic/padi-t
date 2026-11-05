@@ -1237,7 +1237,7 @@
     acct.send.disabled = true; acctMsg('Creating account…');
     try {
       await window.PadiSync.signUp(email, password);
-      acct.form.hidden = true; acctMsg('Account created. Your plans will now sync.');
+      acct.form.hidden = true; acctMsg(window.PadiSync.syncAvailable() ? 'Account created. Your plans will now sync.' : 'Account created. You are signed in.');
       refreshAcct(); syncNow(true); watchLive();
     } catch (err) { acct.send.disabled = false; acctMsg(err.message, true); }
   });
@@ -1247,7 +1247,7 @@
     acct.signIn.disabled = true; acctMsg('Signing in…');
     try {
       await window.PadiSync.signIn(email, password);
-      acct.form.hidden = true; acctMsg('Signed in. Your plans will now sync.');
+      acct.form.hidden = true; acctMsg(window.PadiSync.syncAvailable() ? 'Signed in. Your plans will now sync.' : 'Signed in.');
       refreshAcct(); syncNow(true); watchLive();
     } catch (err) { acctMsg(err.message, true); }
     finally { acct.signIn.disabled = false; }

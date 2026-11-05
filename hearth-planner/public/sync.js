@@ -46,6 +46,7 @@
       return enabled;
     },
     syncAvailable: function () { return syncEnabled; },
+    user: function () { return enabled && session && session.user ? session.user : null; },
     signUp: async function (email, password) {
       var result = await authClient.signUp.email({ email: email, password: password, name: email.split('@')[0] });
       if (result.error) throw new Error(result.error.message || 'Could not create the account.');
