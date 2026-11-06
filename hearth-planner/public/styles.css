@@ -716,3 +716,7 @@ html { overscroll-behavior-y: none; }
   .acct-sheet::before { content: ""; position: absolute; top: 8px; left: 50%; width: 40px; height: 4px; margin-left: -20px; border-radius: 2px; background: var(--line); }
 }
 @keyframes sheet-up { from { transform: translateY(48px); opacity: .5; } to { transform: none; opacity: 1; } }
+
+.as-banner.ok { border-color: var(--accent); background: var(--add-bg); }
+.as-forgot { display: block; margin: 8px 0 0 auto; min-height: 32px; font-size: 13.5px; text-align: right; }
+.as-forgot[hidden] { display: none; }

@@ -12,6 +12,9 @@ module.exports = (req, res) => {
   const provider = activeProvider();
   // Accounts and sync are on when DATABASE_URL (Neon), AUTH_SECRET and SMTP_URL are all set.
   const sync = syncConfigured() ? { enabled: true, realtime: require('./_auth').realtimeConfigured() } : null;
-  const auth = process.env.NEON_AUTH_BASE_URL ? { enabled: true, url: process.env.NEON_AUTH_BASE_URL } : null;
+  // Sign-in goes through this site's own /api/neon-auth proxy so phones keep the session cookie (set NEON_AUTH_DIRECT=1 to bypass).
+  const auth = process.env.NEON_AUTH_BASE_URL
+    ? { enabled: true, url: process.env.NEON_AUTH_DIRECT === '1' ? process.env.NEON_AUTH_BASE_URL : '/api/neon-auth', proxied: process.env.NEON_AUTH_DIRECT !== '1' }
+    : null;
   sendJson(res, 200, { demo: !provider, provider: provider || null, accessRequired: accessRequired(), sync, auth });
 };

@@ -77,19 +77,19 @@
     <h2 id="asTitle">Sign in to Padi-T</h2>
     <p class="as-sub" id="asSub">Your plans follow you to any phone or computer.</p>
 
-    <div class="as-tabs" role="tablist" aria-label="Account">
+    <div class="as-tabs" id="asTabs" role="tablist" aria-label="Account">
       <button type="button" role="tab" id="asTabIn" aria-selected="true" aria-controls="asPanel">Sign in</button>
       <button type="button" role="tab" id="asTabUp" aria-selected="false" aria-controls="asPanel" tabindex="-1">Create account</button>
     </div>
 
     <form id="asPanel" role="tabpanel" aria-labelledby="asTabIn" novalidate>
-      <div class="as-field">
+      <div class="as-field" id="asEmailField">
         <label for="asEmail">Email address</label>
         <input id="asEmail" name="email" type="email" inputmode="email" autocomplete="username" autocapitalize="off" autocorrect="off" spellcheck="false" enterkeyhint="next" maxlength="120" placeholder="you@example.com">
         <p class="as-err" id="asEmailErr" role="alert" hidden></p>
       </div>
-      <div class="as-field">
-        <label for="asPassword">Password</label>
+      <div class="as-field" id="asPwField">
+        <label for="asPassword" id="asPwLabel">Password</label>
         <div class="as-pw">
           <input id="asPassword" name="password" type="password" autocomplete="current-password" autocapitalize="off" autocorrect="off" spellcheck="false" enterkeyhint="go" maxlength="128" placeholder="Your password">
           <button type="button" class="as-eye" id="asShow" aria-pressed="false" aria-label="Show password">Show</button>
@@ -97,6 +97,7 @@
         <p class="as-hint" id="asPwHint" hidden>At least 8 characters.</p>
         <p class="as-err" id="asPwErr" role="alert" hidden></p>
       </div>
+      <button type="button" class="as-link as-forgot" id="asForgot">Forgot password?</button>
 
       <div class="as-banner" id="asBanner" role="alert" hidden>
         <p id="asBannerText"></p>
@@ -109,7 +110,7 @@
 
       <button type="submit" class="as-submit" id="asSubmit"><span id="asSubmitText">Sign in</span></button>
     </form>
-    <p class="as-foot">You can use Padi-T without an account. Signing in only adds sync between your devices.</p>
+    <p class="as-foot" id="asFoot">You can use Padi-T without an account. Signing in only adds sync between your devices.</p>
   </section>
 
   <section id="asAccount" hidden>
@@ -188,6 +189,10 @@
         <svg class="ico"><use href="#i-download"/></svg><span>Install app</span>
       </button>
       <p class="install-hint" id="installHint" hidden></p>
+      <button type="button" class="btn install-btn" id="clearCacheBtn">
+        <svg class="ico"><use href="#i-refresh"/></svg><span>Clear app cache</span>
+      </button>
+      <p class="install-hint" id="clearCacheNote">Fixes a stuck or outdated app. Your saved plans are kept.</p>
       <div class="theme-row">
         <span class="theme-label" id="themeLabel">Dark mode</span>
         <button type="button" class="switch" id="themeToggle" role="switch" aria-checked="false" aria-labelledby="themeLabel">
