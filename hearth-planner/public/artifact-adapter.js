@@ -1,4 +1,4 @@
-/* Padi-T · artifact adapter.
+/* GuidEd · artifact adapter.
    Used only by the single-file build (scripts/build-artifact.js). It replaces the server:
    plans are written by Claude on the viewer's own account (the `sample` capability) and
    Word files are built in the browser and offered through `downloads`. */

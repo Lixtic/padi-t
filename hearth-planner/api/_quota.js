@@ -94,7 +94,7 @@ function message(r) {
   const mins = Math.ceil(r.retryAfter / 60);
   const wait = mins >= 90 ? 'about ' + Math.round(mins / 60) + ' hours' : mins + ' minute(s)';
   return r.scope === 'site'
-    ? 'Padi-T has reached its limit for today. It resets in ' + wait + '. Please try again then.'
+    ? 'GuidEd has reached its limit for today. It resets in ' + wait + '. Please try again then.'
     : 'You have used today\'s plan-writing allowance. It resets in ' + wait + '. Plans you have already made are still saved, and repeats of a plan you made before still work.';
 }
 

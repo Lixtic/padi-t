@@ -1,6 +1,6 @@
-# Padi-T: GES lesson planner
+# GuidEd: GES lesson planner
 
-Pick a **subject, class and week**. Padi-T writes a full Ghana Education Service package: two 60-minute lessons, study notes, BECE-style questions with a marking guide, and a rubric. You can then download it as a formatted **Word (.docx)** file.
+Pick a **subject, class and week**. GuidEd writes a full Ghana Education Service package: two 60-minute lessons, study notes, BECE-style questions with a marking guide, and a rubric. You can then download it as a formatted **Word (.docx)** file.
 
 It works on phones and desktops, has light and dark themes, and keeps a history of your plans in the browser.
 
@@ -12,7 +12,7 @@ api/config.js      tells the site whether an AI key is set (never returns keys)
 api/generate.js    streams the lesson package from your AI provider (Node)
 api/export_docx.py builds the Word file (Python, python-docx)
 lib/               the Word layout builder (landscape tables, shaded headers)
-prompts/           the master prompt (edit this to change what Padi-T writes)
+prompts/           the master prompt (edit this to change what GuidEd writes)
 scripts/           build-prompt.js turns the prompt into api/_prompt.js
 ```
 
@@ -46,12 +46,12 @@ With no key, the site still runs in **demo mode**: it shows a sample plan on a f
 
 ### Saved answers and daily limits
 
-- **Cache.** When a teacher asks for a plan that was already written (same subject, class, week and options), Padi-T serves the saved answer straight away and it costs no tokens and uses none of the teacher's daily allowance. Requests with different notes are matched by their meaningful words, so "forces and motion" and "motion and forces" reuse one answer, and notes that share at least 80% of their words do too. This is word matching, not embeddings, so checking the cache never calls a model. The Regenerate button always writes a new answer and replaces the saved one. Only complete answers are saved, never one that was cut short or failed.
+- **Cache.** When a teacher asks for a plan that was already written (same subject, class, week and options), GuidEd serves the saved answer straight away and it costs no tokens and uses none of the teacher's daily allowance. Requests with different notes are matched by their meaningful words, so "forces and motion" and "motion and forces" reuse one answer, and notes that share at least 80% of their words do too. This is word matching, not embeddings, so checking the cache never calls a model. The Regenerate button always writes a new answer and replaces the saved one. Only complete answers are saved, never one that was cut short or failed.
 - **Privacy.** A request with no teacher's notes shares its answer with everyone, because it only holds the subject, class, week and options. A request with notes is saved for that teacher only (or that network address when signed out).
 - **Quotas.** Each generation adds its estimated tokens to that teacher's total for the day. When the budget is used up, the teacher sees how long until it resets, and saved answers still work. Both the cache and the quotas are kept in Neon (tables `response_cache` and `usage`, created automatically), so they are shared by every serverless instance. Without `DATABASE_URL` they live in each instance's memory, which slows heavy use but is not a hard limit.
 - **Content options.** The Study notes and BECE questions switches in the plan options leave those sections out of the plan to save tokens. Either can be added later with the closing suggestions.
 
-## Changing what Padi-T writes
+## Changing what GuidEd writes
 
 Edit `prompts/ges-lesson-plans.md`, then run:
 
@@ -87,12 +87,12 @@ Use `vercel dev` so the API routes run. Opening `public/index.html` directly (or
 
 ## Install as a mobile app (PWA)
 
-Padi-T is an installable web app. After you deploy to Vercel (`vercel --prod`), open the site on a phone:
+GuidEd is an installable web app. After you deploy to Vercel (`vercel --prod`), open the site on a phone:
 
 - **Android (Chrome):** tap **Install app** in the sidebar, or Chrome menu > Install app.
 - **iPhone/iPad (Safari):** Share > **Add to Home Screen**.
 
-It opens full screen with the Padi-T icon, loads instantly, and shows saved plans offline. Generating plans and Word export need a connection.
+It opens full screen with the GuidEd icon, loads instantly, and shows saved plans offline. Generating plans and Word export need a connection.
 
 For a Play Store listing, paste your deployed URL into [PWABuilder](https://www.pwabuilder.com) to get an Android package (the manifest and icons are already set up).
 
@@ -117,7 +117,7 @@ Set these environment variables in Vercel (Settings > Environment Variables), th
 | `NEON_REALTIME_SECRET` | The Realtime secret provisioned by Neon. Keep this server-only. |
 | `AUTH_SECRET` | Only for the old email-code sign-in. A long random string (24+ characters). Generate one with `openssl rand -base64 32`. Changing it signs everyone out. |
 | `SMTP_URL` | Only for the old email-code sign-in; not needed with Managed Auth. How to send the code emails, e.g. `smtps://USER:PASSWORD@smtp-relay.brevo.com:465` (Brevo free plan: 300 emails a day) or `smtps://you%40gmail.com:APP_PASSWORD@smtp.gmail.com:465` (Gmail with an app password). Any SMTP provider works. |
-| `MAIL_FROM` | The sender shown on the email, e.g. `Padi-T <hello@yourdomain.com>`. Most providers require this address to be verified. |
+| `MAIL_FROM` | The sender shown on the email, e.g. `GuidEd <hello@yourdomain.com>`. Most providers require this address to be verified. |
 
 Managed Auth stores identity and sessions in Neon's `neon_auth` schema. The application tables (`users`, `otp_codes`, `plans`, `profiles`) are created automatically when legacy database sync is used; `db/schema.sql` shows them if you prefer to create them yourself in the Neon SQL Editor. If the Realtime variables are also set, signed-in browsers receive live plan updates. Without the Neon variables, the app works in local/demo mode.
 
@@ -130,6 +130,6 @@ Word files are built in the browser (`public/vendor/docx.iife.js` + `public/docx
 ## Sign-in through your own domain
 
 Phones and strict browsers block cookies set by another site, which made sign-in look successful while the session was dropped
-and plans never synced. Padi-T now sends Neon Auth calls through `/api/neon-auth` on your own domain (a small proxy in
+and plans never synced. GuidEd now sends Neon Auth calls through `/api/neon-auth` on your own domain (a small proxy in
 `api/neon-auth.js`), so the session cookie is first-party. No new settings are needed; it uses `NEON_AUTH_BASE_URL`.
 Set `NEON_AUTH_DIRECT=1` to go straight to Neon again. Your domain must still be a trusted origin in Neon Auth.

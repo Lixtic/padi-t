@@ -82,10 +82,10 @@ async function sendMail(to, code) {
   const json = process.env.SMTP_URL === 'json';                         // tests: capture instead of sending
   const transport = nodemailer.createTransport(json ? { jsonTransport: true } : process.env.SMTP_URL);
   const info = await transport.sendMail({
-    from: process.env.MAIL_FROM || 'Padi-T <no-reply@localhost>',
+    from: process.env.MAIL_FROM || 'GuidEd <no-reply@localhost>',
     to,
-    subject: 'Your Padi-T code: ' + code,
-    text: 'Your Padi-T sign-in code is ' + code + '.\n\nIt works for 10 minutes. If you did not ask for it, you can ignore this email.',
+    subject: 'Your GuidEd code: ' + code,
+    text: 'Your GuidEd sign-in code is ' + code + '.\n\nIt works for 10 minutes. If you did not ask for it, you can ignore this email.',
   });
   if (json) global.__lastMail = { to, code, info };
 }

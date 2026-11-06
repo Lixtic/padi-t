@@ -1,6 +1,6 @@
-<title>Padi-T Lesson Planner</title>
+<title>GuidEd Lesson Planner</title>
 <style>
-/* Padi-T · styles.css
+/* GuidEd · styles.css
    Brand: Savannah Green #006A4E, School Bus Gold #F4B400, Padi Indigo #1B365D, Warm Sand #F5E6CA,
    Clay Terracotta #D95D39, Nurtured Leaf #8EA625, Charcoal Ink #2C2C2C. Light + dark themes.
    Change the look by editing the variables in the two theme blocks below. */
@@ -428,7 +428,7 @@ a { color: inherit; }
 .meta { margin-top: 8px; font-size: 12px; color: var(--muted); }
 .meta:empty { display: none; }
 
-.doc { border: 1px solid var(--card-line); border-radius: 16px; background: var(--card); overflow: hidden; box-shadow: var(--shadow); }
+.doc { border: 1px solid var(--card-line); border-radius: 16px; background: var(--card); overflow: clip; box-shadow: var(--shadow); }
 .doc-bar { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px 12px; padding: 10px 12px 10px 16px; border-bottom: 1px solid var(--line); }
 .doc-id { min-width: 0; display: flex; flex-direction: column; }
 .doc-title { overflow: hidden; white-space: nowrap; text-overflow: ellipsis; font-weight: 600; font-size: 14.5px; }
@@ -552,6 +552,218 @@ html { overscroll-behavior-y: none; }
 .also .pill { height: 32px; padding: 0 12px; font-size: 13px; }
 [data-view="chat"] .also { display: none; }
 
+/* ───────── Account and sync ───────── */
+.acct-actions .acct-msg { margin: 0; font-size: 12.5px; line-height: 1.45; color: var(--muted); }
+.acct-msg:empty { display: none; }
+.acct-msg.err { color: var(--del); }
+
+/* ───────── Mobile polish ───────── */
+@media (max-width: 640px) {
+  /* The plan table becomes stacked cards: no sideways scrolling to read a lesson. */
+  .tbl-wrap:has(> .tbl.joined) { border: 0; border-radius: 0; overflow: visible; margin-top: .4em; }
+  .tbl.joined, .tbl.joined tbody { display: block; width: 100%; min-width: 0; }
+  .tbl.joined tr { display: block; margin: 0 0 8px; border: 1px solid var(--tbl-line); border-radius: 12px; overflow: hidden; background: var(--card); }
+  .tbl.joined td, .tbl.joined th { display: block; width: auto !important; border: 0; border-bottom: 1px solid var(--tbl-line); padding: 9px 12px; }
+  .tbl.joined tr > :last-child { border-bottom: 0; }
+  .tbl.joined tr.ph { display: none; }
+  .tbl.joined tr.lt { margin-top: 18px; border: 0; }
+  .tbl.joined tr.lt td { font-size: 15px; padding: 12px 14px; border-radius: 12px; }
+  .tbl.joined tr.phase td:first-child { background: var(--label); font-weight: 700; }
+  .tbl.joined td[data-l]::before { content: attr(data-l); display: block; margin-bottom: 3px; font-size: 11px; font-weight: 600; letter-spacing: .05em; text-transform: uppercase; color: var(--muted); }
+  .tbl.joined td:empty { display: none; }
+  /* Other tables keep a scrollable wrapper, with a hint that there is more to the right. */
+  .tbl-wrap { background: linear-gradient(to right, var(--card) 30%, transparent), linear-gradient(to left, rgba(0,0,0,.14), transparent) 100% 0 / 14px 100% no-repeat; background-attachment: local, scroll; }
+}
+
+@media (max-width: 560px) {
+  /* Landing: let the page scroll on short phones instead of clipping the heading. */
+  .stage { overflow-y: auto; overscroll-behavior: contain; }
+  [data-view="landing"] .grow { flex: 0 0 8px; }
+  [data-view="landing"] .hero { max-height: none; flex: none; margin-bottom: 16px; }
+  [data-view="landing"] .messages-wrap { flex: none; }
+  [data-view="landing"] .composer-zone { flex: none; }
+  .hero-mark { width: 34px; height: 34px; margin-bottom: 8px; }
+  .hero h1 { font-size: 27px; }
+  /* Reading a plan: give it the screen. The notice and fine print move out of the way. */
+  [data-view="chat"] .demo-banner, [data-view="chat"] .fineprint { display: none; }
+  [data-view="chat"] .composer-zone { padding-bottom: max(8px, env(safe-area-inset-bottom)); }
+  [data-view="chat"] .composer-toggle { margin: 2px 0 6px auto; }
+  .extras-label { width: 100%; }
+  /* Dropdowns open as a bottom sheet with large tap targets. */
+  .dd .menu { position: fixed; left: 8px; right: 8px; top: auto !important; bottom: calc(8px + env(safe-area-inset-bottom)) !important; max-width: none; max-height: 62vh; border-radius: 18px; padding: 8px; z-index: 50; box-shadow: 0 -8px 40px rgba(0,0,0,.28); }
+  .dd .menu-item { min-height: 48px; font-size: 16px; }
+  .chips .chip, .extras .extra-btn { min-height: 40px; }
+  .icon-btn { min-width: 44px; min-height: 44px; }
+}
+@media (max-width: 640px) { .tbl-wrap:has(> .tbl.joined) { background: none; } }
+@media (max-width: 560px) {
+  /* Easier tapping: action buttons are at least 40px tall. */
+  .doc-bar .tool, .tool { min-height: 40px; padding-left: 14px; padding-right: 14px; }
+  [data-view="chat"] .composer-toggle { min-height: 36px; }
+}
+
+/* ── In-place editor ── */
+.edit-bar { position: sticky; top: 0; z-index: 20; display: grid; gap: 6px; padding: 10px 14px 8px; background: var(--card); border-bottom: 2px solid var(--accent); box-shadow: 0 6px 14px -10px rgba(0,0,0,.35); }
+.eb-top { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.eb-title { font-weight: 700; font-size: 14px; color: var(--accent); }
+.eb-tools { display: flex; align-items: center; gap: 6px; overflow-x: auto; scrollbar-width: none; padding-bottom: 2px; }
+.eb-tools::-webkit-scrollbar { display: none; }
+.eb-btn { flex: none; min-height: 38px; min-width: 40px; padding: 0 12px; border: 1px solid var(--card-line); border-radius: 10px; background: var(--card); color: var(--text); font: inherit; font-size: 13px; cursor: pointer; }
+.eb-btn.is-b { font-weight: 800; } .eb-btn.is-i { font-style: italic; }
+.eb-btn:disabled { opacity: .4; cursor: default; }
+.eb-btn:not(:disabled):hover { border-color: var(--accent); }
+.eb-sep { flex: none; width: 1px; align-self: stretch; margin: 4px 2px; background: var(--card-line); }
+.eb-hint { margin: 0; font-size: 12.5px; color: var(--muted); }
+.tool.is-danger { background: var(--terracotta, #D95D39); color: #fff; border-color: transparent; }
+.doc-body.editing [contenteditable="true"] { outline: 1px dashed transparent; outline-offset: 2px; border-radius: 4px; min-height: 1.4em; cursor: text; caret-color: var(--accent); }
+.doc-body.editing [contenteditable="true"]:hover { outline-color: var(--card-line); background: rgba(244,180,0,.08); }
+.doc-body.editing [contenteditable="true"]:focus { outline: 2px solid var(--accent); background: rgba(244,180,0,.12); }
+.doc-body.editing .tbl td { cursor: text; }
+@media (max-width: 640px) {
+  .doc-body.editing [contenteditable="true"] { font-size: 16px; outline-color: var(--card-line); }
+  .edit-bar { padding: 8px 10px 6px; }
+}
+
+/* ───────── Sign in / create account ───────── */
+.acct-top { position: relative; }
+.acct-dot { position: absolute; top: 5px; right: 5px; width: 10px; height: 10px; border-radius: 50%; border: 2px solid var(--bg); display: none; }
+.acct-top[data-state="in"] { color: var(--accent); }
+.acct-top[data-state="in"] .acct-dot { display: block; background: var(--ok); }
+.acct-top[data-state="warn"] .acct-dot { display: block; background: var(--del); }
+
+.acct-sheet {
+  position: fixed; inset: 0; margin: auto;
+  width: min(420px, calc(100vw - 32px)); max-height: min(92vh, 760px); max-height: min(92dvh, 760px);
+  padding: 28px 24px 24px; border: 1px solid var(--card-line); border-radius: 22px;
+  background: var(--card); color: var(--text); box-shadow: var(--shadow);
+  overflow-y: auto; overscroll-behavior: contain;
+}
+.acct-sheet:not([open]) { display: none; }
+.acct-sheet[open] { animation: rise .25s var(--ease); }
+.acct-sheet::backdrop { background: rgba(24, 16, 10, .55); }
+.acct-sheet h2 { margin: 0; font-family: var(--font-serif); font-size: 24px; font-weight: 600; letter-spacing: -.01em; line-height: 1.2; }
+.as-close { position: absolute; top: 10px; right: 10px; width: 40px; height: 40px; }
+.as-logo { display: block; width: 40px; height: 40px; margin: 0 0 12px; color: var(--accent); }
+.as-sub { margin: 6px 0 18px; color: var(--muted); font-size: 14.5px; line-height: 1.45; }
+
+.as-tabs { display: grid; grid-template-columns: 1fr 1fr; gap: 4px; margin-bottom: 18px; padding: 4px; border-radius: 14px; background: var(--sb); }
+.as-tabs button { height: 42px; border-radius: 11px; font-size: 15px; font-weight: 600; color: var(--muted); transition: background-color .15s, color .15s; }
+.as-tabs button[aria-selected="true"] { background: var(--card); color: var(--text); box-shadow: 0 1px 3px rgba(0, 0, 0, .14); }
+
+.as-field { margin-bottom: 14px; }
+.as-field label { display: block; margin-bottom: 6px; font-size: 13.5px; font-weight: 600; }
+.as-field input {
+  width: 100%; height: 48px; padding: 0 14px; border: 1px solid var(--card-line); border-radius: 12px;
+  background: var(--bg); color: var(--text); font: inherit; font-size: 16px; outline: 0;
+}
+.as-field input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px var(--add-bg); }
+.as-field input[aria-invalid="true"] { border-color: var(--del); }
+.as-field input[aria-invalid="true"]:focus { box-shadow: 0 0 0 3px var(--del-bg); }
+.as-pw { position: relative; }
+.as-pw input { padding-right: 74px; }
+.as-eye { position: absolute; top: 0; right: 0; height: 48px; padding: 0 16px; border-radius: 12px; font-size: 14px; font-weight: 600; color: var(--accent); }
+.as-hint, .as-err { margin: 6px 2px 0; font-size: 13px; line-height: 1.4; }
+.as-hint { color: var(--muted); }
+.as-err { color: var(--del); }
+
+.as-banner { margin: 0 0 14px; padding: 12px 14px; border: 1px solid var(--del); border-radius: 12px; background: var(--del-bg); font-size: 14px; line-height: 1.5; }
+.as-banner p { margin: 0; }
+.as-link { min-height: 36px; margin-top: 4px; padding: 0; font-size: 14px; font-weight: 600; color: var(--accent); text-decoration: underline; text-align: left; }
+.as-help { margin-top: 6px; font-size: 13.5px; }
+.as-help summary { display: flex; align-items: center; min-height: 36px; font-weight: 600; cursor: pointer; }
+.as-help ul { margin: 4px 0 0; padding-left: 18px; }
+.as-help li { margin-bottom: 6px; }
+
+.as-submit, .as-second {
+  display: flex; align-items: center; justify-content: center; gap: 10px;
+  width: 100%; height: 50px; border-radius: 14px; font-size: 16px; font-weight: 600;
+}
+.as-submit { background: var(--accent); color: var(--on-accent); }
+.as-submit:hover { background: var(--accent-h); }
+.as-second { border: 1px solid var(--card-line); background: var(--card); color: var(--text); }
+.as-second:hover { background: var(--sb-hover); }
+.as-danger { color: var(--del); }
+.as-submit[disabled], .as-second[disabled] { opacity: .7; cursor: progress; }
+.as-submit.busy::before {
+  content: ""; width: 16px; height: 16px; border-radius: 50%;
+  border: 2px solid currentColor; border-right-color: transparent; animation: as-spin .8s linear infinite;
+}
+@keyframes as-spin { to { transform: rotate(360deg); } }
+.as-foot { margin: 14px 0 0; font-size: 12.5px; line-height: 1.5; color: var(--muted); text-align: center; }
+
+.as-badge { display: grid; place-items: center; width: 48px; height: 48px; margin-bottom: 12px; border-radius: 50%; background: var(--add-bg); color: var(--accent); }
+.as-badge.warn { background: var(--del-bg); color: var(--del); }
+.as-who { margin: 6px 0 0; font-weight: 600; overflow-wrap: anywhere; }
+.as-result { margin: 10px 0 18px; font-size: 15px; line-height: 1.5; }
+.as-actions { display: flex; flex-direction: column; gap: 10px; }
+
+/* On a phone the sheet rises from the bottom, where the thumb is. */
+@media (max-width: 560px) {
+  .acct-sheet {
+    inset: auto 0 0 0; margin: 0; width: 100%; max-width: none;
+    max-height: 94vh; max-height: 94dvh;
+    padding: 26px 18px calc(20px + env(safe-area-inset-bottom));
+    border-width: 1px 0 0; border-radius: 22px 22px 0 0;
+  }
+  .acct-sheet[open] { animation: sheet-up .28s var(--ease); }
+  .acct-sheet::before { content: ""; position: absolute; top: 8px; left: 50%; width: 40px; height: 4px; margin-left: -20px; border-radius: 2px; background: var(--line); }
+}
+@keyframes sheet-up { from { transform: translateY(48px); opacity: .5; } to { transform: none; opacity: 1; } }
+
+.as-banner.ok { border-color: var(--accent); background: var(--add-bg); }
+.as-forgot { display: block; margin: 8px 0 0 auto; min-height: 32px; font-size: 13.5px; text-align: right; }
+.as-forgot[hidden] { display: none; }
+
+/* ───────── GuidEd wordmark ───────── */
+.wordmark { letter-spacing: -.02em; }
+.wordmark em { font-style: normal; color: var(--accent); }
+[data-theme="dark"] .wordmark em { color: var(--gold); }
+
+/* ───────── Sidebar footer: account card + collapsible settings ───────── */
+.sb-foot { display: flex; flex-direction: column; gap: 8px; padding: 12px 12px calc(12px + env(safe-area-inset-bottom)); }
+.acct-card { background: var(--card); border: 1px solid var(--card-line); border-radius: 16px; padding: 6px; box-shadow: 0 1px 2px rgba(27, 54, 93, .04); }
+.acct-open, .acct-id { display: flex; align-items: center; gap: 12px; width: 100%; min-height: 52px; padding: 6px; border-radius: 12px; text-align: left; color: var(--text); }
+.acct-open:hover, .acct-id:hover { background: var(--sb-hover); }
+.acct-in { display: flex; align-items: center; gap: 4px; }
+.acct-id { flex: 1; min-width: 0; }
+.acct-avatar { flex: none; display: grid; place-items: center; width: 40px; height: 40px; border-radius: 50%; background: var(--accent); color: var(--on-accent); font-weight: 650; font-size: 16px; text-transform: uppercase; }
+.acct-avatar .ico { width: 20px; height: 20px; }
+.acct-text { display: flex; flex-direction: column; min-width: 0; line-height: 1.25; }
+.acct-text strong { font-size: 14.5px; font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.acct-text small { font-size: 12.5px; color: var(--muted); }
+.acct-go { margin-left: auto; width: 18px; height: 18px; color: var(--muted); transform: rotate(-90deg); flex: none; }
+.acct-sync { flex: none; display: grid; place-items: center; width: 44px; height: 44px; border-radius: 12px; color: var(--accent); }
+.acct-sync:hover { background: var(--sb-hover); }
+.acct-sync.spin .ico { animation: spin .9s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+.acct-msg { margin: 4px 8px 6px; }
+
+.disc { display: flex; align-items: center; gap: 10px; width: 100%; min-height: 44px; padding: 0 12px; border-radius: 12px; font-size: 14.5px; color: var(--text); text-align: left; }
+.disc:hover { background: var(--sb-hover); }
+.disc > .ico:first-child { color: var(--muted); }
+.disc > span { flex: 1; min-width: 0; }
+.disc small { display: block; font-size: 12px; color: var(--muted); }
+.disc-chev { width: 18px; height: 18px; color: var(--muted); transition: transform .2s var(--ease); }
+.disc[aria-expanded="true"] .disc-chev { transform: rotate(180deg); }
+.disc-sub { min-height: 48px; }
+.set-panel { display: flex; flex-direction: column; gap: 4px; padding: 4px 0 0; }
+.set-panel[hidden] { display: none; }
+.set-panel:not([hidden]) { animation: pop .16s ease-out; }
+.set-row { display: flex; align-items: center; justify-content: space-between; min-height: 44px; padding: 0 12px; font-size: 14.5px; }
+.set-fields { display: flex; flex-direction: column; gap: 8px; margin: 0 0 4px; padding: 0 4px; }
+.set-fields[hidden] { display: none; }
+.set-fields input { height: 44px; padding: 0 14px; border: 1px solid var(--card-line); border-radius: 12px; background: var(--card); color: var(--text); font: inherit; font-size: 16px; outline: 0; }
+.set-fields input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 18%, transparent); }
+.set-action { display: flex; align-items: center; justify-content: center; gap: 8px; min-height: 44px; margin: 2px 4px 0; border: 1px solid var(--card-line); border-radius: 12px; background: transparent; color: var(--text); font-size: 14.5px; }
+.set-action:hover { border-color: var(--accent); background: var(--sb-hover); }
+.set-action[hidden] { display: none; }
+.set-install { background: var(--accent); border-color: var(--accent); color: var(--on-accent); font-weight: 600; }
+.set-install:hover { background: var(--accent-h); }
+.set-panel .install-hint { margin: 0 12px 6px; }
+@media (max-width: 860px) {
+  .sb-foot { max-height: 62vh; overflow-y: auto; overscroll-behavior: contain; }
+}
+
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
   color-scheme: dark;
@@ -615,18 +827,79 @@ html { overscroll-behavior-y: none; }
   <symbol id="i-leaf" viewBox="0 0 24 24"><path d="M5 19c0-8 5-13 14-14 0 9-5 14-13 14"/><path d="M5 19l7-7"/></symbol>
   <symbol id="i-pencil" viewBox="0 0 24 24"><path d="M4 20l1-4.5L16.5 4a2 2 0 0 1 2.8 0l.7.7a2 2 0 0 1 0 2.8L8.5 19z"/><path d="M14.5 6l3.5 3.5"/></symbol>
   <symbol id="i-layers" viewBox="0 0 24 24"><path d="M12 4l8.5 4.5L12 13 3.5 8.5z"/><path d="M3.5 12.5L12 17l8.5-4.5M3.5 16.5L12 21l8.5-4.5"/></symbol>
+  <symbol id="i-cloud" viewBox="0 0 24 24"><path d="M7 18a4.5 4.5 0 0 1-.6-8.96A6 6 0 0 1 18 10.5a3.75 3.75 0 0 1-.5 7.5z"/></symbol>
+  <symbol id="i-sliders" viewBox="0 0 24 24"><path d="M4 7h9M17 7h3M4 17h3M11 17h9"/><circle cx="15" cy="7" r="2"/><circle cx="9" cy="17" r="2"/></symbol>
   <symbol id="i-user" viewBox="0 0 24 24"><circle cx="12" cy="8.5" r="3.8"/><path d="M4.5 20c.7-3.8 3.7-6 7.5-6s6.8 2.2 7.5 6"/></symbol>
   <symbol id="i-key" viewBox="0 0 24 24"><circle cx="8.5" cy="14.5" r="4"/><path d="M11.5 11.5L20 3M16 7l3 3"/></symbol>
 </svg>
+
+
+<!-- ───────── Sign in / create account ───────── -->
+<dialog class="acct-sheet" id="acctSheet" aria-labelledby="asTitle">
+  <button type="button" class="icon-btn as-close" id="asClose" aria-label="Close"><svg class="ico"><use href="#i-x"/></svg></button>
+
+  <section id="asForm">
+    <svg class="as-logo" aria-hidden="true"><use href="#i-logo"/></svg>
+    <h2 id="asTitle">Sign in to GuidEd</h2>
+    <p class="as-sub" id="asSub">Your plans follow you to any phone or computer.</p>
+
+    <div class="as-tabs" id="asTabs" role="tablist" aria-label="Account">
+      <button type="button" role="tab" id="asTabIn" aria-selected="true" aria-controls="asPanel">Sign in</button>
+      <button type="button" role="tab" id="asTabUp" aria-selected="false" aria-controls="asPanel" tabindex="-1">Create account</button>
+    </div>
+
+    <form id="asPanel" role="tabpanel" aria-labelledby="asTabIn" novalidate>
+      <div class="as-field" id="asEmailField">
+        <label for="asEmail">Email address</label>
+        <input id="asEmail" name="email" type="email" inputmode="email" autocomplete="username" autocapitalize="off" autocorrect="off" spellcheck="false" enterkeyhint="next" maxlength="120" placeholder="you@example.com">
+        <p class="as-err" id="asEmailErr" role="alert" hidden></p>
+      </div>
+      <div class="as-field" id="asPwField">
+        <label for="asPassword" id="asPwLabel">Password</label>
+        <div class="as-pw">
+          <input id="asPassword" name="password" type="password" autocomplete="current-password" autocapitalize="off" autocorrect="off" spellcheck="false" enterkeyhint="go" maxlength="128" placeholder="Your password">
+          <button type="button" class="as-eye" id="asShow" aria-pressed="false" aria-label="Show password">Show</button>
+        </div>
+        <p class="as-hint" id="asPwHint" hidden>At least 8 characters.</p>
+        <p class="as-err" id="asPwErr" role="alert" hidden></p>
+      </div>
+      <button type="button" class="as-link as-forgot" id="asForgot">Forgot password?</button>
+
+      <div class="as-banner" id="asBanner" role="alert" hidden>
+        <p id="asBannerText"></p>
+        <button type="button" class="as-link" id="asBannerAct" hidden></button>
+        <details class="as-help" id="asHelp" hidden>
+          <summary>How to fix this</summary>
+          <ul id="asHelpList"></ul>
+        </details>
+      </div>
+
+      <button type="submit" class="as-submit" id="asSubmit"><span id="asSubmitText">Sign in</span></button>
+    </form>
+    <p class="as-foot" id="asFoot">You can use GuidEd without an account. Signing in only adds sync between your devices.</p>
+  </section>
+
+  <section id="asAccount" hidden>
+    <div class="as-badge" id="asBadge" aria-hidden="true"><svg class="ico"><use href="#i-check"/></svg></div>
+    <h2 id="asAcctTitle">You are signed in</h2>
+    <p class="as-who" id="asWho"></p>
+    <p class="as-result" id="asResult" role="status" aria-live="polite"></p>
+    <div class="as-actions">
+      <button type="button" class="as-submit" id="asView"><span>View my plans</span></button>
+      <button type="button" class="as-second" id="asSyncNow"><span>Sync now</span></button>
+      <button type="button" class="as-second as-danger" id="asSignOut"><span>Sign out</span></button>
+    </div>
+  </section>
+</dialog>
 
 <div class="app" id="app">
 
   <!-- ───────── Sidebar ───────── -->
   <aside class="sidebar" id="sidebar" aria-label="Lesson plans">
     <div class="sb-head">
-      <a class="brand" href="./" id="brand" aria-label="Padi-T, start a new plan">
+      <a class="brand" href="./" id="brand" aria-label="GuidEd, start a new plan">
         <svg class="logo" aria-hidden="true"><use href="#i-logo"/></svg>
-        <span>Padi-T</span>
+        <span class="wordmark">Guid<em>Ed</em></span>
       </a>
       <button type="button" class="icon-btn sb-close" id="sbClose" aria-label="Close sidebar">
         <svg class="ico"><use href="#i-x"/></svg>
@@ -654,27 +927,62 @@ html { overscroll-behavior-y: none; }
     </nav>
 
     <div class="sb-foot">
-      <div class="access-row profile-row" id="profileRow">
-        <label class="access-label" for="teacherInput"><svg class="ico"><use href="#i-user"/></svg><span>Teacher details (printed on Word files)</span></label>
-        <input id="teacherInput" type="text" placeholder="Your name, e.g. Mr. K. Mensah" maxlength="80" autocomplete="name">
-        <input id="schoolInput" type="text" placeholder="School name" maxlength="100" autocomplete="organization">
-      </div>
       <div class="access-row" id="accessRow" hidden>
         <label class="access-label" for="accessInput"><svg class="ico"><use href="#i-key"/></svg><span>Access code</span></label>
         <input id="accessInput" type="password" autocomplete="off" placeholder="Enter code" maxlength="80">
       </div>
-      <button type="button" class="btn install-btn" id="installBtn" hidden>
-        <svg class="ico"><use href="#i-download"/></svg><span>Install app</span>
+
+      <div class="acct-card" id="accountRow" hidden>
+        <div id="acctOut">
+          <button type="button" class="acct-open" id="acctOpen">
+            <span class="acct-avatar"><svg class="ico"><use href="#i-user"/></svg></span>
+            <span class="acct-text"><strong>Sign in or create account</strong><small>Sync plans across your phone and computers</small></span>
+            <svg class="ico acct-go"><use href="#i-chevron"/></svg>
+          </button>
+        </div>
+        <div id="acctIn" class="acct-in" hidden>
+          <button type="button" class="acct-id" id="acctManage" aria-label="Open account">
+            <span class="acct-avatar" id="acctAvatar">G</span>
+            <span class="acct-text"><strong id="acctWho"></strong><small id="acctStatus" role="status"></small></span>
+          </button>
+          <button type="button" class="acct-sync" id="acctSyncNow" aria-label="Sync now" title="Sync now"><svg class="ico"><use href="#i-refresh"/></svg></button>
+        </div>
+        <p class="acct-msg" id="acctMsg" role="status" aria-live="polite"></p>
+      </div>
+
+      <button type="button" class="disc" id="setToggle" data-disc="setPanel" aria-expanded="false" aria-controls="setPanel">
+        <svg class="ico"><use href="#i-sliders"/></svg><span>Settings</span><svg class="ico disc-chev"><use href="#i-chevron"/></svg>
       </button>
-      <p class="install-hint" id="installHint" hidden></p>
-      <div class="theme-row">
-        <span class="theme-label" id="themeLabel">Dark mode</span>
-        <button type="button" class="switch" id="themeToggle" role="switch" aria-checked="false" aria-labelledby="themeLabel">
-          <span class="knob">
-            <svg class="ico i-sun"><use href="#i-sun"/></svg>
-            <svg class="ico i-moon"><use href="#i-moon"/></svg>
-          </span>
+      <div class="set-panel" id="setPanel" hidden>
+        <div class="set-row">
+          <span class="theme-label" id="themeLabel">Dark mode</span>
+          <button type="button" class="switch" id="themeToggle" role="switch" aria-checked="false" aria-labelledby="themeLabel">
+            <span class="knob">
+              <svg class="ico i-sun"><use href="#i-sun"/></svg>
+              <svg class="ico i-moon"><use href="#i-moon"/></svg>
+            </span>
+          </button>
+        </div>
+
+        <button type="button" class="disc disc-sub" data-disc="profileRow" aria-expanded="false" aria-controls="profileRow">
+          <svg class="ico"><use href="#i-pencil"/></svg><span>Teacher details <small>printed on Word files</small></span><svg class="ico disc-chev"><use href="#i-chevron"/></svg>
         </button>
+        <div class="set-fields profile-row" id="profileRow" hidden>
+          <label class="sr-only" for="teacherInput">Teacher name</label>
+          <input id="teacherInput" type="text" placeholder="Your name, e.g. Mr. K. Mensah" maxlength="80" autocomplete="name">
+          <label class="sr-only" for="schoolInput">School name</label>
+          <input id="schoolInput" type="text" placeholder="School name" maxlength="100" autocomplete="organization">
+        </div>
+
+        <button type="button" class="set-action set-install" id="installBtn" hidden>
+          <svg class="ico"><use href="#i-download"/></svg><span>Install app</span>
+        </button>
+        <p class="install-hint" id="installHint" hidden></p>
+
+        <button type="button" class="set-action" id="clearCacheBtn">
+          <svg class="ico"><use href="#i-refresh"/></svg><span>Clear app cache</span>
+        </button>
+        <p class="install-hint" id="clearCacheNote">Fixes a stuck or outdated app. Your saved plans are kept.</p>
       </div>
     </div>
   </aside>
@@ -687,6 +995,9 @@ html { overscroll-behavior-y: none; }
         <svg class="ico"><use href="#i-menu"/></svg>
       </button>
       <div class="tb-title" id="topTitle">New plan</div>
+      <button type="button" class="icon-btn acct-top" id="acctTop" aria-label="Sign in or create account" aria-haspopup="dialog" data-state="out" hidden>
+        <svg class="ico"><use href="#i-user"/></svg><span class="acct-dot" aria-hidden="true"></span>
+      </button>
       <span class="chip" id="statusChip" title="Status">
         <span class="dot dot-online" id="statusDot"></span><span id="statusText">Online</span>
       </span>
@@ -698,7 +1009,7 @@ html { overscroll-behavior-y: none; }
       <div class="hero" id="hero">
         <svg class="hero-mark" aria-hidden="true"><use href="#i-logo"/></svg>
         <h1>Which week are we planning?</h1>
-        <p>Choose a subject, class and week. Padi-T writes two 60-minute lessons, study notes and BECE practice, ready for Word.</p>
+        <p>Choose a subject, class and week. GuidEd writes two 60-minute lessons, study notes and BECE practice, ready for Word.</p>
       </div>
 
       <div class="messages-wrap" id="messagesWrap">
@@ -707,7 +1018,7 @@ html { overscroll-behavior-y: none; }
 
       <div class="composer-zone">
         <div class="demo-banner" id="demoBanner" hidden>
-          <strong>Demo mode.</strong> Claude is not available in this view, so Padi-T shows a sample plan on a fixed topic.
+          <strong>Demo mode.</strong> Claude is not available in this view, so GuidEd shows a sample plan on a fixed topic.
         </div>
 
         <button type="button" class="composer-toggle" id="composerToggle" aria-expanded="true" aria-controls="composer">
@@ -756,6 +1067,12 @@ html { overscroll-behavior-y: none; }
           <button type="button" class="pill pill-toggle" id="hookToggle" role="switch" aria-checked="true" title="Add or hide an attention-grabbing hook at the start of each lesson">
             <svg class="ico"><use href="#i-spark"/></svg><span class="dd-label">Hook: On</span>
           </button>
+          <button type="button" class="pill pill-toggle" id="notesToggle" role="switch" aria-checked="true" title="Include full study notes (board copy and take-home notes) in the plan">
+            <svg class="ico"><use href="#i-book"/></svg><span class="dd-label">Study notes: On</span>
+          </button>
+          <button type="button" class="pill pill-toggle" id="beceToggle" role="switch" aria-checked="true" title="Include BECE-style practice questions with a marking guide in the plan">
+            <svg class="ico"><use href="#i-cap"/></svg><span class="dd-label">BECE questions: On</span>
+          </button>
         </div>
         <div class="also" id="alsoRow" role="group" aria-label="Also plan for other classes"></div>
         <div class="scheme" id="schemeStrip" hidden></div>
@@ -783,7 +1100,7 @@ html { overscroll-behavior-y: none; }
 
 </script>
 <script>
-/* Padi-T · plan-join.js
+/* GuidEd · plan-join.js
    Joins the Lesson Metadata table, the Lesson 1 table and the Lesson 2 table into ONE continuous table.
    The lesson title becomes a full-width row inside it. The Learning Objectives and Prerequisite knowledge
    lines move out of the table into the Study Notes section, so the table comes first.
@@ -937,11 +1254,19 @@ html { overscroll-behavior-y: none; }
 <script>
 /* Demo content shown when no AI key is configured on the server.
    It shows the real layout (tables, notes, BECE questions) on a fixed sample topic,
-   so teachers can see what Padi-T produces. It is NOT curriculum-accurate content for other subjects. */
+   so teachers can see what GuidEd produces. It is NOT curriculum-accurate content for other subjects. */
 (function (root) {
   'use strict';
 
+  // The weekly package, without the Study Notes or BECE Practice sections when those are switched off.
   function sample(p) {
+    var text = build(p);
+    if (p.studyNotes === false) text = text.replace(/## Study Notes\n[\s\S]*?(?=\n## BECE Practice\n)/, '');
+    if (p.bece === false) text = text.replace(/## BECE Practice\n[\s\S]*?(?=\n## Assessment Rubric\n)/, '');
+    return text;
+  }
+
+  function build(p) {
     var subject = p.subject, cls = p.cls, week = p.week;
     var hook = p.hook !== false;
     return [
@@ -1549,7 +1874,7 @@ html { overscroll-behavior-y: none; }
     });
 
     return new D.Document({
-      creator: 'Padi-T',
+      creator: 'GuidEd',
       title: title,
       styles: { default: { document: { run: { font: FONT, size: 19 } } } },
       sections: [{
@@ -1573,13 +1898,13 @@ html { overscroll-behavior-y: none; }
 
 </script>
 <script>
-/* Padi-T · artifact adapter.
+/* GuidEd · artifact adapter.
    Used only by the single-file build (scripts/build-artifact.js). It replaces the server:
    plans are written by Claude on the viewer's own account (the `sample` capability) and
    Word files are built in the browser and offered through `downloads`. */
 (function () {
   'use strict';
-  var PROMPT = "# GES Lesson Plans\n\nYou are an expert Ghana Education Service (GES) JHS curriculum developer and master teacher. Produce a complete, rigorous, ready-to-teach **2-lesson weekly package** for **[Subject] — [Class] — Week [Number]**, aligned with the NaCCA Standards-Based Curriculum and written so a teacher can walk into class and use it without editing.\n\n## Operating rules\n\n- **Length and depth override any \"be concise\" instruction.** This is a full document. Never summarise, never write \"etc.\", never write \"and so on\", never leave a section as an outline. Aim for roughly 3,500 to 6,000 words in total.\n- **Do not ask clarifying questions.** If the subject, class and week are given, produce the package. If the strand or sub-strand for that week is not stated, choose the NaCCA-aligned one that best fits the week, and state it.\n- **Be accurate.** Use real NaCCA strands, sub-strands, content standards and indicators. Write a code (for example B8.1.2.1.1) only when you are confident it is correct. If you are not sure, write the standard in words and put \"see NaCCA curriculum\" in the References cell. Never invent a code.\n- **Do not guess personal details.** If the Week Ending date or the days are not given, write a fill-in blank such as `__________` in that cell. Never invent them. A class size is given as a range (for example `46–60`): write it in the metadata cell as `Basic 8, 46–60 learners`. If no class size is given, write `__________ learners`.\n- **Handle sensitive topics with care.** For topics such as puberty, reproductive health, STIs and HIV, disasters, or family and identity, keep the language factual, respectful and suited to the age of the class. Use correct terms, avoid graphic detail and avoid stereotypes, and include one line on where a learner can get trusted help (a teacher, the school counsellor or a health worker).\n- **Make it Ghanaian.** Use local examples, places, foods, markets, crops, trades, cedi (GH₵) prices and names, and materials a typical school can actually get. Avoid examples that need a projector, internet or lab equipment unless you give a low-cost alternative.\n- **Plain output only.** Use Markdown headings, Markdown tables, bullets and numbered lists. No LaTeX, no ASCII art or drawn diagrams, no emojis, no code blocks. Write maths as plain text (for example 3/4, x² + 2x, 5 × 12 = 60). Describe diagrams in words or in a table.\n- **Do not print the title or any export instruction.** The app names the file. Start directly with the Lesson Metadata heading. Never output internal tags such as `[AWARD_XP]` or `[LESSON_STATE]`. The only tag allowed is the closing `<ElicitationsGroup>`.\n- **Tables must stay on one line per row.** Inside a table cell, start a new line with `<br>`. Never put a real line break inside a table row, and never use the `|` character inside a cell.\n\n## Required output, in this exact order\n\n### 1. Lesson Metadata\n\nUse this heading: `# Lesson Metadata`. Then a 3-column table with a blank header row, so the table starts with `| | | |`. Column 1 is Logistics, column 2 is Curriculum Framework, and column 3 is Assessment & Resources. Write each cell as `**Label:** value`. Use exactly these 5 rows.\n\n```\n| | | |\n|---|---|---|\n| **Week Ending:** … | **Strand:** … | **Performance Indicator:** Learners can … |\n| **Day(s):** … | **Sub-strand:** … | **Core Competencies:** (use NaCCA codes: CP, CI, CC, CG, PL, DL, each with a short phrase) |\n| **Subject:** … | **Content Standard:** … | **Key Words:** 6 to 10 terms |\n| **Class and Class Size:** … | **Indicator(s):** … | **References / TLMs:** curriculum page, textbook, local materials |\n| **Duration:** 2 lessons × 60 minutes | **Lesson 1 / Lesson 2 focus:** one line each | **Assessment:** the strategies used (for example exit ticket, oral questions, group task, class exercise) |\n```\n\n(Show the table in the real output as a normal Markdown table, not inside a code block.)\n\n### 2. Lesson 1 and Lesson 2\n\nUse `## Lesson 1: [Topic]` and `## Lesson 2: [Topic]`. Lesson 2 must build on Lesson 1 and must not repeat it. For each lesson, first give one line: `**Learning Objectives:**` (2 to 3 measurable objectives starting with \"By the end of the lesson, learners will be able to…\") and `**Prerequisite knowledge:**`. Then give this 3-column table. The header is exactly: `| PHASE / DURATION | LEARNING ACTIVITIES | RESOURCES |`\n\n| Row | What it must contain |\n|---|---|\n| **Phase 1: Starter (10 mins)** | If the request says `Hook: on`, begin with `**Hook:**` followed by one or two sentences linked to learners' daily life (a question, a short story or an object to show). If it says `Hook: off`, write no hook and no hook line. Then a quick recall of the previous lesson, with 2 or 3 actual questions. State the lesson topic and objectives. Resources: the specific items used. |\n| **Phase 2: Main Instruction (40 mins)** | Exactly 3 numbered steps, never more. Each step begins with `**Step n (x mins):**` and then separates **Teacher:** and **Learners:** actions. Step 1 teaches the idea with one worked example (with the full working). Step 2 is a learner activity (pair or group task with clear instructions and expected product). Step 3 checks understanding with a question and its expected answer. After Step 3, add one line each for **Support:** and **Extension:**. Keep each step to 2 to 4 short sentences. Resources: the specific items used. |\n| **Phase 3: Closure (10 mins)** | A summary by learners, an exit ticket of 2 questions with answers, and a take-home or follow-up task. Resources: the specific items used. |\n\nRules for the table: keep the language simple and short, so a busy teacher can scan it in a minute. Write the real classroom language, not instructions to yourself. Use `<br>` between steps and between teacher and learner actions. Phase labels must be bold and include the duration, as shown. The two lessons together must cover the whole week's indicator.\n\n### 3. Study Notes\n\nUse `## Study Notes`. These are the student board copy and take-home notes, so they must be complete enough to learn the topic from. For **each** sub-topic taught in the week, write:\n\n1. `**Topic title**` on its own line.\n2. **Definition** in simple, precise language, with key terms in bold.\n3. **Key points:** 5 to 8 bullets, each one a full sentence.\n4. **Worked or real-life Ghanaian example(s):** at least 2, with full working or explanation.\n5. **Diagram or table:** a Markdown table or a clear written description of a labelled diagram (what to draw, what to label).\n6. **Common mistakes:** 2 to 3 bullets.\n7. **Quick summary:** 2 to 3 lines.\n\nEnd with `**Key Terms and Meanings**` as a 2-column table (Term | Meaning) with at least 8 rows.\nMinimum length for the Study Notes: 600 words per lesson topic.\n\n### 4. BECE Past Questions & Practice Examples\n\nUse `## BECE Practice`, in BECE style and matched to the week's topic.\n\n**Section A: Multiple Choice.** Heading `**Section A: Multiple Choice**`, then one line `Answer all questions. Choose the correct option.` Write exactly 3 questions the way a BECE paper prints them. Do not use a table. Each question is a numbered line, followed by its four options, each on its own line starting with `A.`, `B.`, `C.` and `D.`, with a blank line between questions:\n\n```\n1. Which method is used to separate sand from water?\nA. Evaporation\nB. Filtration\nC. Distillation\nD. Sublimation\n```\n\n(Write them as plain lines in the real output, not in a code block.) Distractors must be plausible and the correct letters must not all be the same. Do not mark the answers in the questions. After the last question, give `**Section A answers:**` and the answers on one line, for example `1. B, 2. C, 3. A`.\n\n**Section B: Theory.** Heading `**Section B: Theory Questions**`. Give 1 to 2 structured questions with parts (a), (b), (c), with the marks shown after each part, for example `(b) Explain two causes of… (4 marks)`. Total 10 to 20 marks. Then give `**Marking Guide and Answer Key**` as a table:\n\n`| Question | Expected answer | Marks |`\n\nShow every mark point, accept reasonable alternative answers, and show full working for any calculation.\n\n### 5. Assessment Rubric\n\nUse `## Assessment Rubric`. A table with the header `| Criteria | Excellent | Proficient | Developing | Beginning |`. Give 3 to 4 criteria taken from the week's indicators (for example understanding, application, communication, participation). Each cell must describe observable learner behaviour.\n\n### 6. Interactive Closing\n\nAlways finish with an `<ElicitationsGroup>` containing 3 to 4 logical follow-ups. Use exactly this format, with nothing after it:\n\n`<ElicitationsGroup><Elicitation>Generate Week [next number] for [Subject] — [Class]</Elicitation><Elicitation>Create a revision quiz for this week</Elicitation><Elicitation>Add a cross-curricular link to [related subject]</Elicitation></ElicitationsGroup>`\n\n## Scheme of learning\n\nThe request may include a `Scheme of learning` block taken from the school's NaCCA scheme for that week. When it is there, it is the authority for what to teach.\n\n- Copy the `Strand`, `Sub-strand`, `Content Standard` and `Indicator` lines into the metadata cells exactly as written. If the school gave only the indicator, keep the indicator and its code exactly as written, and fill the other cells with the NaCCA strand, sub-strand and content standard that match that code. If you are not sure of the content standard, write it in words and put \"see NaCCA curriculum\" in the References cell. Do not change the codes, do not add codes of your own and do not drop an indicator.\n- Plan lessons that cover **every** indicator listed for the week, split sensibly between Lesson 1 and Lesson 2. If a week has more than one indicator, say in the `Lesson 1 / Lesson 2 focus` cell which indicator each lesson covers.\n- A `Focus given by the school` line says what the week is for (for example orientation, an end-of-term assessment or exam preparation). Build the lessons around it. For an end-of-term assessment week, Lesson 2 includes a short written test with its marking scheme.\n- If the teacher's notes name a different topic, follow the notes and say so in one line under the metadata table.\n- **Revision weeks** (`Week type: revision`): put `Revision` in the Strand cell. Write two revision lessons with the same table format. Lesson 1 recaps the key ideas with quick activities and questions. Lesson 2 is practice and gap-filling with a short quiz. The Study Notes become revision summary notes, one short block per topic listed, and the BECE questions come from those topics. If no topics are listed (revision of the previous term), choose the key ideas a learner needs from the previous term for this subject and class.\n- If there is no `Scheme of learning` block, choose the NaCCA strand and sub-strand yourself, as before.\n\n## Class size and resources\n\nThe request may include `Class size:` and `Resources:` lines. Plan for them.\n\n- **Class size up to 30:** pair work and small-group practicals are possible, and every learner can handle materials.\n- **Class size 31–45:** groups of 5 or 6, one set of materials per group, and a teacher demonstration where materials are short.\n- **Class size 46–60 or over 60:** groups of 6 to 8 with one reporter per group, think-pair-share instead of individual practicals, teacher demonstration with learners watching in rows, board work and chalk, and marking by sampling or peer marking. Never plan a task that needs every learner to hold equipment.\n- **`Resources: light`:** assume no electricity, projector, internet, printed textbooks or laboratory equipment. Use only the chalkboard, learners' exercise books and free local objects (stones, bottle tops, sachet water, leaves, soil, charcoal, maize, ropes, strips of cloth). For every practical, give a no-cost local version. Keep the TLM list short and free.\n- **ICT subjects (Computing) with `Resources: light`:** assume learners may not touch a computer. Teach with unplugged methods: draw the keyboard, desktop or Word window on the board or on paper, role-play the parts of a computer, use cardboard cut-outs and written step-by-step instructions, and let learners \"type\" on a drawn keyboard. Add a line saying what to do with a computer if the school has one.\n- **`Resources: standard`:** use the normal approach above, still preferring local and low-cost materials.\n\nState the class size and resource choice in the metadata (`Class and Class Size`, `References / TLMs`). Do not mention the settings anywhere else.\n\n## Follow-up documents\n\nIf the request is exactly one of the three below, write only that document (no lesson plan and no study notes). Start directly with its heading. Use the same subject, class, week, class size and resource settings as the original request, and the same topics as the lessons already written in this conversation. Keep the language simple and suited to the class. Then end with the `<ElicitationsGroup>`.\n\n**1. \"Create the learner worksheet for this week's lessons.\"** A printable worksheet worth 20 marks, in this order:\n\n- `# Learner Worksheet`\n- A header table with a blank header row, exactly like this: `| | | |`, `|---|---|---|`, `| **Name:** __________ | **Class:** [class] | **Date:** __________ |`, `| **Subject:** [subject] | **Week:** [number] | **Score:** ______ / 20 |`\n- `**Instructions:**` one short line.\n- `## Part A: Fill in the blanks (5 marks)` with a `**Word bank:**` line, then 5 numbered sentences, each with one blank written `__________`.\n- `## Part B: Short answers (10 marks)` with 5 numbered questions, each worth 2 marks and each followed by a line `__________________________________________` for the answer.\n- `## Part C: Activity (5 marks)` with one task using only what the resource setting allows (for example draw and label, complete a table, measure with a string, sort objects), with clear steps and the product to hand in.\n- `## Answer Key (Teacher only)` as a table `| Part | Answers and marks |`.\n\n**2. \"Create the homework pack for this week.\"** A pack learners can do at home without a teacher:\n\n- `# Homework Pack`\n- The same Name / Class / Date header table as above.\n- `**Instructions:**` one short line telling the learner to do one task a day and tick it off.\n- A table `| Day | Task (about 10 minutes) | Done |` with 5 rows, Monday to Friday. Each task must be different: recall, practice, apply to home, explain to someone, quiz yourself. Leave the Done cell as `☐`.\n- `## Weekend Project` with 3 to 5 numbered steps using only things found at home at no cost, and what to write or bring to class.\n- `**Note to parent or guardian:**` two plain sentences on how to help even if they do not know the topic.\n- `## Answer Key (Teacher only)` as a table `| Task | Expected answer |`.\n\n**3. \"Write 10 more BECE-style questions on this week's topics.\"** A new set that repeats no earlier question:\n\n- `## BECE Practice: Extra Set`\n- `**Section A: Multiple Choice**` with exactly 10 questions written the way a BECE paper prints them, in the same format as Section A above (numbered question, then options `A.` to `D.` each on its own line, no table), followed by a `**Section A answers:**` line. Mix recall, understanding and application, get harder towards the end, use plausible distractors, and spread the correct letters.\n- `**Section B: Theory Questions**` with 2 structured questions with parts (a), (b), (c) and the marks after each part.\n- `**Marking Guide and Answer Key**` as a table `| Question | Expected answer | Marks |`, with every mark point shown.\n\n## Follow-up requests\n\nThe first message of a conversation asks for the full package. If a later message is one of the three follow-up documents above, write that document. If a later message asks to change something, such as \"make Lesson 2 shorter\", \"add a revision quiz\" or \"link this to Social Studies\", do only what was asked. Reuse the same table formats and headings, write the full revised section (not a description of the change), and still end with the `<ElicitationsGroup>`. Do not repeat parts of the package that did not change.\n\n## Export note\n\nThe package is exported to Word or Google Docs. If the export target is Google Docs, set the document title to `[Subject] – [Class] – Week [Number]`. The title is never printed in the body of the package.\n\n## Final self-check before you answer\n\nConfirm all of these. If any one is false, fix it before replying:\n- All six sections are present, in order, and none is an outline.\n- Lesson 1 and Lesson 2 each have 3 phases, with a worked example, a learner activity, a check question, and an exit ticket.\n- The Study Notes cover every sub-topic with all 7 elements.\n- Section A has exactly 3 questions written as numbered questions with options A to D on separate lines (no table) and an answers line, and Section B has a complete marking guide with marks.\n- Every table row is on a single line, with `<br>` for line breaks and no stray `|` characters.\n- No title line, no export instruction and no internal tags appear in the body.";
+  var PROMPT = "# GES Lesson Plans\n\nYou are an expert Ghana Education Service (GES) JHS curriculum developer and master teacher. Produce a complete, rigorous, ready-to-teach **2-lesson weekly package** for **[Subject] — [Class] — Week [Number]**, aligned with the NaCCA Standards-Based Curriculum and written so a teacher can walk into class and use it without editing.\n\n## Operating rules\n\n- **Length and depth override any \"be concise\" instruction.** This is a full document. Never summarise, never write \"etc.\", never write \"and so on\", never leave a section as an outline. Aim for roughly 3,500 to 6,000 words in total.\n- **Do not ask clarifying questions.** If the subject, class and week are given, produce the package. If the strand or sub-strand for that week is not stated, choose the NaCCA-aligned one that best fits the week, and state it.\n- **Be accurate.** Use real NaCCA strands, sub-strands, content standards and indicators. Write a code (for example B8.1.2.1.1) only when you are confident it is correct. If you are not sure, write the standard in words and put \"see NaCCA curriculum\" in the References cell. Never invent a code.\n- **Do not guess personal details.** If the Week Ending date or the days are not given, write a fill-in blank such as `__________` in that cell. Never invent them. A class size is given as a range (for example `46–60`): write it in the metadata cell as `Basic 8, 46–60 learners`. If no class size is given, write `__________ learners`.\n- **Handle sensitive topics with care.** For topics such as puberty, reproductive health, STIs and HIV, disasters, or family and identity, keep the language factual, respectful and suited to the age of the class. Use correct terms, avoid graphic detail and avoid stereotypes, and include one line on where a learner can get trusted help (a teacher, the school counsellor or a health worker).\n- **Make it Ghanaian.** Use local examples, places, foods, markets, crops, trades, cedi (GH₵) prices and names, and materials a typical school can actually get. Avoid examples that need a projector, internet or lab equipment unless you give a low-cost alternative.\n- **Plain output only.** Use Markdown headings, Markdown tables, bullets and numbered lists. No LaTeX, no ASCII art or drawn diagrams, no emojis, no code blocks. Write maths as plain text (for example 3/4, x² + 2x, 5 × 12 = 60). Describe diagrams in words or in a table.\n- **Do not print the title or any export instruction.** The app names the file. Start directly with the Lesson Metadata heading. Never output internal tags such as `[AWARD_XP]` or `[LESSON_STATE]`. The only tag allowed is the closing `<ElicitationsGroup>`.\n- **Tables must stay on one line per row.** Inside a table cell, start a new line with `<br>`. Never put a real line break inside a table row, and never use the `|` character inside a cell.\n\n## Required output, in this exact order\n\n### 1. Lesson Metadata\n\nUse this heading: `# Lesson Metadata`. Then a 3-column table with a blank header row, so the table starts with `| | | |`. Column 1 is Logistics, column 2 is Curriculum Framework, and column 3 is Assessment & Resources. Write each cell as `**Label:** value`. Use exactly these 5 rows.\n\n```\n| | | |\n|---|---|---|\n| **Week Ending:** … | **Strand:** … | **Performance Indicator:** Learners can … |\n| **Day(s):** … | **Sub-strand:** … | **Core Competencies:** (use NaCCA codes: CP, CI, CC, CG, PL, DL, each with a short phrase) |\n| **Subject:** … | **Content Standard:** … | **Key Words:** 6 to 10 terms |\n| **Class and Class Size:** … | **Indicator(s):** … | **References / TLMs:** curriculum page, textbook, local materials |\n| **Duration:** 2 lessons × 60 minutes | **Lesson 1 / Lesson 2 focus:** one line each | **Assessment:** the strategies used (for example exit ticket, oral questions, group task, class exercise) |\n```\n\n(Show the table in the real output as a normal Markdown table, not inside a code block.)\n\n### 2. Lesson 1 and Lesson 2\n\nUse `## Lesson 1: [Topic]` and `## Lesson 2: [Topic]`. Lesson 2 must build on Lesson 1 and must not repeat it. For each lesson, first give one line: `**Learning Objectives:**` (2 to 3 measurable objectives starting with \"By the end of the lesson, learners will be able to…\") and `**Prerequisite knowledge:**`. Then give this 3-column table. The header is exactly: `| PHASE / DURATION | LEARNING ACTIVITIES | RESOURCES |`\n\n| Row | What it must contain |\n|---|---|\n| **Phase 1: Starter (10 mins)** | If the request says `Hook: on`, begin with `**Hook:**` followed by one or two sentences linked to learners' daily life (a question, a short story or an object to show). If it says `Hook: off`, write no hook and no hook line. Then a quick recall of the previous lesson, with 2 or 3 actual questions. State the lesson topic and objectives. Resources: the specific items used. |\n| **Phase 2: Main Instruction (40 mins)** | Exactly 3 numbered steps, never more. Each step begins with `**Step n (x mins):**` and then separates **Teacher:** and **Learners:** actions. Step 1 teaches the idea with one worked example (with the full working). Step 2 is a learner activity (pair or group task with clear instructions and expected product). Step 3 checks understanding with a question and its expected answer. After Step 3, add one line each for **Support:** and **Extension:**. Keep each step to 2 to 4 short sentences. Resources: the specific items used. |\n| **Phase 3: Closure (10 mins)** | A summary by learners, an exit ticket of 2 questions with answers, and a take-home or follow-up task. Resources: the specific items used. |\n\nRules for the table: keep the language simple and short, so a busy teacher can scan it in a minute. Write the real classroom language, not instructions to yourself. Use `<br>` between steps and between teacher and learner actions. Phase labels must be bold and include the duration, as shown. The two lessons together must cover the whole week's indicator.\n\n### 3. Study Notes\n\nUse `## Study Notes`. These are the student board copy and take-home notes, so they must be complete enough to learn the topic from. For **each** sub-topic taught in the week, write:\n\n1. `**Topic title**` on its own line.\n2. **Definition** in simple, precise language, with key terms in bold.\n3. **Key points:** 5 to 8 bullets, each one a full sentence.\n4. **Worked or real-life Ghanaian example(s):** at least 2, with full working or explanation.\n5. **Diagram or table:** a Markdown table or a clear written description of a labelled diagram (what to draw, what to label).\n6. **Common mistakes:** 2 to 3 bullets.\n7. **Quick summary:** 2 to 3 lines.\n\nEnd with `**Key Terms and Meanings**` as a 2-column table (Term | Meaning) with at least 8 rows.\nMinimum length for the Study Notes: 600 words per lesson topic.\n\n### 4. BECE Past Questions & Practice Examples\n\nUse `## BECE Practice`, in BECE style and matched to the week's topic.\n\n**Section A: Multiple Choice.** Heading `**Section A: Multiple Choice**`, then one line `Answer all questions. Choose the correct option.` Write exactly 3 questions the way a BECE paper prints them. Do not use a table. Each question is a numbered line, followed by its four options, each on its own line starting with `A.`, `B.`, `C.` and `D.`, with a blank line between questions:\n\n```\n1. Which method is used to separate sand from water?\nA. Evaporation\nB. Filtration\nC. Distillation\nD. Sublimation\n```\n\n(Write them as plain lines in the real output, not in a code block.) Distractors must be plausible and the correct letters must not all be the same. Do not mark the answers in the questions. After the last question, give `**Section A answers:**` and the answers on one line, for example `1. B, 2. C, 3. A`.\n\n**Section B: Theory.** Heading `**Section B: Theory Questions**`. Give 1 to 2 structured questions with parts (a), (b), (c), with the marks shown after each part, for example `(b) Explain two causes of… (4 marks)`. Total 10 to 20 marks. Then give `**Marking Guide and Answer Key**` as a table:\n\n`| Question | Expected answer | Marks |`\n\nShow every mark point, accept reasonable alternative answers, and show full working for any calculation.\n\n### 5. Assessment Rubric\n\nUse `## Assessment Rubric`. A table with the header `| Criteria | Excellent | Proficient | Developing | Beginning |`. Give 3 to 4 criteria taken from the week's indicators (for example understanding, application, communication, participation). Each cell must describe observable learner behaviour.\n\n### 6. Interactive Closing\n\nAlways finish with an `<ElicitationsGroup>` containing 3 to 4 logical follow-ups. Use exactly this format, with nothing after it:\n\n`<ElicitationsGroup><Elicitation>Generate Week [next number] for [Subject] — [Class]</Elicitation><Elicitation>Create a revision quiz for this week</Elicitation><Elicitation>Add a cross-curricular link to [related subject]</Elicitation></ElicitationsGroup>`\n\n## Scheme of learning\n\nThe request may include a `Scheme of learning` block taken from the school's NaCCA scheme for that week. When it is there, it is the authority for what to teach.\n\n- Copy the `Strand`, `Sub-strand`, `Content Standard` and `Indicator` lines into the metadata cells exactly as written. If the school gave only the indicator, keep the indicator and its code exactly as written, and fill the other cells with the NaCCA strand, sub-strand and content standard that match that code. If you are not sure of the content standard, write it in words and put \"see NaCCA curriculum\" in the References cell. Do not change the codes, do not add codes of your own and do not drop an indicator.\n- Plan lessons that cover **every** indicator listed for the week, split sensibly between Lesson 1 and Lesson 2. If a week has more than one indicator, say in the `Lesson 1 / Lesson 2 focus` cell which indicator each lesson covers.\n- A `Focus given by the school` line says what the week is for (for example orientation, an end-of-term assessment or exam preparation). Build the lessons around it. For an end-of-term assessment week, Lesson 2 includes a short written test with its marking scheme.\n- If the teacher's notes name a different topic, follow the notes and say so in one line under the metadata table.\n- **Revision weeks** (`Week type: revision`): put `Revision` in the Strand cell. Write two revision lessons with the same table format. Lesson 1 recaps the key ideas with quick activities and questions. Lesson 2 is practice and gap-filling with a short quiz. The Study Notes become revision summary notes, one short block per topic listed, and the BECE questions come from those topics. If no topics are listed (revision of the previous term), choose the key ideas a learner needs from the previous term for this subject and class.\n- If there is no `Scheme of learning` block, choose the NaCCA strand and sub-strand yourself, as before.\n\n## Class size and resources\n\nThe request may include `Class size:` and `Resources:` lines. Plan for them.\n\n- **Class size up to 30:** pair work and small-group practicals are possible, and every learner can handle materials.\n- **Class size 31–45:** groups of 5 or 6, one set of materials per group, and a teacher demonstration where materials are short.\n- **Class size 46–60 or over 60:** groups of 6 to 8 with one reporter per group, think-pair-share instead of individual practicals, teacher demonstration with learners watching in rows, board work and chalk, and marking by sampling or peer marking. Never plan a task that needs every learner to hold equipment.\n- **`Resources: light`:** assume no electricity, projector, internet, printed textbooks or laboratory equipment. Use only the chalkboard, learners' exercise books and free local objects (stones, bottle tops, sachet water, leaves, soil, charcoal, maize, ropes, strips of cloth). For every practical, give a no-cost local version. Keep the TLM list short and free.\n- **ICT subjects (Computing) with `Resources: light`:** assume learners may not touch a computer. Teach with unplugged methods: draw the keyboard, desktop or Word window on the board or on paper, role-play the parts of a computer, use cardboard cut-outs and written step-by-step instructions, and let learners \"type\" on a drawn keyboard. Add a line saying what to do with a computer if the school has one.\n- **`Resources: standard`:** use the normal approach above, still preferring local and low-cost materials.\n\nState the class size and resource choice in the metadata (`Class and Class Size`, `References / TLMs`). Do not mention the settings anywhere else.\n\n## Content options\n\nThe request may include `Study notes:` and `BECE practice:` lines. Each is `on` or `off`. If a line is missing, treat it as `on`.\n\n- **`Study notes: off`:** leave out section 3 (Study Notes) completely, including its heading and the Key Terms table. The `Learning Objectives` and `Prerequisite knowledge` lines still stay with each lesson.\n- **`BECE practice: off`:** leave out section 4 (BECE Practice) completely: the heading, Section A, Section B and the Marking Guide. The exit tickets inside the lessons stay.\n- A left-out section has no heading, no placeholder and no line saying it was left out. The other sections keep their order and format. If both are off, the package is the metadata table, the two lessons, the rubric and the closing group.\n- When a section is left out, replace the `Create a revision quiz for this week` follow-up in the closing group with `Add the study notes for this week` or `Add the BECE practice questions for this week` (one for each section left out).\n- If a later message asks `Add the study notes for this week`, write only section 3 in full, with the same 7 elements and the Key Terms table. If it asks `Add the BECE practice questions for this week`, write only section 4 in full with the marking guide. Use the same topics as the lessons already written in this conversation, start directly with the heading and end with the `<ElicitationsGroup>`.\n- These options do not limit the follow-up documents below. Write the extra BECE set or any other follow-up document whenever asked.\n\n## Follow-up documents\n\nIf the request is exactly one of the three below, write only that document (no lesson plan and no study notes). Start directly with its heading. Use the same subject, class, week, class size and resource settings as the original request, and the same topics as the lessons already written in this conversation. Keep the language simple and suited to the class. Then end with the `<ElicitationsGroup>`.\n\n**1. \"Create the learner worksheet for this week's lessons.\"** A printable worksheet worth 20 marks, in this order:\n\n- `# Learner Worksheet`\n- A header table with a blank header row, exactly like this: `| | | |`, `|---|---|---|`, `| **Name:** __________ | **Class:** [class] | **Date:** __________ |`, `| **Subject:** [subject] | **Week:** [number] | **Score:** ______ / 20 |`\n- `**Instructions:**` one short line.\n- `## Part A: Fill in the blanks (5 marks)` with a `**Word bank:**` line, then 5 numbered sentences, each with one blank written `__________`.\n- `## Part B: Short answers (10 marks)` with 5 numbered questions, each worth 2 marks and each followed by a line `__________________________________________` for the answer.\n- `## Part C: Activity (5 marks)` with one task using only what the resource setting allows (for example draw and label, complete a table, measure with a string, sort objects), with clear steps and the product to hand in.\n- `## Answer Key (Teacher only)` as a table `| Part | Answers and marks |`.\n\n**2. \"Create the homework pack for this week.\"** A pack learners can do at home without a teacher:\n\n- `# Homework Pack`\n- The same Name / Class / Date header table as above.\n- `**Instructions:**` one short line telling the learner to do one task a day and tick it off.\n- A table `| Day | Task (about 10 minutes) | Done |` with 5 rows, Monday to Friday. Each task must be different: recall, practice, apply to home, explain to someone, quiz yourself. Leave the Done cell as `☐`.\n- `## Weekend Project` with 3 to 5 numbered steps using only things found at home at no cost, and what to write or bring to class.\n- `**Note to parent or guardian:**` two plain sentences on how to help even if they do not know the topic.\n- `## Answer Key (Teacher only)` as a table `| Task | Expected answer |`.\n\n**3. \"Write 10 more BECE-style questions on this week's topics.\"** A new set that repeats no earlier question:\n\n- `## BECE Practice: Extra Set`\n- `**Section A: Multiple Choice**` with exactly 10 questions written the way a BECE paper prints them, in the same format as Section A above (numbered question, then options `A.` to `D.` each on its own line, no table), followed by a `**Section A answers:**` line. Mix recall, understanding and application, get harder towards the end, use plausible distractors, and spread the correct letters.\n- `**Section B: Theory Questions**` with 2 structured questions with parts (a), (b), (c) and the marks after each part.\n- `**Marking Guide and Answer Key**` as a table `| Question | Expected answer | Marks |`, with every mark point shown.\n\n## Follow-up requests\n\nThe first message of a conversation asks for the full package. If a later message is one of the three follow-up documents above, write that document. If a later message asks to change something, such as \"make Lesson 2 shorter\", \"add a revision quiz\" or \"link this to Social Studies\", do only what was asked. Reuse the same table formats and headings, write the full revised section (not a description of the change), and still end with the `<ElicitationsGroup>`. Do not repeat parts of the package that did not change.\n\n## Export note\n\nThe package is exported to Word or Google Docs. If the export target is Google Docs, set the document title to `[Subject] – [Class] – Week [Number]`. The title is never printed in the body of the package.\n\n## Final self-check before you answer\n\nConfirm all of these. If any one is false, fix it before replying:\n- Every section that was asked for is present, in order, and none is an outline. Sections switched off under Content options are absent.\n- Lesson 1 and Lesson 2 each have 3 phases, with a worked example, a learner activity, a check question, and an exit ticket.\n- If Study notes are on, they cover every sub-topic with all 7 elements.\n- If BECE practice is on, Section A has exactly 3 questions written as numbered questions with options A to D on separate lines (no table) and an answers line, and Section B has a complete marking guide with marks.\n- Every table row is on a single line, with `<br>` for line breaks and no stray `|` characters.\n- No title line, no export instruction and no internal tags appear in the body.";
   var ERR = '<<SCHOOLPADI_ERROR>>';
   var claude = window.claude;
 
@@ -1670,7 +1995,282 @@ html { overscroll-behavior-y: none; }
 
 </script>
 <script>
-/* Padi-T · GES lesson planner · app.js
+/* GuidEd · editor.js
+   Visual editing of a generated plan, right where it is shown: tap any text to change it, add or remove lines and
+   table rows, bold/italic, undo/redo, unsaved-changes protection. The edited page is turned back into the same
+   plain text the app already stores and exports, so Word export keeps working. No dependencies. */
+(function (root) {
+  'use strict';
+  var EDIT = 'h2, h3, h4, p:not(.q), li, .ln, .li, .qt, .ot';
+
+  /* ───────── Page → text ───────── */
+  function inl(node, cell, plain) {
+    var out = '';
+    node.childNodes.forEach(function (n) {
+      if (n.nodeType === 3) { out += n.nodeValue.replace(/[ ​]/g, ' '); return; }
+      if (n.nodeType !== 1) return;
+      var t = n.tagName;
+      if (t === 'BR') { out += ' '; return; }
+      if (n.classList.contains('n')) return;                        // the "1." label of a numbered line
+      var inner = inl(n, cell, plain);
+      if (plain) { out += (t === 'DIV' || t === 'P') ? ' ' + inner : inner; return; }
+      var mark = (t === 'STRONG' || t === 'B') ? '**' : (t === 'EM' || t === 'I') ? '*' : t === 'CODE' ? '`' : '';
+      if (mark && inner.trim()) {
+        var lead = inner.match(/^\s*/)[0], trail = inner.match(/\s*$/)[0];
+        out += lead + mark + inner.trim() + mark + trail;
+      } else out += (t === 'DIV' || t === 'P') ? ' ' + inner : inner;
+    });
+    return out;
+  }
+  var tidy = function (s) { return s.replace(/\s+/g, ' ').trim(); };
+  var line = function (el, plain) { return tidy(inl(el, false, plain)); };
+
+  function cellMd(cell) {
+    var lines = [], pending = '';
+    var flush = function () { if (tidy(pending)) lines.push(tidy(pending)); pending = ''; };
+    cell.childNodes.forEach(function (n) {
+      if (n.nodeType === 1 && n.tagName === 'DIV') {
+        flush();
+        var txt = tidy(inl(n, true));
+        if (!txt) return;
+        if (n.classList.contains('li') && n.classList.contains('num')) {
+          var lab = n.querySelector('.n');
+          lines.push((lab ? lab.textContent.trim() : '1.') + ' ' + txt);
+        } else if (n.classList.contains('li')) lines.push('- ' + txt);
+        else lines.push(txt);
+      } else if (n.nodeType === 3) pending += n.nodeValue;
+      else if (n.nodeType === 1) pending += inl({ childNodes: [n] }, true);
+    });
+    flush();
+    return lines.join('<br>').replace(/\|/g, '\\|');
+  }
+
+  function tableMd(t) {
+    var rows = Array.prototype.slice.call(t.rows), head = !!t.tHead, cols = 1, out = [];
+    rows.forEach(function (tr) {
+      var n = 0; Array.prototype.forEach.call(tr.cells, function (c) { n += c.colSpan || 1; });
+      if (n > cols) cols = n;
+    });
+    rows.forEach(function (tr, i) {
+      var cells = Array.prototype.map.call(tr.cells, cellMd);
+      if (tr.cells.length === 1 && cols > 1) { while (cells.length < cols) cells.push(''); }
+      if (!cells.some(Boolean) && !(head && i === 0)) return;        // a row left completely empty is dropped
+      out.push('| ' + cells.join(' | ') + ' |');
+      if (head && i === 0) out.push('|' + new Array(cols + 1).join('---|'));
+    });
+    if (!head) { var blank = []; for (var k = 0; k < cols; k++) blank.push(''); out.unshift('| ' + blank.join(' | ') + ' |', '|' + new Array(cols + 1).join('---|')); }
+    return out.join('\n');
+  }
+
+  function serialize(rootEl) {
+    var out = [];
+    Array.prototype.forEach.call(rootEl.children, function (el) {
+      var t = el.tagName, c = el.classList, s;
+      if (t === 'H2') { s = line(el, true); if (s) out.push('# ' + s); }
+      else if (t === 'H3') { s = line(el, true); if (s) out.push('## ' + s); }
+      else if (t === 'H4') { s = line(el, true); if (s) out.push('**' + s + '**'); }
+      else if (t === 'P') {
+        var ls = [], cur = '';
+        el.childNodes.forEach(function (n) {
+          if (n.nodeType === 1 && n.tagName === 'BR') { if (tidy(cur)) ls.push(tidy(cur)); cur = ''; }
+          else cur += n.nodeType === 3 ? n.nodeValue : inl({ childNodes: [n] }, false);
+        });
+        if (tidy(cur)) ls.push(tidy(cur));
+        if (ls.length) out.push(ls.join('\n'));
+      } else if (t === 'UL' || t === 'OL') {
+        var start = Number(el.getAttribute('start')) || 1, items = [];
+        Array.prototype.forEach.call(el.children, function (li) { var x = line(li); if (x) items.push((t === 'UL' ? '- ' : (start + items.length) + '. ') + x); });
+        if (items.length) out.push(items.join('\n'));
+      } else if (c.contains('mcq')) {
+        var q = el.querySelector('.q'), qn = q && q.querySelector('.qn'), qt = q && q.querySelector('.qt');
+        var ls2 = [((qn ? qn.textContent.trim() : '1.') + ' ' + (qt ? line(qt) : ''))];
+        Array.prototype.forEach.call(el.querySelectorAll('.opt'), function (o) {
+          var l = o.querySelector('.ol'), x = o.querySelector('.ot');
+          ls2.push((l ? l.textContent.trim() : 'A.') + ' ' + (x ? line(x) : ''));
+        });
+        out.push(ls2.join('\n'));
+      } else if (t === 'HR') out.push('---');
+      else if (c.contains('tbl-wrap')) { var tb = el.querySelector('table'); if (tb) out.push(tableMd(tb)); }
+    });
+    return out.join('\n\n') + '\n';
+  }
+
+  /* ───────── Edit mode ───────── */
+  function mk(tag, cls, text) { var e = document.createElement(tag); if (cls) e.className = cls; if (text) e.textContent = text; return e; }
+
+  function prepare(body) {
+    Array.prototype.forEach.call(body.querySelectorAll('.tbl td, .tbl th'), function (c) {
+      if (!c.querySelector('div')) c.appendChild(mk('div', 'ln'));       // blank cells get a line you can type in
+    });
+    Array.prototype.forEach.call(body.querySelectorAll(EDIT), function (el) {
+      el.setAttribute('contenteditable', 'true'); el.setAttribute('role', 'textbox'); el.setAttribute('spellcheck', 'true');
+    });
+    Array.prototype.forEach.call(body.querySelectorAll('.n, .qn, .ol'), function (el) { el.setAttribute('contenteditable', 'false'); });
+  }
+
+  function begin(o) {
+    var body = o.body, toast = o.toast || function () {};
+    body.classList.add('editing');
+    try { document.execCommand('styleWithCSS', false, false); } catch (e) { /* ignore */ }
+    prepare(body);
+    var base = serialize(body), undo = [body.innerHTML], redo = [], last = null, savedRange = null, snapTimer = 0, draftTimer = 0, discardTimer = 0, askDiscard = false;
+
+    var bar = mk('div', 'edit-bar'); bar.setAttribute('role', 'toolbar'); bar.setAttribute('aria-label', 'Editing tools');
+    var top = mk('div', 'eb-top'), cancel = mk('button', 'tool', 'Cancel'), save = mk('button', 'tool tool-main', 'Save changes'), title = mk('span', 'eb-title', 'Editing');
+    cancel.type = save.type = 'button'; cancel.setAttribute('data-act', 'cancel'); save.setAttribute('data-act', 'save');
+    top.append(cancel, title, save);
+    var tools = mk('div', 'eb-tools');
+    var defs = [['undo', '↶ Undo'], ['redo', '↷ Redo'], ['|'], ['bold', 'B'], ['italic', 'I'], ['|'], ['addline', '+ Line'], ['delline', '− Line'], ['|'], ['addrow', '+ Row'], ['delrow', '− Row'], ['|'], ['raw', 'Text mode']];
+    var btn = {};
+    defs.forEach(function (d) {
+      if (d[0] === '|') { tools.appendChild(mk('span', 'eb-sep')); return; }
+      var b = mk('button', 'eb-btn' + (d[0] === 'bold' ? ' is-b' : d[0] === 'italic' ? ' is-i' : ''), d[1]);
+      b.type = 'button'; b.setAttribute('data-act', d[0]);
+      if (d[0] === 'undo') b.title = 'Undo'; if (d[0] === 'addline') b.title = 'Add a line below the one you are on'; if (d[0] === 'delline') b.title = 'Remove the line you are on';
+      if (d[0] === 'addrow') b.title = 'Add a table row below this one'; if (d[0] === 'delrow') b.title = 'Remove this table row';
+      btn[d[0]] = b; tools.appendChild(b);
+    });
+    var hint = mk('p', 'eb-hint', 'Tap any text to change it. Press Enter for a new line.');
+    bar.append(top, tools, hint);
+    ['pointerdown', 'mousedown'].forEach(function (ev) { bar.addEventListener(ev, function (e) { if (e.target.closest('button')) e.preventDefault(); }); });   // keep the cursor where it was
+
+    function block(el) { return el && el.closest ? el.closest(EDIT) : null; }
+    function state() {
+      var row = last && last.closest('tr'), body1 = row && !row.closest('thead') && !row.classList.contains('lt') && !row.classList.contains('ph');
+      btn.undo.disabled = undo.length < 2; btn.redo.disabled = !redo.length;
+      btn.addrow.disabled = !body1; btn.delrow.disabled = !body1 || row.parentNode.rows.length < 2;
+      btn.addline.disabled = !last || last.matches('.qt, .ot'); btn.delline.disabled = !last || last.matches('.qt, .ot');
+      btn.bold.disabled = btn.italic.disabled = !last;
+    }
+    function snap(force) {
+      var h = body.innerHTML;
+      if (h === undo[undo.length - 1]) return;
+      undo.push(h); if (undo.length > 60) undo.shift(); redo = [];
+      clearTimeout(draftTimer); draftTimer = setTimeout(function () { if (o.onDraft) o.onDraft(serialize(body)); }, 900);
+      state();
+    }
+    function later() { clearTimeout(snapTimer); snapTimer = setTimeout(snap, 600); }
+    function restore(h) { body.innerHTML = h; prepare(body); last = null; state(); }
+    function doUndo() { snap(); if (undo.length < 2) return; redo.push(undo.pop()); restore(undo[undo.length - 1]); }
+    function doRedo() { if (!redo.length) return; var h = redo.pop(); undo.push(h); restore(h); }
+    function caretIn(el, atEnd) {
+      el.focus();
+      var r = document.createRange(); r.selectNodeContents(el); r.collapse(!atEnd !== false ? false : true);
+      var s = window.getSelection(); s.removeAllRanges(); s.addRange(r);
+      try { el.scrollIntoView({ block: 'center', behavior: 'smooth' }); } catch (e) { /* ignore */ }
+    }
+    function fresh(like) {
+      var tag = like.matches('li') ? 'li' : like.matches('.li') ? 'div' : like.matches('.ln') ? 'div' : 'p';
+      var e = mk(tag, like.matches('.li') ? 'li' : like.matches('.ln') ? 'ln' : '');
+      e.setAttribute('contenteditable', 'true'); e.setAttribute('role', 'textbox'); e.setAttribute('spellcheck', 'true');
+      return e;
+    }
+    function addLine(b) {
+      b = b || last; if (!b || b.matches('.qt, .ot')) return;
+      var n = fresh(b); b.after(n); snap(); caretIn(n, true); last = n; state();
+    }
+    function delLine(b, back) {
+      b = b || last; if (!b || b.matches('.qt, .ot')) return;
+      var sibs = Array.prototype.filter.call(b.parentNode.children, function (x) { return x.matches(EDIT); });
+      if (sibs.length < 2 && b.closest('td, th, li, ul, ol') && !b.matches('p, h2, h3, h4')) { b.textContent = ''; snap(); caretIn(b, true); return; }
+      var next = b.previousElementSibling && b.previousElementSibling.matches(EDIT) ? b.previousElementSibling : b.nextElementSibling && b.nextElementSibling.matches(EDIT) ? b.nextElementSibling : null;
+      var list = b.parentNode.matches('ul, ol') && sibs.length < 2 ? b.parentNode : null;
+      (list || b).remove(); last = null; snap();
+      if (next) { caretIn(next, true); last = next; } state();
+    }
+    function addRow() {
+      var tr = last && last.closest('tr'); if (!tr) return;
+      var c = tr.cloneNode(true);
+      Array.prototype.forEach.call(c.cells, function (cell) { cell.innerHTML = ''; });
+      prepare(c); tr.after(c); snap();
+      var first = c.querySelector(EDIT); if (first) { caretIn(first, true); last = first; } state();
+    }
+    function delRow() {
+      var tr = last && last.closest('tr'); if (!tr || tr.parentNode.rows.length < 2) return;
+      var nx = tr.nextElementSibling || tr.previousElementSibling; tr.remove(); last = null; snap();
+      var f = nx && nx.querySelector(EDIT); if (f) { caretIn(f, true); last = f; }
+      state(); toast('Row removed. Tap Undo to bring it back.');
+    }
+    function fmt(cmd) {
+      if (savedRange) { var s = window.getSelection(); s.removeAllRanges(); s.addRange(savedRange); }
+      if (last) last.focus();
+      document.execCommand(cmd); snap();
+    }
+    function dirty() { return serialize(body) !== base; }
+    function close() {
+      clearTimeout(snapTimer); clearTimeout(draftTimer); clearTimeout(discardTimer);
+      document.removeEventListener('selectionchange', onSel);
+      body.removeEventListener('focusin', onFocus); body.removeEventListener('input', later);
+      body.removeEventListener('keydown', onKey); body.removeEventListener('paste', onPaste); body.removeEventListener('beforeinput', onBefore);
+      body.classList.remove('editing'); bar.remove();
+    }
+
+    function onFocus(e) { var b = block(e.target); if (b) { last = b; state(); } }
+    function onSel() {
+      var s = window.getSelection();
+      if (s.rangeCount && body.contains(s.anchorNode)) { savedRange = s.getRangeAt(0).cloneRange(); var b = block(s.anchorNode.nodeType === 1 ? s.anchorNode : s.anchorNode.parentNode); if (b && b !== last) { last = b; state(); } }
+    }
+    function onKey(e) {
+      var b = block(e.target), mod = e.ctrlKey || e.metaKey;
+      if (mod && (e.key === 'z' || e.key === 'Z')) { e.preventDefault(); e.shiftKey ? doRedo() : doUndo(); return; }
+      if (mod && (e.key === 'y' || e.key === 'Y')) { e.preventDefault(); doRedo(); return; }
+      if (!b) return;
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        if (b.matches('.qt, .ot')) { var all = Array.prototype.slice.call(body.querySelectorAll('.qt, .ot')), nx = all[all.indexOf(b) + 1]; if (nx) caretIn(nx, false); return; }
+        addLine(b);
+      } else if (e.key === 'Backspace' && !tidy(b.textContent) && !b.matches('.qt, .ot')) {
+        var sibs = Array.prototype.filter.call(b.parentNode.children, function (x) { return x.matches(EDIT); });
+        if (sibs.length > 1) { e.preventDefault(); delLine(b, true); }
+      } else if (e.key === 'Escape') b.blur();
+    }
+    function onBefore(e) {
+      if (e.inputType === 'historyUndo') { e.preventDefault(); doUndo(); }
+      else if (e.inputType === 'historyRedo') { e.preventDefault(); doRedo(); }
+      else if (e.inputType === 'insertParagraph' || e.inputType === 'insertLineBreak') e.preventDefault();
+    }
+    function onPaste(e) {
+      e.preventDefault();
+      var t = ((e.clipboardData || window.clipboardData).getData('text/plain') || '').replace(/\s*\n\s*/g, ' ');
+      document.execCommand('insertText', false, t);
+    }
+    document.addEventListener('selectionchange', onSel);
+    body.addEventListener('focusin', onFocus); body.addEventListener('input', later);
+    body.addEventListener('keydown', onKey); body.addEventListener('paste', onPaste); body.addEventListener('beforeinput', onBefore);
+
+    tools.addEventListener('click', function (e) {
+      var b = e.target.closest('button'); if (!b || b.disabled) return;
+      var a = b.getAttribute('data-act');
+      if (a === 'undo') doUndo(); else if (a === 'redo') doRedo();
+      else if (a === 'bold') fmt('bold'); else if (a === 'italic') fmt('italic');
+      else if (a === 'addline') addLine(); else if (a === 'delline') delLine();
+      else if (a === 'addrow') addRow(); else if (a === 'delrow') delRow();
+      else if (a === 'raw') { var md = serialize(body); close(); if (o.onRaw) o.onRaw(md); }
+    });
+    save.addEventListener('click', function () {
+      snap(); var md = serialize(body);
+      if (!md.trim()) { toast('The plan cannot be empty.'); return; }
+      close(); if (o.onSave) o.onSave(md);
+    });
+    cancel.addEventListener('click', function () {
+      if (dirty() && !askDiscard) {
+        askDiscard = true; cancel.textContent = 'Discard changes?'; cancel.classList.add('is-danger');
+        discardTimer = setTimeout(function () { askDiscard = false; cancel.textContent = 'Cancel'; cancel.classList.remove('is-danger'); }, 4000);
+        return;
+      }
+      close(); if (o.onCancel) o.onCancel();
+    });
+    state();
+    return { bar: bar, serialize: function () { return serialize(body); }, dirty: dirty, cancel: function () { cancel.click(); }, close: close };
+  }
+
+  root.PadiEditor = { begin: begin, serialize: serialize };
+  if (typeof module !== 'undefined' && module.exports) module.exports = root.PadiEditor;
+})(typeof window !== 'undefined' ? window : globalThis);
+
+</script>
+<script>
+/* GuidEd · GES lesson planner · app.js
    Vanilla JS, no dependencies, no build step.
    Talks to /api/config, /api/generate (streaming) and /api/export-docx. */
 (() => {
@@ -1811,11 +2411,13 @@ html { overscroll-behavior-y: none; }
     if (joined) cls.push('joined');
     let html = '<div class="tbl-wrap"><table class="' + cls.join(' ') + '">';
     if (joined) {
+      let inLesson = false;
       html += '<tbody>' + rows.slice(1).map((r) => {
         const only = r[0] && cols > 1 && r.slice(1).every((c) => !c);
         if (only) return '<tr class="' + (/^\**\s*lesson\s*(\d|one|two)\b/i.test(r[0]) ? 'lt' : 'sp') + '"><td colspan="' + cols + '">' + cellHtml(r[0]) + '</td></tr>';
-        if (isPhaseRow(r)) return '<tr class="ph">' + pad(r).map((c) => '<th>' + cellHtml(c) + '</th>').join('') + '</tr>';
-        return '<tr>' + pad(r).map((c) => '<td>' + cellHtml(c) + '</td>').join('') + '</tr>';
+        if (isPhaseRow(r)) { inLesson = true; return '<tr class="ph">' + pad(r).map((c) => '<th>' + cellHtml(c) + '</th>').join('') + '</tr>'; }
+        const names = ['', 'Learning activities', 'Resources'];
+        return '<tr' + (inLesson ? ' class="phase"' : '') + '>' + pad(r).map((c, ci) => '<td' + (inLesson && names[ci] ? ' data-l="' + names[ci] + '"' : '') + '>' + cellHtml(c) + '</td>').join('') + '</tr>';
       }).join('') + '</tbody></table></div>';
       return html;
     }
@@ -1859,8 +2461,8 @@ html { overscroll-behavior-y: none; }
           flushP(); flushL();
           const opts = [];
           while (i + 1 < lines.length && opt.test(lines[i + 1])) { i++; opts.push(lines[i].trim().match(/^([A-Da-d])[.)]\s+(.*)$/)); }
-          html += '<div class="mcq"><p class="q"><span class="qn">' + m[1] + '.</span> ' + inline(m[2]) + '</p><div class="opts">'
-            + opts.map((o) => '<div class="opt"><span class="ol">' + o[1].toUpperCase() + '.</span><span>' + inline(o[2]) + '</span></div>').join('') + '</div></div>';
+          html += '<div class="mcq"><p class="q"><span class="qn">' + m[1] + '.</span> <span class="qt">' + inline(m[2]) + '</span></p><div class="opts">'
+            + opts.map((o) => '<div class="opt"><span class="ol">' + o[1].toUpperCase() + '.</span><span class="ot">' + inline(o[2]) + '</span></div>').join('') + '</div></div>';
           continue;
         }
         flushP(); if (!list || list.t !== 'ol') { flushL(); list = { t: 'ol', start: Number(m[1]), items: [] }; } list.items.push(m[2]); continue;
@@ -1905,11 +2507,12 @@ html { overscroll-behavior-y: none; }
 
   const store = {
     load() { try { return JSON.parse(localStorage.getItem(KEY)); } catch (e) { return null; } },
-    save() {
+    save(quiet) {
       const keep = state.sessions.filter((s) => s.messages.length).sort((a, b) => b.updatedAt - a.updatedAt).slice(0, MAX_SESSIONS);
       for (let n = keep.length; n >= 0; n--) {
         try {
           localStorage.setItem(KEY, JSON.stringify({ sessions: keep.slice(0, n), params: state.params }));
+          if (!quiet && typeof scheduleSync === 'function') scheduleSync();
           return;
         } catch (e) { /* quota: drop the oldest and retry */ }
       }
@@ -1934,7 +2537,8 @@ html { overscroll-behavior-y: none; }
   /* Teacher details: saved once on this device, printed under the title of every Word file. */
   const profile = () => { try { return JSON.parse(localStorage.getItem(PROFILE_KEY)) || {}; } catch (e) { return {}; } };
   function saveProfile() {
-    try { localStorage.setItem(PROFILE_KEY, JSON.stringify({ teacher: teacherInput.value.trim(), school: schoolInput.value.trim() })); } catch (e) { /* storage blocked */ }
+    try { localStorage.setItem(PROFILE_KEY, JSON.stringify({ teacher: teacherInput.value.trim(), school: schoolInput.value.trim(), updatedAt: Date.now() })); } catch (e) { /* storage blocked */ }
+    if (typeof scheduleSync === 'function') scheduleSync();
   }
   [teacherInput, schoolInput].forEach((el) => el.addEventListener('input', saveProfile));
   { const p = profile(); teacherInput.value = p.teacher || ''; schoolInput.value = p.school || ''; }
@@ -1989,7 +2593,7 @@ html { overscroll-behavior-y: none; }
     const s = current();
     if (!s) return;
     topTitle.textContent = s.messages.length ? s.title : 'New plan';
-    document.title = (s.messages.length ? s.title + ' · ' : '') + 'Padi-T';
+    document.title = (s.messages.length ? s.title + ' · ' : '') + 'GuidEd';
     let st = statusOf(s);
     if (st !== 'running' && state.config.demo) st = 'demo';
     statusDot.className = 'dot dot-' + (st === 'demo' ? 'idle' : st);
@@ -2025,7 +2629,7 @@ html { overscroll-behavior-y: none; }
       }
     });
     state.bots.forEach((b, i) => { if (i < state.bots.length - 1) b.demote(); });
-    if (s.params) { state.params = Object.assign({ size: '31–45', light: false, hook: true }, s.params); syncPills(); }
+    if (s.params) { state.params = Object.assign({ size: '31–45', light: false, hook: true, studyNotes: true, bece: true }, s.params); syncPills(); }
     updateView(); updateTopbar(); renderSessions(); updateSend(); scrollBottom(true);
   }
 
@@ -2050,6 +2654,7 @@ html { overscroll-behavior-y: none; }
     const wasCurrent = id === state.currentId;
     if (wasCurrent) stopStreaming();
     state.sessions = state.sessions.filter((s) => s.id !== id);
+    { const t = tomb(); t[id] = Date.now(); saveTomb(t); }
     store.save();
     if (wasCurrent) { const s = makeSession(); state.sessions.unshift(s); showSession(s.id); }
     else renderSessions();
@@ -2064,7 +2669,9 @@ html { overscroll-behavior-y: none; }
           h('div', { class: 'req-tags' },
             h('span', { class: 'tag', text: p.subject }), h('span', { class: 'tag', text: p.cls }), h('span', { class: 'tag', text: 'Week ' + p.week }),
             p.size ? h('span', { class: 'tag', text: p.size + ' learners' }) : null,
-            p.light ? h('span', { class: 'tag', text: 'Low-resource' }) : null),
+            p.light ? h('span', { class: 'tag', text: 'Low-resource' }) : null,
+            p.studyNotes === false ? h('span', { class: 'tag', text: 'No study notes' }) : null,
+            p.bece === false ? h('span', { class: 'tag', text: 'No BECE questions' }) : null),
           m.content ? h('div', { class: 'req-notes', text: m.content }) : null));
     }
     return h('div', { class: 'msg user' }, h('div', { class: 'bubble', text: m.content }));
@@ -2116,39 +2723,66 @@ html { overscroll-behavior-y: none; }
         mk('bece', '10 more BECE questions', 'cap'));
     }
 
+    let editor = null;
+    const DRAFT = 'schoolpadi.draft';
+    const draftKey = () => (api.msg && api.msg.id) || session.id || baseTitle;
+    function readDrafts() { try { return JSON.parse(localStorage.getItem(DRAFT) || '{}'); } catch (e) { return {}; } }
+    function writeDraft(md) { try { const d = readDrafts(); if (md === null) delete d[draftKey()]; else d[draftKey()] = md; localStorage.setItem(DRAFT, JSON.stringify(d)); } catch (e) { /* storage unavailable */ } }
+
     function closeEdit() {
       if (editBox) { editBox.remove(); editBox = null; ta = null; }
+      editor = null;
       bodyEl.hidden = false;
       if (autoCollapsed) setComposer(false, true);
       $('span', btnEdit).textContent = 'Edit';
     }
 
-    function startEdit() {
+    function commit(text) {
+      const tail = (api.text.match(/<ElicitationsGroup>[\s\S]*$/i) || [''])[0];
+      const raw = text.trim() + (tail ? '\n\n' + tail : '');
+      if (api.msg) { api.msg.content = raw; api.msg.edited = true; api.msg.demo = false; }
+      writeDraft(null);
+      closeEdit();
+      api.set(raw, true, api.msg);
+      store.save();
+      toast('Changes saved. Word export now uses your version.');
+    }
+
+    function startRawEdit(initial) {
       if (state.streaming || editBox) return;
       ta = h('textarea', { class: 'doc-edit', spellcheck: 'false', 'aria-label': 'Edit plan text' });
-      ta.value = splitElic(api.text).body;
+      ta.value = (initial != null ? initial : splitElic(api.text).body).trim();
       const save = h('button', { type: 'button', class: 'tool tool-main', 'data-act': 'save' }, icon('check'), h('span', { text: 'Save changes' }));
       const cancel = h('button', { type: 'button', class: 'tool', 'data-act': 'cancel' }, icon('x'), h('span', { text: 'Cancel' }));
-      save.addEventListener('click', () => {
-        const text = ta.value.trim();
-        if (!text) { toast('The plan cannot be empty.'); return; }
-        const tail = (api.text.match(/<ElicitationsGroup>[\s\S]*$/i) || [''])[0];
-        const raw = text + (tail ? '\n\n' + tail : '');
-        if (api.msg) { api.msg.content = raw; api.msg.edited = true; api.msg.demo = false; }
-        closeEdit();
-        api.set(raw, true, api.msg);
-        store.save();
-        toast('Changes saved. Word export now uses your version.');
-      });
-      cancel.addEventListener('click', closeEdit);
+      save.addEventListener('click', () => { if (!ta.value.trim()) { toast('The plan cannot be empty.'); return; } commit(ta.value); });
+      cancel.addEventListener('click', () => { closeEdit(); api.set(api.text, true, api.msg); });
       editBox = h('div', { class: 'edit-box' },
-        h('p', { class: 'edit-hint', text: 'Edit the plan as text. In a table, separate cells with | and start a new line inside a cell with <br>.' }),
+        h('p', { class: 'edit-hint', text: 'Text mode. In a table, separate cells with | and start a new line inside a cell with <br>.' }),
         ta, h('div', { class: 'edit-actions' }, save, cancel));
       bodyEl.hidden = true;
       if (!zone.classList.contains('is-collapsed')) setComposer(true, true);
       bodyEl.after(editBox);
       $('span', btnEdit).textContent = 'Editing';
       ta.focus();
+    }
+
+    function startEdit() {
+      if (state.streaming || editor || editBox) return;
+      if (!window.PadiEditor) { startRawEdit(); return; }
+      if (!zone.classList.contains('is-collapsed')) setComposer(true, true);
+      const draft = readDrafts()[draftKey()];
+      if (draft) { bodyEl.innerHTML = renderMd(draft); toast('Restored your unsaved edits.'); }
+      editor = window.PadiEditor.begin({
+        body: bodyEl, toast,
+        onDraft: writeDraft,
+        onSave: (md) => commit(md),
+        onCancel: () => { writeDraft(null); closeEdit(); api.set(api.text, true, api.msg); },
+        onRaw: (md) => { editor = null; startRawEdit(md); },
+      });
+      bodyEl.parentNode.insertBefore(editor.bar, bodyEl);
+      $('span', btnEdit).textContent = 'Editing';
+      const first = bodyEl.querySelector('p:not(.q), td .ln, h2');
+      if (first && window.matchMedia('(hover: hover)').matches) first.focus();
     }
 
     const api = {
@@ -2185,7 +2819,11 @@ html { overscroll-behavior-y: none; }
       if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(t).then(done, () => toast('Copy was blocked by the browser'));
       else toast('Copy is not available in this browser');
     });
-    btnEdit.addEventListener('click', () => (editBox ? closeEdit() : startEdit()));
+    btnEdit.addEventListener('click', () => {
+      if (editor) editor.cancel();
+      else if (editBox) { closeEdit(); api.set(api.text, true, api.msg); }
+      else startEdit();
+    });
     btnReuse.addEventListener('click', () => reuseSession());
     btnRegen.addEventListener('click', () => regenerate());
     btnDocx.addEventListener('click', () => exportDocx(api.text, api.title, btnDocx, kind));
@@ -2219,6 +2857,24 @@ html { overscroll-behavior-y: none; }
 
   /* ───────── Export ───────── */
   const hintProfile = () => { const p = profile(); return p.teacher || p.school ? '' : '. Tip: add your name and school in the menu to print them on every file.'; };
+  let docxLoading = null;
+  function loadDocxLib() {
+    if (window.docx && window.SchoolPadiDocx) return Promise.resolve();
+    if (!docxLoading) docxLoading = new Promise((ok, no) => {
+      const s = document.createElement('script');
+      s.src = 'vendor/docx.iife.js';
+      s.onload = () => (window.docx && window.SchoolPadiDocx ? ok() : no(new Error('docx missing')));
+      s.onerror = () => { docxLoading = null; no(new Error('docx failed to load')); };
+      document.head.append(s);
+    });
+    return docxLoading;
+  }
+  function saveBlob(blob, title) {
+    const url = URL.createObjectURL(blob);
+    const a = h('a', { href: url, download: title.replace(/[^A-Za-z0-9._-]+/g, '_').replace(/^_+|_+$/g, '') + '.docx' });
+    document.body.append(a); a.click(); a.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 4000);
+  }
   async function exportDocx(text, title, btn, kind) {
     const layout = kind === 'worksheet' || kind === 'homework' ? 'portrait' : 'landscape';
     const label = $('span', btn);
@@ -2230,6 +2886,15 @@ html { overscroll-behavior-y: none; }
         toast('Saved ' + name + hintProfile());
         return;
       }
+      // Build the Word file right here in the browser (no server round trip, works offline once loaded).
+      try {
+        await loadDocxLib();
+        const who = profile();
+        const blob = await window.SchoolPadiDocx.toFile(window.docx, title, splitElic(text).body, { portrait: layout === 'portrait', teacher: who.teacher, school: who.school });
+        saveBlob(blob, title);
+        toast('Downloaded ' + title + '.docx' + hintProfile());
+        return;
+      } catch (e) { /* fall back to the server below */ }
       const res = await fetch('/api/export-docx', {
         method: 'POST', headers: { 'content-type': 'application/json' },
         body: JSON.stringify({ title, layout, content: splitElic(text).body, teacher: profile().teacher || '', school: profile().school || '' }),
@@ -2239,11 +2904,7 @@ html { overscroll-behavior-y: none; }
         try { const j = await res.json(); if (j.message) msg = j.message; } catch (e) { /* not JSON */ }
         throw new Error(res.status === 404 ? 'Word export needs the deployed server. It is not available in this preview.' : msg);
       }
-      const blob = await res.blob();
-      const url = URL.createObjectURL(blob);
-      const a = h('a', { href: url, download: title.replace(/[^A-Za-z0-9._-]+/g, '_').replace(/^_+|_+$/g, '') + '.docx' });
-      document.body.append(a); a.click(); a.remove();
-      setTimeout(() => URL.revokeObjectURL(url), 4000);
+      saveBlob(await res.blob(), title);
       toast('Downloaded ' + title + '.docx' + hintProfile());
     } catch (e) {
       toast(e.message || 'Could not export.');
@@ -2260,10 +2921,12 @@ html { overscroll-behavior-y: none; }
   async function* apiStream(session, signal) {
     if (window.SchoolPadiArtifact) { yield* window.SchoolPadiArtifact.stream(session, signal); return; }
     const p = session.params;
+    const fresh = state.fresh === true; state.fresh = false;        // Regenerate asks for a new answer, not the saved one
+    const who = window.PadiSync && window.PadiSync.authHeader ? await window.PadiSync.authHeader() : {};
     const res = await fetch('/api/generate', {
       method: 'POST', signal,
-      headers: { 'content-type': 'application/json', 'x-access-code': state.access || '' },
-      body: JSON.stringify({ params: { subject: p.subject, cls: p.cls, week: p.week, hook: p.hook !== false, light: p.light === true, size: p.size || '', notes: session.messages[0].content || '' }, thread: threadOf(session) }),
+      headers: Object.assign({ 'content-type': 'application/json', 'x-access-code': state.access || '' }, who),
+      body: JSON.stringify({ params: { subject: p.subject, cls: p.cls, week: p.week, hook: p.hook !== false, light: p.light === true, studyNotes: p.studyNotes !== false, bece: p.bece !== false, size: p.size || '', notes: session.messages[0].content || '' }, thread: threadOf(session), fresh }),
     });
     if (!res.ok) {
       let j = {};
@@ -2374,6 +3037,7 @@ html { overscroll-behavior-y: none; }
     s.messages.pop();
     const last = state.bots.pop();
     if (last) last.root.remove();
+    state.fresh = true;
     runGenerate(s);
   }
 
@@ -2384,7 +3048,7 @@ html { overscroll-behavior-y: none; }
     const wk = text.match(/\bweek\s*(\d{1,2})\b/i);
     if (wk && /^(generate|create|plan|write)/i.test(text) && s && s.params) {
       const n = Math.min(Math.max(parseInt(wk[1], 10), 1), WEEKS.length);
-      state.params = { subject: s.params.subject, cls: s.params.cls, week: n, hook: s.params.hook !== false, size: s.params.size || state.params.size, light: s.params.light === true };
+      state.params = { subject: s.params.subject, cls: s.params.cls, week: n, hook: s.params.hook !== false, size: s.params.size || state.params.size, light: s.params.light === true, studyNotes: s.params.studyNotes !== false, bece: s.params.bece !== false };
       syncPills();
       const fresh = makeSession();
       state.sessions.unshift(fresh);
@@ -2582,6 +3246,14 @@ html { overscroll-behavior-y: none; }
     $('.dd-label', lightBtn).textContent = 'Resources: ' + (on ? 'Light' : 'Standard');
   }
   lightBtn.addEventListener('click', () => { state.params.light = state.params.light !== true; syncLight(); store.save(); });
+  const notesBtn = $('#notesToggle'), beceBtn = $('#beceToggle');
+  function syncContent() {
+    const n = state.params.studyNotes !== false, b = state.params.bece !== false;
+    notesBtn.setAttribute('aria-checked', String(n)); $('.dd-label', notesBtn).textContent = 'Study notes: ' + (n ? 'On' : 'Off');
+    beceBtn.setAttribute('aria-checked', String(b)); $('.dd-label', beceBtn).textContent = 'BECE questions: ' + (b ? 'On' : 'Off');
+  }
+  notesBtn.addEventListener('click', () => { state.params.studyNotes = state.params.studyNotes === false; syncContent(); store.save(); });
+  beceBtn.addEventListener('click', () => { state.params.bece = state.params.bece === false; syncContent(); store.save(); });
   /* The school's NaCCA scheme for the chosen subject, class and week (when one is loaded). */
   const schemeStrip = $('#schemeStrip');
   const schemeFor = (p) => (window.SchoolPadiSchemes ? window.SchoolPadiSchemes.lookup(p.subject, p.cls, p.week) : null);
@@ -2639,7 +3311,7 @@ html { overscroll-behavior-y: none; }
     const n = 1 + state.params.also.length;
     sendBtn.title = n > 1 ? 'Write ' + n + ' plans' : '';
   }
-  function syncPills() { dropdowns.forEach((d) => d.build()); syncHook(); syncLight(); syncScheme(); syncAlso(); }
+  function syncPills() { dropdowns.forEach((d) => d.build()); syncHook(); syncLight(); syncContent(); syncScheme(); syncAlso(); }
 
   /* ───────── Sidebar behaviour ───────── */
   const navOpen = () => (isMobile() ? app.classList.contains('nav-open') : !app.classList.contains('sb-collapsed'));
@@ -2719,6 +3391,7 @@ html { overscroll-behavior-y: none; }
       if (!res.ok) throw new Error('no api');
       const j = await res.json();
       state.config = { loaded: true, demo: !!j.demo, provider: j.provider || null, accessRequired: !!j.accessRequired };
+      initAccount(Object.assign({}, j.sync || {}, { enabled: !!(j.auth && j.auth.enabled), syncEnabled: !!j.sync, authUrl: j.auth && j.auth.url }));
     } catch (e) {
       state.config = { loaded: true, demo: true, provider: null, accessRequired: false };   // static preview, no server
     }
@@ -2726,11 +3399,381 @@ html { overscroll-behavior-y: none; }
     updateView(); updateTopbar();
   }
 
+
+  /* ───────── Accounts and sync ───────── */
+  /* Plans live on the device first. When a teacher signs in, they are also copied to that teacher's own
+     private rows (Neon) and merged across devices: the newest edit of each plan wins. */
+  const TOMB_KEY = 'schoolpadi.deleted';
+  const tomb = () => { try { return JSON.parse(localStorage.getItem(TOMB_KEY)) || {}; } catch (e) { return {}; } };
+  const saveTomb = (t) => { try { localStorage.setItem(TOMB_KEY, JSON.stringify(t)); } catch (e) { /* ignore */ } };
+  const acct = {
+    root: $('#accountRow'), out: $('#acctOut'), inn: $('#acctIn'), open: $('#acctOpen'), top: $('#acctTop'), manage: $('#acctManage'),
+    who: $('#acctWho'), avatar: $('#acctAvatar'), status: $('#acctStatus'), now: $('#acctSyncNow'), msg: $('#acctMsg'),
+  };
+  const sheet = {
+    dlg: $('#acctSheet'), form: $('#asForm'), acct: $('#asAccount'), panel: $('#asPanel'), close: $('#asClose'),
+    tabIn: $('#asTabIn'), tabUp: $('#asTabUp'), title: $('#asTitle'), sub: $('#asSub'),
+    email: $('#asEmail'), emailErr: $('#asEmailErr'), pw: $('#asPassword'), pwErr: $('#asPwErr'), pwHint: $('#asPwHint'), show: $('#asShow'),
+    banner: $('#asBanner'), bannerText: $('#asBannerText'), bannerAct: $('#asBannerAct'), help: $('#asHelp'), helpList: $('#asHelpList'),
+    submit: $('#asSubmit'), submitText: $('#asSubmitText'),
+    forgot: $('#asForgot'), tabs: $('#asTabs'), emailField: $('#asEmailField'), pwLabel: $('#asPwLabel'), pwField: $('#asPwField'), foot: $('#asFoot'),
+    badge: $('#asBadge'), acctTitle: $('#asAcctTitle'), who: $('#asWho'), result: $('#asResult'), view: $('#asView'), syncNow: $('#asSyncNow'), signOut: $('#asSignOut'),
+  };
+  const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  let resetToken = '', mode = 'signin', busy = false, problemKind = '', bannerRun = null;
+  const signedIn = () => !!(window.PadiSync && window.PadiSync.available() && window.PadiSync.user());
+  let syncing = false, syncAgain = false, syncTimer = 0, lastSync = 0;
+
+  const acctMsg = (t, bad) => { acct.msg.textContent = t || ''; acct.msg.classList.toggle('err', !!bad); };
+  const ago = (t) => { const s = Math.round((Date.now() - t) / 1000); return s < 20 ? 'just now' : s < 90 ? 'a minute ago' : s < 3600 ? Math.round(s / 60) + ' minutes ago' : Math.round(s / 3600) + ' hours ago'; };
+  function acctStatus(t) { acct.status.textContent = t; }
+  function refreshAcct() {
+    const P = window.PadiSync, ok = !!(P && P.authConfigured());      // no account screen at all if sign-in is not set up on this site
+    acct.root.hidden = !ok; acct.top.hidden = !ok;
+    if (!ok) return;
+    const u = P.user();
+    acct.out.hidden = !!u; acct.inn.hidden = !u;
+    acct.top.dataset.state = u ? (problemKind ? 'warn' : 'in') : 'out';
+    acct.top.setAttribute('aria-label', u ? 'Account: ' + (u.email || 'signed in') : 'Sign in or create account');
+    if (u) { acct.who.textContent = u.email || 'Signed in'; acct.avatar.textContent = String(u.email || 'G').charAt(0); if (lastSync) acctStatus('Synced ' + ago(lastSync)); }
+  }
+  function scheduleSync() { if (!signedIn() || !window.PadiSync.syncAvailable()) return; clearTimeout(syncTimer); syncTimer = setTimeout(() => syncNow(), 3000); }
+
+  const cleanRemote = (r) => {
+    const d = r && r.data;
+    if (!d || typeof d !== 'object' || !Array.isArray(d.messages) || !d.messages.length) return null;
+    return Object.assign({}, d, { id: String(r.id), updatedAt: Number(r.updated_at) || 0, title: typeof d.title === 'string' ? d.title : 'Plan', params: d.params && typeof d.params === 'object' ? d.params : null,
+      messages: d.messages.filter((m) => m && (m.role === 'user' || m.role === 'assistant') && typeof m.content === 'string') });
+  };
+
+  // The server refuses a plan with no usable time stamp, so make sure every plan sent has one.
+  const stamp = (n) => (Number.isFinite(n) && n > 0 ? n : Date.now());
+
+  // Returns what happened: { pulled, pushed, removed, remoteTotal, failed } when it ran, { error } when it failed,
+  // and null when it did not run (signed out, already syncing, or a plan is being written).
+  async function syncNow(manual) {
+    if (!signedIn() || !window.PadiSync.syncAvailable()) return null;
+    if (syncing) { syncAgain = true; return null; }
+    if (state.streaming) { scheduleSync(); return null; }            // never change plans while one is being written
+    syncing = true; acct.now.classList.add('spin'); acctStatus('Syncing…'); if (manual) acctMsg('');
+    try {
+      const P = window.PadiSync;
+      const remote = await P.list(60);
+      const t = tomb(), local = new Map(state.sessions.filter((s) => s.messages.length).map((s) => [s.id, s]));
+      const push = [], take = new Map(), drop = new Set(), seen = new Set();
+      for (const r of remote) {
+        seen.add(r.id);
+        const l = local.get(r.id), ts = Number(r.updated_at) || 0;
+        if (r.deleted) {
+          if (t[r.id] && t[r.id] <= ts) delete t[r.id];
+          if (l && l.updatedAt <= ts) drop.add(r.id); else if (l) push.push({ id: l.id, data: l, updated_at: l.updatedAt });
+        } else if (t[r.id]) {                                         // deleted on this device
+          if (t[r.id] >= ts) push.push({ id: r.id, data: {}, updated_at: t[r.id], deleted: true });
+          else { delete t[r.id]; const c = cleanRemote(r); if (c) take.set(r.id, c); }
+        } else if (!l) { const c = cleanRemote(r); if (c) take.set(r.id, c); }
+        else if (ts > l.updatedAt) { const c = cleanRemote(r); if (c) take.set(r.id, c); }
+        else if (l.updatedAt > ts) push.push({ id: l.id, data: l, updated_at: l.updatedAt });
+      }
+      local.forEach((l, id) => { if (!seen.has(id) && !t[id]) push.push({ id, data: l, updated_at: l.updatedAt }); });
+      Object.keys(t).forEach((id) => { if (!seen.has(id)) push.push({ id, data: {}, updated_at: t[id], deleted: true }); });
+      Object.keys(t).forEach((id) => { if (Date.now() - t[id] > 30 * 864e5) delete t[id]; });
+      push.forEach((r) => { r.updated_at = stamp(r.updated_at); });
+      const sent = await P.push(push);
+      saveTomb(t);
+      const summary = {
+        pulled: take.size, removed: drop.size, pushed: push.filter((r) => !r.deleted).length - (sent.failed || 0),
+        failed: sent.failed || 0, remoteTotal: remote.filter((r) => !r.deleted).length, localTotal: local.size,
+      };
+
+      // teacher details
+      try {
+        const rp = await P.getProfile(), lp = profile(), lts = lp.updatedAt || 0, empty = !lp.teacher && !lp.school;
+        if (rp && (empty || rp.updated_at > lts)) {
+          const d = rp.data || {};
+          teacherInput.value = String(d.teacher || '').slice(0, 80); schoolInput.value = String(d.school || '').slice(0, 100);
+          try { localStorage.setItem(PROFILE_KEY, JSON.stringify({ teacher: teacherInput.value, school: schoolInput.value, updatedAt: rp.updated_at })); } catch (e) { /* ignore */ }
+        } else if (!empty && (!rp || lts > rp.updated_at)) {
+          await P.setProfile({ teacher: lp.teacher || '', school: lp.school || '' }, lts || Date.now());
+        }
+      } catch (e) { if (e.offline) throw e; }
+
+      if ((take.size || drop.size) && !state.streaming) {
+        const keepCur = state.currentId;
+        let list = state.sessions.filter((s) => !drop.has(s.id)).map((s) => take.get(s.id) || s);
+        const have = new Set(list.map((s) => s.id));
+        take.forEach((c, id) => { if (!have.has(id)) list.push(c); });
+        state.sessions = list;
+        const cur = current();
+        if (!cur) { const f = makeSession(); state.sessions.unshift(f); showSession(f.id); }
+        else if (take.has(keepCur)) showSession(keepCur);
+        renderSessions(); updateTopbar(); store.save(true);
+      } else if (take.size || drop.size) syncAgain = true;
+      lastSync = Date.now();
+      problemKind = '';
+      acctStatus(summary.failed ? 'Synced. ' + summary.failed + (summary.failed === 1 ? ' plan' : ' plans') + ' could not be saved (too large).' : 'Synced just now');
+      refreshAcct();
+      return summary;
+    } catch (e) {
+      if (e.offline) acctStatus('Offline. Will sync when you are back online.');
+      else if (e.code === 'session' || e.status === 401 || !signedIn()) {
+        refreshAcct(); acctStatus('');
+        acctMsg('Your sign-in has ended on this device. Please sign in again.', true);
+        toast('Your sign-in has ended on this device. Please sign in again.');
+      } else acctStatus('Could not sync: ' + e.message);
+      return { error: e };
+    } finally {
+      syncing = false; acct.now.classList.remove('spin');
+      if (syncAgain) { syncAgain = false; scheduleSync(); }
+    }
+  }
+
+  let stopLive = null;
+  async function watchLive() {
+    if (stopLive) { stopLive(); stopLive = null; }
+    if (!signedIn() || !window.PadiSync.syncAvailable() || !window.PadiSync.watch) return;
+    try { stopLive = await window.PadiSync.watch(() => { if (!syncing && !state.streaming) syncNow(); }); }
+    catch (e) { /* polling remains available when Realtime is unavailable */ }
+  }
+  // The password reset email links back here with ?token=... (or ?error=... when the link is no good).
+  function openResetFromLink() {
+    let token = '', bad = false;
+    try {
+      const q = new URLSearchParams(location.search);
+      token = q.get('token') || ''; bad = !!q.get('error') && /token/i.test(q.get('error'));
+      if (token || q.get('error')) { q.delete('token'); q.delete('error'); history.replaceState(null, '', location.pathname + (q.toString() ? '?' + q : '') + location.hash); }
+    } catch (e) { return; }
+    if (!token && !bad) return;
+    if (!window.PadiSync.authConfigured()) return;
+    showFormView(); sheet.dlg.showModal ? (sheet.dlg.open || sheet.dlg.showModal()) : 0;
+    if (token) { resetToken = token; setMode('reset'); }
+    else { setMode('forgot'); showBanner('This reset link has expired or was already used. Enter your email to get a new one.'); }
+  }
+  function initAccount(cfg) {
+    if (!window.PadiSync || !cfg) return;
+    window.PadiSync.init(cfg).then(() => {
+      refreshAcct();
+      if (signedIn() && window.PadiSync.syncAvailable()) { syncNow(); watchLive(); }
+      openResetFromLink();
+    }).catch((e) => acctMsg(e.message, true));
+  }
+
+  /* ── Sign in / create account sheet ── */
+  const plural = (n, one, many) => n + ' ' + (n === 1 ? one : many);
+
+  // Steps that fit the browser in use, for when the browser blocks the sign-in cookie.
+  function browserSteps() {
+    const ua = navigator.userAgent || '';
+    const ios = /iPhone|iPad|iPod/.test(ua) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+    const steps = [];
+    if (ios) steps.push('iPhone or iPad: open Settings, then Safari (on newer versions: Settings, Apps, Safari), and turn off "Prevent Cross-Site Tracking". Then come back and sign in again.');
+    else if (/Firefox/.test(ua)) steps.push('Firefox: tap the shield in the address bar and turn off Enhanced Tracking Protection for this site. Then sign in again.');
+    else if (navigator.brave) steps.push('Brave: tap the lion icon and turn Shields off for this site. Then sign in again.');
+    else steps.push('Chrome or Edge: open Settings, then Privacy, then Third-party cookies, and allow them for this site. Then sign in again.');
+    steps.push('Do not use a private or Incognito window. They block this kind of sign-in.');
+    steps.push('Or open GuidEd in a different browser, where it may work without changing any setting.');
+    return steps;
+  }
+
+  function hideBanner() { sheet.banner.hidden = true; sheet.help.hidden = true; sheet.bannerAct.hidden = true; bannerRun = null; }
+  function showBanner(text, opts) {
+    opts = opts || {};
+    sheet.banner.classList.toggle('ok', !!opts.ok);
+    sheet.bannerText.textContent = text;
+    sheet.bannerAct.hidden = !opts.action;
+    if (opts.action) { sheet.bannerAct.textContent = opts.action.label; bannerRun = opts.action.run; }
+    sheet.help.hidden = !opts.help;
+    if (opts.help) { sheet.helpList.replaceChildren(...opts.help.map((t) => h('li', { text: t }))); sheet.help.open = true; }
+    sheet.banner.hidden = false;
+  }
+  function fieldError(input, errEl, text) {
+    input.setAttribute('aria-invalid', 'true'); errEl.textContent = text; errEl.hidden = false;
+    if (input === sheet.pw) sheet.pwHint.hidden = true;                  // the error already says what the hint would
+  }
+  function clearErrors() {
+    [[sheet.email, sheet.emailErr], [sheet.pw, sheet.pwErr]].forEach(([i, e]) => { i.removeAttribute('aria-invalid'); e.hidden = true; e.textContent = ''; });
+    sheet.pwHint.hidden = !(mode === 'signup' || mode === 'reset');
+    hideBanner();
+  }
+  function setBusy(on, text) {
+    busy = on; sheet.submit.disabled = on; sheet.submit.classList.toggle('busy', on);
+    sheet.submitText.textContent = on ? text : submitLabel();
+  }
+  const submitLabel = () => (mode === 'signup' ? 'Create account' : mode === 'forgot' ? 'Send reset link' : mode === 'reset' ? 'Set new password' : 'Sign in');
+  function setMode(m) {
+    mode = m; const up = m === 'signup', forgot = m === 'forgot', reset = m === 'reset', special = forgot || reset;
+    sheet.tabs.hidden = special; sheet.emailField.hidden = reset; sheet.forgot.hidden = reset || up;
+    sheet.pwField.hidden = forgot; sheet.foot.hidden = special;
+    sheet.forgot.textContent = forgot ? 'Back to sign in' : 'Forgot password?';
+    sheet.pwLabel.textContent = reset ? 'New password' : 'Password';
+    sheet.tabIn.setAttribute('aria-selected', String(!up)); sheet.tabUp.setAttribute('aria-selected', String(up));
+    sheet.tabIn.tabIndex = up ? -1 : 0; sheet.tabUp.tabIndex = up ? 0 : -1;
+    sheet.panel.setAttribute('aria-labelledby', up ? 'asTabUp' : 'asTabIn');
+    sheet.title.textContent = forgot ? 'Reset your password' : reset ? 'Choose a new password' : up ? 'Create your GuidEd account' : 'Sign in to GuidEd';
+    sheet.sub.textContent = forgot ? 'Enter your email and we will send you a link to set a new password.' : reset ? 'Pick a password you have not used here before.' : up ? 'Keep your plans safe and open them on any phone or computer.' : 'Your plans follow you to any phone or computer.';
+    sheet.pw.autocomplete = (up || reset) ? 'new-password' : 'current-password';
+    sheet.pw.placeholder = (up || reset) ? 'At least 8 characters' : 'Your password';
+    sheet.pwHint.hidden = !(up || reset);
+    sheet.submitText.textContent = submitLabel();
+    clearErrors();
+  }
+
+  function showFormView() { sheet.acct.hidden = true; sheet.form.hidden = false; }
+  function showAccountView(heading, resultText) {
+    const u = window.PadiSync.user();
+    sheet.form.hidden = true; sheet.acct.hidden = false;
+    sheet.acctTitle.textContent = heading || 'Your account';
+    sheet.who.textContent = u ? u.email : '';
+    sheet.badge.classList.remove('warn');
+    sheet.result.textContent = resultText != null ? resultText : (lastSync ? 'Last synced ' + ago(lastSync) + '.' : '');
+    sheet.view.hidden = !state.sessions.some((s) => s.messages.length);
+  }
+
+  // What to tell the teacher after a sync: how many plans arrived, how many were saved, and anything that went wrong.
+  function describeSync(r, signup) {
+    if (!window.PadiSync.syncAvailable()) return 'You are signed in. Saving plans to your account is not turned on for this site yet, so your plans stay on this device.';
+    if (!r) return 'Your plans will sync in a moment.';
+    if (r.error) return 'You are signed in, but your plans could not be synced: ' + r.error.message;
+    const parts = [];
+    if (signup) parts.push('Your account is ready.');
+    if (r.pulled) parts.push('Brought ' + plural(r.pulled, 'plan', 'plans') + ' from your account to this device.');
+    if (r.pushed) parts.push('Saved ' + plural(r.pushed, 'plan', 'plans') + ' from this device to your account.');
+    if (r.failed) parts.push(plural(r.failed, 'plan', 'plans') + ' could not be saved because ' + (r.failed === 1 ? 'it is' : 'they are') + ' too large.');
+    if (!r.pulled && !r.pushed && !r.failed) {
+      parts.push(r.remoteTotal ? 'Your ' + plural(r.remoteTotal, 'saved plan', 'saved plans') + (r.remoteTotal === 1 ? ' is' : ' are') + ' already on this device.'
+        : 'No plans are saved on this account yet. Plans you make will appear on your other devices.');
+    }
+    return parts.join(' ');
+  }
+
+  // Runs a sync and shows the outcome in the sheet. Waits for any sync already under way so the result is never lost.
+  async function syncAndReport(signup) {
+    sheet.result.textContent = 'Checking your plans…';
+    for (let i = 0; i < 40 && syncing; i++) await new Promise((r) => setTimeout(r, 250));
+    const r = await syncNow(true);
+    if (r && r.error && !signedIn()) {                                  // the session did not hold
+      showFormView(); setMode('signin');
+      showBanner('Your sign-in has ended. Please sign in again.');
+      return r;
+    }
+    if (sheet.dlg.open && !sheet.acct.hidden) {
+      sheet.result.textContent = describeSync(r, signup);
+      sheet.badge.classList.toggle('warn', !!(r && r.error));
+      sheet.view.hidden = !state.sessions.some((s) => s.messages.length);
+    }
+    return r;
+  }
+
+  function openSheet(m) {
+    const P = window.PadiSync;
+    if (!P || !P.authConfigured()) return;
+    if (isMobile()) setNav(false);
+    if (P.user()) showAccountView(); else { showFormView(); setMode(m || mode); }
+    if (!sheet.dlg.open) sheet.dlg.showModal();
+    if (!P.user() && !isMobile()) sheet.email.focus();                   // on a phone the keyboard would hide the form
+  }
+  const closeSheet = () => { if (sheet.dlg.open) sheet.dlg.close(); };
+
+  function handleAuthError(err) {
+    refreshAcct();
+    const code = err && err.code;
+    if (code === 'cookies') {
+      problemKind = 'cookies'; refreshAcct();
+      showBanner((err.created ? 'Your account was created. ' : '') + err.message, { help: browserSteps() });
+    } else if (code === 'exists') showBanner(err.message, { action: { label: 'Sign in instead', run: () => setMode('signin') } });
+    else if (code === 'badlogin') showBanner(err.message, { action: { label: 'New here? Create an account', run: () => setMode('signup') } });
+    else if (code === 'password') fieldError(sheet.pw, sheet.pwErr, err.message);
+    else if (code === 'email') fieldError(sheet.email, sheet.emailErr, err.message);
+    else showBanner((err && err.message) || 'Something went wrong. Please try again.');
+  }
+
+  acct.open.addEventListener('click', () => openSheet('signin'));
+  acct.top.addEventListener('click', () => openSheet('signin'));
+  acct.manage.addEventListener('click', () => openSheet());
+  acct.now.addEventListener('click', () => syncNow(true));
+  sheet.close.addEventListener('click', closeSheet);
+  sheet.dlg.addEventListener('click', (e) => {                           // a tap on the dimmed area outside the sheet closes it
+    const r = sheet.dlg.getBoundingClientRect();
+    if (e.clientX < r.left || e.clientX > r.right || e.clientY < r.top || e.clientY > r.bottom) closeSheet();
+  });
+  sheet.dlg.addEventListener('close', () => { sheet.pw.value = ''; sheet.pw.type = 'password'; sheet.show.textContent = 'Show'; sheet.show.setAttribute('aria-pressed', 'false'); setBusy(false); });
+  sheet.tabIn.addEventListener('click', () => setMode('signin'));
+  sheet.tabUp.addEventListener('click', () => setMode('signup'));
+  [sheet.tabIn, sheet.tabUp].forEach((tab) => tab.addEventListener('keydown', (e) => {
+    if (e.key !== 'ArrowLeft' && e.key !== 'ArrowRight') return;
+    e.preventDefault(); const next = mode === 'signin' ? sheet.tabUp : sheet.tabIn; setMode(mode === 'signin' ? 'signup' : 'signin'); next.focus();
+  }));
+  sheet.show.addEventListener('click', () => {
+    const on = sheet.pw.type === 'password';
+    sheet.pw.type = on ? 'text' : 'password'; sheet.show.textContent = on ? 'Hide' : 'Show';
+    sheet.show.setAttribute('aria-pressed', String(on)); sheet.show.setAttribute('aria-label', on ? 'Hide password' : 'Show password');
+  });
+  sheet.forgot.addEventListener('click', () => { const keep = sheet.email.value; setMode(mode === 'forgot' ? 'signin' : 'forgot'); sheet.email.value = keep; (mode === 'forgot' ? sheet.email : sheet.pw).focus(); });
+  sheet.bannerAct.addEventListener('click', () => { const run = bannerRun; if (run) { run(); (sheet.pw.value ? sheet.submit : sheet.pw).focus(); } });
+  [[sheet.email, sheet.emailErr], [sheet.pw, sheet.pwErr]].forEach(([i, e]) => i.addEventListener('input', () => { i.removeAttribute('aria-invalid'); e.hidden = true; if (i === sheet.pw) sheet.pwHint.hidden = !(mode === 'signup' || mode === 'reset'); if (!sheet.banner.hidden && !sheet.help.open) hideBanner(); }));
+
+  sheet.panel.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    if (busy) return;
+    const email = sheet.email.value.trim().toLowerCase(), password = sheet.pw.value, signup = mode === 'signup';
+    clearErrors();
+    if (mode === 'forgot') {
+      if (!EMAIL_RE.test(email)) { fieldError(sheet.email, sheet.emailErr, email ? 'That email address does not look right.' : 'Enter your email address.'); sheet.email.focus(); return; }
+      setBusy(true, 'Sending…');
+      try {
+        await window.PadiSync.requestReset(email); setBusy(false);
+        showBanner('If an account exists for ' + email + ', a reset link is on its way. Open it on this device, then choose a new password. Check your spam folder if it does not arrive.', { ok: true });
+      } catch (err) { setBusy(false); handleAuthError(err); }
+      return;
+    }
+    if (mode === 'reset') {
+      if (password.length < 8) { fieldError(sheet.pw, sheet.pwErr, password ? 'Use at least 8 characters.' : 'Choose a new password.'); sheet.pw.focus(); return; }
+      setBusy(true, 'Saving…');
+      try {
+        await window.PadiSync.resetPassword(resetToken, password); resetToken = ''; setBusy(false);
+        setMode('signin'); sheet.pw.value = ''; sheet.email.focus();
+        showBanner('Your password has been changed. Sign in with your new password.', { ok: true });
+      } catch (err) {
+        setBusy(false);
+        if (err && err.code === 'token') showBanner(err.message, { action: { label: 'Send me a new link', run: () => setMode('forgot') } });
+        else handleAuthError(err);
+      }
+      return;
+    }
+    let bad = null;
+    if (!EMAIL_RE.test(email)) { fieldError(sheet.email, sheet.emailErr, email ? 'That email address does not look right.' : 'Enter your email address.'); bad = sheet.email; }
+    if (!password) { fieldError(sheet.pw, sheet.pwErr, signup ? 'Choose a password.' : 'Enter your password.'); bad = bad || sheet.pw; }
+    else if (signup && password.length < 8) { fieldError(sheet.pw, sheet.pwErr, 'Use at least 8 characters.'); bad = bad || sheet.pw; }
+    if (bad) { bad.focus(); return; }
+    setBusy(true, signup ? 'Creating your account…' : 'Signing in…');
+    try {
+      if (signup) await window.PadiSync.signUp(email, password); else await window.PadiSync.signIn(email, password);
+      sheet.pw.value = ''; problemKind = ''; refreshAcct(); watchLive();
+      showAccountView(signup ? 'Account created' : 'Welcome back', 'Checking your plans…');
+      setBusy(false);
+      await syncAndReport(signup);
+    } catch (err) { setBusy(false); handleAuthError(err); }
+  });
+
+  sheet.view.addEventListener('click', () => { closeSheet(); setNav(true); if (isMobile()) newBtn.focus(); });
+  sheet.syncNow.addEventListener('click', async () => {
+    sheet.syncNow.disabled = true; sheet.result.textContent = 'Syncing…';
+    try { await syncAndReport(false); } finally { sheet.syncNow.disabled = false; }
+  });
+  sheet.signOut.addEventListener('click', async () => {
+    await window.PadiSync.signOut();
+    if (stopLive) { stopLive(); stopLive = null; }
+    lastSync = 0; problemKind = ''; acctStatus(''); refreshAcct(); acctMsg('');
+    closeSheet(); toast('Signed out. Your plans stay on this device.');
+  });
+  document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible') scheduleSync(); });
+  window.addEventListener('online', () => scheduleSync());
+  setInterval(() => { if (signedIn() && document.visibilityState === 'visible' && !syncing) { if (lastSync) acctStatus('Synced ' + ago(lastSync)); if (Date.now() - lastSync > 5 * 60000) syncNow(); } }, 30000);
+
   function init() {
     const saved = store.load();
     state.sessions = saved && Array.isArray(saved.sessions) ? saved.sessions.filter((s) => s && Array.isArray(s.messages)) : [];
     if (saved && saved.params && SUBJECTS.includes(saved.params.subject) && CLASSES.includes(saved.params.cls) && WEEKS.includes(saved.params.week)) {
-      state.params = { subject: saved.params.subject, cls: saved.params.cls, week: saved.params.week, hook: saved.params.hook !== false, size: SIZES.includes(saved.params.size) ? saved.params.size : state.params.size, light: saved.params.light === true };
+      state.params = { subject: saved.params.subject, cls: saved.params.cls, week: saved.params.week, hook: saved.params.hook !== false, size: SIZES.includes(saved.params.size) ? saved.params.size : state.params.size, light: saved.params.light === true, studyNotes: saved.params.studyNotes !== false, bece: saved.params.bece !== false };
     }
     try { state.access = localStorage.getItem(ACCESS_KEY) || ''; accessInput.value = state.access; } catch (e) { /* ignore */ }
 
@@ -2741,7 +3784,7 @@ html { overscroll-behavior-y: none; }
     makeDropdown($('#ddWeek'), { name: 'Week', items: WEEKS.map((x) => ({ id: x, label: 'Week ' + x })), get: () => state.params.week, set: (v) => { state.params.week = v; store.save(); syncScheme(); }, label: (x) => 'Week ' + x });
 
     makeDropdown($('#ddSize'), { name: 'Class size', items: SIZES.map((x) => ({ id: x, label: x + ' learners' })), get: () => state.params.size, set: (v) => { state.params.size = v; store.save(); }, label: (x) => x + ' learners' });
-    syncHook(); syncLight(); syncScheme(); syncAlso();
+    syncHook(); syncLight(); syncContent(); syncScheme(); syncAlso();
     syncNav();
     const s = makeSession();
     state.sessions.unshift(s);
@@ -2750,6 +3793,31 @@ html { overscroll-behavior-y: none; }
     loadConfig();
     setInterval(() => { renderSessions(); updateTopbar(); }, 30000);
   }
+
+  // Collapsible sections in the sidebar (Settings, Teacher details). The Settings choice is remembered on this device.
+  document.querySelectorAll('[data-disc]').forEach((btn) => {
+    const panel = document.getElementById(btn.dataset.disc);
+    if (!panel) return;
+    const key = 'schoolpadi.open.' + btn.dataset.disc;
+    const set = (open, save) => {
+      btn.setAttribute('aria-expanded', String(open)); panel.hidden = !open;
+      if (save) { try { localStorage.setItem(key, open ? '1' : '0'); } catch (e) { /* ignore */ } }
+    };
+    btn.addEventListener('click', () => set(panel.hidden, true));
+    try { if (localStorage.getItem(key) === '1') set(true, false); } catch (e) { /* ignore */ }
+  });
+
+  // Clears the app's cached files (not the saved plans) and reloads, so a stuck or outdated copy is replaced.
+  const clearBtn = $('#clearCacheBtn');
+  if (clearBtn) clearBtn.addEventListener('click', async () => {
+    clearBtn.disabled = true; clearBtn.querySelector('span').textContent = 'Clearing…';
+    try {
+      if ('serviceWorker' in navigator) { const regs = await navigator.serviceWorker.getRegistrations(); await Promise.all(regs.map((r) => r.unregister())); }
+      if (window.caches) { const keys = await caches.keys(); await Promise.all(keys.map((k) => caches.delete(k))); }
+    } catch (e) { /* reload anyway */ }
+    toast('Cache cleared. Reloading…');
+    setTimeout(() => location.reload(), 600);
+  });
 
   init();
 })();

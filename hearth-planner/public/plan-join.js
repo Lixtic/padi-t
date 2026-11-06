@@ -1,4 +1,4 @@
-/* Padi-T · plan-join.js
+/* GuidEd · plan-join.js
    Joins the Lesson Metadata table, the Lesson 1 table and the Lesson 2 table into ONE continuous table.
    The lesson title becomes a full-width row inside it. The Learning Objectives and Prerequisite knowledge
    lines move out of the table into the Study Notes section, so the table comes first.

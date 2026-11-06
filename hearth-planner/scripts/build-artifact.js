@@ -12,9 +12,9 @@ let html = read('public/index.html');
 let body = html.slice(html.indexOf('<body>') + 6, html.indexOf('</body>'));
 body = body.replace(/<script\b[^>]*>\s*<\/script>/g, '');
 body = body.replace(/<strong>Demo mode\.<\/strong>[\s\S]*?<\/div>/,
-  "<strong>Demo mode.</strong> Claude is not available in this view, so Padi-T shows a sample plan on a fixed topic.\n        </div>");
+  "<strong>Demo mode.</strong> Claude is not available in this view, so GuidEd shows a sample plan on a fixed topic.\n        </div>");
 
-const demoHint = 'Ask the site owner to add an API key in the Vercel environment variables, and Padi-T will write this for you.';
+const demoHint = 'Ask the site owner to add an API key in the Vercel environment variables, and GuidEd will write this for you.';
 const sampleSrc = read('public/sample.js').split(demoHint).join('Claude is not available in this view.');
 
 // Theme tokens: light values on bare :root; dark values for the system setting and the explicit toggle.
@@ -28,7 +28,7 @@ const safe = (s) => s.replace(/<\/script/gi, '<\\/script');
 const adapter = read('public/artifact-adapter.js').replace("'__GES_PROMPT__'", () => JSON.stringify(prompt));
 
 const out = [
-  '<title>Padi-T Lesson Planner</title>',
+  '<title>GuidEd Lesson Planner</title>',
   '<style>', css, '</style>',
   body.trim(),
   '<script src="https://cdn.jsdelivr.net/npm/docx@8.5.0/build/index.umd.js"></script>',

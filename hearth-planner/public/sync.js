@@ -1,4 +1,4 @@
-/* Padi-T · sync.js
+/* GuidEd · sync.js
    Managed Neon Auth email/password sign-in and plan sync.
    Plans stay on the device first; signing in copies them to the teacher's own private rows. */
 (function () {
@@ -36,7 +36,7 @@
     var body = null;
     try { body = await res.json(); } catch (e) { /* empty or not JSON */ }
     if (!res.ok) {
-      console.warn('[Padi-T sync] ' + path + ' ->', res.status, body);
+      console.warn('[GuidEd sync] ' + path + ' ->', res.status, body);
       var err = new Error((body && body.message) || 'Something went wrong. Try again.');
       err.status = res.status;
       if (res.status === 401 && opts.auth) { session = null; store(); err.code = 'session'; }
@@ -53,7 +53,7 @@
     if (!status && /failed to fetch|networkerror|load failed|network request failed|fetch failed/i.test(msg)) return out('Cannot reach the sign-in service. Check your internet connection and try again.', 'network');
     if (/INVALID_TOKEN|invalid token|token.*(expired|invalid)|expired/i.test(code + ' ' + msg) && action === 'reset') return out('This reset link has expired or was already used. Ask for a new one.', 'token');
     if (/RESET_PASSWORD_DISABLED|not enabled|disabled/i.test(code + ' ' + msg) && action === 'reset') return out('Resetting a password by email is not turned on for this site yet.', 'other');
-    if (/invalid origin/i.test(msg)) return out('This website address is not approved for sign-in yet. If you run Padi-T, add ' + location.origin + ' as a trusted origin in Neon Auth.', 'origin');
+    if (/invalid origin/i.test(msg)) return out('This website address is not approved for sign-in yet. If you run GuidEd, add ' + location.origin + ' as a trusted origin in Neon Auth.', 'origin');
     if (code === 'INVALID_EMAIL_OR_PASSWORD' || /invalid email or password|invalid password|incorrect/i.test(msg) || (status === 401 && action === 'signin')) return out('That email and password do not match. Check them, or create an account if you are new.', 'badlogin', 'signup');
     if (/USER_ALREADY_EXISTS|already exists|already registered|already in use/i.test(code + ' ' + msg)) return out('An account with this email already exists. Sign in instead.', 'exists', 'signin');
     if (/PASSWORD_TOO_SHORT|too short/i.test(code + ' ' + msg)) return out('Use at least 8 characters for your password.', 'password');
@@ -69,9 +69,9 @@
   async function authCall(fn, action) {
     var result;
     try { result = await fn(); }
-    catch (e) { console.error('[Padi-T sign-in] request threw:', e); var x = explain(e, action); throw problem(x.text, x.kind, { hint: x.hint }); }
+    catch (e) { console.error('[GuidEd sign-in] request threw:', e); var x = explain(e, action); throw problem(x.text, x.kind, { hint: x.hint }); }
     if (!result) { var f = explain(null, action); throw problem(f.text, f.kind); }
-    if (result.error) { console.error('[Padi-T sign-in] error:', result.error); var y = explain(result.error, action); throw problem(y.text, y.kind, { hint: y.hint }); }
+    if (result.error) { console.error('[GuidEd sign-in] error:', result.error); var y = explain(result.error, action); throw problem(y.text, y.kind, { hint: y.hint }); }
     return result;
   }
 

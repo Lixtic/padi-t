@@ -1,4 +1,4 @@
-/* Padi-T · GES lesson planner · app.js
+/* GuidEd · GES lesson planner · app.js
    Vanilla JS, no dependencies, no build step.
    Talks to /api/config, /api/generate (streaming) and /api/export-docx. */
 (() => {
@@ -321,7 +321,7 @@
     const s = current();
     if (!s) return;
     topTitle.textContent = s.messages.length ? s.title : 'New plan';
-    document.title = (s.messages.length ? s.title + ' · ' : '') + 'Padi-T';
+    document.title = (s.messages.length ? s.title + ' · ' : '') + 'GuidEd';
     let st = statusOf(s);
     if (st !== 'running' && state.config.demo) st = 'demo';
     statusDot.className = 'dot dot-' + (st === 'demo' ? 'idle' : st);
@@ -1136,7 +1136,7 @@
   const saveTomb = (t) => { try { localStorage.setItem(TOMB_KEY, JSON.stringify(t)); } catch (e) { /* ignore */ } };
   const acct = {
     root: $('#accountRow'), out: $('#acctOut'), inn: $('#acctIn'), open: $('#acctOpen'), top: $('#acctTop'), manage: $('#acctManage'),
-    who: $('#acctWho'), status: $('#acctStatus'), now: $('#acctSyncNow'), msg: $('#acctMsg'),
+    who: $('#acctWho'), avatar: $('#acctAvatar'), status: $('#acctStatus'), now: $('#acctSyncNow'), msg: $('#acctMsg'),
   };
   const sheet = {
     dlg: $('#acctSheet'), form: $('#asForm'), acct: $('#asAccount'), panel: $('#asPanel'), close: $('#asClose'),
@@ -1163,7 +1163,7 @@
     acct.out.hidden = !!u; acct.inn.hidden = !u;
     acct.top.dataset.state = u ? (problemKind ? 'warn' : 'in') : 'out';
     acct.top.setAttribute('aria-label', u ? 'Account: ' + (u.email || 'signed in') : 'Sign in or create account');
-    if (u) { acct.who.textContent = u.email || 'Signed in'; if (lastSync) acctStatus('Synced ' + ago(lastSync)); }
+    if (u) { acct.who.textContent = u.email || 'Signed in'; acct.avatar.textContent = String(u.email || 'G').charAt(0); if (lastSync) acctStatus('Synced ' + ago(lastSync)); }
   }
   function scheduleSync() { if (!signedIn() || !window.PadiSync.syncAvailable()) return; clearTimeout(syncTimer); syncTimer = setTimeout(() => syncNow(), 3000); }
 
@@ -1183,7 +1183,7 @@
     if (!signedIn() || !window.PadiSync.syncAvailable()) return null;
     if (syncing) { syncAgain = true; return null; }
     if (state.streaming) { scheduleSync(); return null; }            // never change plans while one is being written
-    syncing = true; acctStatus('Syncing…'); if (manual) acctMsg('');
+    syncing = true; acct.now.classList.add('spin'); acctStatus('Syncing…'); if (manual) acctMsg('');
     try {
       const P = window.PadiSync;
       const remote = await P.list(60);
@@ -1250,7 +1250,7 @@
       } else acctStatus('Could not sync: ' + e.message);
       return { error: e };
     } finally {
-      syncing = false;
+      syncing = false; acct.now.classList.remove('spin');
       if (syncAgain) { syncAgain = false; scheduleSync(); }
     }
   }
@@ -1298,7 +1298,7 @@
     else if (navigator.brave) steps.push('Brave: tap the lion icon and turn Shields off for this site. Then sign in again.');
     else steps.push('Chrome or Edge: open Settings, then Privacy, then Third-party cookies, and allow them for this site. Then sign in again.');
     steps.push('Do not use a private or Incognito window. They block this kind of sign-in.');
-    steps.push('Or open Padi-T in a different browser, where it may work without changing any setting.');
+    steps.push('Or open GuidEd in a different browser, where it may work without changing any setting.');
     return steps;
   }
 
@@ -1336,7 +1336,7 @@
     sheet.tabIn.setAttribute('aria-selected', String(!up)); sheet.tabUp.setAttribute('aria-selected', String(up));
     sheet.tabIn.tabIndex = up ? -1 : 0; sheet.tabUp.tabIndex = up ? 0 : -1;
     sheet.panel.setAttribute('aria-labelledby', up ? 'asTabUp' : 'asTabIn');
-    sheet.title.textContent = forgot ? 'Reset your password' : reset ? 'Choose a new password' : up ? 'Create your Padi-T account' : 'Sign in to Padi-T';
+    sheet.title.textContent = forgot ? 'Reset your password' : reset ? 'Choose a new password' : up ? 'Create your GuidEd account' : 'Sign in to GuidEd';
     sheet.sub.textContent = forgot ? 'Enter your email and we will send you a link to set a new password.' : reset ? 'Pick a password you have not used here before.' : up ? 'Keep your plans safe and open them on any phone or computer.' : 'Your plans follow you to any phone or computer.';
     sheet.pw.autocomplete = (up || reset) ? 'new-password' : 'current-password';
     sheet.pw.placeholder = (up || reset) ? 'At least 8 characters' : 'Your password';
@@ -1521,6 +1521,19 @@
     loadConfig();
     setInterval(() => { renderSessions(); updateTopbar(); }, 30000);
   }
+
+  // Collapsible sections in the sidebar (Settings, Teacher details). The Settings choice is remembered on this device.
+  document.querySelectorAll('[data-disc]').forEach((btn) => {
+    const panel = document.getElementById(btn.dataset.disc);
+    if (!panel) return;
+    const key = 'schoolpadi.open.' + btn.dataset.disc;
+    const set = (open, save) => {
+      btn.setAttribute('aria-expanded', String(open)); panel.hidden = !open;
+      if (save) { try { localStorage.setItem(key, open ? '1' : '0'); } catch (e) { /* ignore */ } }
+    };
+    btn.addEventListener('click', () => set(panel.hidden, true));
+    try { if (localStorage.getItem(key) === '1') set(true, false); } catch (e) { /* ignore */ }
+  });
 
   // Clears the app's cached files (not the saved plans) and reloads, so a stuck or outdated copy is replaced.
   const clearBtn = $('#clearCacheBtn');

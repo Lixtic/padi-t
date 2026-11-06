@@ -1,4 +1,4 @@
-/* Padi-T · install support. Registers the service worker and shows an Install button
+/* GuidEd · install support. Registers the service worker and shows an Install button
    (Android/Chrome) or a short Add to Home Screen hint (iPhone/iPad). Not loaded in the artifact build. */
 (function () {
   'use strict';
