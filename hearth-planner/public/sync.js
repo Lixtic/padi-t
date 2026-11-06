@@ -51,6 +51,8 @@
     var status = e && e.status, code = String((e && (e.code || (e.body && e.body.code))) || ''), msg = String((e && (e.message || e.statusText)) || '');
     var out = function (text, kind, hint) { return { text: text, kind: kind, hint: hint || null }; };
     if (!status && /failed to fetch|networkerror|load failed|network request failed|fetch failed/i.test(msg)) return out('Cannot reach the sign-in service. Check your internet connection and try again.', 'network');
+    if (/INVALID_TOKEN|invalid token|token.*(expired|invalid)|expired/i.test(code + ' ' + msg) && action === 'reset') return out('This reset link has expired or was already used. Ask for a new one.', 'token');
+    if (/RESET_PASSWORD_DISABLED|not enabled|disabled/i.test(code + ' ' + msg) && action === 'reset') return out('Resetting a password by email is not turned on for this site yet.', 'other');
     if (/invalid origin/i.test(msg)) return out('This website address is not approved for sign-in yet. If you run Padi-T, add ' + location.origin + ' as a trusted origin in Neon Auth.', 'origin');
     if (code === 'INVALID_EMAIL_OR_PASSWORD' || /invalid email or password|invalid password|incorrect/i.test(msg) || (status === 401 && action === 'signin')) return out('That email and password do not match. Check them, or create an account if you are new.', 'badlogin', 'signup');
     if (/USER_ALREADY_EXISTS|already exists|already registered|already in use/i.test(code + ' ' + msg)) return out('An account with this email already exists. Sign in instead.', 'exists', 'signin');
@@ -124,6 +126,14 @@
       session = { user: result.data.user };
       await confirmSession();
       return session.user;
+    },
+    // Sends the password reset email. The link in it returns to this site with ?token=... (see app.js).
+    requestReset: async function (email) {
+      // Called straight off the client: it builds the request from the property path, so it must not be detached or wrapped in .call().
+      await authCall(function () { return authClient.requestPasswordReset({ email: email, redirectTo: location.origin + '/' }); }, 'reset');
+    },
+    resetPassword: async function (token, newPassword) {
+      await authCall(function () { return authClient.resetPassword({ newPassword: newPassword, token: token }); }, 'reset');
     },
     signOut: async function () { try { if (authClient) await authClient.signOut(); } catch (e) { /* signing out locally is enough */ } session = null; store(); },
     watch: async function (onChange) {

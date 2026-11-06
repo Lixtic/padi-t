@@ -1144,10 +1144,11 @@
     email: $('#asEmail'), emailErr: $('#asEmailErr'), pw: $('#asPassword'), pwErr: $('#asPwErr'), pwHint: $('#asPwHint'), show: $('#asShow'),
     banner: $('#asBanner'), bannerText: $('#asBannerText'), bannerAct: $('#asBannerAct'), help: $('#asHelp'), helpList: $('#asHelpList'),
     submit: $('#asSubmit'), submitText: $('#asSubmitText'),
+    forgot: $('#asForgot'), tabs: $('#asTabs'), emailField: $('#asEmailField'), pwLabel: $('#asPwLabel'), pwField: $('#asPwField'), foot: $('#asFoot'),
     badge: $('#asBadge'), acctTitle: $('#asAcctTitle'), who: $('#asWho'), result: $('#asResult'), view: $('#asView'), syncNow: $('#asSyncNow'), signOut: $('#asSignOut'),
   };
   const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  let mode = 'signin', busy = false, problemKind = '', bannerRun = null;
+  let resetToken = '', mode = 'signin', busy = false, problemKind = '', bannerRun = null;
   const signedIn = () => !!(window.PadiSync && window.PadiSync.available() && window.PadiSync.user());
   let syncing = false, syncAgain = false, syncTimer = 0, lastSync = 0;
 
@@ -1261,11 +1262,26 @@
     try { stopLive = await window.PadiSync.watch(() => { if (!syncing && !state.streaming) syncNow(); }); }
     catch (e) { /* polling remains available when Realtime is unavailable */ }
   }
+  // The password reset email links back here with ?token=... (or ?error=... when the link is no good).
+  function openResetFromLink() {
+    let token = '', bad = false;
+    try {
+      const q = new URLSearchParams(location.search);
+      token = q.get('token') || ''; bad = !!q.get('error') && /token/i.test(q.get('error'));
+      if (token || q.get('error')) { q.delete('token'); q.delete('error'); history.replaceState(null, '', location.pathname + (q.toString() ? '?' + q : '') + location.hash); }
+    } catch (e) { return; }
+    if (!token && !bad) return;
+    if (!window.PadiSync.authConfigured()) return;
+    showFormView(); sheet.dlg.showModal ? (sheet.dlg.open || sheet.dlg.showModal()) : 0;
+    if (token) { resetToken = token; setMode('reset'); }
+    else { setMode('forgot'); showBanner('This reset link has expired or was already used. Enter your email to get a new one.'); }
+  }
   function initAccount(cfg) {
     if (!window.PadiSync || !cfg) return;
     window.PadiSync.init(cfg).then(() => {
       refreshAcct();
       if (signedIn() && window.PadiSync.syncAvailable()) { syncNow(); watchLive(); }
+      openResetFromLink();
     }).catch((e) => acctMsg(e.message, true));
   }
 
@@ -1289,6 +1305,7 @@
   function hideBanner() { sheet.banner.hidden = true; sheet.help.hidden = true; sheet.bannerAct.hidden = true; bannerRun = null; }
   function showBanner(text, opts) {
     opts = opts || {};
+    sheet.banner.classList.toggle('ok', !!opts.ok);
     sheet.bannerText.textContent = text;
     sheet.bannerAct.hidden = !opts.action;
     if (opts.action) { sheet.bannerAct.textContent = opts.action.label; bannerRun = opts.action.run; }
@@ -1302,24 +1319,29 @@
   }
   function clearErrors() {
     [[sheet.email, sheet.emailErr], [sheet.pw, sheet.pwErr]].forEach(([i, e]) => { i.removeAttribute('aria-invalid'); e.hidden = true; e.textContent = ''; });
-    sheet.pwHint.hidden = mode !== 'signup';
+    sheet.pwHint.hidden = !(mode === 'signup' || mode === 'reset');
     hideBanner();
   }
   function setBusy(on, text) {
     busy = on; sheet.submit.disabled = on; sheet.submit.classList.toggle('busy', on);
-    sheet.submitText.textContent = on ? text : (mode === 'signup' ? 'Create account' : 'Sign in');
+    sheet.submitText.textContent = on ? text : submitLabel();
   }
+  const submitLabel = () => (mode === 'signup' ? 'Create account' : mode === 'forgot' ? 'Send reset link' : mode === 'reset' ? 'Set new password' : 'Sign in');
   function setMode(m) {
-    mode = m; const up = m === 'signup';
+    mode = m; const up = m === 'signup', forgot = m === 'forgot', reset = m === 'reset', special = forgot || reset;
+    sheet.tabs.hidden = special; sheet.emailField.hidden = reset; sheet.forgot.hidden = reset || up;
+    sheet.pwField.hidden = forgot; sheet.foot.hidden = special;
+    sheet.forgot.textContent = forgot ? 'Back to sign in' : 'Forgot password?';
+    sheet.pwLabel.textContent = reset ? 'New password' : 'Password';
     sheet.tabIn.setAttribute('aria-selected', String(!up)); sheet.tabUp.setAttribute('aria-selected', String(up));
     sheet.tabIn.tabIndex = up ? -1 : 0; sheet.tabUp.tabIndex = up ? 0 : -1;
     sheet.panel.setAttribute('aria-labelledby', up ? 'asTabUp' : 'asTabIn');
-    sheet.title.textContent = up ? 'Create your Padi-T account' : 'Sign in to Padi-T';
-    sheet.sub.textContent = up ? 'Keep your plans safe and open them on any phone or computer.' : 'Your plans follow you to any phone or computer.';
-    sheet.pw.autocomplete = up ? 'new-password' : 'current-password';
-    sheet.pw.placeholder = up ? 'At least 8 characters' : 'Your password';
-    sheet.pwHint.hidden = !up;
-    sheet.submitText.textContent = up ? 'Create account' : 'Sign in';
+    sheet.title.textContent = forgot ? 'Reset your password' : reset ? 'Choose a new password' : up ? 'Create your Padi-T account' : 'Sign in to Padi-T';
+    sheet.sub.textContent = forgot ? 'Enter your email and we will send you a link to set a new password.' : reset ? 'Pick a password you have not used here before.' : up ? 'Keep your plans safe and open them on any phone or computer.' : 'Your plans follow you to any phone or computer.';
+    sheet.pw.autocomplete = (up || reset) ? 'new-password' : 'current-password';
+    sheet.pw.placeholder = (up || reset) ? 'At least 8 characters' : 'Your password';
+    sheet.pwHint.hidden = !(up || reset);
+    sheet.submitText.textContent = submitLabel();
     clearErrors();
   }
 
@@ -1413,14 +1435,38 @@
     sheet.pw.type = on ? 'text' : 'password'; sheet.show.textContent = on ? 'Hide' : 'Show';
     sheet.show.setAttribute('aria-pressed', String(on)); sheet.show.setAttribute('aria-label', on ? 'Hide password' : 'Show password');
   });
+  sheet.forgot.addEventListener('click', () => { const keep = sheet.email.value; setMode(mode === 'forgot' ? 'signin' : 'forgot'); sheet.email.value = keep; (mode === 'forgot' ? sheet.email : sheet.pw).focus(); });
   sheet.bannerAct.addEventListener('click', () => { const run = bannerRun; if (run) { run(); (sheet.pw.value ? sheet.submit : sheet.pw).focus(); } });
-  [[sheet.email, sheet.emailErr], [sheet.pw, sheet.pwErr]].forEach(([i, e]) => i.addEventListener('input', () => { i.removeAttribute('aria-invalid'); e.hidden = true; if (i === sheet.pw) sheet.pwHint.hidden = mode !== 'signup'; if (!sheet.banner.hidden && !sheet.help.open) hideBanner(); }));
+  [[sheet.email, sheet.emailErr], [sheet.pw, sheet.pwErr]].forEach(([i, e]) => i.addEventListener('input', () => { i.removeAttribute('aria-invalid'); e.hidden = true; if (i === sheet.pw) sheet.pwHint.hidden = !(mode === 'signup' || mode === 'reset'); if (!sheet.banner.hidden && !sheet.help.open) hideBanner(); }));
 
   sheet.panel.addEventListener('submit', async (e) => {
     e.preventDefault();
     if (busy) return;
     const email = sheet.email.value.trim().toLowerCase(), password = sheet.pw.value, signup = mode === 'signup';
     clearErrors();
+    if (mode === 'forgot') {
+      if (!EMAIL_RE.test(email)) { fieldError(sheet.email, sheet.emailErr, email ? 'That email address does not look right.' : 'Enter your email address.'); sheet.email.focus(); return; }
+      setBusy(true, 'Sending…');
+      try {
+        await window.PadiSync.requestReset(email); setBusy(false);
+        showBanner('If an account exists for ' + email + ', a reset link is on its way. Open it on this device, then choose a new password. Check your spam folder if it does not arrive.', { ok: true });
+      } catch (err) { setBusy(false); handleAuthError(err); }
+      return;
+    }
+    if (mode === 'reset') {
+      if (password.length < 8) { fieldError(sheet.pw, sheet.pwErr, password ? 'Use at least 8 characters.' : 'Choose a new password.'); sheet.pw.focus(); return; }
+      setBusy(true, 'Saving…');
+      try {
+        await window.PadiSync.resetPassword(resetToken, password); resetToken = ''; setBusy(false);
+        setMode('signin'); sheet.pw.value = ''; sheet.email.focus();
+        showBanner('Your password has been changed. Sign in with your new password.', { ok: true });
+      } catch (err) {
+        setBusy(false);
+        if (err && err.code === 'token') showBanner(err.message, { action: { label: 'Send me a new link', run: () => setMode('forgot') } });
+        else handleAuthError(err);
+      }
+      return;
+    }
     let bad = null;
     if (!EMAIL_RE.test(email)) { fieldError(sheet.email, sheet.emailErr, email ? 'That email address does not look right.' : 'Enter your email address.'); bad = sheet.email; }
     if (!password) { fieldError(sheet.pw, sheet.pwErr, signup ? 'Choose a password.' : 'Enter your password.'); bad = bad || sheet.pw; }
@@ -1475,6 +1521,18 @@
     loadConfig();
     setInterval(() => { renderSessions(); updateTopbar(); }, 30000);
   }
+
+  // Clears the app's cached files (not the saved plans) and reloads, so a stuck or outdated copy is replaced.
+  const clearBtn = $('#clearCacheBtn');
+  if (clearBtn) clearBtn.addEventListener('click', async () => {
+    clearBtn.disabled = true; clearBtn.querySelector('span').textContent = 'Clearing…';
+    try {
+      if ('serviceWorker' in navigator) { const regs = await navigator.serviceWorker.getRegistrations(); await Promise.all(regs.map((r) => r.unregister())); }
+      if (window.caches) { const keys = await caches.keys(); await Promise.all(keys.map((k) => caches.delete(k))); }
+    } catch (e) { /* reload anyway */ }
+    toast('Cache cleared. Reloading…');
+    setTimeout(() => location.reload(), 600);
+  });
 
   init();
 })();
