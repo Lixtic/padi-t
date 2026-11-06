@@ -1,4 +1,4 @@
-/* Padi-T · editor.js
+/* GuidEd · editor.js
    Visual editing of a generated plan, right where it is shown: tap any text to change it, add or remove lines and
    table rows, bold/italic, undo/redo, unsaved-changes protection. The edited page is turned back into the same
    plain text the app already stores and exports, so Word export keeps working. No dependencies. */

@@ -1,6 +1,6 @@
 /* Demo content shown when no AI key is configured on the server.
    It shows the real layout (tables, notes, BECE questions) on a fixed sample topic,
-   so teachers can see what Padi-T produces. It is NOT curriculum-accurate content for other subjects. */
+   so teachers can see what GuidEd produces. It is NOT curriculum-accurate content for other subjects. */
 (function (root) {
   'use strict';
 
@@ -333,7 +333,7 @@
     if (/learner worksheet/i.test(t)) return worksheet(p);
     if (/homework pack/i.test(t)) return homework(p);
     if (/BECE-style/i.test(t)) return bece(p);
-    return '## Demo mode\n\nFollow-up requests such as "' + t.slice(0, 80).replace(/[<>]/g, '') + '" need a connected AI model. Ask the site owner to add an API key in the Vercel environment variables, and Padi-T will write this for you. This demo can still show the worksheet, the homework pack and the extra BECE set.\n\n<ElicitationsGroup><Elicitation>Create the learner worksheet for this week\'s lessons.</Elicitation></ElicitationsGroup>';
+    return '## Demo mode\n\nFollow-up requests such as "' + t.slice(0, 80).replace(/[<>]/g, '') + '" need a connected AI model. Ask the site owner to add an API key in the Vercel environment variables, and GuidEd will write this for you. This demo can still show the worksheet, the homework pack and the extra BECE set.\n\n<ElicitationsGroup><Elicitation>Create the learner worksheet for this week\'s lessons.</Elicitation></ElicitationsGroup>';
   }
 
   root.SchoolPadiSample = { sample: sample, followup: followup };

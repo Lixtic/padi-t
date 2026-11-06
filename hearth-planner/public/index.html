@@ -3,14 +3,14 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <title>Padi-T · Lesson Planner for Ghana JHS</title>
+  <title>GuidEd · Lesson Planner for Ghana JHS</title>
   <meta name="description" content="Plan a full week for Ghana Education Service JHS: two 60-minute lessons, study notes, BECE practice and a marking guide, exported to Word.">
   <meta name="color-scheme" content="light dark">
   <meta name="theme-color" content="#006A4E">
-  <meta name="application-name" content="Padi-T">
+  <meta name="application-name" content="GuidEd">
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-title" content="Padi-T">
+  <meta name="apple-mobile-web-app-title" content="GuidEd">
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
   <link rel="manifest" href="manifest.webmanifest">
   <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
@@ -63,6 +63,7 @@
   <symbol id="i-pencil" viewBox="0 0 24 24"><path d="M4 20l1-4.5L16.5 4a2 2 0 0 1 2.8 0l.7.7a2 2 0 0 1 0 2.8L8.5 19z"/><path d="M14.5 6l3.5 3.5"/></symbol>
   <symbol id="i-layers" viewBox="0 0 24 24"><path d="M12 4l8.5 4.5L12 13 3.5 8.5z"/><path d="M3.5 12.5L12 17l8.5-4.5M3.5 16.5L12 21l8.5-4.5"/></symbol>
   <symbol id="i-cloud" viewBox="0 0 24 24"><path d="M7 18a4.5 4.5 0 0 1-.6-8.96A6 6 0 0 1 18 10.5a3.75 3.75 0 0 1-.5 7.5z"/></symbol>
+  <symbol id="i-sliders" viewBox="0 0 24 24"><path d="M4 7h9M17 7h3M4 17h3M11 17h9"/><circle cx="15" cy="7" r="2"/><circle cx="9" cy="17" r="2"/></symbol>
   <symbol id="i-user" viewBox="0 0 24 24"><circle cx="12" cy="8.5" r="3.8"/><path d="M4.5 20c.7-3.8 3.7-6 7.5-6s6.8 2.2 7.5 6"/></symbol>
   <symbol id="i-key" viewBox="0 0 24 24"><circle cx="8.5" cy="14.5" r="4"/><path d="M11.5 11.5L20 3M16 7l3 3"/></symbol>
 </svg>
@@ -74,7 +75,7 @@
 
   <section id="asForm">
     <svg class="as-logo" aria-hidden="true"><use href="#i-logo"/></svg>
-    <h2 id="asTitle">Sign in to Padi-T</h2>
+    <h2 id="asTitle">Sign in to GuidEd</h2>
     <p class="as-sub" id="asSub">Your plans follow you to any phone or computer.</p>
 
     <div class="as-tabs" id="asTabs" role="tablist" aria-label="Account">
@@ -110,7 +111,7 @@
 
       <button type="submit" class="as-submit" id="asSubmit"><span id="asSubmitText">Sign in</span></button>
     </form>
-    <p class="as-foot" id="asFoot">You can use Padi-T without an account. Signing in only adds sync between your devices.</p>
+    <p class="as-foot" id="asFoot">You can use GuidEd without an account. Signing in only adds sync between your devices.</p>
   </section>
 
   <section id="asAccount" hidden>
@@ -131,9 +132,9 @@
   <!-- ───────── Sidebar ───────── -->
   <aside class="sidebar" id="sidebar" aria-label="Lesson plans">
     <div class="sb-head">
-      <a class="brand" href="./" id="brand" aria-label="Padi-T, start a new plan">
+      <a class="brand" href="./" id="brand" aria-label="GuidEd, start a new plan">
         <svg class="logo" aria-hidden="true"><use href="#i-logo"/></svg>
-        <span>Padi-T</span>
+        <span class="wordmark">Guid<em>Ed</em></span>
       </a>
       <button type="button" class="icon-btn sb-close" id="sbClose" aria-label="Close sidebar">
         <svg class="ico"><use href="#i-x"/></svg>
@@ -161,46 +162,62 @@
     </nav>
 
     <div class="sb-foot">
-      <div class="access-row acct-row" id="accountRow" hidden>
-        <div id="acctOut">
-          <button type="button" class="btn acct-open" id="acctOpen"><svg class="ico"><use href="#i-user"/></svg><span>Sign in or create account</span></button>
-          <p class="acct-note">Sync your plans to your phone and other computers.</p>
-        </div>
-        <div id="acctIn" hidden>
-          <div class="acct-who" id="acctWho"></div>
-          <div class="acct-status" id="acctStatus" role="status"></div>
-          <div class="acct-actions">
-            <button type="button" class="btn acct-btn" id="acctSyncNow"><span>Sync now</span></button>
-            <button type="button" class="btn acct-btn" id="acctManage"><span>Account</span></button>
-          </div>
-        </div>
-        <p class="acct-msg" id="acctMsg" role="status" aria-live="polite"></p>
-      </div>
-      <div class="access-row profile-row" id="profileRow">
-        <label class="access-label" for="teacherInput"><svg class="ico"><use href="#i-user"/></svg><span>Teacher details (printed on Word files)</span></label>
-        <input id="teacherInput" type="text" placeholder="Your name, e.g. Mr. K. Mensah" maxlength="80" autocomplete="name">
-        <input id="schoolInput" type="text" placeholder="School name" maxlength="100" autocomplete="organization">
-      </div>
       <div class="access-row" id="accessRow" hidden>
         <label class="access-label" for="accessInput"><svg class="ico"><use href="#i-key"/></svg><span>Access code</span></label>
         <input id="accessInput" type="password" autocomplete="off" placeholder="Enter code" maxlength="80">
       </div>
-      <button type="button" class="btn install-btn" id="installBtn" hidden>
-        <svg class="ico"><use href="#i-download"/></svg><span>Install app</span>
+
+      <div class="acct-card" id="accountRow" hidden>
+        <div id="acctOut">
+          <button type="button" class="acct-open" id="acctOpen">
+            <span class="acct-avatar"><svg class="ico"><use href="#i-user"/></svg></span>
+            <span class="acct-text"><strong>Sign in or create account</strong><small>Sync plans across your phone and computers</small></span>
+            <svg class="ico acct-go"><use href="#i-chevron"/></svg>
+          </button>
+        </div>
+        <div id="acctIn" class="acct-in" hidden>
+          <button type="button" class="acct-id" id="acctManage" aria-label="Open account">
+            <span class="acct-avatar" id="acctAvatar">G</span>
+            <span class="acct-text"><strong id="acctWho"></strong><small id="acctStatus" role="status"></small></span>
+          </button>
+          <button type="button" class="acct-sync" id="acctSyncNow" aria-label="Sync now" title="Sync now"><svg class="ico"><use href="#i-refresh"/></svg></button>
+        </div>
+        <p class="acct-msg" id="acctMsg" role="status" aria-live="polite"></p>
+      </div>
+
+      <button type="button" class="disc" id="setToggle" data-disc="setPanel" aria-expanded="false" aria-controls="setPanel">
+        <svg class="ico"><use href="#i-sliders"/></svg><span>Settings</span><svg class="ico disc-chev"><use href="#i-chevron"/></svg>
       </button>
-      <p class="install-hint" id="installHint" hidden></p>
-      <button type="button" class="btn install-btn" id="clearCacheBtn">
-        <svg class="ico"><use href="#i-refresh"/></svg><span>Clear app cache</span>
-      </button>
-      <p class="install-hint" id="clearCacheNote">Fixes a stuck or outdated app. Your saved plans are kept.</p>
-      <div class="theme-row">
-        <span class="theme-label" id="themeLabel">Dark mode</span>
-        <button type="button" class="switch" id="themeToggle" role="switch" aria-checked="false" aria-labelledby="themeLabel">
-          <span class="knob">
-            <svg class="ico i-sun"><use href="#i-sun"/></svg>
-            <svg class="ico i-moon"><use href="#i-moon"/></svg>
-          </span>
+      <div class="set-panel" id="setPanel" hidden>
+        <div class="set-row">
+          <span class="theme-label" id="themeLabel">Dark mode</span>
+          <button type="button" class="switch" id="themeToggle" role="switch" aria-checked="false" aria-labelledby="themeLabel">
+            <span class="knob">
+              <svg class="ico i-sun"><use href="#i-sun"/></svg>
+              <svg class="ico i-moon"><use href="#i-moon"/></svg>
+            </span>
+          </button>
+        </div>
+
+        <button type="button" class="disc disc-sub" data-disc="profileRow" aria-expanded="false" aria-controls="profileRow">
+          <svg class="ico"><use href="#i-pencil"/></svg><span>Teacher details <small>printed on Word files</small></span><svg class="ico disc-chev"><use href="#i-chevron"/></svg>
         </button>
+        <div class="set-fields profile-row" id="profileRow" hidden>
+          <label class="sr-only" for="teacherInput">Teacher name</label>
+          <input id="teacherInput" type="text" placeholder="Your name, e.g. Mr. K. Mensah" maxlength="80" autocomplete="name">
+          <label class="sr-only" for="schoolInput">School name</label>
+          <input id="schoolInput" type="text" placeholder="School name" maxlength="100" autocomplete="organization">
+        </div>
+
+        <button type="button" class="set-action set-install" id="installBtn" hidden>
+          <svg class="ico"><use href="#i-download"/></svg><span>Install app</span>
+        </button>
+        <p class="install-hint" id="installHint" hidden></p>
+
+        <button type="button" class="set-action" id="clearCacheBtn">
+          <svg class="ico"><use href="#i-refresh"/></svg><span>Clear app cache</span>
+        </button>
+        <p class="install-hint" id="clearCacheNote">Fixes a stuck or outdated app. Your saved plans are kept.</p>
       </div>
     </div>
   </aside>
@@ -227,7 +244,7 @@
       <div class="hero" id="hero">
         <svg class="hero-mark" aria-hidden="true"><use href="#i-logo"/></svg>
         <h1>Which week are we planning?</h1>
-        <p>Choose a subject, class and week. Padi-T writes two 60-minute lessons, study notes and BECE practice, ready for Word.</p>
+        <p>Choose a subject, class and week. GuidEd writes two 60-minute lessons, study notes and BECE practice, ready for Word.</p>
       </div>
 
       <div class="messages-wrap" id="messagesWrap">
@@ -236,7 +253,7 @@
 
       <div class="composer-zone">
         <div class="demo-banner" id="demoBanner" hidden>
-          <strong>Demo mode.</strong> No AI key is set on the server, so Padi-T shows a sample layout on a fixed topic. Add a key in Vercel to generate real plans.
+          <strong>Demo mode.</strong> No AI key is set on the server, so GuidEd shows a sample layout on a fixed topic. Add a key in Vercel to generate real plans.
         </div>
 
         <button type="button" class="composer-toggle" id="composerToggle" aria-expanded="true" aria-controls="composer">

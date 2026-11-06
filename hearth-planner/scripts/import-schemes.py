@@ -15,7 +15,7 @@ from docx import Document
 ROOT = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..')
 OUT = os.path.join(ROOT, 'data', 'schemes.json')
 
-# Names used in schemes -> the name in the Padi-T subject list.
+# Names used in schemes -> the name in the GuidEd subject list.
 ALIASES = {
     'computing': 'Computing',
     'creative design / arts': 'Creative Arts and Design',

@@ -1,4 +1,4 @@
-"""Renders the Padi-T app icons (PNG) from the logo shapes. Run: python3 scripts/make-icons.py"""
+"""Renders the GuidEd app icons (PNG) from the logo shapes. Run: python3 scripts/make-icons.py"""
 import os
 from playwright.sync_api import sync_playwright
 root = os.path.join(os.path.dirname(__file__), '..', 'public', 'icons')

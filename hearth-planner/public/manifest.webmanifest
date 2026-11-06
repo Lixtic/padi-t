@@ -1,6 +1,6 @@
 {
-  "name": "Padi-T",
-  "short_name": "Padi-T",
+  "name": "GuidEd",
+  "short_name": "GuidEd",
   "description": "Weekly lesson plans for Ghana JHS: two lessons, study notes, BECE practice and a marking guide, ready for Word.",
   "id": "/",
   "start_url": "/?source=pwa",

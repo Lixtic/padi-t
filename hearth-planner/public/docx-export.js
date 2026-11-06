@@ -276,7 +276,7 @@
     });
 
     return new D.Document({
-      creator: 'Padi-T',
+      creator: 'GuidEd',
       title: title,
       styles: { default: { document: { run: { font: FONT, size: 19 } } } },
       sections: [{

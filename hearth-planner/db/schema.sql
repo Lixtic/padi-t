@@ -1,4 +1,4 @@
--- Padi-T tables for Neon (Postgres). The API creates these automatically on first use,
+-- GuidEd tables for Neon (Postgres). The API creates these automatically on first use,
 -- so running this file is optional. Keep it for reference or to create the tables yourself in the Neon SQL Editor.
 
 create table if not exists users (
