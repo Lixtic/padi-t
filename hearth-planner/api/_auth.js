@@ -48,7 +48,7 @@ async function authed(req) {
   const m = /^Bearer\s+([\w-]+\.[\w-]+\.[\w-]+)$/.exec(String(req.headers.authorization || ''));
   if (m && process.env.NEON_AUTH_JWKS_URL) {
     try {
-      const { jwtVerify, createRemoteJWKSet } = require('jose');
+      const { jwtVerify, createRemoteJWKSet } = await import('jose');   // jose 6 is ES-module only, so require() fails
       jwks = jwks || createRemoteJWKSet(new URL(process.env.NEON_AUTH_JWKS_URL));
       const iss = issuers();
       const result = await jwtVerify(m[1], jwks, iss ? { issuer: iss } : {});

@@ -4,7 +4,15 @@
 (function (root) {
   'use strict';
 
+  // The weekly package, without the Study Notes or BECE Practice sections when those are switched off.
   function sample(p) {
+    var text = build(p);
+    if (p.studyNotes === false) text = text.replace(/## Study Notes\n[\s\S]*?(?=\n## BECE Practice\n)/, '');
+    if (p.bece === false) text = text.replace(/## BECE Practice\n[\s\S]*?(?=\n## Assessment Rubric\n)/, '');
+    return text;
+  }
+
+  function build(p) {
     var subject = p.subject, cls = p.cls, week = p.week;
     var hook = p.hook !== false;
     return [

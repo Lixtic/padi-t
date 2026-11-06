@@ -357,7 +357,7 @@
       }
     });
     state.bots.forEach((b, i) => { if (i < state.bots.length - 1) b.demote(); });
-    if (s.params) { state.params = Object.assign({ size: '31–45', light: false, hook: true }, s.params); syncPills(); }
+    if (s.params) { state.params = Object.assign({ size: '31–45', light: false, hook: true, studyNotes: true, bece: true }, s.params); syncPills(); }
     updateView(); updateTopbar(); renderSessions(); updateSend(); scrollBottom(true);
   }
 
@@ -397,7 +397,9 @@
           h('div', { class: 'req-tags' },
             h('span', { class: 'tag', text: p.subject }), h('span', { class: 'tag', text: p.cls }), h('span', { class: 'tag', text: 'Week ' + p.week }),
             p.size ? h('span', { class: 'tag', text: p.size + ' learners' }) : null,
-            p.light ? h('span', { class: 'tag', text: 'Low-resource' }) : null),
+            p.light ? h('span', { class: 'tag', text: 'Low-resource' }) : null,
+            p.studyNotes === false ? h('span', { class: 'tag', text: 'No study notes' }) : null,
+            p.bece === false ? h('span', { class: 'tag', text: 'No BECE questions' }) : null),
           m.content ? h('div', { class: 'req-notes', text: m.content }) : null));
     }
     return h('div', { class: 'msg user' }, h('div', { class: 'bubble', text: m.content }));
@@ -647,10 +649,12 @@
   async function* apiStream(session, signal) {
     if (window.SchoolPadiArtifact) { yield* window.SchoolPadiArtifact.stream(session, signal); return; }
     const p = session.params;
+    const fresh = state.fresh === true; state.fresh = false;        // Regenerate asks for a new answer, not the saved one
+    const who = window.PadiSync && window.PadiSync.authHeader ? await window.PadiSync.authHeader() : {};
     const res = await fetch('/api/generate', {
       method: 'POST', signal,
-      headers: { 'content-type': 'application/json', 'x-access-code': state.access || '' },
-      body: JSON.stringify({ params: { subject: p.subject, cls: p.cls, week: p.week, hook: p.hook !== false, light: p.light === true, size: p.size || '', notes: session.messages[0].content || '' }, thread: threadOf(session) }),
+      headers: Object.assign({ 'content-type': 'application/json', 'x-access-code': state.access || '' }, who),
+      body: JSON.stringify({ params: { subject: p.subject, cls: p.cls, week: p.week, hook: p.hook !== false, light: p.light === true, studyNotes: p.studyNotes !== false, bece: p.bece !== false, size: p.size || '', notes: session.messages[0].content || '' }, thread: threadOf(session), fresh }),
     });
     if (!res.ok) {
       let j = {};
@@ -761,6 +765,7 @@
     s.messages.pop();
     const last = state.bots.pop();
     if (last) last.root.remove();
+    state.fresh = true;
     runGenerate(s);
   }
 
@@ -771,7 +776,7 @@
     const wk = text.match(/\bweek\s*(\d{1,2})\b/i);
     if (wk && /^(generate|create|plan|write)/i.test(text) && s && s.params) {
       const n = Math.min(Math.max(parseInt(wk[1], 10), 1), WEEKS.length);
-      state.params = { subject: s.params.subject, cls: s.params.cls, week: n, hook: s.params.hook !== false, size: s.params.size || state.params.size, light: s.params.light === true };
+      state.params = { subject: s.params.subject, cls: s.params.cls, week: n, hook: s.params.hook !== false, size: s.params.size || state.params.size, light: s.params.light === true, studyNotes: s.params.studyNotes !== false, bece: s.params.bece !== false };
       syncPills();
       const fresh = makeSession();
       state.sessions.unshift(fresh);
@@ -969,6 +974,14 @@
     $('.dd-label', lightBtn).textContent = 'Resources: ' + (on ? 'Light' : 'Standard');
   }
   lightBtn.addEventListener('click', () => { state.params.light = state.params.light !== true; syncLight(); store.save(); });
+  const notesBtn = $('#notesToggle'), beceBtn = $('#beceToggle');
+  function syncContent() {
+    const n = state.params.studyNotes !== false, b = state.params.bece !== false;
+    notesBtn.setAttribute('aria-checked', String(n)); $('.dd-label', notesBtn).textContent = 'Study notes: ' + (n ? 'On' : 'Off');
+    beceBtn.setAttribute('aria-checked', String(b)); $('.dd-label', beceBtn).textContent = 'BECE questions: ' + (b ? 'On' : 'Off');
+  }
+  notesBtn.addEventListener('click', () => { state.params.studyNotes = state.params.studyNotes === false; syncContent(); store.save(); });
+  beceBtn.addEventListener('click', () => { state.params.bece = state.params.bece === false; syncContent(); store.save(); });
   /* The school's NaCCA scheme for the chosen subject, class and week (when one is loaded). */
   const schemeStrip = $('#schemeStrip');
   const schemeFor = (p) => (window.SchoolPadiSchemes ? window.SchoolPadiSchemes.lookup(p.subject, p.cls, p.week) : null);
@@ -1026,7 +1039,7 @@
     const n = 1 + state.params.also.length;
     sendBtn.title = n > 1 ? 'Write ' + n + ' plans' : '';
   }
-  function syncPills() { dropdowns.forEach((d) => d.build()); syncHook(); syncLight(); syncScheme(); syncAlso(); }
+  function syncPills() { dropdowns.forEach((d) => d.build()); syncHook(); syncLight(); syncContent(); syncScheme(); syncAlso(); }
 
   /* ───────── Sidebar behaviour ───────── */
   const navOpen = () => (isMobile() ? app.classList.contains('nav-open') : !app.classList.contains('sb-collapsed'));
@@ -1122,10 +1135,19 @@
   const tomb = () => { try { return JSON.parse(localStorage.getItem(TOMB_KEY)) || {}; } catch (e) { return {}; } };
   const saveTomb = (t) => { try { localStorage.setItem(TOMB_KEY, JSON.stringify(t)); } catch (e) { /* ignore */ } };
   const acct = {
-    root: $('#accountRow'), out: $('#acctOut'), inn: $('#acctIn'), open: $('#acctOpen'), form: $('#acctForm'),
-    email: $('#acctEmail'), password: $('#acctPassword'), send: $('#acctSend'), signIn: $('#acctSignIn'),
-    who: $('#acctWho'), status: $('#acctStatus'), now: $('#acctSyncNow'), signOut: $('#acctSignOut'), msg: $('#acctMsg'),
+    root: $('#accountRow'), out: $('#acctOut'), inn: $('#acctIn'), open: $('#acctOpen'), top: $('#acctTop'), manage: $('#acctManage'),
+    who: $('#acctWho'), status: $('#acctStatus'), now: $('#acctSyncNow'), msg: $('#acctMsg'),
   };
+  const sheet = {
+    dlg: $('#acctSheet'), form: $('#asForm'), acct: $('#asAccount'), panel: $('#asPanel'), close: $('#asClose'),
+    tabIn: $('#asTabIn'), tabUp: $('#asTabUp'), title: $('#asTitle'), sub: $('#asSub'),
+    email: $('#asEmail'), emailErr: $('#asEmailErr'), pw: $('#asPassword'), pwErr: $('#asPwErr'), pwHint: $('#asPwHint'), show: $('#asShow'),
+    banner: $('#asBanner'), bannerText: $('#asBannerText'), bannerAct: $('#asBannerAct'), help: $('#asHelp'), helpList: $('#asHelpList'),
+    submit: $('#asSubmit'), submitText: $('#asSubmitText'),
+    badge: $('#asBadge'), acctTitle: $('#asAcctTitle'), who: $('#asWho'), result: $('#asResult'), view: $('#asView'), syncNow: $('#asSyncNow'), signOut: $('#asSignOut'),
+  };
+  const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  let mode = 'signin', busy = false, problemKind = '', bannerRun = null;
   const signedIn = () => !!(window.PadiSync && window.PadiSync.available() && window.PadiSync.user());
   let syncing = false, syncAgain = false, syncTimer = 0, lastSync = 0;
 
@@ -1133,10 +1155,13 @@
   const ago = (t) => { const s = Math.round((Date.now() - t) / 1000); return s < 20 ? 'just now' : s < 90 ? 'a minute ago' : s < 3600 ? Math.round(s / 60) + ' minutes ago' : Math.round(s / 3600) + ' hours ago'; };
   function acctStatus(t) { acct.status.textContent = t; }
   function refreshAcct() {
-    if (!window.PadiSync) { acct.root.hidden = true; return; }
-    acct.root.hidden = false;
-    const u = window.PadiSync.user();
+    const P = window.PadiSync, ok = !!(P && P.authConfigured());      // no account screen at all if sign-in is not set up on this site
+    acct.root.hidden = !ok; acct.top.hidden = !ok;
+    if (!ok) return;
+    const u = P.user();
     acct.out.hidden = !!u; acct.inn.hidden = !u;
+    acct.top.dataset.state = u ? (problemKind ? 'warn' : 'in') : 'out';
+    acct.top.setAttribute('aria-label', u ? 'Account: ' + (u.email || 'signed in') : 'Sign in or create account');
     if (u) { acct.who.textContent = u.email || 'Signed in'; if (lastSync) acctStatus('Synced ' + ago(lastSync)); }
   }
   function scheduleSync() { if (!signedIn() || !window.PadiSync.syncAvailable()) return; clearTimeout(syncTimer); syncTimer = setTimeout(() => syncNow(), 3000); }
@@ -1148,10 +1173,15 @@
       messages: d.messages.filter((m) => m && (m.role === 'user' || m.role === 'assistant') && typeof m.content === 'string') });
   };
 
+  // The server refuses a plan with no usable time stamp, so make sure every plan sent has one.
+  const stamp = (n) => (Number.isFinite(n) && n > 0 ? n : Date.now());
+
+  // Returns what happened: { pulled, pushed, removed, remoteTotal, failed } when it ran, { error } when it failed,
+  // and null when it did not run (signed out, already syncing, or a plan is being written).
   async function syncNow(manual) {
-    if (!signedIn() || !window.PadiSync.syncAvailable()) return;
-    if (syncing) { syncAgain = true; return; }
-    if (state.streaming) { scheduleSync(); return; }                 // never change plans while one is being written
+    if (!signedIn() || !window.PadiSync.syncAvailable()) return null;
+    if (syncing) { syncAgain = true; return null; }
+    if (state.streaming) { scheduleSync(); return null; }            // never change plans while one is being written
     syncing = true; acctStatus('Syncing…'); if (manual) acctMsg('');
     try {
       const P = window.PadiSync;
@@ -1174,8 +1204,13 @@
       local.forEach((l, id) => { if (!seen.has(id) && !t[id]) push.push({ id, data: l, updated_at: l.updatedAt }); });
       Object.keys(t).forEach((id) => { if (!seen.has(id)) push.push({ id, data: {}, updated_at: t[id], deleted: true }); });
       Object.keys(t).forEach((id) => { if (Date.now() - t[id] > 30 * 864e5) delete t[id]; });
-      await P.push(push);
+      push.forEach((r) => { r.updated_at = stamp(r.updated_at); });
+      const sent = await P.push(push);
       saveTomb(t);
+      const summary = {
+        pulled: take.size, removed: drop.size, pushed: push.filter((r) => !r.deleted).length - (sent.failed || 0),
+        failed: sent.failed || 0, remoteTotal: remote.filter((r) => !r.deleted).length, localTotal: local.size,
+      };
 
       // teacher details
       try {
@@ -1201,11 +1236,18 @@
         renderSessions(); updateTopbar(); store.save(true);
       } else if (take.size || drop.size) syncAgain = true;
       lastSync = Date.now();
-      acctStatus('Synced just now');
+      problemKind = '';
+      acctStatus(summary.failed ? 'Synced. ' + summary.failed + (summary.failed === 1 ? ' plan' : ' plans') + ' could not be saved (too large).' : 'Synced just now');
+      refreshAcct();
+      return summary;
     } catch (e) {
       if (e.offline) acctStatus('Offline. Will sync when you are back online.');
-      else if (e.status === 401 || !signedIn()) { refreshAcct(); acctMsg('Please sign in again.', true); }
-      else acctStatus('Could not sync: ' + e.message);
+      else if (e.code === 'session' || e.status === 401 || !signedIn()) {
+        refreshAcct(); acctStatus('');
+        acctMsg('Your sign-in has ended on this device. Please sign in again.', true);
+        toast('Your sign-in has ended on this device. Please sign in again.');
+      } else acctStatus('Could not sync: ' + e.message);
+      return { error: e };
     } finally {
       syncing = false;
       if (syncAgain) { syncAgain = false; scheduleSync(); }
@@ -1227,40 +1269,183 @@
     }).catch((e) => acctMsg(e.message, true));
   }
 
-  acct.open.addEventListener('click', () => {
-    if (!window.PadiSync.authConfigured()) { acctMsg('Sign-in is not configured on this deployment. Add NEON_AUTH_BASE_URL in Vercel and redeploy.', true); return; }
-    acct.form.hidden = !acct.form.hidden; if (!acct.form.hidden) acct.email.focus();
-  });
-  acct.form.addEventListener('submit', async (e) => {
-    e.preventDefault();
-    const email = acct.email.value.trim().toLowerCase();
-    const password = acct.password.value;
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { acctMsg('Enter a valid email address.', true); return; }
-    if (password.length < 8) { acctMsg('Use a password with at least 8 characters.', true); return; }
-    acct.send.disabled = true; acctMsg('Creating account…');
-    try {
-      await window.PadiSync.signUp(email, password);
-      acct.form.hidden = true; acctMsg(window.PadiSync.syncAvailable() ? 'Account created. Your plans will now sync.' : 'Account created. You are signed in.');
-      refreshAcct(); syncNow(true); watchLive();
-    } catch (err) { acctMsg(err.message, true); }
-    finally { acct.send.disabled = false; }
-  });
-  acct.signIn.addEventListener('click', async () => {
-    const email = acct.email.value.trim().toLowerCase(), password = acct.password.value;
-    if (!email || !password) { acctMsg('Enter your email and password.', true); return; }
-    acct.signIn.disabled = true; acctMsg('Signing in…');
-    try {
-      await window.PadiSync.signIn(email, password);
-      acct.form.hidden = true; acctMsg(window.PadiSync.syncAvailable() ? 'Signed in. Your plans will now sync.' : 'Signed in.');
-      refreshAcct(); syncNow(true); watchLive();
-    } catch (err) { acctMsg(err.message, true); }
-    finally { acct.signIn.disabled = false; }
-  });
+  /* ── Sign in / create account sheet ── */
+  const plural = (n, one, many) => n + ' ' + (n === 1 ? one : many);
+
+  // Steps that fit the browser in use, for when the browser blocks the sign-in cookie.
+  function browserSteps() {
+    const ua = navigator.userAgent || '';
+    const ios = /iPhone|iPad|iPod/.test(ua) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+    const steps = [];
+    if (ios) steps.push('iPhone or iPad: open Settings, then Safari (on newer versions: Settings, Apps, Safari), and turn off "Prevent Cross-Site Tracking". Then come back and sign in again.');
+    else if (/Firefox/.test(ua)) steps.push('Firefox: tap the shield in the address bar and turn off Enhanced Tracking Protection for this site. Then sign in again.');
+    else if (navigator.brave) steps.push('Brave: tap the lion icon and turn Shields off for this site. Then sign in again.');
+    else steps.push('Chrome or Edge: open Settings, then Privacy, then Third-party cookies, and allow them for this site. Then sign in again.');
+    steps.push('Do not use a private or Incognito window. They block this kind of sign-in.');
+    steps.push('Or open Padi-T in a different browser, where it may work without changing any setting.');
+    return steps;
+  }
+
+  function hideBanner() { sheet.banner.hidden = true; sheet.help.hidden = true; sheet.bannerAct.hidden = true; bannerRun = null; }
+  function showBanner(text, opts) {
+    opts = opts || {};
+    sheet.bannerText.textContent = text;
+    sheet.bannerAct.hidden = !opts.action;
+    if (opts.action) { sheet.bannerAct.textContent = opts.action.label; bannerRun = opts.action.run; }
+    sheet.help.hidden = !opts.help;
+    if (opts.help) { sheet.helpList.replaceChildren(...opts.help.map((t) => h('li', { text: t }))); sheet.help.open = true; }
+    sheet.banner.hidden = false;
+  }
+  function fieldError(input, errEl, text) {
+    input.setAttribute('aria-invalid', 'true'); errEl.textContent = text; errEl.hidden = false;
+    if (input === sheet.pw) sheet.pwHint.hidden = true;                  // the error already says what the hint would
+  }
+  function clearErrors() {
+    [[sheet.email, sheet.emailErr], [sheet.pw, sheet.pwErr]].forEach(([i, e]) => { i.removeAttribute('aria-invalid'); e.hidden = true; e.textContent = ''; });
+    sheet.pwHint.hidden = mode !== 'signup';
+    hideBanner();
+  }
+  function setBusy(on, text) {
+    busy = on; sheet.submit.disabled = on; sheet.submit.classList.toggle('busy', on);
+    sheet.submitText.textContent = on ? text : (mode === 'signup' ? 'Create account' : 'Sign in');
+  }
+  function setMode(m) {
+    mode = m; const up = m === 'signup';
+    sheet.tabIn.setAttribute('aria-selected', String(!up)); sheet.tabUp.setAttribute('aria-selected', String(up));
+    sheet.tabIn.tabIndex = up ? -1 : 0; sheet.tabUp.tabIndex = up ? 0 : -1;
+    sheet.panel.setAttribute('aria-labelledby', up ? 'asTabUp' : 'asTabIn');
+    sheet.title.textContent = up ? 'Create your Padi-T account' : 'Sign in to Padi-T';
+    sheet.sub.textContent = up ? 'Keep your plans safe and open them on any phone or computer.' : 'Your plans follow you to any phone or computer.';
+    sheet.pw.autocomplete = up ? 'new-password' : 'current-password';
+    sheet.pw.placeholder = up ? 'At least 8 characters' : 'Your password';
+    sheet.pwHint.hidden = !up;
+    sheet.submitText.textContent = up ? 'Create account' : 'Sign in';
+    clearErrors();
+  }
+
+  function showFormView() { sheet.acct.hidden = true; sheet.form.hidden = false; }
+  function showAccountView(heading, resultText) {
+    const u = window.PadiSync.user();
+    sheet.form.hidden = true; sheet.acct.hidden = false;
+    sheet.acctTitle.textContent = heading || 'Your account';
+    sheet.who.textContent = u ? u.email : '';
+    sheet.badge.classList.remove('warn');
+    sheet.result.textContent = resultText != null ? resultText : (lastSync ? 'Last synced ' + ago(lastSync) + '.' : '');
+    sheet.view.hidden = !state.sessions.some((s) => s.messages.length);
+  }
+
+  // What to tell the teacher after a sync: how many plans arrived, how many were saved, and anything that went wrong.
+  function describeSync(r, signup) {
+    if (!window.PadiSync.syncAvailable()) return 'You are signed in. Saving plans to your account is not turned on for this site yet, so your plans stay on this device.';
+    if (!r) return 'Your plans will sync in a moment.';
+    if (r.error) return 'You are signed in, but your plans could not be synced: ' + r.error.message;
+    const parts = [];
+    if (signup) parts.push('Your account is ready.');
+    if (r.pulled) parts.push('Brought ' + plural(r.pulled, 'plan', 'plans') + ' from your account to this device.');
+    if (r.pushed) parts.push('Saved ' + plural(r.pushed, 'plan', 'plans') + ' from this device to your account.');
+    if (r.failed) parts.push(plural(r.failed, 'plan', 'plans') + ' could not be saved because ' + (r.failed === 1 ? 'it is' : 'they are') + ' too large.');
+    if (!r.pulled && !r.pushed && !r.failed) {
+      parts.push(r.remoteTotal ? 'Your ' + plural(r.remoteTotal, 'saved plan', 'saved plans') + (r.remoteTotal === 1 ? ' is' : ' are') + ' already on this device.'
+        : 'No plans are saved on this account yet. Plans you make will appear on your other devices.');
+    }
+    return parts.join(' ');
+  }
+
+  // Runs a sync and shows the outcome in the sheet. Waits for any sync already under way so the result is never lost.
+  async function syncAndReport(signup) {
+    sheet.result.textContent = 'Checking your plans…';
+    for (let i = 0; i < 40 && syncing; i++) await new Promise((r) => setTimeout(r, 250));
+    const r = await syncNow(true);
+    if (r && r.error && !signedIn()) {                                  // the session did not hold
+      showFormView(); setMode('signin');
+      showBanner('Your sign-in has ended. Please sign in again.');
+      return r;
+    }
+    if (sheet.dlg.open && !sheet.acct.hidden) {
+      sheet.result.textContent = describeSync(r, signup);
+      sheet.badge.classList.toggle('warn', !!(r && r.error));
+      sheet.view.hidden = !state.sessions.some((s) => s.messages.length);
+    }
+    return r;
+  }
+
+  function openSheet(m) {
+    const P = window.PadiSync;
+    if (!P || !P.authConfigured()) return;
+    if (isMobile()) setNav(false);
+    if (P.user()) showAccountView(); else { showFormView(); setMode(m || mode); }
+    if (!sheet.dlg.open) sheet.dlg.showModal();
+    if (!P.user() && !isMobile()) sheet.email.focus();                   // on a phone the keyboard would hide the form
+  }
+  const closeSheet = () => { if (sheet.dlg.open) sheet.dlg.close(); };
+
+  function handleAuthError(err) {
+    refreshAcct();
+    const code = err && err.code;
+    if (code === 'cookies') {
+      problemKind = 'cookies'; refreshAcct();
+      showBanner((err.created ? 'Your account was created. ' : '') + err.message, { help: browserSteps() });
+    } else if (code === 'exists') showBanner(err.message, { action: { label: 'Sign in instead', run: () => setMode('signin') } });
+    else if (code === 'badlogin') showBanner(err.message, { action: { label: 'New here? Create an account', run: () => setMode('signup') } });
+    else if (code === 'password') fieldError(sheet.pw, sheet.pwErr, err.message);
+    else if (code === 'email') fieldError(sheet.email, sheet.emailErr, err.message);
+    else showBanner((err && err.message) || 'Something went wrong. Please try again.');
+  }
+
+  acct.open.addEventListener('click', () => openSheet('signin'));
+  acct.top.addEventListener('click', () => openSheet('signin'));
+  acct.manage.addEventListener('click', () => openSheet());
   acct.now.addEventListener('click', () => syncNow(true));
-  acct.signOut.addEventListener('click', async () => {
+  sheet.close.addEventListener('click', closeSheet);
+  sheet.dlg.addEventListener('click', (e) => {                           // a tap on the dimmed area outside the sheet closes it
+    const r = sheet.dlg.getBoundingClientRect();
+    if (e.clientX < r.left || e.clientX > r.right || e.clientY < r.top || e.clientY > r.bottom) closeSheet();
+  });
+  sheet.dlg.addEventListener('close', () => { sheet.pw.value = ''; sheet.pw.type = 'password'; sheet.show.textContent = 'Show'; sheet.show.setAttribute('aria-pressed', 'false'); setBusy(false); });
+  sheet.tabIn.addEventListener('click', () => setMode('signin'));
+  sheet.tabUp.addEventListener('click', () => setMode('signup'));
+  [sheet.tabIn, sheet.tabUp].forEach((tab) => tab.addEventListener('keydown', (e) => {
+    if (e.key !== 'ArrowLeft' && e.key !== 'ArrowRight') return;
+    e.preventDefault(); const next = mode === 'signin' ? sheet.tabUp : sheet.tabIn; setMode(mode === 'signin' ? 'signup' : 'signin'); next.focus();
+  }));
+  sheet.show.addEventListener('click', () => {
+    const on = sheet.pw.type === 'password';
+    sheet.pw.type = on ? 'text' : 'password'; sheet.show.textContent = on ? 'Hide' : 'Show';
+    sheet.show.setAttribute('aria-pressed', String(on)); sheet.show.setAttribute('aria-label', on ? 'Hide password' : 'Show password');
+  });
+  sheet.bannerAct.addEventListener('click', () => { const run = bannerRun; if (run) { run(); (sheet.pw.value ? sheet.submit : sheet.pw).focus(); } });
+  [[sheet.email, sheet.emailErr], [sheet.pw, sheet.pwErr]].forEach(([i, e]) => i.addEventListener('input', () => { i.removeAttribute('aria-invalid'); e.hidden = true; if (i === sheet.pw) sheet.pwHint.hidden = mode !== 'signup'; if (!sheet.banner.hidden && !sheet.help.open) hideBanner(); }));
+
+  sheet.panel.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    if (busy) return;
+    const email = sheet.email.value.trim().toLowerCase(), password = sheet.pw.value, signup = mode === 'signup';
+    clearErrors();
+    let bad = null;
+    if (!EMAIL_RE.test(email)) { fieldError(sheet.email, sheet.emailErr, email ? 'That email address does not look right.' : 'Enter your email address.'); bad = sheet.email; }
+    if (!password) { fieldError(sheet.pw, sheet.pwErr, signup ? 'Choose a password.' : 'Enter your password.'); bad = bad || sheet.pw; }
+    else if (signup && password.length < 8) { fieldError(sheet.pw, sheet.pwErr, 'Use at least 8 characters.'); bad = bad || sheet.pw; }
+    if (bad) { bad.focus(); return; }
+    setBusy(true, signup ? 'Creating your account…' : 'Signing in…');
+    try {
+      if (signup) await window.PadiSync.signUp(email, password); else await window.PadiSync.signIn(email, password);
+      sheet.pw.value = ''; problemKind = ''; refreshAcct(); watchLive();
+      showAccountView(signup ? 'Account created' : 'Welcome back', 'Checking your plans…');
+      setBusy(false);
+      await syncAndReport(signup);
+    } catch (err) { setBusy(false); handleAuthError(err); }
+  });
+
+  sheet.view.addEventListener('click', () => { closeSheet(); setNav(true); if (isMobile()) newBtn.focus(); });
+  sheet.syncNow.addEventListener('click', async () => {
+    sheet.syncNow.disabled = true; sheet.result.textContent = 'Syncing…';
+    try { await syncAndReport(false); } finally { sheet.syncNow.disabled = false; }
+  });
+  sheet.signOut.addEventListener('click', async () => {
     await window.PadiSync.signOut();
     if (stopLive) { stopLive(); stopLive = null; }
-    lastSync = 0; refreshAcct(); acctMsg('Signed out. Your plans stay on this device.');
+    lastSync = 0; problemKind = ''; acctStatus(''); refreshAcct(); acctMsg('');
+    closeSheet(); toast('Signed out. Your plans stay on this device.');
   });
   document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible') scheduleSync(); });
   window.addEventListener('online', () => scheduleSync());
@@ -1270,7 +1455,7 @@
     const saved = store.load();
     state.sessions = saved && Array.isArray(saved.sessions) ? saved.sessions.filter((s) => s && Array.isArray(s.messages)) : [];
     if (saved && saved.params && SUBJECTS.includes(saved.params.subject) && CLASSES.includes(saved.params.cls) && WEEKS.includes(saved.params.week)) {
-      state.params = { subject: saved.params.subject, cls: saved.params.cls, week: saved.params.week, hook: saved.params.hook !== false, size: SIZES.includes(saved.params.size) ? saved.params.size : state.params.size, light: saved.params.light === true };
+      state.params = { subject: saved.params.subject, cls: saved.params.cls, week: saved.params.week, hook: saved.params.hook !== false, size: SIZES.includes(saved.params.size) ? saved.params.size : state.params.size, light: saved.params.light === true, studyNotes: saved.params.studyNotes !== false, bece: saved.params.bece !== false };
     }
     try { state.access = localStorage.getItem(ACCESS_KEY) || ''; accessInput.value = state.access; } catch (e) { /* ignore */ }
 
@@ -1281,7 +1466,7 @@
     makeDropdown($('#ddWeek'), { name: 'Week', items: WEEKS.map((x) => ({ id: x, label: 'Week ' + x })), get: () => state.params.week, set: (v) => { state.params.week = v; store.save(); syncScheme(); }, label: (x) => 'Week ' + x });
 
     makeDropdown($('#ddSize'), { name: 'Class size', items: SIZES.map((x) => ({ id: x, label: x + ' learners' })), get: () => state.params.size, set: (v) => { state.params.size = v; store.save(); }, label: (x) => x + ' learners' });
-    syncHook(); syncLight(); syncScheme(); syncAlso();
+    syncHook(); syncLight(); syncContent(); syncScheme(); syncAlso();
     syncNav();
     const s = makeSession();
     state.sessions.unshift(s);

@@ -119,6 +119,17 @@ The request may include `Class size:` and `Resources:` lines. Plan for them.
 
 State the class size and resource choice in the metadata (`Class and Class Size`, `References / TLMs`). Do not mention the settings anywhere else.
 
+## Content options
+
+The request may include `Study notes:` and `BECE practice:` lines. Each is `on` or `off`. If a line is missing, treat it as `on`.
+
+- **`Study notes: off`:** leave out section 3 (Study Notes) completely, including its heading and the Key Terms table. The `Learning Objectives` and `Prerequisite knowledge` lines still stay with each lesson.
+- **`BECE practice: off`:** leave out section 4 (BECE Practice) completely: the heading, Section A, Section B and the Marking Guide. The exit tickets inside the lessons stay.
+- A left-out section has no heading, no placeholder and no line saying it was left out. The other sections keep their order and format. If both are off, the package is the metadata table, the two lessons, the rubric and the closing group.
+- When a section is left out, replace the `Create a revision quiz for this week` follow-up in the closing group with `Add the study notes for this week` or `Add the BECE practice questions for this week` (one for each section left out).
+- If a later message asks `Add the study notes for this week`, write only section 3 in full, with the same 7 elements and the Key Terms table. If it asks `Add the BECE practice questions for this week`, write only section 4 in full with the marking guide. Use the same topics as the lessons already written in this conversation, start directly with the heading and end with the `<ElicitationsGroup>`.
+- These options do not limit the follow-up documents below. Write the extra BECE set or any other follow-up document whenever asked.
+
 ## Follow-up documents
 
 If the request is exactly one of the three below, write only that document (no lesson plan and no study notes). Start directly with its heading. Use the same subject, class, week, class size and resource settings as the original request, and the same topics as the lessons already written in this conversation. Keep the language simple and suited to the class. Then end with the `<ElicitationsGroup>`.
@@ -161,9 +172,9 @@ The package is exported to Word or Google Docs. If the export target is Google D
 ## Final self-check before you answer
 
 Confirm all of these. If any one is false, fix it before replying:
-- All six sections are present, in order, and none is an outline.
+- Every section that was asked for is present, in order, and none is an outline. Sections switched off under Content options are absent.
 - Lesson 1 and Lesson 2 each have 3 phases, with a worked example, a learner activity, a check question, and an exit ticket.
-- The Study Notes cover every sub-topic with all 7 elements.
-- Section A has exactly 3 questions written as numbered questions with options A to D on separate lines (no table) and an answers line, and Section B has a complete marking guide with marks.
+- If Study notes are on, they cover every sub-topic with all 7 elements.
+- If BECE practice is on, Section A has exactly 3 questions written as numbered questions with options A to D on separate lines (no table) and an answers line, and Section B has a complete marking guide with marks.
 - Every table row is on a single line, with `<br>` for line breaks and no stray `|` characters.
 - No title line, no export instruction and no internal tags appear in the body.

@@ -33,3 +33,27 @@ create table if not exists profiles (
 );
 
 create index if not exists plans_recent on plans (user_id, updated_at);
+
+-- Cached plan answers. A repeat of a recent request is served from here at no token cost.
+create table if not exists response_cache (
+  scope      text   not null,                 -- 'global' (no teacher's notes) or 'p:<hashed user or address>'
+  key        text   not null,
+  params_key text   not null,
+  notes_norm text   not null default '',
+  response   text   not null,
+  thread_len int    not null default 0,
+  tokens     int    not null default 0,
+  created_at bigint not null,
+  hits       int    not null default 0,
+  primary key (scope, key)
+);
+create index if not exists response_cache_lookup on response_cache (scope, params_key, created_at);
+
+-- Estimated tokens used per teacher (or hashed network address) per UTC day. The row with subject 'global' is the site total.
+create table if not exists usage (
+  subject  text   not null,
+  day      text   not null,
+  tokens   bigint not null default 0,
+  requests int    not null default 0,
+  primary key (subject, day)
+);

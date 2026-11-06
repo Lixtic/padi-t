@@ -38,6 +38,18 @@ With no key, the site still runs in **demo mode**: it shows a sample plan on a f
 | `MAX_OUTPUT_TOKENS` | Output budget per answer. Default 8000. A full package needs about 6,000 to 9,000. |
 | `ACCESS_CODE` | If set, teachers must enter this code before generating. Strongly recommended for a public site, since every generation costs money. |
 | `RATE_LIMIT` | Generations per IP every 10 minutes. Default 8. |
+| `TOKEN_QUOTA_DAILY` | Daily token budget per signed-in teacher, or per network address when not signed in. Default 200,000 (about 14 full plans). `0` turns it off. Counts are estimates. The day runs 00:00 to 24:00 UTC, which is Ghana time. |
+| `TOKEN_CAP_DAILY_GLOBAL` | Optional daily cap on all teachers together, as a brake on spend. Default 0 (off). |
+| `CACHE_TTL_DAYS` | How long a saved answer is reused. Default 30. |
+| `CACHE_SIMILARITY` | How alike two sets of teacher's notes must be (0 to 1) for a saved answer to be reused. Default 0.8. |
+| `CACHE_DISABLED` | Set to `1` to turn the answer cache off. |
+
+### Saved answers and daily limits
+
+- **Cache.** When a teacher asks for a plan that was already written (same subject, class, week and options), Padi-T serves the saved answer straight away and it costs no tokens and uses none of the teacher's daily allowance. Requests with different notes are matched by their meaningful words, so "forces and motion" and "motion and forces" reuse one answer, and notes that share at least 80% of their words do too. This is word matching, not embeddings, so checking the cache never calls a model. The Regenerate button always writes a new answer and replaces the saved one. Only complete answers are saved, never one that was cut short or failed.
+- **Privacy.** A request with no teacher's notes shares its answer with everyone, because it only holds the subject, class, week and options. A request with notes is saved for that teacher only (or that network address when signed out).
+- **Quotas.** Each generation adds its estimated tokens to that teacher's total for the day. When the budget is used up, the teacher sees how long until it resets, and saved answers still work. Both the cache and the quotas are kept in Neon (tables `response_cache` and `usage`, created automatically), so they are shared by every serverless instance. Without `DATABASE_URL` they live in each instance's memory, which slows heavy use but is not a hard limit.
+- **Content options.** The Study notes and BECE questions switches in the plan options leave those sections out of the plan to save tokens. Either can be added later with the closing suggestions.
 
 ## Changing what Padi-T writes
 
