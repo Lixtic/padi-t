@@ -126,3 +126,10 @@ Managed Auth controls password sessions and email delivery. Use Neon’s product
 ## Word export
 
 Word files are built in the browser (`public/vendor/docx.iife.js` + `public/docx-export.js`), so export works even if the Python function is unavailable. The server route `api/export_docx.py` is kept as a fallback.
+
+## Sign-in through your own domain
+
+Phones and strict browsers block cookies set by another site, which made sign-in look successful while the session was dropped
+and plans never synced. Padi-T now sends Neon Auth calls through `/api/neon-auth` on your own domain (a small proxy in
+`api/neon-auth.js`), so the session cookie is first-party. No new settings are needed; it uses `NEON_AUTH_BASE_URL`.
+Set `NEON_AUTH_DIRECT=1` to go straight to Neon again. Your domain must still be a trusted origin in Neon Auth.

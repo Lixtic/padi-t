@@ -89,7 +89,7 @@
       syncEnabled = !!(c && c.syncEnabled);
       realtime = !!(c && c.realtime);
       if (enabled) {
-        authClient = window.NeonAuth.createAuthClient(c.authUrl);
+        authClient = window.NeonAuth.createAuthClient(c.authUrl.charAt(0) === '/' ? location.origin + c.authUrl : c.authUrl);
         try {
           var current = await authClient.getSession();
           session = current && current.data && current.data.user ? { user: current.data.user } : null;
