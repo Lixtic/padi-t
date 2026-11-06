@@ -553,13 +553,12 @@ html { overscroll-behavior-y: none; }
 /* ───────── Account and sync ───────── */
 .acct-row { gap: 8px; }
 .acct-open { width: 100%; justify-content: flex-start; }
-.acct-form { display: flex; flex-direction: column; gap: 8px; margin-top: 8px; }
-.acct-form > div { display: flex; flex-direction: column; gap: 8px; }
 .acct-btn { width: 100%; justify-content: center; }
 .acct-who { font-size: 13.5px; font-weight: 600; overflow-wrap: anywhere; }
 .acct-status { font-size: 12.5px; color: var(--muted); margin-top: 2px; }
 .acct-actions { display: flex; gap: 8px; margin-top: 8px; }
-.acct-actions .acct-btn { flex: 1; }
+.acct-actions .acct-btn { flex: 1; border: 1px solid var(--card-line); background: var(--card); }
+.acct-actions .acct-btn:hover { border-color: var(--accent); }
 .acct-msg { margin: 0; font-size: 12.5px; line-height: 1.45; color: var(--muted); }
 .acct-msg:empty { display: none; }
 .acct-msg.err { color: var(--del); }
@@ -630,3 +629,90 @@ html { overscroll-behavior-y: none; }
   .doc-body.editing [contenteditable="true"] { font-size: 16px; outline-color: var(--card-line); }
   .edit-bar { padding: 8px 10px 6px; }
 }
+
+/* ───────── Sign in / create account ───────── */
+.acct-note { margin: 6px 2px 0; font-size: 12.5px; line-height: 1.45; color: var(--muted); }
+.acct-top { position: relative; }
+.acct-dot { position: absolute; top: 5px; right: 5px; width: 10px; height: 10px; border-radius: 50%; border: 2px solid var(--bg); display: none; }
+.acct-top[data-state="in"] { color: var(--accent); }
+.acct-top[data-state="in"] .acct-dot { display: block; background: var(--ok); }
+.acct-top[data-state="warn"] .acct-dot { display: block; background: var(--del); }
+
+.acct-sheet {
+  position: fixed; inset: 0; margin: auto;
+  width: min(420px, calc(100vw - 32px)); max-height: min(92vh, 760px); max-height: min(92dvh, 760px);
+  padding: 28px 24px 24px; border: 1px solid var(--card-line); border-radius: 22px;
+  background: var(--card); color: var(--text); box-shadow: var(--shadow);
+  overflow-y: auto; overscroll-behavior: contain;
+}
+.acct-sheet:not([open]) { display: none; }
+.acct-sheet[open] { animation: rise .25s var(--ease); }
+.acct-sheet::backdrop { background: rgba(24, 16, 10, .55); }
+.acct-sheet h2 { margin: 0; font-family: var(--font-serif); font-size: 24px; font-weight: 600; letter-spacing: -.01em; line-height: 1.2; }
+.as-close { position: absolute; top: 10px; right: 10px; width: 40px; height: 40px; }
+.as-logo { display: block; width: 40px; height: 40px; margin: 0 0 12px; color: var(--accent); }
+.as-sub { margin: 6px 0 18px; color: var(--muted); font-size: 14.5px; line-height: 1.45; }
+
+.as-tabs { display: grid; grid-template-columns: 1fr 1fr; gap: 4px; margin-bottom: 18px; padding: 4px; border-radius: 14px; background: var(--sb); }
+.as-tabs button { height: 42px; border-radius: 11px; font-size: 15px; font-weight: 600; color: var(--muted); transition: background-color .15s, color .15s; }
+.as-tabs button[aria-selected="true"] { background: var(--card); color: var(--text); box-shadow: 0 1px 3px rgba(0, 0, 0, .14); }
+
+.as-field { margin-bottom: 14px; }
+.as-field label { display: block; margin-bottom: 6px; font-size: 13.5px; font-weight: 600; }
+.as-field input {
+  width: 100%; height: 48px; padding: 0 14px; border: 1px solid var(--card-line); border-radius: 12px;
+  background: var(--bg); color: var(--text); font: inherit; font-size: 16px; outline: 0;
+}
+.as-field input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px var(--add-bg); }
+.as-field input[aria-invalid="true"] { border-color: var(--del); }
+.as-field input[aria-invalid="true"]:focus { box-shadow: 0 0 0 3px var(--del-bg); }
+.as-pw { position: relative; }
+.as-pw input { padding-right: 74px; }
+.as-eye { position: absolute; top: 0; right: 0; height: 48px; padding: 0 16px; border-radius: 12px; font-size: 14px; font-weight: 600; color: var(--accent); }
+.as-hint, .as-err { margin: 6px 2px 0; font-size: 13px; line-height: 1.4; }
+.as-hint { color: var(--muted); }
+.as-err { color: var(--del); }
+
+.as-banner { margin: 0 0 14px; padding: 12px 14px; border: 1px solid var(--del); border-radius: 12px; background: var(--del-bg); font-size: 14px; line-height: 1.5; }
+.as-banner p { margin: 0; }
+.as-link { min-height: 36px; margin-top: 4px; padding: 0; font-size: 14px; font-weight: 600; color: var(--accent); text-decoration: underline; text-align: left; }
+.as-help { margin-top: 6px; font-size: 13.5px; }
+.as-help summary { display: flex; align-items: center; min-height: 36px; font-weight: 600; cursor: pointer; }
+.as-help ul { margin: 4px 0 0; padding-left: 18px; }
+.as-help li { margin-bottom: 6px; }
+
+.as-submit, .as-second {
+  display: flex; align-items: center; justify-content: center; gap: 10px;
+  width: 100%; height: 50px; border-radius: 14px; font-size: 16px; font-weight: 600;
+}
+.as-submit { background: var(--accent); color: var(--on-accent); }
+.as-submit:hover { background: var(--accent-h); }
+.as-second { border: 1px solid var(--card-line); background: var(--card); color: var(--text); }
+.as-second:hover { background: var(--sb-hover); }
+.as-danger { color: var(--del); }
+.as-submit[disabled], .as-second[disabled] { opacity: .7; cursor: progress; }
+.as-submit.busy::before {
+  content: ""; width: 16px; height: 16px; border-radius: 50%;
+  border: 2px solid currentColor; border-right-color: transparent; animation: as-spin .8s linear infinite;
+}
+@keyframes as-spin { to { transform: rotate(360deg); } }
+.as-foot { margin: 14px 0 0; font-size: 12.5px; line-height: 1.5; color: var(--muted); text-align: center; }
+
+.as-badge { display: grid; place-items: center; width: 48px; height: 48px; margin-bottom: 12px; border-radius: 50%; background: var(--add-bg); color: var(--accent); }
+.as-badge.warn { background: var(--del-bg); color: var(--del); }
+.as-who { margin: 6px 0 0; font-weight: 600; overflow-wrap: anywhere; }
+.as-result { margin: 10px 0 18px; font-size: 15px; line-height: 1.5; }
+.as-actions { display: flex; flex-direction: column; gap: 10px; }
+
+/* On a phone the sheet rises from the bottom, where the thumb is. */
+@media (max-width: 560px) {
+  .acct-sheet {
+    inset: auto 0 0 0; margin: 0; width: 100%; max-width: none;
+    max-height: 94vh; max-height: 94dvh;
+    padding: 26px 18px calc(20px + env(safe-area-inset-bottom));
+    border-width: 1px 0 0; border-radius: 22px 22px 0 0;
+  }
+  .acct-sheet[open] { animation: sheet-up .28s var(--ease); }
+  .acct-sheet::before { content: ""; position: absolute; top: 8px; left: 50%; width: 40px; height: 4px; margin-left: -20px; border-radius: 2px; background: var(--line); }
+}
+@keyframes sheet-up { from { transform: translateY(48px); opacity: .5; } to { transform: none; opacity: 1; } }

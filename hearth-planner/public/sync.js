@@ -9,13 +9,25 @@
   function load() { try { session = JSON.parse(localStorage.getItem(AUTH_KEY)); } catch (e) { session = null; } }
   function store() { try { if (session) localStorage.setItem(AUTH_KEY, JSON.stringify(session)); else localStorage.removeItem(AUTH_KEY); } catch (e) { /* storage blocked */ } }
 
+  // An Error that carries a short machine-readable code the screen can act on.
+  function problem(message, code, extra) { var e = new Error(message); e.code = code; if (extra) for (var k in extra) e[k] = extra[k]; return e; }
+
+  var COOKIE_MSG = 'Your email and password were accepted, but this browser did not keep your sign-in, so your plans cannot sync here. '
+    + 'This usually means the browser is blocking cookies from the sign-in service (for example Safari\'s "Prevent Cross-Site Tracking", a private window, or a tracking blocker).';
+
   async function call(path, opts) {
     opts = opts || {};
     var headers = { 'content-type': 'application/json' };
     if (opts.auth) {
-      if (!authClient) { var gone = new Error('Please sign in again.'); gone.status = 401; throw gone; }
-      var tokenResult = await authClient.token();
-      if (tokenResult.error || !tokenResult.data || !tokenResult.data.token) { session = null; store(); throw new Error('Please sign in again.'); }
+      if (!authClient) throw problem('Please sign in again.', 'session', { status: 401 });
+      var tokenResult;
+      try { tokenResult = await authClient.token(); }
+      catch (e) { tokenResult = { error: e }; }
+      if (!tokenResult || tokenResult.error || !tokenResult.data || !tokenResult.data.token) {
+        // The sign-in service did not recognise this browser. Say so plainly instead of silently signing the teacher out.
+        session = null; store();
+        throw problem('Your sign-in has ended on this device. Please sign in again.', 'session', { status: 401 });
+      }
       headers.authorization = 'Bearer ' + tokenResult.data.token;
     }
     var res;
@@ -27,27 +39,46 @@
       console.warn('[Padi-T sync] ' + path + ' ->', res.status, body);
       var err = new Error((body && body.message) || 'Something went wrong. Try again.');
       err.status = res.status;
-      if (res.status === 401 && opts.auth) { session = null; store(); }
+      if (res.status === 401 && opts.auth) { session = null; store(); err.code = 'session'; }
       throw err;
     }
     return body;
   }
 
-  // Runs a sign-in or sign-up request and turns every failure into a readable message.
-  async function authCall(fn, fallback) {
+  // Turns whatever the sign-in library reports (a thrown error or an error object) into a short message a teacher
+  // can act on. Network failures and server refusals are told apart, because they need different fixes.
+  function explain(e, action) {
+    var status = e && e.status, code = String((e && (e.code || (e.body && e.body.code))) || ''), msg = String((e && (e.message || e.statusText)) || '');
+    var out = function (text, kind, hint) { return { text: text, kind: kind, hint: hint || null }; };
+    if (!status && /failed to fetch|networkerror|load failed|network request failed|fetch failed/i.test(msg)) return out('Cannot reach the sign-in service. Check your internet connection and try again.', 'network');
+    if (/invalid origin/i.test(msg)) return out('This website address is not approved for sign-in yet. If you run Padi-T, add ' + location.origin + ' as a trusted origin in Neon Auth.', 'origin');
+    if (code === 'INVALID_EMAIL_OR_PASSWORD' || /invalid email or password|invalid password|incorrect/i.test(msg) || (status === 401 && action === 'signin')) return out('That email and password do not match. Check them, or create an account if you are new.', 'badlogin', 'signup');
+    if (/USER_ALREADY_EXISTS|already exists|already registered|already in use/i.test(code + ' ' + msg)) return out('An account with this email already exists. Sign in instead.', 'exists', 'signin');
+    if (/PASSWORD_TOO_SHORT|too short/i.test(code + ' ' + msg)) return out('Use at least 8 characters for your password.', 'password');
+    if (/PASSWORD_TOO_LONG|too long/i.test(code + ' ' + msg)) return out('That password is too long. Use fewer characters.', 'password');
+    if (/INVALID_EMAIL|invalid email/i.test(code + ' ' + msg)) return out('That email address does not look right.', 'email');
+    if (/EMAIL_NOT_VERIFIED|not verified|verify your email/i.test(code + ' ' + msg)) return out('Please confirm your email address first. Check your inbox for the link, then sign in.', 'verify');
+    if (status === 429 || /too many|rate limit/i.test(msg)) return out('Too many attempts. Wait a minute and try again.', 'rate');
+    if (status >= 500) return out('The sign-in service had a problem. Try again in a moment.', 'server');
+    return out(msg && msg.length < 140 ? msg : (action === 'signup' ? 'Could not create the account. Please try again.' : 'Could not sign in. Please try again.'), 'other');
+  }
+
+  // Runs a sign-in or sign-up request. Every failure becomes an Error with a readable message and a code.
+  async function authCall(fn, action) {
     var result;
-    var where = location.origin;
     try { result = await fn(); }
-    catch (e) { console.error('[Padi-T sign-in] request threw:', e); throw new Error('Could not reach the sign-in service from ' + where + '. If this site is new or a preview link, add it as a trusted origin in Neon Auth. (' + (e && e.message ? e.message : 'network error') + ')'); }
-    if (!result) throw new Error(fallback);
-    if (result.error) {
-      console.error('[Padi-T sign-in] server/client error:', result.error);
-      var m = String(result.error.message || result.error.statusText || '');
-      var st = result.error.status ? ' (' + result.error.status + ')' : '';
-      if (/failed to fetch|networkerror|load failed/i.test(m) || (!m && !result.error.status)) throw new Error('Could not reach the sign-in service from ' + where + '. If this site is new or a preview link, add it as a trusted origin in Neon Auth.');
-      throw new Error((m || 'Sign-in was refused') + st);
-    }
+    catch (e) { console.error('[Padi-T sign-in] request threw:', e); var x = explain(e, action); throw problem(x.text, x.kind, { hint: x.hint }); }
+    if (!result) { var f = explain(null, action); throw problem(f.text, f.kind); }
+    if (result.error) { console.error('[Padi-T sign-in] error:', result.error); var y = explain(result.error, action); throw problem(y.text, y.kind, { hint: y.hint }); }
     return result;
+  }
+
+  // After a successful sign-in, confirm the session can really be used. If it cannot (usually blocked cookies), say so now
+  // instead of letting the teacher find out later that nothing syncs.
+  async function confirmSession() {
+    var t;
+    try { t = await authClient.token(); } catch (e) { t = null; }
+    if (!t || t.error || !t.data || !t.data.token) { session = null; store(); throw problem(COOKIE_MSG, 'cookies'); }
   }
 
   window.PadiSync = {
@@ -77,20 +108,24 @@
       } catch (e) { return {}; }
     },
     signUp: async function (email, password) {
-      var result = await authCall(function () { return authClient.signUp.email({ email: email, password: password, name: email.split('@')[0] }); }, 'Could not create the account.');
+      var result = await authCall(function () { return authClient.signUp.email({ email: email, password: password, name: email.split('@')[0] }); }, 'signup');
       var user = result.data && result.data.user;
       if (!user || !(result.data.token || result.data.session)) {      // no session yet (e.g. email check on): sign in right away
-        try { user = (await authCall(function () { return authClient.signIn.email({ email: email, password: password }); }, 'Could not sign in.')).data.user; }
-        catch (e) { if (!user) throw e; throw new Error('Account created. Check your email to confirm it, then sign in.'); }
+        try { user = (await authCall(function () { return authClient.signIn.email({ email: email, password: password }); }, 'signin')).data.user; }
+        catch (e) { if (!user) throw e; throw problem('Account created. Check your email to confirm it, then sign in.', 'verify'); }
       }
-      session = { user: user }; return user;
+      session = { user: user };
+      try { await confirmSession(); } catch (e) { e.created = true; throw e; }
+      return user;
     },
     signIn: async function (email, password) {
-      var result = await authCall(function () { return authClient.signIn.email({ email: email, password: password }); }, 'Could not sign in.');
-      if (!result.data || !result.data.user) throw new Error('Could not sign in. Please try again.');
-      session = { user: result.data.user }; return session.user;
+      var result = await authCall(function () { return authClient.signIn.email({ email: email, password: password }); }, 'signin');
+      if (!result.data || !result.data.user) throw problem('Could not sign in. Please try again.', 'other');
+      session = { user: result.data.user };
+      await confirmSession();
+      return session.user;
     },
-    signOut: async function () { if (authClient) await authClient.signOut(); session = null; store(); },
+    signOut: async function () { try { if (authClient) await authClient.signOut(); } catch (e) { /* signing out locally is enough */ } session = null; store(); },
     watch: async function (onChange) {
       if (!realtime || !window.NeonRealtime || !session) return function () {};
       if (live) { live.unsubscribe(); live = null; }
@@ -106,10 +141,23 @@
       };
     },
     list: function (limit) { return call('/api/sync?what=plans&limit=' + (limit || 60), { auth: true }); },
+    // Uploads in small batches. If the server refuses a batch (one plan too large or malformed), the plans are sent one by one so a
+    // single bad plan cannot stop the rest from syncing. Returns how many plans could not be saved.
     push: async function (rows) {
-      for (var i = 0; i < rows.length; i += 5) {                       // small batches keep each request light
-        await call('/api/sync', { method: 'POST', auth: true, body: { what: 'plans', rows: rows.slice(i, i + 5) } });
+      var failed = 0;
+      var send = function (part) { return call('/api/sync', { method: 'POST', auth: true, body: { what: 'plans', rows: part } }); };
+      for (var i = 0; i < rows.length; i += 5) {
+        var batch = rows.slice(i, i + 5);
+        try { await send(batch); }
+        catch (e) {
+          if (e.status !== 400) throw e;
+          for (var j = 0; j < batch.length; j++) {
+            try { await send([batch[j]]); }
+            catch (e2) { if (e2.status === 400) failed++; else throw e2; }
+          }
+        }
       }
+      return { failed: failed };
     },
     getProfile: async function () { var j = await call('/api/sync?what=profile', { auth: true }); return j && j.profile ? j.profile : null; },
     setProfile: function (data, updatedAt) { return call('/api/sync', { method: 'POST', auth: true, body: { what: 'profile', data: data, updated_at: updatedAt } }); }

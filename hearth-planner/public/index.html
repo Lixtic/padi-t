@@ -67,6 +67,64 @@
   <symbol id="i-key" viewBox="0 0 24 24"><circle cx="8.5" cy="14.5" r="4"/><path d="M11.5 11.5L20 3M16 7l3 3"/></symbol>
 </svg>
 
+
+<!-- ───────── Sign in / create account ───────── -->
+<dialog class="acct-sheet" id="acctSheet" aria-labelledby="asTitle">
+  <button type="button" class="icon-btn as-close" id="asClose" aria-label="Close"><svg class="ico"><use href="#i-x"/></svg></button>
+
+  <section id="asForm">
+    <svg class="as-logo" aria-hidden="true"><use href="#i-logo"/></svg>
+    <h2 id="asTitle">Sign in to Padi-T</h2>
+    <p class="as-sub" id="asSub">Your plans follow you to any phone or computer.</p>
+
+    <div class="as-tabs" role="tablist" aria-label="Account">
+      <button type="button" role="tab" id="asTabIn" aria-selected="true" aria-controls="asPanel">Sign in</button>
+      <button type="button" role="tab" id="asTabUp" aria-selected="false" aria-controls="asPanel" tabindex="-1">Create account</button>
+    </div>
+
+    <form id="asPanel" role="tabpanel" aria-labelledby="asTabIn" novalidate>
+      <div class="as-field">
+        <label for="asEmail">Email address</label>
+        <input id="asEmail" name="email" type="email" inputmode="email" autocomplete="username" autocapitalize="off" autocorrect="off" spellcheck="false" enterkeyhint="next" maxlength="120" placeholder="you@example.com">
+        <p class="as-err" id="asEmailErr" role="alert" hidden></p>
+      </div>
+      <div class="as-field">
+        <label for="asPassword">Password</label>
+        <div class="as-pw">
+          <input id="asPassword" name="password" type="password" autocomplete="current-password" autocapitalize="off" autocorrect="off" spellcheck="false" enterkeyhint="go" maxlength="128" placeholder="Your password">
+          <button type="button" class="as-eye" id="asShow" aria-pressed="false" aria-label="Show password">Show</button>
+        </div>
+        <p class="as-hint" id="asPwHint" hidden>At least 8 characters.</p>
+        <p class="as-err" id="asPwErr" role="alert" hidden></p>
+      </div>
+
+      <div class="as-banner" id="asBanner" role="alert" hidden>
+        <p id="asBannerText"></p>
+        <button type="button" class="as-link" id="asBannerAct" hidden></button>
+        <details class="as-help" id="asHelp" hidden>
+          <summary>How to fix this</summary>
+          <ul id="asHelpList"></ul>
+        </details>
+      </div>
+
+      <button type="submit" class="as-submit" id="asSubmit"><span id="asSubmitText">Sign in</span></button>
+    </form>
+    <p class="as-foot">You can use Padi-T without an account. Signing in only adds sync between your devices.</p>
+  </section>
+
+  <section id="asAccount" hidden>
+    <div class="as-badge" id="asBadge" aria-hidden="true"><svg class="ico"><use href="#i-check"/></svg></div>
+    <h2 id="asAcctTitle">You are signed in</h2>
+    <p class="as-who" id="asWho"></p>
+    <p class="as-result" id="asResult" role="status" aria-live="polite"></p>
+    <div class="as-actions">
+      <button type="button" class="as-submit" id="asView"><span>View my plans</span></button>
+      <button type="button" class="as-second" id="asSyncNow"><span>Sync now</span></button>
+      <button type="button" class="as-second as-danger" id="asSignOut"><span>Sign out</span></button>
+    </div>
+  </section>
+</dialog>
+
 <div class="app" id="app">
 
   <!-- ───────── Sidebar ───────── -->
@@ -102,24 +160,17 @@
     </nav>
 
     <div class="sb-foot">
-      <div class="access-row acct-row" id="accountRow">
+      <div class="access-row acct-row" id="accountRow" hidden>
         <div id="acctOut">
-          <button type="button" class="btn acct-open" id="acctOpen"><svg class="ico"><use href="#i-user"/></svg><span>Sign up or sign in</span></button>
-          <form class="acct-form" id="acctForm" hidden autocomplete="on">
-            <label class="sr-only" for="acctEmail">Email address</label>
-            <input id="acctEmail" type="email" inputmode="email" autocomplete="email" placeholder="Your email address" maxlength="120" required>
-            <label class="sr-only" for="acctPassword">Password</label>
-            <input id="acctPassword" type="password" autocomplete="new-password" placeholder="Password (8+ characters)" minlength="8" required>
-            <button type="submit" class="btn acct-btn" id="acctSend"><span>Create account</span></button>
-            <button type="button" class="btn acct-btn" id="acctSignIn"><span>Sign in instead</span></button>
-          </form>
+          <button type="button" class="btn acct-open" id="acctOpen"><svg class="ico"><use href="#i-user"/></svg><span>Sign in or create account</span></button>
+          <p class="acct-note">Sync your plans to your phone and other computers.</p>
         </div>
         <div id="acctIn" hidden>
           <div class="acct-who" id="acctWho"></div>
           <div class="acct-status" id="acctStatus" role="status"></div>
           <div class="acct-actions">
             <button type="button" class="btn acct-btn" id="acctSyncNow"><span>Sync now</span></button>
-            <button type="button" class="btn acct-btn" id="acctSignOut"><span>Sign out</span></button>
+            <button type="button" class="btn acct-btn" id="acctManage"><span>Account</span></button>
           </div>
         </div>
         <p class="acct-msg" id="acctMsg" role="status" aria-live="polite"></p>
@@ -157,6 +208,9 @@
         <svg class="ico"><use href="#i-menu"/></svg>
       </button>
       <div class="tb-title" id="topTitle">New plan</div>
+      <button type="button" class="icon-btn acct-top" id="acctTop" aria-label="Sign in or create account" aria-haspopup="dialog" data-state="out" hidden>
+        <svg class="ico"><use href="#i-user"/></svg><span class="acct-dot" aria-hidden="true"></span>
+      </button>
       <span class="chip" id="statusChip" title="Status">
         <span class="dot dot-online" id="statusDot"></span><span id="statusText">Online</span>
       </span>
