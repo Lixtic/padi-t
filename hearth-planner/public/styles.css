@@ -842,3 +842,6 @@ html { overscroll-behavior-y: none; }
 .paywall .pw-main { min-height: 46px; padding: 0 20px; border-radius: 999px; background: var(--accent); color: var(--on-accent); font-weight: 650; font-size: 15px; }
 .paywall .pw-sub { font-size: 13px; color: var(--muted); }
 .plan-cta[hidden] { display: none; }
+
+.set-links { display: flex; gap: 8px; justify-content: center; margin: 14px 12px 4px; font-size: 12.5px; color: var(--muted); }
+.set-links a, .as-foot a { color: inherit; text-decoration: underline; text-underline-offset: 2px; }
