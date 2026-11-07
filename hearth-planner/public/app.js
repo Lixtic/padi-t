@@ -960,25 +960,36 @@
   }
   document.addEventListener('click', (e) => { if (!e.target.closest('.dd')) closeMenus(); });
 
+  // One line under "Options" that says what is switched on, so the panel can stay closed.
+  function syncSummary() {
+    const p = state.params, parts = [(p.size || '') + ' learners'];
+    if (p.light === true) parts.push('Low-resource');
+    if (p.studyNotes !== false) parts.push('Notes');
+    if (p.bece !== false) parts.push('BECE');
+    if (p.hook !== false) parts.push('Hook');
+    const n = (p.also || []).length; if (n) parts.push('+' + n + (n === 1 ? ' class' : ' classes'));
+    $('#optSummary').textContent = parts.join(' · ');
+  }
   const hookBtn = $('#hookToggle');
   function syncHook() {
     const on = state.params.hook !== false;
     hookBtn.setAttribute('aria-checked', String(on));
-    $('.dd-label', hookBtn).textContent = 'Hook: ' + (on ? 'On' : 'Off');
+    syncSummary();
   }
   hookBtn.addEventListener('click', () => { state.params.hook = state.params.hook === false; syncHook(); store.save(); });
   const lightBtn = $('#lightToggle');
   function syncLight() {
     const on = state.params.light === true;
     lightBtn.setAttribute('aria-checked', String(on));
-    $('.dd-label', lightBtn).textContent = 'Resources: ' + (on ? 'Light' : 'Standard');
+    syncSummary();
   }
   lightBtn.addEventListener('click', () => { state.params.light = state.params.light !== true; syncLight(); store.save(); });
   const notesBtn = $('#notesToggle'), beceBtn = $('#beceToggle');
   function syncContent() {
     const n = state.params.studyNotes !== false, b = state.params.bece !== false;
-    notesBtn.setAttribute('aria-checked', String(n)); $('.dd-label', notesBtn).textContent = 'Study notes: ' + (n ? 'On' : 'Off');
-    beceBtn.setAttribute('aria-checked', String(b)); $('.dd-label', beceBtn).textContent = 'BECE questions: ' + (b ? 'On' : 'Off');
+    notesBtn.setAttribute('aria-checked', String(n));
+    beceBtn.setAttribute('aria-checked', String(b));
+    syncSummary();
   }
   notesBtn.addEventListener('click', () => { state.params.studyNotes = state.params.studyNotes === false; syncContent(); store.save(); });
   beceBtn.addEventListener('click', () => { state.params.bece = state.params.bece === false; syncContent(); store.save(); });
@@ -1036,6 +1047,7 @@
         });
         return b;
       }));
+    syncSummary();
     const n = 1 + state.params.also.length;
     sendBtn.title = n > 1 ? 'Write ' + n + ' plans' : '';
   }
@@ -1511,7 +1523,7 @@
     makeDropdown($('#ddClass'), { name: 'Class', items: CLASSES.map((x) => ({ id: x, label: x })), get: () => state.params.cls, set: (v) => { state.params.cls = v; store.save(); syncScheme(); syncAlso(); }, label: (x) => x });
     makeDropdown($('#ddWeek'), { name: 'Week', items: WEEKS.map((x) => ({ id: x, label: 'Week ' + x })), get: () => state.params.week, set: (v) => { state.params.week = v; store.save(); syncScheme(); }, label: (x) => 'Week ' + x });
 
-    makeDropdown($('#ddSize'), { name: 'Class size', items: SIZES.map((x) => ({ id: x, label: x + ' learners' })), get: () => state.params.size, set: (v) => { state.params.size = v; store.save(); }, label: (x) => x + ' learners' });
+    makeDropdown($('#ddSize'), { name: 'Class size', items: SIZES.map((x) => ({ id: x, label: x + ' learners' })), get: () => state.params.size, set: (v) => { state.params.size = v; syncSummary(); store.save(); }, label: (x) => x + ' learners' });
     syncHook(); syncLight(); syncContent(); syncScheme(); syncAlso();
     syncNav();
     const s = makeSession();
