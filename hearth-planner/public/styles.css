@@ -932,3 +932,6 @@ html { overscroll-behavior-y: none; }
 .us-pay-top small { margin-left: auto; color: var(--muted); font-size: 12px; }
 .us-pay-who { display: block; margin-top: 2px; color: var(--muted); font-size: 12px; overflow-wrap: anywhere; }
 .us-pay .danger { margin-top: 6px; background: none; border: 0; padding: 4px 0; color: var(--del); font: 600 13.5px var(--font-ui); cursor: pointer; }
+
+.menu-group { padding: 10px 14px 4px; font: 700 11px var(--font-ui); letter-spacing: .06em; text-transform: uppercase; color: var(--muted); }
+.menu-group:not(:first-child) { margin-top: 4px; border-top: 1px solid var(--card-line); }
