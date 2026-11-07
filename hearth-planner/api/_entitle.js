@@ -48,10 +48,30 @@ async function expiry(uid) {
   return rows.length ? Number(rows[0].expires_at) : 0;
 }
 
+// Daily counters for the admin's usage page. Never slows or breaks a request.
+function event(name) {
+  if (!db.configured()) return Promise.resolve();
+  return db.ensure().then(() => db.query('insert into events (day, name, n) values ($1, $2, 1) on conflict (day, name) do update set n = events.n + 1', [dayKey(), name])).catch(() => {});
+}
+// The first time a signed-in teacher is seen counts as a sign-up.
+const seen = new Set();
+async function noteAccount(me) {
+  if (seen.has(me.uid)) return;
+  seen.add(me.uid);
+  try {
+    await db.ensure();
+    const r = await db.query('insert into accounts (user_id, email, first_seen) values ($1, $2, $3) on conflict (user_id) do update set email = case when accounts.email = \'\' then excluded.email else accounts.email end returning (xmax = 0) as fresh', [me.uid, me.email || '', Date.now()]);
+    if (r.length && r[0].fresh) await event('signup');
+  } catch (e) { /* counting is best effort */ }
+}
+const adminEmails = () => String(process.env.ADMIN_EMAILS || '').split(',').map((x) => x.trim().toLowerCase()).filter(Boolean);
+const isAdmin = (me) => !!(me && me.email && adminEmails().includes(String(me.email).toLowerCase()));
+
 // Works out who is asking and which tier applies.
 async function resolve(me, ip) {
   const subject = Quota.subjectFor(me, ip);
   if (!me || !me.uid) return { tier: 'guest', subject };
+  noteAccount(me);
   let expiresAt = 0;
   try { expiresAt = await expiry(me.uid); } catch (e) { console.error('[entitle] expiry lookup failed', e && e.message); }
   const vip = !!me.email && proEmails().includes(me.email.toLowerCase());
@@ -79,7 +99,7 @@ async function checkFree(ent, cls) {
   if (c.freeClasses && !classes.includes(cls) && classes.length >= c.freeClasses) return { ok: false, reason: 'classes', classes, limit: c.freeClasses, resetsAt: nextWeek() };
   return { ok: true, used, limit: c.freePlansWeekly };
 }
-const countFree = (ent, cls) => bump(ent.subject, weekKey(), cls);
+const countFree = (ent, cls) => { event('plan_free'); return bump(ent.subject, weekKey(), cls); };
 
 // Guests: previews that cost tokens today (previews served from the shared cache are free and not counted).
 async function guestUsed(ent) {
@@ -119,4 +139,4 @@ async function status(me, ip) {
   return out;
 }
 
-module.exports = { cfg, enabled, resolve, checkFree, countFree, checkGuest, countGuest, message, status, weekKey, expiry };
+module.exports = { event, isAdmin, cfg, enabled, resolve, checkFree, countFree, checkGuest, countGuest, message, status, weekKey, expiry };

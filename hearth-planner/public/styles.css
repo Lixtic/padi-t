@@ -904,3 +904,31 @@ html { overscroll-behavior-y: none; }
 .foot-link:hover { background: var(--add-bg); color: var(--text); }
 .foot-link[hidden] { display: none; }
 .foot-link .ico { width: 18px; height: 18px; flex: none; }
+
+/* Pro-ending banner, usage sheet, refund help */
+.pro-banner { display: flex; align-items: center; gap: 10px; margin: 0 12px 8px; padding: 9px 8px 9px 14px; border-radius: 14px; background: color-mix(in srgb, var(--gold) 22%, var(--card)); border: 1px solid color-mix(in srgb, var(--gold) 55%, var(--card-line)); font-size: 13.5px; }
+.pro-banner[hidden] { display: none; }
+.pro-banner span { flex: 1; min-width: 0; }
+.pro-banner .pb-go { flex: none; min-height: 34px; padding: 0 14px; border: 0; border-radius: 999px; background: var(--accent); color: var(--on-accent); font: 600 13px var(--font-ui); cursor: pointer; }
+.pro-banner .pb-x { flex: none; width: 34px; height: 34px; border: 0; background: none; color: var(--muted); font-size: 22px; line-height: 1; cursor: pointer; }
+.plan-row[data-warn="1"] .plan-text small { color: #B45309; font-weight: 600; }
+.ps-help { display: block; margin: 10px auto 0; padding: 6px; border: 0; background: none; color: var(--muted); font: 500 13px var(--font-ui); text-decoration: underline; text-underline-offset: 2px; cursor: pointer; }
+.ps-help[hidden] { display: none; }
+.us-tiles { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin: 4px 0 6px; }
+.us-tile { border: 1px solid var(--card-line); border-radius: 14px; background: var(--card); padding: 12px 14px; display: flex; flex-direction: column; gap: 2px; }
+.us-tile strong { font: 600 26px/1.1 var(--font-serif); }
+.us-tile span { font-size: 13px; font-weight: 600; }
+.us-tile small { font-size: 12px; color: var(--muted); }
+.us-sec { margin-top: 6px; }
+.us-rows { list-style: none; margin: 0; padding: 0; border: 1px solid var(--card-line); border-radius: 14px; background: var(--card); overflow: hidden; }
+.us-rows li { display: flex; flex-wrap: wrap; align-items: baseline; gap: 2px 10px; padding: 10px 14px; font-size: 14px; }
+.us-rows li + li { border-top: 1px solid var(--card-line); }
+.us-rows li span { flex: 1; min-width: 0; }
+.us-rows li small { flex-basis: 100%; color: var(--muted); font-size: 12px; }
+.us-note { margin: 8px 0 0; font-size: 13.5px; color: var(--muted); line-height: 1.5; }
+.us-pay { border: 1px solid var(--card-line); border-radius: 14px; background: var(--card); padding: 10px 14px; margin-bottom: 8px; }
+.us-pay.refunded { opacity: .6; }
+.us-pay-top { display: flex; align-items: baseline; gap: 10px; }
+.us-pay-top small { margin-left: auto; color: var(--muted); font-size: 12px; }
+.us-pay-who { display: block; margin-top: 2px; color: var(--muted); font-size: 12px; overflow-wrap: anywhere; }
+.us-pay .danger { margin-top: 6px; background: none; border: 0; padding: 4px 0; color: var(--del); font: 600 13.5px var(--font-ui); cursor: pointer; }

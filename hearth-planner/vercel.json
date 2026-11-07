@@ -63,6 +63,9 @@
       ]
     }
   ],
+  "crons": [
+    { "path": "/api/billing?action=reminders", "schedule": "0 8 * * *" }
+  ],
   "rewrites": [
     {
       "source": "/api/neon-auth/:path*",

@@ -90,4 +90,15 @@ async function sendMail(to, code) {
   if (json) global.__lastMail = { to, code, info };
 }
 
-module.exports = { syncConfigured, legacyConfigured, realtimeConfigured, issue, authed, hashCode, newCode, sendMail };
+// A plain notice email (for example "your Pro ends soon"). Returns false when no mail server is set up.
+async function sendNotice(to, subject, text) {
+  const json = process.env.SMTP_URL === 'json';
+  if (!process.env.SMTP_URL) return false;
+  const nodemailer = require('nodemailer');
+  const transport = nodemailer.createTransport(json ? { jsonTransport: true } : process.env.SMTP_URL);
+  const info = await transport.sendMail({ from: process.env.MAIL_FROM || 'GuidEd <no-reply@localhost>', to, subject, text });
+  if (json) (global.__notices = global.__notices || []).push({ to, subject, text, info });
+  return true;
+}
+
+module.exports = { sendNotice, syncConfigured, legacyConfigured, realtimeConfigured, issue, authed, hashCode, newCode, sendMail };

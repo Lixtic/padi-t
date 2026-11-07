@@ -11,8 +11,7 @@ const A = require('./_auth');
 const db = require('./_db');
 
 const KINDS = ['bug', 'idea', 'other'];
-const adminEmails = () => String(process.env.ADMIN_EMAILS || '').split(',').map((s) => s.trim().toLowerCase()).filter(Boolean);
-const isAdmin = (me) => !!(me && me.email && adminEmails().includes(String(me.email).toLowerCase()));
+const { isAdmin } = require('./_entitle');
 const clip = (v, n) => String(v == null ? '' : v).replace(/[\u0000-\u0008\u000b\u000c\u000e-\u001f]/g, '').trim().slice(0, n);
 
 // Keeps only a few short, known fields of the technical details the app attaches.

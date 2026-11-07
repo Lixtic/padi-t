@@ -54,8 +54,30 @@ async function settle(reference, onlyFor) {
   const data = await paystack('/transaction/verify/' + encodeURIComponent(reference));
   if (data.status !== 'success') return { ok: false, code: data.status || 'pending', message: data.status === 'abandoned' || data.status === 'failed' ? 'The payment was not completed.' : 'The payment is still being confirmed.' };
   if (Number(data.amount) !== Number(row.amount) || String(data.currency) !== String(row.currency)) return { ok: false, code: 'mismatch', message: 'The amount paid does not match this plan. Contact support.' };
-  await grant(reference, Date.now());
+  const g = await grant(reference, Date.now());
+  if (g.granted) E.event('paid');
   return { ok: true };
+}
+
+// Emails each teacher once when their Pro is about to end (within REMIND_DAYS, default 3).
+async function remindExpiring() {
+  if (!process.env.SMTP_URL) return { sent: 0, skipped: 'no mail server (SMTP_URL) is set up' };
+  await db.ensure();
+  const days = Math.max(1, parseInt(process.env.REMIND_DAYS || '3', 10) || 3);
+  const now = Date.now();
+  const rows = await db.query('select s.user_id, s.expires_at, (select email from payments p where p.user_id = s.user_id and p.status = \'success\' order by p.paid_at desc limit 1) as email from subscriptions s where s.expires_at > $1 and s.expires_at <= $2 and s.reminded_for <> s.expires_at', [now, now + days * 86400000]);
+  let sent = 0;
+  for (const r of rows) {
+    if (!r.email) continue;
+    const left = Math.max(1, Math.ceil((Number(r.expires_at) - now) / 86400000));
+    const when = new Date(Number(r.expires_at)).toUTCString().slice(0, 16);
+    try {
+      const ok = await A.sendNotice(r.email, 'Your GuidEd Pro ends in ' + left + (left === 1 ? ' day' : ' days'),
+        'Hello,\n\nYour GuidEd Pro plan ends on ' + when + '. After that your account goes back to the free plan (a few full plans a week, one class, and a footer on Word files).\n\nTo keep Pro, open GuidEd, tap the PRO badge and choose Extend Pro. New time is added on top of what you have left, and nothing renews by itself.\n\nThank you for using GuidEd.');
+      if (ok) { await db.query('update subscriptions set reminded_for = expires_at where user_id = $1', [r.user_id]); sent++; }
+    } catch (e) { console.error('[billing] reminder failed', e && e.message); }
+  }
+  return { sent, due: rows.length };
 }
 
 module.exports = async (req, res) => {
@@ -76,6 +98,13 @@ module.exports = async (req, res) => {
         if (!r || !r.ok) { if (r) console.warn('[billing] webhook not settled', r.code); if (!r || r.code === 'pending') return sendJson(res, 500, { error: 'retry' }); }
       }
       return sendJson(res, 200, { ok: true });
+    }
+
+    // Run once a day by Vercel Cron (see vercel.json). Vercel sends "Authorization: Bearer <CRON_SECRET>" when CRON_SECRET is set.
+    if (action === 'reminders') {
+      const cs = process.env.CRON_SECRET || '';
+      if (!cs || req.headers.authorization !== 'Bearer ' + cs) return sendJson(res, 401, { error: 'unauthorized' });
+      return sendJson(res, 200, await remindExpiring());
     }
 
     const me = req.headers.authorization ? await A.authed(req).catch(() => null) : null;
@@ -105,6 +134,7 @@ module.exports = async (req, res) => {
         email: me.email, amount, currency, reference, callback_url: origin + '/',
         metadata: { product: 'guided-pro', plan: key, user_id: me.uid },
       }) });
+      E.event('checkout_started');
       return sendJson(res, 200, { url: data.authorization_url, reference });
     }
 
@@ -123,4 +153,5 @@ module.exports = async (req, res) => {
   }
 };
 // The webhook signature covers the exact bytes Paystack sent, so this function must receive the body unparsed.
+module.exports.paystack = paystack;
 module.exports.config = { api: { bodyParser: false } };
