@@ -59,6 +59,7 @@ module.exports = async (req, res) => {
   if (ent && ent.tier === 'free' && firstTurn) {
     let g = { ok: true };
     try { g = await Entitle.checkFree(ent, v.params.cls); } catch (e) { console.error('[generate] free check failed', e && e.message); }
+    if (!g.ok) Entitle.event('free_limit_' + g.reason);
     if (!g.ok) return sendJson(res, 402, { error: 'limit', reason: g.reason, resetsAt: g.resetsAt, message: Entitle.message('free', g) });
   }
 
@@ -76,6 +77,8 @@ module.exports = async (req, res) => {
       sendHeaders(hit.how);
       res.end(hit.text);
       if (ent && ent.tier === 'free' && firstTurn) await Entitle.countFree(ent, v.params.cls).catch(() => {});
+      else if (ent && ent.tier === 'pro' && firstTurn) Entitle.event('plan_pro');
+      else if (guest) Entitle.event('guest_preview');
       return;
     }
   }
@@ -84,6 +87,7 @@ module.exports = async (req, res) => {
   if (guest) {
     let g = { ok: true };
     try { g = await Entitle.checkGuest(ent); } catch (e) { console.error('[generate] guest check failed', e && e.message); }
+    if (!g.ok) Entitle.event('guest_limit');
     if (!g.ok) return sendJson(res, 402, { error: 'guest_limit', resetsAt: g.resetsAt, message: Entitle.message('guest', g) });
   }
 
@@ -139,8 +143,9 @@ module.exports = async (req, res) => {
   const tasks = [Quota.record(subject, used)];
   const complete = !failed && !ctrl.signal.aborted && (finish === 'stop' || (guest && wroteText));
   if (complete) tasks.push(Cache.store(ck, full, v.thread.length, used));
-  if (guest && wroteText) tasks.push(Entitle.countGuest(ent));                     // a taster that spent tokens
+  if (guest && wroteText) { Entitle.event('guest_preview'); tasks.push(Entitle.countGuest(ent)); }                     // a taster that spent tokens
   else if (ent && ent.tier === 'free' && firstTurn && !fresh && complete) tasks.push(Entitle.countFree(ent, v.params.cls));
+  else if (ent && ent.tier === 'pro' && firstTurn && !fresh && complete) Entitle.event('plan_pro');
   await Promise.all(tasks).catch(() => {});
 };
 

@@ -163,6 +163,20 @@
   </section>
 </dialog>
 
+<dialog class="acct-sheet up-sheet fb-inbox" id="usageSheet" aria-labelledby="usTitle">
+  <button type="button" class="icon-btn as-close" id="usClose" aria-label="Close"><svg class="ico"><use href="#i-x"/></svg></button>
+  <section>
+    <h2 id="usTitle">Usage and payments</h2>
+    <p class="as-sub" id="usSub"></p>
+    <div class="fb-filter" id="usRange" role="group" aria-label="Period">
+      <button type="button" data-d="7" aria-pressed="false">7 days</button>
+      <button type="button" data-d="30" aria-pressed="true">30 days</button>
+      <button type="button" data-d="90" aria-pressed="false">90 days</button>
+    </div>
+    <div id="usBody"></div>
+  </section>
+</dialog>
+
 <dialog class="acct-sheet up-sheet fb-inbox" id="inboxSheet" aria-labelledby="ibTitle">
   <button type="button" class="icon-btn as-close" id="ibClose" aria-label="Close"><svg class="ico"><use href="#i-x"/></svg></button>
   <section>
@@ -189,6 +203,7 @@
     <ul class="ps-list" id="psList"></ul>
     <button type="button" class="ps-cta" id="psCta" hidden></button>
     <p class="as-foot" id="psNote"></p>
+    <button type="button" class="ps-help" id="psHelp" hidden>Need a refund or help with a payment?</button>
   </section>
 </dialog>
 
@@ -276,6 +291,9 @@
       <button type="button" class="foot-link" id="feedbackBtn">
         <svg class="ico"><use href="#i-pencil"/></svg><span>Report a bug or suggest an idea</span>
       </button>
+      <button type="button" class="foot-link" id="usageBtn" hidden>
+        <svg class="ico"><use href="#i-sliders"/></svg><span>Usage and payments</span>
+      </button>
       <button type="button" class="foot-link" id="inboxBtn" hidden>
         <svg class="ico"><use href="#i-layers"/></svg><span>Feedback inbox</span>
       </button>
@@ -335,6 +353,7 @@
         <span class="dot dot-online" id="statusDot"></span><span id="statusText">Online</span>
       </span>
     </header>
+    <div class="pro-banner" id="proBanner" role="status" hidden><span id="proBannerText"></span><button type="button" class="pb-go" id="proBannerGo">Extend Pro</button><button type="button" class="pb-x" id="proBannerX" aria-label="Dismiss">×</button></div>
 
     <section class="stage" id="stage">
       <div class="grow grow-top"></div>

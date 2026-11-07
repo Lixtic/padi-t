@@ -159,3 +159,9 @@ Use `PRO_EMAILS` to give staff and testers Pro without paying. `TIERS=off` remov
 ## Bug reports and suggestions
 
 Every menu has **Report a bug or suggest an idea**. Messages are saved in the `feedback` table with the plan type, browser and app version (never plans or chats), and limited to 5 per hour per person. To read them, add your sign-in email to `ADMIN_EMAILS` in Vercel, sign in, and open **Feedback inbox** in the menu. You can reply by email, mark messages done, or delete them.
+
+## Usage, payments, refunds and Pro reminders
+
+- **Usage and payments** (menu, admins only, see `ADMIN_EMAILS`): new accounts, guest previews, plans written, how many guests and free teachers hit their limits, checkouts started versus completed, active Pro, money by plan, and recent payments. Counts start from the deploy that added them.
+- **Refunds:** press **Refund** on a payment. GuidEd asks Paystack to refund it in full, marks it refunded, and removes the Pro days that payment bought (never below today). Teachers who want a refund use **Need a refund or help with a payment?** in their plan sheet, which sends you a message in the feedback inbox. Pro does not renew by itself, so there is nothing for a teacher to cancel.
+- **Pro-ending warning:** in the last 7 days teachers see a banner and a warning on their plan card. Teachers also get one email 3 days before the end (change with `REMIND_DAYS`). The email needs `CRON_SECRET` and `SMTP_URL` in Vercel; without them only the in-app warning runs. Vercel Cron runs the job daily at 08:00 UTC.

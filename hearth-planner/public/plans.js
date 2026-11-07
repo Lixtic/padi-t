@@ -11,7 +11,21 @@
   function toast(t) { if (hooks.toast) hooks.toast(t); }
   function fmtDate(ms) { try { return new Date(ms).toLocaleDateString(undefined, { day: 'numeric', month: 'short', year: 'numeric' }); } catch (e) { return ''; } }
   function money(n, cur) { return (cur === 'GHS' ? 'GH₵' : cur + ' ') + (Math.round(n * 100) / 100).toString(); }
-  function emit() { render(); renderBadge(); if (el.ps && el.ps.open) renderPlan(); listeners.forEach(function (f) { try { f(info); } catch (e) { /* ignore */ } }); }
+  // Days left when a paid Pro period ends within a week (testers on PRO_EMAILS have no end date).
+  function endingSoon() {
+    if (P.tier() !== 'pro' || !info.pro || info.pro.vip || !info.pro.expiresAt) return 0;
+    var d = Math.ceil((info.pro.expiresAt - Date.now()) / 86400000);
+    return d >= 1 && d <= 7 ? d : 0;
+  }
+  function dayStamp() { return new Date().toISOString().slice(0, 10); }
+  function renderBanner() {
+    var b = document.getElementById('proBanner'); if (!b) return;
+    var d = endingSoon(), shown = !!d;
+    try { if (shown && localStorage.getItem('guided.proBanner') === info.pro.expiresAt + ':' + dayStamp()) shown = false; } catch (e) { /* show it */ }
+    b.hidden = !shown;
+    if (shown) document.getElementById('proBannerText').textContent = 'Your Pro ends in ' + d + (d === 1 ? ' day' : ' days') + ' (' + fmtDate(info.pro.expiresAt) + ').';
+  }
+  function emit() { render(); renderBadge(); renderBanner(); if (el.ps && el.ps.open) renderPlan(); listeners.forEach(function (f) { try { f(info); } catch (e) { /* ignore */ } }); }
 
   var P = {
     configure: function (h) { hooks = h || {}; },
@@ -124,10 +138,11 @@
       cta = 'Upgrade';
     } else {
       title = 'GuidEd Pro';
-      sub = info.pro && info.pro.expiresAt ? 'Active until ' + fmtDate(info.pro.expiresAt) : 'Active';
-      cta = 'Extend';
+      var dl0 = endingSoon();
+      sub = dl0 ? 'Ends in ' + dl0 + (dl0 === 1 ? ' day' : ' days') + ' · ' + fmtDate(info.pro.expiresAt) : info.pro && info.pro.expiresAt ? 'Active until ' + fmtDate(info.pro.expiresAt) : 'Active';
+      cta = dl0 ? 'Extend now' : 'Extend';
     }
-    el.row.dataset.tier = tone;
+    el.row.dataset.tier = tone; el.row.dataset.warn = t === 'pro' && endingSoon() ? '1' : '';
     el.rowTitle.textContent = title; el.rowSub.textContent = sub; el.rowCta.textContent = cta; el.rowCta.hidden = !cta;
     document.documentElement.dataset.tier = t;
   }
@@ -200,6 +215,7 @@
       var ex = info.pro && info.pro.expiresAt;
       el.psTitle.textContent = 'You have GuidEd Pro';
       sub = ex ? 'Active until ' + fmtDate(ex) + ' (' + daysLeft(ex) + ' days left)' : 'Active on your account';
+      if (endingSoon()) sub = 'Ends soon: ' + sub;
       cta = 'Extend Pro';
       note = 'New time is added on top of what you have left.';
     }
@@ -218,6 +234,7 @@
       li.append(mark, body); el.psList.append(li);
     });
     el.psCta.textContent = cta; el.psCta.hidden = !cta; el.psNote.textContent = note;
+    if (el.psHelp) el.psHelp.hidden = !(t === 'pro' && info.pro && !info.pro.vip);
   }
   P.openPlan = function () {
     if (!el.ps || !P.tier()) return;
@@ -268,6 +285,11 @@
       el.psBadge = $('#psBadge'); el.psTitle = $('#psTitle'); el.psSub = $('#psSub'); el.psMeter = $('#psMeter'); el.psFill = $('#psFill');
       el.psMeterText = $('#psMeterText'); el.psList = $('#psList'); el.psCta = $('#psCta'); el.psNote = $('#psNote');
       $('#psClose').addEventListener('click', P.closePlan);
+      el.psHelp = $('#psHelp');
+      el.psHelp.addEventListener('click', function () { P.closePlan(); if (window.GuidedFeedback) window.GuidedFeedback.open({ kind: 'other', text: 'Refund or payment help: ' }); });
+      var bGo = $('#proBannerGo'), bX = $('#proBannerX');
+      if (bGo) bGo.addEventListener('click', function () { P.openUpgrade('', ''); });
+      if (bX) bX.addEventListener('click', function () { try { localStorage.setItem('guided.proBanner', info.pro.expiresAt + ':' + dayStamp()); } catch (e) { /* ignore */ } renderBanner(); });
       el.ps.addEventListener('click', function (e) {
         var r = el.ps.getBoundingClientRect();
         if (e.clientX < r.left || e.clientX > r.right || e.clientY < r.top || e.clientY > r.bottom) P.closePlan();

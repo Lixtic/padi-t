@@ -28,6 +28,12 @@ const SCHEMA = [
   // Bug reports and suggestions sent from inside the app.
   "create table if not exists feedback (id text primary key, kind text not null, message text not null, email text not null default '', user_id text not null default '', tier text not null default '', context text not null default '', status text not null default 'new', created_at bigint not null)",
   'create index if not exists feedback_status on feedback (status, created_at)',
+  // Usage numbers for the admin: daily counters, and one row per account the first time it is seen (first_seen 0 = existed before tracking began).
+  'create table if not exists events (day text not null, name text not null, n int not null default 0, primary key (day, name))',
+  'create table if not exists accounts (user_id text primary key, email text not null default \'\', first_seen bigint not null)',
+  'alter table subscriptions add column if not exists reminded_for bigint not null default 0',
+  'alter table payments add column if not exists refunded_at bigint',
+  'insert into accounts (user_id, first_seen) select distinct user_id, 0 from plans on conflict do nothing',
   'create table if not exists plan_log (subject text not null, period text not null, cls text not null, n int not null default 0, primary key (subject, period, cls))',
 ];
 
