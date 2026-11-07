@@ -44,9 +44,9 @@ async function read(subject, day) {
 
 // Checks the budget before a generation. estimate is the expected input size in tokens.
 // Returns { ok, remaining, limit, retryAfter, scope } and never throws (a failure to check lets the request through).
-async function check(subject, estimate) {
+async function check(subject, estimate, opts) {
   const day = today();
-  const limit = perSubject(), cap = siteCap();
+  const limit = opts && opts.limit !== undefined ? opts.limit : perSubject(), cap = siteCap();
   if (!limit && !cap) return { ok: true, remaining: Infinity, limit: 0 };
   try {
     if (cap) {

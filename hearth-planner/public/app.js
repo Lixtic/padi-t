@@ -520,6 +520,7 @@
       setKind(k) { kind = KIND_TITLE[k] !== undefined ? k : 'plan'; titleEl.textContent = api.title; },
       set(raw, final, msg) {
         api.text = raw;
+        const pv = !!(msg && msg.preview);
         const { body, chips } = splitElic(raw);
         bodyEl.innerHTML = renderMd(body);
         progress.textContent = final ? '' : 'Writing… ' + wordCount(body) + ' words';
@@ -527,7 +528,10 @@
           api.msg = msg || null;
           tools.forEach((b) => { b.disabled = false; });
           metaEl.textContent = msg ? metaText(msg) : '';
-          if (!demoted) {
+          if (pv) {                                       // a taster: no editing or regenerating, and a card that leads to the full plan
+            [btnRegen, btnEdit, btnReuse].forEach((b) => { b.hidden = true; });
+            chipsEl.replaceChildren(paywallCard(session)); extrasEl.replaceChildren();
+          } else if (!demoted) {
             chipsEl.replaceChildren(...chips.map((c) => h('button', { type: 'button', class: 'chip-btn', text: c, onclick: () => onChip(c) })));
             fillExtras();
           }
@@ -554,9 +558,59 @@
     });
     btnReuse.addEventListener('click', () => reuseSession());
     btnRegen.addEventListener('click', () => regenerate());
-    btnDocx.addEventListener('click', () => exportDocx(api.text, api.title, btnDocx, kind));
+    btnDocx.addEventListener('click', () => {
+      if (api.msg && api.msg.preview) {
+        if (signedIn()) toast('This is a preview of Lesson 1. Write the full plan to download it.');
+        else openSignupSheet('Create a free account to unlock the full plan and download it.');
+        return;
+      }
+      exportDocx(api.text, api.title, btnDocx, kind);
+    });
     return api;
   }
+
+  /* ───────── Free preview, Free and Pro ───────── */
+  // The card under a guest's taster. Guests create an account; signed-in teachers write the full plan.
+  function paywallCard(session) {
+    const btn = h('button', { type: 'button', class: 'pw-main', 'data-pw': '1' });
+    const sub = h('span', { class: 'pw-sub', 'data-pw-sub': '1' });
+    const paint = () => { const guest = !signedIn(); btn.textContent = guest ? 'Create free account' : 'Write the full plan'; sub.textContent = guest ? 'Free. Takes about a minute.' : 'Uses one of your plans.'; };
+    paint();
+    btn.addEventListener('click', () => { if (signedIn()) unlockFull(session); else openSignupSheet('Create a free account to unlock the full plan.'); });
+    return h('div', { class: 'paywall' },
+      h('h3', { text: 'This is a preview of Lesson 1' }),
+      h('p', { text: 'The full plan is ready when you are:' }),
+      h('ul', null, ...['Lesson 2 and the complete weekly package', 'Study notes for every sub-topic', 'BECE practice questions with a marking guide', 'Word download, ready to print'].map((x) => h('li', { text: x }))),
+      h('div', { class: 'pw-actions' }, btn, sub));
+  }
+  function openSignupSheet(msg) {
+    if (!window.PadiSync || !window.PadiSync.authConfigured()) { toast(msg || 'Sign-in is not available here.'); return; }
+    openSheet('signup');
+    if (msg) showBanner(msg, { ok: true });
+  }
+  // Writes the full version of a plan that was only previewed.
+  function unlockFull(s) {
+    if (state.streaming || !s || !s.params) return;
+    state.params = Object.assign({}, state.params, { subject: s.params.subject, cls: s.params.cls, week: s.params.week, size: s.params.size || state.params.size, hook: s.params.hook !== false, light: s.params.light === true, studyNotes: true, bece: true, also: [] });
+    syncPills(); syncAlso();
+    const fresh = makeSession();
+    state.sessions.unshift(fresh);
+    promptEl.value = '';
+    showSession(fresh.id);
+    submit();
+  }
+  if (window.GuidedPlans) {
+    window.GuidedPlans.configure({
+      toast: (t) => toast(t), signedIn: () => signedIn(), authHeader: () => (window.PadiSync ? window.PadiSync.authHeader() : Promise.resolve({})),
+      openSignup: openSignupSheet,
+    });
+    window.GuidedPlans.captureReturn();
+    window.GuidedPlans.onChange(() => {
+      syncAlso();
+      document.querySelectorAll('.pw-main').forEach((b) => { const guest = !signedIn(); b.textContent = guest ? 'Create free account' : 'Write the full plan'; });
+    });
+  }
+  const refreshPlans = () => { const G = window.GuidedPlans; if (G && !state.config.demo) G.load().then(() => G.resume()); };
 
   function askFor(kind) {
     if (state.streaming) return;
@@ -605,6 +659,8 @@
   }
   async function exportDocx(text, title, btn, kind) {
     const layout = kind === 'worksheet' || kind === 'homework' ? 'portrait' : 'landscape';
+    const GP = window.GuidedPlans;
+    if (GP && GP.tier() === 'guest') { openSignupSheet('Create a free account to download Word files.'); return; }
     const label = $('span', btn);
     const before = label.textContent;
     btn.disabled = true; label.textContent = 'Preparing…';
@@ -618,7 +674,7 @@
       try {
         await loadDocxLib();
         const who = profile();
-        const blob = await window.SchoolPadiDocx.toFile(window.docx, title, splitElic(text).body, { portrait: layout === 'portrait', teacher: who.teacher, school: who.school });
+        const blob = await window.SchoolPadiDocx.toFile(window.docx, title, splitElic(text).body, { portrait: layout === 'portrait', teacher: who.teacher, school: who.school, footer: GP ? GP.footerText() : '' });
         saveBlob(blob, title);
         toast('Downloaded ' + title + '.docx' + hintProfile());
         return;
@@ -661,8 +717,10 @@
       try { j = await res.json(); } catch (e) { /* not JSON */ }
       const err = new Error(j.message || 'The request failed (' + res.status + ').');
       err.code = j.error || (res.status === 404 ? 'not_configured' : 'http_' + res.status);
+      err.reason = j.reason;
       throw err;
     }
+    state.lastPreview = res.headers.get('x-guided-preview') === '1';     // a guest's taster: Lesson 1 only
     if (!res.body || !res.body.getReader) { yield await res.text(); return; }
     const reader = res.body.getReader();
     const dec = new TextDecoder();
@@ -746,6 +804,10 @@
       s.messages.push({ role: 'user', content: text });
     } else {                                        // follow-up
       if (!text) return;
+      if (s.messages.some((m) => m.preview)) {       // a taster cannot be refined: it has to become a full plan first
+        if (signedIn()) unlockFull(s); else openSignupSheet('Create a free account to unlock the full plan and ask for changes.');
+        return;
+      }
       s.messages.push({ role: 'user', content: text });
     }
     s.updatedAt = Date.now();
@@ -818,6 +880,7 @@
     }
     if (raf) cancelAnimationFrame(raf);
     state.streaming = null;
+    const previewFlag = state.lastPreview === true; state.lastPreview = false;
 
     // The server is not set up with a key: fall back to the sample and carry on.
     if (err && err.code === 'not_configured' && !text) {
@@ -834,6 +897,9 @@
 
     if (err && !text.trim()) {
       const isFirst = session.messages.length === 1;
+      const GP = window.GuidedPlans;
+      if (GP && err.code === 'limit') GP.openUpgrade(err.reason, err.message);
+      else if (err.code === 'guest_limit' || err.code === 'account') openSignupSheet(err.message);
       if (err.code === 'access') {
         state.config.accessRequired = true; showAccess(true); accessInput.focus();
       }
@@ -862,12 +928,14 @@
     }
 
     const msg = { role: 'assistant', kind, content: text, seconds: (performance.now() - t0) / 1000, stopped: aborted, demo: state.config.demo, warning };
+    if (previewFlag) msg.preview = true;
     if (!text.trim()) { bot.error(warning || 'The model returned nothing. Please try again.', () => { bot.root.remove(); state.bots.pop(); runGenerate(session); }); updateSend(); renderSessions(); updateTopbar(); return; }
     session.messages.push(msg);
     session.updatedAt = Date.now();
     bot.set(text, true, msg);
     updateSend(); renderSessions(); updateTopbar(); updateView(); store.save();
     scrollBottom();
+    if (window.GuidedPlans && !state.config.demo) window.GuidedPlans.load();       // refresh "plans left"
     if (aborted) planQueue = []; else if (planQueue.length && session.messages.length === 2) setTimeout(nextInQueue, 700);
   }
 
@@ -1038,8 +1106,10 @@
     alsoRow.replaceChildren(h('span', { class: 'also-label', title: 'Uses the same subject, week and class size' }, 'Also plan for'),
       ...others.map((c) => {
         const on = state.params.also.includes(c);
-        const b = h('button', { type: 'button', class: 'pill pill-toggle', role: 'switch', 'aria-checked': String(on) }, (on ? '✓ ' : '+ ') + c);
+        const locked = !!(window.GuidedPlans && window.GuidedPlans.alsoLocked());
+        const b = h('button', { type: 'button', class: 'pill pill-toggle', role: 'switch', 'aria-checked': String(on && !locked) }, (on && !locked ? '✓ ' : '+ ') + c + (locked ? '  🔒 Pro' : ''));
         b.addEventListener('click', () => {
+          if (locked) { window.GuidedPlans.openUpgrade('classes', 'Planning for several classes at once is part of GuidEd Pro.'); return; }
           const set = new Set(state.params.also || []);
           if (set.has(c)) set.delete(c); else set.add(c);
           state.params.also = CLASSES.filter((x) => set.has(x));
@@ -1136,6 +1206,7 @@
       state.config = { loaded: true, demo: true, provider: null, accessRequired: false };   // static preview, no server
     }
     showAccess(state.config.accessRequired && !state.config.demo);
+    if (window.GuidedPlans) window.GuidedPlans.setDemo(state.config.demo);
     updateView(); updateTopbar();
   }
 
@@ -1294,6 +1365,7 @@
       refreshAcct();
       if (signedIn() && window.PadiSync.syncAvailable()) { syncNow(); watchLive(); }
       openResetFromLink();
+      refreshPlans();
     }).catch((e) => acctMsg(e.message, true));
   }
 
@@ -1488,7 +1560,7 @@
     setBusy(true, signup ? 'Creating your account…' : 'Signing in…');
     try {
       if (signup) await window.PadiSync.signUp(email, password); else await window.PadiSync.signIn(email, password);
-      sheet.pw.value = ''; problemKind = ''; refreshAcct(); watchLive();
+      sheet.pw.value = ''; problemKind = ''; refreshAcct(); watchLive(); refreshPlans();
       showAccountView(signup ? 'Account created' : 'Welcome back', 'Checking your plans…');
       setBusy(false);
       await syncAndReport(signup);
@@ -1503,7 +1575,7 @@
   sheet.signOut.addEventListener('click', async () => {
     await window.PadiSync.signOut();
     if (stopLive) { stopLive(); stopLive = null; }
-    lastSync = 0; problemKind = ''; acctStatus(''); refreshAcct(); acctMsg('');
+    lastSync = 0; problemKind = ''; acctStatus(''); refreshAcct(); acctMsg(''); refreshPlans();
     closeSheet(); toast('Signed out. Your plans stay on this device.');
   });
   document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible') scheduleSync(); });
