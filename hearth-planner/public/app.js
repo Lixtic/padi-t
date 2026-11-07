@@ -1156,7 +1156,7 @@
     email: $('#asEmail'), emailErr: $('#asEmailErr'), pw: $('#asPassword'), pwErr: $('#asPwErr'), pwHint: $('#asPwHint'), show: $('#asShow'),
     banner: $('#asBanner'), bannerText: $('#asBannerText'), bannerAct: $('#asBannerAct'), help: $('#asHelp'), helpList: $('#asHelpList'),
     submit: $('#asSubmit'), submitText: $('#asSubmitText'),
-    forgot: $('#asForgot'), tabs: $('#asTabs'), emailField: $('#asEmailField'), pwLabel: $('#asPwLabel'), pwField: $('#asPwField'), foot: $('#asFoot'),
+    forgot: $('#asForgot'), detail: $('#asDetail'), tabs: $('#asTabs'), emailField: $('#asEmailField'), pwLabel: $('#asPwLabel'), pwField: $('#asPwField'), foot: $('#asFoot'),
     badge: $('#asBadge'), acctTitle: $('#asAcctTitle'), who: $('#asWho'), result: $('#asResult'), view: $('#asView'), syncNow: $('#asSyncNow'), signOut: $('#asSignOut'),
   };
   const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -1323,6 +1323,7 @@
     if (opts.action) { sheet.bannerAct.textContent = opts.action.label; bannerRun = opts.action.run; }
     sheet.help.hidden = !opts.help;
     if (opts.help) { sheet.helpList.replaceChildren(...opts.help.map((t) => h('li', { text: t }))); sheet.help.open = true; }
+    sheet.detail.textContent = opts.detail || ''; sheet.detail.hidden = !opts.detail;
     sheet.banner.hidden = false;
   }
   function fieldError(input, errEl, text) {
@@ -1418,7 +1419,7 @@
     const code = err && err.code;
     if (code === 'cookies') {
       problemKind = 'cookies'; refreshAcct();
-      showBanner((err.created ? 'Your account was created. ' : '') + err.message, { help: browserSteps() });
+      showBanner((err.created ? 'Your account was created. ' : '') + err.message, { help: browserSteps(), detail: err.detail, action: { label: 'Continue without syncing', run: closeSheet } });
     } else if (code === 'exists') showBanner(err.message, { action: { label: 'Sign in instead', run: () => setMode('signin') } });
     else if (code === 'badlogin') showBanner(err.message, { action: { label: 'New here? Create an account', run: () => setMode('signup') } });
     else if (code === 'password') fieldError(sheet.pw, sheet.pwErr, err.message);

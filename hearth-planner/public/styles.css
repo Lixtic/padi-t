@@ -795,3 +795,5 @@ html { overscroll-behavior-y: none; }
   .pill-main .dd .menu { min-width: 100%; }
 }
 .opt-toggle[aria-expanded="true"] .disc-chev { transform: rotate(180deg); }
+.as-detail { margin: 8px 0 0; font: 12px/1.45 ui-monospace, SFMono-Regular, Menlo, monospace; color: var(--muted); word-break: break-word; user-select: all; }
+.as-detail[hidden] { display: none; }
