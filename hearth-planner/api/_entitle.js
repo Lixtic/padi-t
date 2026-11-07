@@ -22,8 +22,8 @@ const cfg = () => ({
   previewMaxTokens: Math.max(500, num('PREVIEW_MAX_TOKENS', 2200)),
   currency: process.env.PRO_CURRENCY || 'GHS',
   plans: {
-    monthly: { label: 'Monthly', amount: num('PRO_PRICE_MONTHLY', 40), days: num('PRO_DAYS_MONTHLY', 30) },
-    term: { label: 'Full term', amount: num('PRO_PRICE_TERM', 100), days: num('PRO_DAYS_TERM', 120) },
+    monthly: { label: 'Monthly', amount: num('PRO_PRICE_MONTHLY', 23), days: num('PRO_DAYS_MONTHLY', 30) },
+    term: { label: 'Full term', amount: num('PRO_PRICE_TERM', 50), days: num('PRO_DAYS_TERM', 120) },
   },
 });
 
