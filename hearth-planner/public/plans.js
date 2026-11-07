@@ -11,7 +11,7 @@
   function toast(t) { if (hooks.toast) hooks.toast(t); }
   function fmtDate(ms) { try { return new Date(ms).toLocaleDateString(undefined, { day: 'numeric', month: 'short', year: 'numeric' }); } catch (e) { return ''; } }
   function money(n, cur) { return (cur === 'GHS' ? 'GH₵' : cur + ' ') + (Math.round(n * 100) / 100).toString(); }
-  function emit() { render(); listeners.forEach(function (f) { try { f(info); } catch (e) { /* ignore */ } }); }
+  function emit() { render(); renderBadge(); if (el.ps && el.ps.open) renderPlan(); listeners.forEach(function (f) { try { f(info); } catch (e) { /* ignore */ } }); }
 
   var P = {
     configure: function (h) { hooks = h || {}; },
@@ -132,6 +132,100 @@
     document.documentElement.dataset.tier = t;
   }
 
+  /* ───────── Plan badge (top bar) and "Your plan" sheet ───────── */
+  var NAMES = { guest: 'Guest', free: 'Free', pro: 'Pro' };
+  function renderBadge() {
+    if (!el.badge) return;
+    var t = P.tier();
+    el.badge.hidden = !t;
+    if (!t) return;
+    el.badge.dataset.tier = t;
+    el.badge.textContent = NAMES[t];
+    el.badge.setAttribute('aria-label', 'Your plan: ' + NAMES[t] + '. Tap to see what it includes.');
+  }
+  // [what, guest, free, pro, free-and-guest hint of what Pro adds]. ok=false shows a lock.
+  function capabilities(t) {
+    var lim = info.limits || {};
+    var fp = lim.freePlansWeekly, fc = lim.freeClasses, gp = lim.guestPreviewsDaily;
+    var freeClasses = fc === 1 ? '1 class a week' : fc ? fc + ' classes a week' : 'Every class';
+    var all = {
+      guest: [
+        ['Lesson plans', true, 'Lesson 1 preview' + (gp ? ', ' + gp + ' a day' : ''), 'Unlimited full plans'],
+        ['Classes', true, '1 class at a time', 'Basic 7, 8 and 9'],
+        ['Study notes and BECE questions', false, 'Create a free account to add them'],
+        ['Changes and follow-up requests', false, 'Create a free account to ask'],
+        ['Word downloads', false, 'Create a free account to download'],
+        ['Sync across your devices', false, 'Create a free account to sync'],
+      ],
+      free: [
+        ['Lesson plans', true, fp ? fp + ' full plans a week' : 'Full plans', 'Unlimited full plans'],
+        ['Classes', true, freeClasses, 'Basic 7, 8 and 9'],
+        ['Study notes and BECE questions', true, 'Included'],
+        ['Changes and follow-up requests', true, 'Included'],
+        ['Word downloads', true, 'With a "Made with GuidEd" footer', 'Clean, ready to print'],
+        ['Sync across your devices', true, 'Included'],
+      ],
+      pro: [
+        ['Lesson plans', true, 'Unlimited full plans'],
+        ['Classes', true, 'Basic 7, 8 and 9'],
+        ['Study notes and BECE questions', true, 'Included'],
+        ['Changes and follow-up requests', true, 'Included'],
+        ['Word downloads', true, 'Clean, ready to print'],
+        ['Sync across your devices', true, 'Included'],
+      ],
+    };
+    return all[t];
+  }
+  function daysLeft(ms) { return Math.max(0, Math.ceil((ms - Date.now()) / 86400000)); }
+  function renderPlan() {
+    var t = P.tier();
+    if (!t || !el.ps) return;
+    el.psBadge.dataset.tier = t; el.psBadge.textContent = NAMES[t];
+    var sub = '', meter = null, cta = '', note = '';
+    if (t === 'guest') {
+      var g = info.guest || { used: 0, limit: 0 };
+      el.psTitle.textContent = 'You are using GuidEd as a guest';
+      sub = 'You can try a preview of Lesson 1 without an account.';
+      if (g.limit) meter = { used: g.used, limit: g.limit, text: Math.max(0, g.limit - g.used) + ' of ' + g.limit + ' previews left today' };
+      cta = 'Create free account';
+      note = 'A free account unlocks full plans, Word downloads and sync.';
+    } else if (t === 'free') {
+      var f = info.free || { used: 0, limit: 0 };
+      el.psTitle.textContent = 'You are on the Free plan';
+      sub = info.email ? 'Signed in as ' + info.email : 'Signed in';
+      if (f.limit) meter = { used: f.used, limit: f.limit, text: Math.max(0, f.limit - f.used) + ' of ' + f.limit + ' full plans left this week' + (f.resetsAt ? ' · renews Monday' : '') };
+      cta = 'Upgrade to Pro';
+      note = 'Pro is a one-time payment for a set time. It never renews by itself.';
+    } else {
+      var ex = info.pro && info.pro.expiresAt;
+      el.psTitle.textContent = 'You have GuidEd Pro';
+      sub = ex ? 'Active until ' + fmtDate(ex) + ' (' + daysLeft(ex) + ' days left)' : 'Active on your account';
+      cta = 'Extend Pro';
+      note = 'New time is added on top of what you have left.';
+    }
+    el.psSub.textContent = sub;
+    el.psMeter.hidden = !meter;
+    if (meter) { el.psFill.style.width = Math.min(100, meter.limit ? Math.round(100 * meter.used / meter.limit) : 0) + '%'; el.psMeterText.textContent = meter.text; }
+    el.psList.replaceChildren();
+    capabilities(t).forEach(function (c) {
+      var li = document.createElement('li'); li.className = c[1] ? 'ok' : 'locked';
+      var mark = document.createElement('span'); mark.className = 'ps-mark'; mark.setAttribute('aria-hidden', 'true'); mark.textContent = c[1] ? '✓' : '🔒';
+      var body = document.createElement('span'); body.className = 'ps-body';
+      var a = document.createElement('strong'); a.textContent = c[0];
+      var b = document.createElement('small'); b.textContent = c[2];
+      body.append(a, b);
+      if (c[3] && t === 'free') { var u = document.createElement('small'); u.className = 'ps-pro'; u.textContent = 'Pro: ' + c[3]; body.append(u); }
+      li.append(mark, body); el.psList.append(li);
+    });
+    el.psCta.textContent = cta; el.psCta.hidden = !cta; el.psNote.textContent = note;
+  }
+  P.openPlan = function () {
+    if (!el.ps || !P.tier()) return;
+    renderPlan();
+    if (!el.ps.open) el.ps.showModal();
+  };
+  P.closePlan = function () { if (el.ps && el.ps.open) el.ps.close(); };
+
   /* ───────── Upgrade sheet ───────── */
   function showMsg(t) { el.msg.textContent = t; el.msg.hidden = !t; }
   function setPayBusy(on) { el.buy.forEach(function (b) { b.disabled = on || b.dataset.off === '1'; b.classList.toggle('busy', on); }); }
@@ -168,6 +262,22 @@
   function build() {
     el.row = $('#planRow');
     if (el.row) { el.rowTitle = $('#planRowTitle'); el.rowSub = $('#planRowSub'); el.rowCta = $('#planRowCta'); }
+    el.badge = $('#planBadge');
+    el.ps = $('#planSheet');
+    if (el.ps) {
+      el.psBadge = $('#psBadge'); el.psTitle = $('#psTitle'); el.psSub = $('#psSub'); el.psMeter = $('#psMeter'); el.psFill = $('#psFill');
+      el.psMeterText = $('#psMeterText'); el.psList = $('#psList'); el.psCta = $('#psCta'); el.psNote = $('#psNote');
+      $('#psClose').addEventListener('click', P.closePlan);
+      el.ps.addEventListener('click', function (e) {
+        var r = el.ps.getBoundingClientRect();
+        if (e.clientX < r.left || e.clientX > r.right || e.clientY < r.top || e.clientY > r.bottom) P.closePlan();
+      });
+      el.psCta.addEventListener('click', function () {
+        var t = P.tier(); P.closePlan();
+        if (t === 'guest') { if (hooks.openSignup) hooks.openSignup(); } else P.openUpgrade('', '');
+      });
+    }
+    if (el.badge) el.badge.addEventListener('click', P.openPlan);
     el.dlg = $('#upSheet');
     if (!el.dlg) return;
     el.title = $('#upTitle'); el.lead = $('#upLead'); el.reason = $('#upReason'); el.table = $('#upTable'); el.note = $('#upNote'); el.msg = $('#upMsg');
@@ -179,11 +289,7 @@
     });
     el.buyMonthly.addEventListener('click', function () { P.pay('monthly'); });
     el.buyTerm.addEventListener('click', function () { P.pay('term'); });
-    if (el.row) el.row.addEventListener('click', function () {
-      var t = P.tier();
-      if (t === 'guest') { if (hooks.openSignup) hooks.openSignup(); }
-      else P.openUpgrade('', '');
-    });
+    if (el.row) el.row.addEventListener('click', P.openPlan);
   }
 
   window.GuidedPlans = P;

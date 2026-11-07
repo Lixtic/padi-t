@@ -130,6 +130,20 @@
 </dialog>
 
 <!-- ───────── Upgrade to Pro ───────── -->
+<dialog class="acct-sheet up-sheet" id="planSheet" aria-labelledby="psTitle">
+  <button type="button" class="icon-btn as-close" id="psClose" aria-label="Close"><svg class="ico"><use href="#i-x"/></svg></button>
+  <section>
+    <span class="plan-badge ps-badge" id="psBadge" data-tier=""></span>
+    <h2 id="psTitle">Your plan</h2>
+    <p class="as-sub" id="psSub"></p>
+    <div class="ps-meter" id="psMeter" hidden><div class="ps-bar"><span id="psFill"></span></div><small id="psMeterText"></small></div>
+    <h3 class="ps-h">What you can do</h3>
+    <ul class="ps-list" id="psList"></ul>
+    <button type="button" class="ps-cta" id="psCta" hidden></button>
+    <p class="as-foot" id="psNote"></p>
+  </section>
+</dialog>
+
 <dialog class="acct-sheet up-sheet" id="upSheet" aria-labelledby="upTitle">
   <button type="button" class="icon-btn as-close" id="upClose" aria-label="Close"><svg class="ico"><use href="#i-x"/></svg></button>
   <section>
@@ -258,6 +272,7 @@
         <svg class="ico"><use href="#i-menu"/></svg>
       </button>
       <div class="tb-title" id="topTitle">New plan</div>
+      <button type="button" class="plan-badge" id="planBadge" data-tier="" aria-haspopup="dialog" aria-label="Your plan" hidden></button>
       <button type="button" class="icon-btn acct-top" id="acctTop" aria-label="Sign in or create account" aria-haspopup="dialog" data-state="out" hidden>
         <svg class="ico"><use href="#i-user"/></svg><span class="acct-dot" aria-hidden="true"></span>
       </button>
