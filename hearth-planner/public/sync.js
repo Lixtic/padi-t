@@ -4,6 +4,7 @@
 (function () {
   'use strict';
   var AUTH_KEY = 'schoolpadi.auth';
+  var authBase = '', trace = [];
   var enabled = false, syncEnabled = false, realtime = false, session = null, live = null, authClient = null;
 
   function load() { try { session = JSON.parse(localStorage.getItem(AUTH_KEY)); } catch (e) { session = null; } }
@@ -15,20 +16,49 @@
   var COOKIE_MSG = 'Your email and password were accepted, but this browser did not keep your sign-in, so your plans cannot sync here. '
     + 'This usually means the browser is blocking cookies from the sign-in service (for example Safari\'s "Prevent Cross-Site Tracking", a private window, or a tracking blocker).';
 
+  var wait = function (ms) { return new Promise(function (r) { setTimeout(r, ms); }); };
+  var note = function (step, what) { trace.push(step + ': ' + what); };
+
+  // Gets a short-lived access token for our own API. The sign-in library's token() is tried first. If it fails, two other routes to the
+  // same token are tried (a direct request, then the token header on a session check), because browsers can be slow to store the new
+  // cookie and the library's cached state can be stale. Every step is noted so a failure can say exactly where it stopped.
+  async function fetchJwt() {
+    trace = [];
+    for (var attempt = 0; attempt < 3; attempt++) {
+      if (attempt) await wait(attempt === 1 ? 350 : 900);
+      try {
+        var t = await authClient.token();
+        if (t && t.data && t.data.token) return t.data.token;
+        note('token()', t && t.error ? (t.error.status || '') + ' ' + (t.error.message || t.error.code || 'error') : 'no token');
+      } catch (e) { note('token()', 'threw ' + (e && (e.message || e.status))); }
+      try {
+        var r = await fetch(authBase + '/token', { credentials: 'include', headers: { accept: 'application/json' } });
+        var b = null; try { b = await r.json(); } catch (e) { /* not JSON */ }
+        if (r.ok && b && b.token) return b.token;
+        note('GET /token', r.status + (b && (b.message || b.code) ? ' ' + (b.message || b.code) : ''));
+      } catch (e) { note('GET /token', 'failed ' + (e && e.message)); }
+      try {
+        var hdr = '';
+        var g = await authClient.getSession({ fetchOptions: { onSuccess: function (ctx) { hdr = (ctx && ctx.response && ctx.response.headers && ctx.response.headers.get('set-auth-jwt')) || ''; } } });
+        if (hdr) return hdr;
+        note('getSession()', g && g.data && g.data.user ? 'signed in, but no token header' : 'no session (cookie not sent)');
+      } catch (e) { note('getSession()', 'threw ' + (e && e.message)); }
+    }
+    return '';
+  }
+
   async function call(path, opts) {
     opts = opts || {};
     var headers = { 'content-type': 'application/json' };
     if (opts.auth) {
       if (!authClient) throw problem('Please sign in again.', 'session', { status: 401 });
-      var tokenResult;
-      try { tokenResult = await authClient.token(); }
-      catch (e) { tokenResult = { error: e }; }
-      if (!tokenResult || tokenResult.error || !tokenResult.data || !tokenResult.data.token) {
+      var jwt = await fetchJwt();
+      if (!jwt) {
         // The sign-in service did not recognise this browser. Say so plainly instead of silently signing the teacher out.
         session = null; store();
         throw problem('Your sign-in has ended on this device. Please sign in again.', 'session', { status: 401 });
       }
-      headers.authorization = 'Bearer ' + tokenResult.data.token;
+      headers.authorization = 'Bearer ' + jwt;
     }
     var res;
     try { res = await fetch(path, { method: opts.method || 'GET', headers: headers, body: opts.body ? JSON.stringify(opts.body) : undefined }); }
@@ -78,9 +108,13 @@
   // After a successful sign-in, confirm the session can really be used. If it cannot (usually blocked cookies), say so now
   // instead of letting the teacher find out later that nothing syncs.
   async function confirmSession() {
-    var t;
-    try { t = await authClient.token(); } catch (e) { t = null; }
-    if (!t || t.error || !t.data || !t.data.token) { session = null; store(); throw problem(COOKIE_MSG, 'cookies'); }
+    var jwt = await fetchJwt();
+    if (!jwt) {
+      session = null; store();
+      var detail = 'Technical details: ' + location.host + ' via ' + (authBase.charAt(0) === '/' || authBase.indexOf(location.origin) === 0 ? 'this site' : authBase) + ' · ' + trace.slice(0, 6).join(' · ');
+      console.error('[GuidEd sign-in] no token after sign-in', trace);
+      throw problem(COOKIE_MSG, 'cookies', { detail: detail });
+    }
   }
 
   window.PadiSync = {
@@ -91,7 +125,8 @@
       syncEnabled = !!(c && c.syncEnabled);
       realtime = !!(c && c.realtime);
       if (enabled) {
-        authClient = window.NeonAuth.createAuthClient(c.authUrl.charAt(0) === '/' ? location.origin + c.authUrl : c.authUrl);
+        authBase = c.authUrl.charAt(0) === '/' ? location.origin + c.authUrl : c.authUrl;
+        authClient = window.NeonAuth.createAuthClient(authBase);
         try {
           var current = await authClient.getSession();
           session = current && current.data && current.data.user ? { user: current.data.user } : null;
@@ -105,8 +140,8 @@
     authHeader: async function () {
       if (!enabled || !authClient || !session) return {};
       try {
-        var t = await authClient.token();
-        return t && t.data && t.data.token ? { authorization: 'Bearer ' + t.data.token } : {};
+        var jwt = await fetchJwt();
+        return jwt ? { authorization: 'Bearer ' + jwt } : {};
       } catch (e) { return {}; }
     },
     signUp: async function (email, password) {

@@ -310,7 +310,7 @@ a { color: inherit; }
 .send:disabled { opacity: .42; box-shadow: none; }
 
 /* ───────── Pills + dropdown menus ───────── */
-.context-pills { display: flex; flex-wrap: wrap; gap: 8px; margin: 14px 4px 0; }
+.context-pills { display: flex; flex-direction: column; gap: 6px; margin: 14px 4px 0; }
 .dd { position: relative; }
 .pill {
   display: inline-flex; align-items: center; gap: 7px; height: 34px; padding: 0 11px 0 10px;
@@ -764,6 +764,40 @@ html { overscroll-behavior-y: none; }
   .sb-foot { max-height: 62vh; overflow-y: auto; overscroll-behavior: contain; }
 }
 
+/* ───────── Plan options: three essentials up front, the rest on demand ───────── */
+.pill-main { display: flex; flex-wrap: wrap; gap: 8px; }
+.pill-main .pill { height: 40px; font-size: 14.5px; }
+.pill-main .dd-label { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.opt-toggle { display: flex; align-items: center; gap: 8px; min-height: 44px; padding: 0 6px; border-radius: 12px; color: var(--muted); font-size: 13.5px; text-align: left; }
+.opt-toggle:hover { color: var(--text); }
+.opt-toggle .ico { flex: none; }
+.opt-name { font-weight: 600; color: var(--text); }
+.opt-summary { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.opt-panel { display: flex; flex-direction: column; background: var(--card); border: 1px solid var(--card-line); border-radius: 16px; padding: 4px 14px; }
+.opt-panel[hidden] { display: none; }
+.opt-panel:not([hidden]) { animation: pop .16s ease-out; }
+.opt-panel > * + * { border-top: 1px solid var(--card-line); }
+.opt-panel .dd .pill { width: 100%; height: 52px; padding: 0; border: 0; border-radius: 0; background: transparent; gap: 12px; font-size: 15px; }
+.opt-panel .dd .pill .chev { margin-left: auto; }
+.opt-panel .dd .menu { left: 0; right: 0; }
+.opt-row { display: flex; align-items: center; gap: 12px; width: 100%; min-height: 56px; padding: 6px 0; text-align: left; color: var(--text); }
+.opt-row > .ico { flex: none; width: 18px; height: 18px; color: var(--muted); }
+.opt-text { flex: 1; min-width: 0; display: flex; flex-direction: column; line-height: 1.3; font-size: 15px; }
+.opt-text small { font-size: 12.5px; color: var(--muted); }
+.sw { position: relative; flex: none; width: 42px; height: 26px; border-radius: 999px; background: var(--idle); transition: background-color .18s; }
+.sw::after { content: ""; position: absolute; top: 3px; left: 3px; width: 20px; height: 20px; border-radius: 50%; background: #fff; box-shadow: 0 1px 2px rgba(0,0,0,.25); transition: transform .18s var(--ease); }
+.opt-row[aria-checked="true"] .sw { background: var(--accent); }
+.opt-row[aria-checked="true"] .sw::after { transform: translateX(16px); }
+.opt-row[aria-checked="true"] > .ico { color: var(--accent); }
+.opt-panel .also { margin: 0; padding: 12px 0 10px; }
+@media (max-width: 560px) {
+  .pill-main { display: grid; grid-template-columns: 1fr 1fr; }
+  .pill-main .dd:first-child { grid-column: 1 / -1; }
+  .pill-main .dd .pill { width: 100%; }
+  .pill-main .dd .menu { min-width: 100%; }
+}
+.opt-toggle[aria-expanded="true"] .disc-chev { transform: rotate(180deg); }
+
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
   color-scheme: dark;
@@ -1037,6 +1071,7 @@ html { overscroll-behavior-y: none; }
         </form>
 
         <div class="context-pills" id="pills">
+          <div class="pill-main">
           <div class="dd" id="ddSubject">
             <button type="button" class="pill" aria-haspopup="menu" aria-expanded="false">
               <svg class="ico"><use href="#i-book"/></svg><span class="dd-label">Integrated Science</span><svg class="ico chev"><use href="#i-chevron"/></svg>
@@ -1055,26 +1090,36 @@ html { overscroll-behavior-y: none; }
             </button>
             <div class="menu" role="menu" hidden></div>
           </div>
+          </div>
+          <button type="button" class="opt-toggle" id="optToggle" data-disc="optPanel" aria-expanded="false" aria-controls="optPanel">
+            <svg class="ico"><use href="#i-sliders"/></svg><span class="opt-name">Options</span><span class="opt-summary" id="optSummary"></span><svg class="ico disc-chev"><use href="#i-chevron"/></svg>
+          </button>
+          <div class="opt-panel" id="optPanel" hidden>
           <div class="dd" id="ddSize">
             <button type="button" class="pill" aria-haspopup="menu" aria-expanded="false" title="How many learners are in the class">
               <svg class="ico"><use href="#i-users"/></svg><span class="dd-label">31–45 learners</span><svg class="ico chev"><use href="#i-chevron"/></svg>
             </button>
             <div class="menu" role="menu" hidden></div>
           </div>
-          <button type="button" class="pill pill-toggle" id="lightToggle" role="switch" aria-checked="false" title="Plan with no electricity, projector, internet, textbooks or lab equipment">
-            <svg class="ico"><use href="#i-leaf"/></svg><span class="dd-label">Resources: Standard</span>
-          </button>
-          <button type="button" class="pill pill-toggle" id="hookToggle" role="switch" aria-checked="true" title="Add or hide an attention-grabbing hook at the start of each lesson">
-            <svg class="ico"><use href="#i-spark"/></svg><span class="dd-label">Hook: On</span>
-          </button>
-          <button type="button" class="pill pill-toggle" id="notesToggle" role="switch" aria-checked="true" title="Include full study notes (board copy and take-home notes) in the plan">
-            <svg class="ico"><use href="#i-book"/></svg><span class="dd-label">Study notes: On</span>
-          </button>
-          <button type="button" class="pill pill-toggle" id="beceToggle" role="switch" aria-checked="true" title="Include BECE-style practice questions with a marking guide in the plan">
-            <svg class="ico"><use href="#i-cap"/></svg><span class="dd-label">BECE questions: On</span>
-          </button>
+            <button type="button" class="opt-row" id="lightToggle" role="switch" aria-checked="false" title="Plan with no electricity, projector, internet, textbooks or lab equipment">
+              <svg class="ico"><use href="#i-leaf"/></svg>
+              <span class="opt-text"><span class="dd-label">Low-resource classroom</span><small>No electricity, projector, internet or textbooks</small></span><span class="sw" aria-hidden="true"></span>
+            </button>
+            <button type="button" class="opt-row" id="hookToggle" role="switch" aria-checked="true" title="Add or hide an attention-grabbing hook at the start of each lesson">
+              <svg class="ico"><use href="#i-spark"/></svg>
+              <span class="opt-text"><span class="dd-label">Lesson hook</span><small>An attention-grabbing start to each lesson</small></span><span class="sw" aria-hidden="true"></span>
+            </button>
+            <button type="button" class="opt-row" id="notesToggle" role="switch" aria-checked="true" title="Include full study notes (board copy and take-home notes) in the plan">
+              <svg class="ico"><use href="#i-book"/></svg>
+              <span class="opt-text"><span class="dd-label">Study notes</span><small>Board copy and take-home notes</small></span><span class="sw" aria-hidden="true"></span>
+            </button>
+            <button type="button" class="opt-row" id="beceToggle" role="switch" aria-checked="true" title="Include BECE-style practice questions with a marking guide in the plan">
+              <svg class="ico"><use href="#i-cap"/></svg>
+              <span class="opt-text"><span class="dd-label">BECE practice questions</span><small>With a marking guide</small></span><span class="sw" aria-hidden="true"></span>
+            </button>
+            <div class="also" id="alsoRow" role="group" aria-label="Also plan for other classes"></div>
+          </div>
         </div>
-        <div class="also" id="alsoRow" role="group" aria-label="Also plan for other classes"></div>
         <div class="scheme" id="schemeStrip" hidden></div>
         <p class="fineprint" id="fineprint">Always review a generated plan against the NaCCA curriculum before teaching.</p>
       </div>
@@ -3232,25 +3277,36 @@ html { overscroll-behavior-y: none; }
   }
   document.addEventListener('click', (e) => { if (!e.target.closest('.dd')) closeMenus(); });
 
+  // One line under "Options" that says what is switched on, so the panel can stay closed.
+  function syncSummary() {
+    const p = state.params, parts = [(p.size || '') + ' learners'];
+    if (p.light === true) parts.push('Low-resource');
+    if (p.studyNotes !== false) parts.push('Notes');
+    if (p.bece !== false) parts.push('BECE');
+    if (p.hook !== false) parts.push('Hook');
+    const n = (p.also || []).length; if (n) parts.push('+' + n + (n === 1 ? ' class' : ' classes'));
+    $('#optSummary').textContent = parts.join(' · ');
+  }
   const hookBtn = $('#hookToggle');
   function syncHook() {
     const on = state.params.hook !== false;
     hookBtn.setAttribute('aria-checked', String(on));
-    $('.dd-label', hookBtn).textContent = 'Hook: ' + (on ? 'On' : 'Off');
+    syncSummary();
   }
   hookBtn.addEventListener('click', () => { state.params.hook = state.params.hook === false; syncHook(); store.save(); });
   const lightBtn = $('#lightToggle');
   function syncLight() {
     const on = state.params.light === true;
     lightBtn.setAttribute('aria-checked', String(on));
-    $('.dd-label', lightBtn).textContent = 'Resources: ' + (on ? 'Light' : 'Standard');
+    syncSummary();
   }
   lightBtn.addEventListener('click', () => { state.params.light = state.params.light !== true; syncLight(); store.save(); });
   const notesBtn = $('#notesToggle'), beceBtn = $('#beceToggle');
   function syncContent() {
     const n = state.params.studyNotes !== false, b = state.params.bece !== false;
-    notesBtn.setAttribute('aria-checked', String(n)); $('.dd-label', notesBtn).textContent = 'Study notes: ' + (n ? 'On' : 'Off');
-    beceBtn.setAttribute('aria-checked', String(b)); $('.dd-label', beceBtn).textContent = 'BECE questions: ' + (b ? 'On' : 'Off');
+    notesBtn.setAttribute('aria-checked', String(n));
+    beceBtn.setAttribute('aria-checked', String(b));
+    syncSummary();
   }
   notesBtn.addEventListener('click', () => { state.params.studyNotes = state.params.studyNotes === false; syncContent(); store.save(); });
   beceBtn.addEventListener('click', () => { state.params.bece = state.params.bece === false; syncContent(); store.save(); });
@@ -3308,6 +3364,7 @@ html { overscroll-behavior-y: none; }
         });
         return b;
       }));
+    syncSummary();
     const n = 1 + state.params.also.length;
     sendBtn.title = n > 1 ? 'Write ' + n + ' plans' : '';
   }
@@ -3783,7 +3840,7 @@ html { overscroll-behavior-y: none; }
     makeDropdown($('#ddClass'), { name: 'Class', items: CLASSES.map((x) => ({ id: x, label: x })), get: () => state.params.cls, set: (v) => { state.params.cls = v; store.save(); syncScheme(); syncAlso(); }, label: (x) => x });
     makeDropdown($('#ddWeek'), { name: 'Week', items: WEEKS.map((x) => ({ id: x, label: 'Week ' + x })), get: () => state.params.week, set: (v) => { state.params.week = v; store.save(); syncScheme(); }, label: (x) => 'Week ' + x });
 
-    makeDropdown($('#ddSize'), { name: 'Class size', items: SIZES.map((x) => ({ id: x, label: x + ' learners' })), get: () => state.params.size, set: (v) => { state.params.size = v; store.save(); }, label: (x) => x + ' learners' });
+    makeDropdown($('#ddSize'), { name: 'Class size', items: SIZES.map((x) => ({ id: x, label: x + ' learners' })), get: () => state.params.size, set: (v) => { state.params.size = v; syncSummary(); store.save(); }, label: (x) => x + ' learners' });
     syncHook(); syncLight(); syncContent(); syncScheme(); syncAlso();
     syncNav();
     const s = makeSession();

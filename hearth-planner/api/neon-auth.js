@@ -54,6 +54,8 @@ module.exports = async (req, res) => {
     res.statusCode = 502; res.setHeader('content-type', 'application/json');
     return res.end(JSON.stringify({ code: 'UPSTREAM', message: 'The sign-in service could not be reached.' }));
   }
+  const cookiesOut = typeof r.headers.getSetCookie === 'function' ? r.headers.getSetCookie().length : 0;
+  if (!r.ok || /^(sign-in|sign-up|token|get-session)/.test(path)) console.log('[neon-auth] ' + req.method + ' /' + path + ' -> ' + r.status + ' cookieIn=' + (headers.cookie ? 'yes' : 'no') + ' setCookie=' + cookiesOut);
   res.statusCode = r.status;
   r.headers.forEach((v, k) => { if (!HOP.has(k.toLowerCase())) res.setHeader(k, v); });
   const cookies = typeof r.headers.getSetCookie === 'function' ? r.headers.getSetCookie() : [];

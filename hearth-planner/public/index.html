@@ -103,6 +103,7 @@
       <div class="as-banner" id="asBanner" role="alert" hidden>
         <p id="asBannerText"></p>
         <button type="button" class="as-link" id="asBannerAct" hidden></button>
+        <p class="as-detail" id="asDetail" hidden></p>
         <details class="as-help" id="asHelp" hidden>
           <summary>How to fix this</summary>
           <ul id="asHelpList"></ul>
@@ -272,6 +273,7 @@
         </form>
 
         <div class="context-pills" id="pills">
+          <div class="pill-main">
           <div class="dd" id="ddSubject">
             <button type="button" class="pill" aria-haspopup="menu" aria-expanded="false">
               <svg class="ico"><use href="#i-book"/></svg><span class="dd-label">Integrated Science</span><svg class="ico chev"><use href="#i-chevron"/></svg>
@@ -290,26 +292,36 @@
             </button>
             <div class="menu" role="menu" hidden></div>
           </div>
+          </div>
+          <button type="button" class="opt-toggle" id="optToggle" data-disc="optPanel" aria-expanded="false" aria-controls="optPanel">
+            <svg class="ico"><use href="#i-sliders"/></svg><span class="opt-name">Options</span><span class="opt-summary" id="optSummary"></span><svg class="ico disc-chev"><use href="#i-chevron"/></svg>
+          </button>
+          <div class="opt-panel" id="optPanel" hidden>
           <div class="dd" id="ddSize">
             <button type="button" class="pill" aria-haspopup="menu" aria-expanded="false" title="How many learners are in the class">
               <svg class="ico"><use href="#i-users"/></svg><span class="dd-label">31–45 learners</span><svg class="ico chev"><use href="#i-chevron"/></svg>
             </button>
             <div class="menu" role="menu" hidden></div>
           </div>
-          <button type="button" class="pill pill-toggle" id="lightToggle" role="switch" aria-checked="false" title="Plan with no electricity, projector, internet, textbooks or lab equipment">
-            <svg class="ico"><use href="#i-leaf"/></svg><span class="dd-label">Resources: Standard</span>
-          </button>
-          <button type="button" class="pill pill-toggle" id="hookToggle" role="switch" aria-checked="true" title="Add or hide an attention-grabbing hook at the start of each lesson">
-            <svg class="ico"><use href="#i-spark"/></svg><span class="dd-label">Hook: On</span>
-          </button>
-          <button type="button" class="pill pill-toggle" id="notesToggle" role="switch" aria-checked="true" title="Include full study notes (board copy and take-home notes) in the plan">
-            <svg class="ico"><use href="#i-book"/></svg><span class="dd-label">Study notes: On</span>
-          </button>
-          <button type="button" class="pill pill-toggle" id="beceToggle" role="switch" aria-checked="true" title="Include BECE-style practice questions with a marking guide in the plan">
-            <svg class="ico"><use href="#i-cap"/></svg><span class="dd-label">BECE questions: On</span>
-          </button>
+            <button type="button" class="opt-row" id="lightToggle" role="switch" aria-checked="false" title="Plan with no electricity, projector, internet, textbooks or lab equipment">
+              <svg class="ico"><use href="#i-leaf"/></svg>
+              <span class="opt-text"><span class="dd-label">Low-resource classroom</span><small>No electricity, projector, internet or textbooks</small></span><span class="sw" aria-hidden="true"></span>
+            </button>
+            <button type="button" class="opt-row" id="hookToggle" role="switch" aria-checked="true" title="Add or hide an attention-grabbing hook at the start of each lesson">
+              <svg class="ico"><use href="#i-spark"/></svg>
+              <span class="opt-text"><span class="dd-label">Lesson hook</span><small>An attention-grabbing start to each lesson</small></span><span class="sw" aria-hidden="true"></span>
+            </button>
+            <button type="button" class="opt-row" id="notesToggle" role="switch" aria-checked="true" title="Include full study notes (board copy and take-home notes) in the plan">
+              <svg class="ico"><use href="#i-book"/></svg>
+              <span class="opt-text"><span class="dd-label">Study notes</span><small>Board copy and take-home notes</small></span><span class="sw" aria-hidden="true"></span>
+            </button>
+            <button type="button" class="opt-row" id="beceToggle" role="switch" aria-checked="true" title="Include BECE-style practice questions with a marking guide in the plan">
+              <svg class="ico"><use href="#i-cap"/></svg>
+              <span class="opt-text"><span class="dd-label">BECE practice questions</span><small>With a marking guide</small></span><span class="sw" aria-hidden="true"></span>
+            </button>
+            <div class="also" id="alsoRow" role="group" aria-label="Also plan for other classes"></div>
+          </div>
         </div>
-        <div class="also" id="alsoRow" role="group" aria-label="Also plan for other classes"></div>
         <div class="scheme" id="schemeStrip" hidden></div>
         <p class="fineprint" id="fineprint">Always review a generated plan against the NaCCA curriculum before teaching.</p>
       </div>
