@@ -24,6 +24,7 @@
   <script src="vendor/neon-auth.js" defer></script>
   <script src="sync.js" defer></script>
   <script src="plans.js" defer></script>
+  <script src="feedback.js" defer></script>
   <script src="docx-export.js" defer></script>
   <script src="schemes.js" defer></script>
   <script src="sample.js" defer></script>
@@ -130,6 +131,53 @@
 </dialog>
 
 <!-- ───────── Upgrade to Pro ───────── -->
+<dialog class="acct-sheet up-sheet" id="fbSheet" aria-labelledby="fbTitle">
+  <button type="button" class="icon-btn as-close" id="fbClose" aria-label="Close"><svg class="ico"><use href="#i-x"/></svg></button>
+  <section id="fbFormWrap">
+    <h2 id="fbTitle">Report a bug or suggest an idea</h2>
+    <p class="as-sub">Tell us what went wrong, or what would make GuidEd better for your classroom.</p>
+    <form id="fbForm" novalidate>
+      <div class="fb-kinds" role="radiogroup" aria-label="What is this about?">
+        <label><input type="radio" name="fbKind" value="bug" checked><span>Something is broken</span></label>
+        <label><input type="radio" name="fbKind" value="idea"><span>I have an idea</span></label>
+        <label><input type="radio" name="fbKind" value="other"><span>Something else</span></label>
+      </div>
+      <div class="as-field">
+        <label for="fbMsg">Your message</label>
+        <textarea id="fbMsg" rows="5" maxlength="2000" placeholder="What happened? What did you expect?"></textarea>
+        <p class="fb-count" id="fbCount">0 / 2000</p>
+      </div>
+      <div class="as-field">
+        <label for="fbEmail">Email, if you would like a reply <span class="fb-opt">(optional)</span></label>
+        <input id="fbEmail" type="email" inputmode="email" autocomplete="email" autocapitalize="off" spellcheck="false" maxlength="120" placeholder="you@example.com">
+      </div>
+      <p class="as-err" id="fbErr" role="alert" hidden></p>
+      <button type="submit" class="as-submit" id="fbSend"><span>Send</span></button>
+      <p class="as-foot">We also send your plan type, browser and app version so we can reproduce problems. We never send your plans or chats. <a href="privacy">Privacy</a></p>
+    </form>
+  </section>
+  <section id="fbDone" hidden>
+    <h2>Thank you</h2>
+    <p class="as-sub">Your message has reached us. If you left an email, we may write back.</p>
+    <button type="button" class="as-submit" id="fbDoneBtn"><span>Close</span></button>
+  </section>
+</dialog>
+
+<dialog class="acct-sheet up-sheet fb-inbox" id="inboxSheet" aria-labelledby="ibTitle">
+  <button type="button" class="icon-btn as-close" id="ibClose" aria-label="Close"><svg class="ico"><use href="#i-x"/></svg></button>
+  <section>
+    <h2 id="ibTitle">Feedback inbox</h2>
+    <p class="as-sub" id="ibSub"></p>
+    <div class="fb-filter" id="ibFilter" role="group" aria-label="Filter">
+      <button type="button" data-f="new" aria-pressed="true">New</button>
+      <button type="button" data-f="done" aria-pressed="false">Done</button>
+      <button type="button" data-f="" aria-pressed="false">All</button>
+    </div>
+    <ul class="fb-list" id="ibList"></ul>
+    <p class="as-foot" id="ibEmpty" hidden>Nothing here yet.</p>
+  </section>
+</dialog>
+
 <dialog class="acct-sheet up-sheet" id="planSheet" aria-labelledby="psTitle">
   <button type="button" class="icon-btn as-close" id="psClose" aria-label="Close"><svg class="ico"><use href="#i-x"/></svg></button>
   <section>
@@ -225,6 +273,13 @@
         <span class="plan-cta" id="planRowCta"></span>
       </button>
 
+      <button type="button" class="foot-link" id="feedbackBtn">
+        <svg class="ico"><use href="#i-pencil"/></svg><span>Report a bug or suggest an idea</span>
+      </button>
+      <button type="button" class="foot-link" id="inboxBtn" hidden>
+        <svg class="ico"><use href="#i-layers"/></svg><span>Feedback inbox</span>
+      </button>
+
       <button type="button" class="disc" id="setToggle" data-disc="setPanel" aria-expanded="false" aria-controls="setPanel">
         <svg class="ico"><use href="#i-sliders"/></svg><span>Settings</span><svg class="ico disc-chev"><use href="#i-chevron"/></svg>
       </button>
@@ -241,7 +296,7 @@
 
         <button type="button" class="disc disc-sub" data-disc="profileRow" aria-expanded="false" aria-controls="profileRow">
           <svg class="ico"><use href="#i-pencil"/></svg><span>Teacher details <small>printed on Word files</small></span><svg class="ico disc-chev"><use href="#i-chevron"/></svg>
-        </button>
+      </button>
         <div class="set-fields profile-row" id="profileRow" hidden>
           <label class="sr-only" for="teacherInput">Teacher name</label>
           <input id="teacherInput" type="text" placeholder="Your name, e.g. Mr. K. Mensah" maxlength="80" autocomplete="name">
@@ -251,12 +306,12 @@
 
         <button type="button" class="set-action set-install" id="installBtn" hidden>
           <svg class="ico"><use href="#i-download"/></svg><span>Install app</span>
-        </button>
+      </button>
         <p class="install-hint" id="installHint" hidden></p>
 
         <button type="button" class="set-action" id="clearCacheBtn">
           <svg class="ico"><use href="#i-refresh"/></svg><span>Clear app cache</span>
-        </button>
+      </button>
         <p class="install-hint" id="clearCacheNote">Fixes a stuck or outdated app. Your saved plans are kept.</p>
 
         <p class="set-links"><a href="about">About</a><span aria-hidden="true">·</span><a href="privacy">Privacy</a></p>
@@ -301,7 +356,7 @@
 
         <button type="button" class="composer-toggle" id="composerToggle" aria-expanded="true" aria-controls="composer">
           <svg class="ico"><use href="#i-chevron"/></svg><span>Collapse</span>
-        </button>
+      </button>
 
         <form class="composer" id="composer" autocomplete="off">
           <label class="sr-only" for="prompt">Notes</label>

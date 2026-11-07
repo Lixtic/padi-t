@@ -154,3 +154,8 @@ Plans are described by what a teacher gets, not by tokens. Every number is an en
 3. Use a test key first. Paystack's test cards and mobile money numbers are in their docs.
 
 Use `PRO_EMAILS` to give staff and testers Pro without paying. `TIERS=off` removes every limit.
+
+
+## Bug reports and suggestions
+
+Every menu has **Report a bug or suggest an idea**. Messages are saved in the `feedback` table with the plan type, browser and app version (never plans or chats), and limited to 5 per hour per person. To read them, add your sign-in email to `ADMIN_EMAILS` in Vercel, sign in, and open **Feedback inbox** in the menu. You can reply by email, mark messages done, or delete them.
