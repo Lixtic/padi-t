@@ -25,6 +25,9 @@ const SCHEMA = [
   'create table if not exists subscriptions (user_id text primary key, expires_at bigint not null default 0, plan text not null default \'\', updated_at bigint not null)',
   'create table if not exists payments (reference text primary key, user_id text not null, email text not null default \'\', plan text not null, amount bigint not null, currency text not null, status text not null default \'pending\', created_at bigint not null, paid_at bigint)',
   'create index if not exists payments_user on payments (user_id, created_at)',
+  // Bug reports and suggestions sent from inside the app.
+  "create table if not exists feedback (id text primary key, kind text not null, message text not null, email text not null default '', user_id text not null default '', tier text not null default '', context text not null default '', status text not null default 'new', created_at bigint not null)",
+  'create index if not exists feedback_status on feedback (status, created_at)',
   'create table if not exists plan_log (subject text not null, period text not null, cls text not null, n int not null default 0, primary key (subject, period, cls))',
 ];
 

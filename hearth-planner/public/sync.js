@@ -4,7 +4,7 @@
 (function () {
   'use strict';
   var AUTH_KEY = 'schoolpadi.auth';
-  var authBase = '', trace = [];
+  var authBase = '', trace = [], lastDetail = '';
   var enabled = false, syncEnabled = false, realtime = false, session = null, live = null, authClient = null;
 
   function load() { try { session = JSON.parse(localStorage.getItem(AUTH_KEY)); } catch (e) { session = null; } }
@@ -112,6 +112,7 @@
     if (!jwt) {
       session = null; store();
       var detail = 'Technical details: ' + location.host + ' via ' + (authBase.charAt(0) === '/' || authBase.indexOf(location.origin) === 0 ? 'this site' : authBase) + ' · ' + trace.slice(0, 6).join(' · ');
+      lastDetail = detail;
       console.error('[GuidEd sign-in] no token after sign-in', trace);
       throw problem(COOKIE_MSG, 'cookies', { detail: detail });
     }
@@ -119,6 +120,7 @@
 
   window.PadiSync = {
     available: function () { return enabled; },
+    lastDetail: function () { return lastDetail; },
     authConfigured: function () { return !!authClient; },
     init: async function (c) {
       enabled = !!(c && c.enabled && c.authUrl && window.NeonAuth);
