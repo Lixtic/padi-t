@@ -11,7 +11,7 @@
   var MARGIN_X = 850, MARGIN_Y = 740;              // 1.5 cm, 1.3 cm
   var BR = '', PIPE = '';
 
-  var NEW_PAGE = /^(lesson\s*(2|two)\b|study notes|bece|answer key)/i;
+  var NEW_PAGE = /^(lesson\s*(2|two)\b|study notes|teacher.?s notes|bece|class exercise|wassce|answer key)/i;
   var META_HEADING = /metadata|lesson (details|information)/i;
   var PHASE_HEADER = /phase|duration/i;
   var LABEL_COLUMN = /phase|duration|criteri|aspect|stage/i;

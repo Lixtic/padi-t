@@ -1,6 +1,6 @@
 # GuidEd: GES lesson planner
 
-Pick a **subject, class and week**. GuidEd writes a full Ghana Education Service package: two 60-minute lessons, study notes, BECE-style questions with a marking guide, and a rubric. You can then download it as a formatted **Word (.docx)** file.
+Pick a **subject, class and week**, from Basic 1 to SHS 3. GuidEd writes a full Ghana Education Service package: two lessons, notes, exam practice with a marking guide, and a rubric. You can then download it as a formatted **Word (.docx)** file.
 
 It works on phones and desktops, has light and dark themes, and keeps a history of your plans in the browser.
 
@@ -165,3 +165,18 @@ Every menu has **Report a bug or suggest an idea**. Messages are saved in the `f
 - **Usage and payments** (menu, admins only, see `ADMIN_EMAILS`): new accounts, guest previews, plans written, how many guests and free teachers hit their limits, checkouts started versus completed, active Pro, money by plan, and recent payments. Counts start from the deploy that added them.
 - **Refunds:** press **Refund** on a payment. GuidEd asks Paystack to refund it in full, marks it refunded, and removes the Pro days that payment bought (never below today). Teachers who want a refund use **Need a refund or help with a payment?** in their plan sheet, which sends you a message in the feedback inbox. Pro does not renew by itself, so there is nothing for a teacher to cancel.
 - **Pro-ending warning:** in the last 7 days teachers see a banner and a warning on their plan card. Teachers also get one email 3 days before the end (change with `REMIND_DAYS`). The email needs `CRON_SECRET` and `SMTP_URL` in Vercel; without them only the in-app warning runs. Vercel Cron runs the job daily at 08:00 UTC.
+
+## Levels: Lower Primary, Upper Primary, JHS and SHS
+
+The class menu is grouped by level, and the subjects change with the level. Each level has its own style of plan.
+
+| Level | Classes | Subjects | Style |
+|---|---|---|---|
+| Lower Primary | Basic 1 to 3 | English Language, Mathematics, Ghanaian Language, Our World Our People, Creative Arts, Religious and Moral Education, Physical Education, Computing | Play-based and mostly spoken. **Teacher's Notes** with a take-home activity, then a **Class Exercise** (oral and written). |
+| Upper Primary | Basic 4 to 6 | The above, plus Science, History and French | Simple English, group work. **Study Notes**, then a **Class Exercise** (multiple choice and short answers). |
+| JHS | Basic 7 to 9 | Unchanged | As before, with **BECE Practice**. |
+| SHS | SHS 1 to 3 | English Language, Mathematics, General Science, Social Studies | Double-period lessons (2 × 80 minutes), deeper notes, **WASSCE Practice** with DoK levels and a marking scheme. |
+
+- The list of levels, classes and subjects lives in `api/_levels.js`. After editing it run `node scripts/build-levels.js` (`npm run build` does it too; the generated files are committed) so the browser copy matches.
+- The level profiles live in `prompts/ges-lesson-plans.md` (the `### Level:` sections). Only the matching profile is sent with a request, so JHS requests cost what they did before. Run `node scripts/build-prompt.js` after editing.
+- The weekly topics from the NaCCA schemes of learning (`data/schemes.json`) exist for JHS only. For the other levels GuidEd chooses the NaCCA strand and sub-strand itself, as it does for JHS subjects without a scheme. To add a scheme for another level, import it with `scripts/import-schemes.py`.

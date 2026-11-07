@@ -15,7 +15,7 @@ What it does
 * Understands the markdown the model produces: `#` headings, **bold**,
   *italic*, bullets, numbered / lettered lines, `<br>` inside table cells,
   blank header rows (`| | | |`) and escaped pipes (`\\|`).
-* Starts Lesson 2, Study Notes and BECE Practice on a new page.
+* Starts Lesson 2, Study Notes (or Teacher's Notes) and the exam-practice section (BECE, Class Exercise or WASSCE) on a new page.
 * Strips internal tags (<ElicitationsGroup>, [AWARD_XP: n], ...).
 * Footer with the title and "Page X of Y".
 """
@@ -50,7 +50,7 @@ USABLE_W = PAGE_W - 2 * MARGIN_X
 BR = '\ue000'     # <br> inside a table cell
 PIPE = '\ue001'   # escaped pipe  \|
 
-_NEW_PAGE = re.compile(r'^(lesson\s*(2|two)\b|study notes|bece|answer key)', re.I)
+_NEW_PAGE = re.compile(r"^(lesson\s*(2|two)\b|study notes|teacher.?s notes|bece|class exercise|wassce|answer key)", re.I)
 _META_HEADING = re.compile(r'metadata|lesson (details|information)', re.I)
 _PHASE_HEADER = re.compile(r'phase|duration', re.I)
 _LABEL_COLUMN = re.compile(r'phase|duration|criteri|aspect|stage', re.I)
@@ -383,7 +383,7 @@ def join_plan_tables(text):
         block = ['']
         for x in moved:
             block += [x, '']
-        h = next((k for k, l in enumerate(rest) if re.match(r'^#{1,3}\s*\**\s*study notes\b', l.strip(), re.I)), -1)
+        h = next((k for k, l in enumerate(rest) if re.match(r'^#{1,3}\s*\**\s*(?:study notes|teacher.?s notes)\b', l.strip(), re.I)), -1)
         if h >= 0:
             rest = rest[:h + 1] + block + rest[h + 1:]
         else:

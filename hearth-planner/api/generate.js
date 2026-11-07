@@ -1,5 +1,9 @@
 'use strict';
-const SYSTEM_PROMPT = require('./_prompt');
+const BASE_PROMPT = require('./_prompt');
+const LEVEL_PROMPTS = require('./_prompt_levels');
+const Levels = require('./_levels');
+// JHS uses the main prompt as it is. Other levels add their own profile at the end.
+const systemFor = (cls) => { const l = Levels.levelOfClass(cls); return l && LEVEL_PROMPTS[l.id] ? BASE_PROMPT + '\n\n' + LEVEL_PROMPTS[l.id] : BASE_PROMPT; };
 const { sendJson, clientIp, rateLimit, accessOk, readJson, validate, firstMessage } = require('./_lib');
 const { activeProvider, ADAPTERS } = require('./_providers');
 const Cache = require('./_cache');
@@ -66,7 +70,7 @@ module.exports = async (req, res) => {
   // 1. A repeat of a recent request is served from the cache, at no token cost and with no quota used.
   //    "fresh" (the Regenerate button) skips the lookup and replaces the stored answer.
   const ck = Cache.keyFor({
-    ver: Cache.version(SYSTEM_PROMPT, provider),
+    ver: Cache.version(systemFor(v.params.cls), provider),
     settingsText: makeFirst(Object.assign({}, v.params, { notes: '' })),
     notes: v.params.notes, thread: v.thread, subject,
   });
@@ -92,7 +96,7 @@ module.exports = async (req, res) => {
   }
 
   // 2. Not cached, so it will cost tokens. Stop here if today's allowance is used up.
-  const inputTokens = Quota.estimateTokens(SYSTEM_PROMPT.length + messages.reduce((n, m) => n + m.content.length, 0));
+  const inputTokens = Quota.estimateTokens(systemFor(v.params.cls).length + messages.reduce((n, m) => n + m.content.length, 0));
   const q = await Quota.check(subject, inputTokens, ent && ent.tier === 'pro' && Entitle.cfg().proTokenDaily ? { limit: Entitle.cfg().proTokenDaily } : undefined);
   if (!q.ok) {
     return sendJson(res, 429, { error: 'quota', message: Quota.message(q) }, { 'Retry-After': String(q.retryAfter) });
@@ -101,7 +105,7 @@ module.exports = async (req, res) => {
   const ctrl = new AbortController();
   res.on('close', () => { if (!res.writableEnded) ctrl.abort(); });
 
-  const stream = ADAPTERS[provider]({ system: SYSTEM_PROMPT, messages, signal: ctrl.signal, maxTokens: guest ? Entitle.cfg().previewMaxTokens : undefined });
+  const stream = ADAPTERS[provider]({ system: systemFor(v.params.cls), messages, signal: ctrl.signal, maxTokens: guest ? Entitle.cfg().previewMaxTokens : undefined });
   const it = stream[Symbol.asyncIterator]();
   let first;
   try {

@@ -20,6 +20,7 @@
   const ERR_MARK = '<<SCHOOLPADI_ERROR>>';
   const PROFILE_KEY = 'schoolpadi.profile';
   const SIZES = ['Up to 30', '31–45', '46–60', 'Over 60'];
+  const GL = window.GuidedLevels;   // levels.js, loaded before this file
   // Canned requests behind the "Create from this plan" buttons. The server prompt knows these exact lines.
   const ASKS = {
     worksheet: "Create the learner worksheet for this week's lessons.",
@@ -27,15 +28,19 @@
     bece: "Write 10 more BECE-style questions on this week's topics.",
   };
   const KIND_TITLE = { plan: '', worksheet: ' – Learner Worksheet', homework: ' – Homework Pack', bece: ' – BECE Practice' };
-  const kindOfAsk = (text) => Object.keys(ASKS).find((k) => ASKS[k] === text) || 'plan';
+  const EXAM_ASKS = GL.LEVELS.map((l) => l.exam.ask);
+  const askText = (kind, cls) => (kind === 'bece' ? examOf(cls || 'Basic 8').ask : ASKS[kind]);
+  const kindTitle = (kind, cls) => (kind === 'bece' ? examOf(cls || 'Basic 8').title : KIND_TITLE[kind]);
+  const kindOfAsk = (text) => (EXAM_ASKS.includes(text) ? 'bece' : Object.keys(ASKS).find((k) => ASKS[k] === text) || 'plan');
   const NS = 'http://www.w3.org/2000/svg';
 
-  const SUBJECTS = [
-    'Integrated Science', 'Mathematics', 'English Language', 'Social Studies',
-    'Religious and Moral Education', 'Computing', 'Career Technology',
-    'Creative Arts and Design', 'Ghanaian Language', 'French', 'Physical Education and Health',
-  ];
-  const CLASSES = ['Basic 7', 'Basic 8', 'Basic 9'];
+  // Levels, classes and subjects come from levels.js (generated from api/_levels.js, so the server agrees).
+  const CLASSES = GL.ALL_CLASSES;
+  const levelOf = (cls) => GL.levelOfClass(cls) || GL.LEVELS.find((l) => l.id === GL.DEFAULT_LEVEL);
+  const subjectsOf = (cls) => levelOf(cls).subjects;
+  const examOf = (cls) => levelOf(cls).exam;
+  const notesOf = (cls) => levelOf(cls).notes;
+  const SUBJECTS = levelOf('Basic 8').subjects;
   const WEEKS = Array.from({ length: 15 }, (_, i) => i + 1);
 
   /* ───────── Helpers ───────── */
@@ -398,8 +403,8 @@
             h('span', { class: 'tag', text: p.subject }), h('span', { class: 'tag', text: p.cls }), h('span', { class: 'tag', text: 'Week ' + p.week }),
             p.size ? h('span', { class: 'tag', text: p.size + ' learners' }) : null,
             p.light ? h('span', { class: 'tag', text: 'Low-resource' }) : null,
-            p.studyNotes === false ? h('span', { class: 'tag', text: 'No study notes' }) : null,
-            p.bece === false ? h('span', { class: 'tag', text: 'No BECE questions' }) : null),
+            p.studyNotes === false ? h('span', { class: 'tag', text: notesOf(p.cls).tag }) : null,
+            p.bece === false ? h('span', { class: 'tag', text: examOf(p.cls).tag }) : null),
           m.content ? h('div', { class: 'req-notes', text: m.content }) : null));
     }
     return h('div', { class: 'msg user' }, h('div', { class: 'bubble', text: m.content }));
@@ -443,12 +448,13 @@
 
     function fillExtras() {
       if (demoted) { extrasEl.replaceChildren(); return; }
-      const mk = (k, label, ic) => h('button', { type: 'button', class: 'extra-btn', 'data-ask': k, onclick: () => askFor(k) }, icon(ic), h('span', { text: label }));
+      const planCls = () => (session.params && session.params.cls) || state.params.cls;
+      const mk = (k, label, ic) => h('button', { type: 'button', class: 'extra-btn', 'data-ask': k, onclick: () => askFor(k, planCls()) }, icon(ic), h('span', { text: label }));
       extrasEl.replaceChildren(
         h('span', { class: 'extras-label', text: 'Create from this plan' }),
         mk('worksheet', 'Learner worksheet', 'book'),
         mk('homework', 'Homework pack', 'calendar'),
-        mk('bece', '10 more BECE questions', 'cap'));
+        mk('bece', examOf(planCls()).more, 'cap'));
     }
 
     let editor = null;
@@ -515,7 +521,7 @@
 
     const api = {
       root, text: '', msg: null,
-      get title() { return baseTitle + (KIND_TITLE[kind] || ''); },
+      get title() { return baseTitle + (kindTitle(kind, session.params && session.params.cls) || ''); },
       get kind() { return kind; },
       setKind(k) { kind = KIND_TITLE[k] !== undefined ? k : 'plan'; titleEl.textContent = api.title; },
       set(raw, final, msg) {
@@ -580,7 +586,7 @@
     return h('div', { class: 'paywall' },
       h('h3', { text: 'This is a preview of Lesson 1' }),
       h('p', { text: 'The full plan is ready when you are:' }),
-      h('ul', null, ...['Lesson 2 and the complete weekly package', 'Study notes for every sub-topic', 'BECE practice questions with a marking guide', 'Word download, ready to print'].map((x) => h('li', { text: x }))),
+      h('ul', null, ...['Lesson 2 and the complete weekly package', 'Study notes for every sub-topic', examOf(state.params.cls).section + ' questions with a marking guide', 'Word download, ready to print'].map((x) => h('li', { text: x }))),
       h('div', { class: 'pw-actions' }, btn, sub));
   }
   function openSignupSheet(msg) {
@@ -612,9 +618,9 @@
   }
   const refreshPlans = () => { const G = window.GuidedPlans; if (G && !state.config.demo) G.load().then(() => G.resume()); };
 
-  function askFor(kind) {
+  function askFor(kind, cls) {
     if (state.streaming) return;
-    promptEl.value = ASKS[kind];
+    promptEl.value = askText(kind, cls || state.params.cls);
     submit();
   }
 
@@ -991,7 +997,8 @@
       const cur = cfg.get();
       label.textContent = cfg.label(cur);
       btn.setAttribute('aria-label', cfg.name + ': ' + cfg.label(cur));
-      menu.replaceChildren(...cfg.items.map((it) => h('button', {
+      const list = typeof cfg.items === 'function' ? cfg.items() : cfg.items;
+      menu.replaceChildren(...list.map((it) => it.header ? h('div', { class: 'menu-group', role: 'presentation', text: it.header }) : h('button', {
         type: 'button', role: 'menuitemradio', class: 'menu-item', 'aria-checked': String(it.id === cur),
         onclick: () => { cfg.set(it.id); build(); close(); btn.focus(); },
       },
@@ -1033,7 +1040,7 @@
     const p = state.params, parts = [(p.size || '') + ' learners'];
     if (p.light === true) parts.push('Low-resource');
     if (p.studyNotes !== false) parts.push('Notes');
-    if (p.bece !== false) parts.push('BECE');
+    if (p.bece !== false) parts.push(examOf(p.cls).id === 'bece' ? 'BECE' : examOf(p.cls).id === 'wassce' ? 'WASSCE' : 'Exercise');
     if (p.hook !== false) parts.push('Hook');
     const n = (p.also || []).length; if (n) parts.push('+' + n + (n === 1 ? ' class' : ' classes'));
     $('#optSummary').textContent = parts.join(' · ');
@@ -1057,6 +1064,12 @@
     const n = state.params.studyNotes !== false, b = state.params.bece !== false;
     notesBtn.setAttribute('aria-checked', String(n));
     beceBtn.setAttribute('aria-checked', String(b));
+    // The wording follows the level: BECE practice (JHS), class exercise (primary), WASSCE practice (SHS).
+    const lv = levelOf(state.params.cls), ex = lv.exam;
+    $('.dd-label', notesBtn).textContent = lv.notes.toggle;
+    $('small', notesBtn).textContent = lv.id === 'lower' ? 'Key ideas for you and a take-home activity' : 'Board copy and take-home notes';
+    $('.dd-label', beceBtn).textContent = ex.toggle + (lv.id === 'lower' || lv.id === 'upper' ? '' : ' questions');
+    $('small', beceBtn).textContent = lv.id === 'lower' ? 'Oral and written, with answers' : 'With a marking guide';
     syncSummary();
   }
   notesBtn.addEventListener('click', () => { state.params.studyNotes = state.params.studyNotes === false; syncContent(); store.save(); });
@@ -1101,7 +1114,7 @@
     schemeStrip.hidden = false;
   }
   function syncAlso() {
-    const others = CLASSES.filter((c) => c !== state.params.cls);
+    const others = levelOf(state.params.cls).classes.filter((c) => c !== state.params.cls);
     state.params.also = (state.params.also || []).filter((c) => others.includes(c));
     alsoRow.replaceChildren(h('span', { class: 'also-label', title: 'Uses the same subject, week and class size' }, 'Also plan for'),
       ...others.map((c) => {
@@ -1112,7 +1125,7 @@
           if (locked) { window.GuidedPlans.openUpgrade('classes', 'Planning for several classes at once is part of GuidEd Pro.'); return; }
           const set = new Set(state.params.also || []);
           if (set.has(c)) set.delete(c); else set.add(c);
-          state.params.also = CLASSES.filter((x) => set.has(x));
+          state.params.also = levelOf(state.params.cls).classes.filter((x) => set.has(x));
           syncAlso(); store.save();
         });
         return b;
@@ -1585,15 +1598,19 @@
   function init() {
     const saved = store.load();
     state.sessions = saved && Array.isArray(saved.sessions) ? saved.sessions.filter((s) => s && Array.isArray(s.messages)) : [];
-    if (saved && saved.params && SUBJECTS.includes(saved.params.subject) && CLASSES.includes(saved.params.cls) && WEEKS.includes(saved.params.week)) {
+    if (saved && saved.params && CLASSES.includes(saved.params.cls) && subjectsOf(saved.params.cls).includes(saved.params.subject) && WEEKS.includes(saved.params.week)) {
       state.params = { subject: saved.params.subject, cls: saved.params.cls, week: saved.params.week, hook: saved.params.hook !== false, size: SIZES.includes(saved.params.size) ? saved.params.size : state.params.size, light: saved.params.light === true, studyNotes: saved.params.studyNotes !== false, bece: saved.params.bece !== false };
     }
     try { state.access = localStorage.getItem(ACCESS_KEY) || ''; accessInput.value = state.access; } catch (e) { /* ignore */ }
 
     applyTheme(document.documentElement.getAttribute('data-theme') === 'dark' ? 'dark' : 'light', false);
 
-    makeDropdown($('#ddSubject'), { name: 'Subject', items: SUBJECTS.map((x) => ({ id: x, label: x })), get: () => state.params.subject, set: (v) => { state.params.subject = v; store.save(); syncScheme(); }, label: (x) => x });
-    makeDropdown($('#ddClass'), { name: 'Class', items: CLASSES.map((x) => ({ id: x, label: x })), get: () => state.params.cls, set: (v) => { state.params.cls = v; store.save(); syncScheme(); syncAlso(); }, label: (x) => x });
+    const ddSubject = makeDropdown($('#ddSubject'), { name: 'Subject', items: () => subjectsOf(state.params.cls).map((x) => ({ id: x, label: x })), get: () => state.params.subject, set: (v) => { state.params.subject = v; store.save(); syncScheme(); }, label: (x) => x });
+    makeDropdown($('#ddClass'), { name: 'Class', items: () => GL.LEVELS.flatMap((l) => [{ header: l.name }, ...l.classes.map((x) => ({ id: x, label: x }))]), get: () => state.params.cls, set: (v) => {
+      state.params.cls = v;
+      if (!subjectsOf(v).includes(state.params.subject)) state.params.subject = subjectsOf(v)[0];   // a subject that is not taught at this level falls back to the first one
+      ddSubject.build(); syncContent(); store.save(); syncScheme(); syncAlso();
+    }, label: (x) => x });
     makeDropdown($('#ddWeek'), { name: 'Week', items: WEEKS.map((x) => ({ id: x, label: 'Week ' + x })), get: () => state.params.week, set: (v) => { state.params.week = v; store.save(); syncScheme(); }, label: (x) => 'Week ' + x });
 
     makeDropdown($('#ddSize'), { name: 'Class size', items: SIZES.map((x) => ({ id: x, label: x + ' learners' })), get: () => state.params.size, set: (v) => { state.params.size = v; syncSummary(); store.save(); }, label: (x) => x + ' learners' });

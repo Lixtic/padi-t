@@ -3,7 +3,8 @@
 const crypto = require('crypto');
 
 const Schemes = require('./_schemes');
-const CLASSES = ['Basic 7', 'Basic 8', 'Basic 9'];
+const Levels = require('./_levels');
+const CLASSES = Levels.ALL_CLASSES;
 const SIZES = ['Up to 30', '31–45', '46–60', 'Over 60'];
 const NAME_RE = /^[\p{L}\p{N} &()\-–—,.'/]{2,60}$/u;
 const MAX_NOTES = 600;
@@ -87,7 +88,7 @@ function validate(body) {
   if (size && !SIZES.includes(size)) return { error: 'Please choose a class size from the list.' };
 
   if (!NAME_RE.test(subject)) return { error: 'Please choose a subject.' };
-  if (!CLASSES.includes(cls)) return { error: 'Please choose Basic 7, Basic 8 or Basic 9.' };
+  if (!CLASSES.includes(cls)) return { error: 'Please choose a class from Basic 1 to Basic 9, or SHS 1 to SHS 3.' };
   if (!Number.isInteger(week) || week < 1 || week > 20) return { error: 'Please choose a week between 1 and 20.' };
   if (notes.length > MAX_NOTES) return { error: 'Notes are too long (max ' + MAX_NOTES + ' characters).' };
 
@@ -115,11 +116,18 @@ function validate(body) {
   };
 }
 
+// JHS is the default the main prompt was written for. Every other level adds a Level line that switches on its profile in the prompt.
+function levelLine(cls) {
+  const l = Levels.levelOfClass(cls);
+  return l && l.id !== 'jhs' ? ['Level: ' + l.name + ' (' + l.id + ')'] : [];
+}
+
 function firstMessage(p) {
   const lines = [
     'Generate the 2-lesson weekly package.',
     'Subject: ' + p.subject,
     'Class: ' + p.cls,
+    ...(levelLine(p.cls)),
     'Week: ' + p.week,
     'Hook: ' + (p.hook === false ? 'off' : 'on'),
     'Resources: ' + (p.light ? 'light' : 'standard'),

@@ -166,7 +166,7 @@
     var all = {
       guest: [
         ['Lesson plans', true, 'Lesson 1 preview' + (gp ? ', ' + gp + ' a day' : ''), 'Unlimited full plans'],
-        ['Classes', true, '1 class at a time', 'Basic 7, 8 and 9'],
+        ['Classes', true, '1 class at a time', 'Every class, Basic 1 to SHS 3'],
         ['Study notes and BECE questions', false, 'Create a free account to add them'],
         ['Changes and follow-up requests', false, 'Create a free account to ask'],
         ['Word downloads', false, 'Create a free account to download'],
@@ -174,7 +174,7 @@
       ],
       free: [
         ['Lesson plans', true, fp ? fp + ' full plans a week' : 'Full plans', 'Unlimited full plans'],
-        ['Classes', true, freeClasses, 'Basic 7, 8 and 9'],
+        ['Classes', true, freeClasses, 'Every class, Basic 1 to SHS 3'],
         ['Study notes and BECE questions', true, 'Included'],
         ['Changes and follow-up requests', true, 'Included'],
         ['Word downloads', true, 'With a "Made with GuidEd" footer', 'Clean, ready to print'],
@@ -182,7 +182,7 @@
       ],
       pro: [
         ['Lesson plans', true, 'Unlimited full plans'],
-        ['Classes', true, 'Basic 7, 8 and 9'],
+        ['Classes', true, 'Every class, Basic 1 to SHS 3'],
         ['Study notes and BECE questions', true, 'Included'],
         ['Changes and follow-up requests', true, 'Included'],
         ['Word downloads', true, 'Clean, ready to print'],
@@ -252,7 +252,7 @@
     var free = lim.freePlansWeekly ? lim.freePlansWeekly + ' a week' : 'Unlimited';
     var cls = lim.freeClasses === 1 ? '1 class' : lim.freeClasses ? lim.freeClasses + ' classes' : 'All classes';
     el.table.replaceChildren();
-    [['Full lesson plans', free, 'Unlimited'], ['Classes you plan for', cls, 'Basic 7, 8 and 9'], ['Word downloads', 'With a GuidEd footer', 'Clean, ready to print'], ['Study notes and BECE questions', 'Included', 'Included']].forEach(function (r) {
+    [['Full lesson plans', free, 'Unlimited'], ['Classes you plan for', cls, 'Every class, Basic 1 to SHS 3'], ['Word downloads', 'With a GuidEd footer', 'Clean, ready to print'], ['Study notes and BECE questions', 'Included', 'Included']].forEach(function (r) {
       var row = document.createElement('div'); row.className = 'up-row';
       var a = document.createElement('span'); a.className = 'up-what'; a.textContent = r[0];
       var b = document.createElement('span'); b.className = 'up-free'; b.textContent = r[1];
