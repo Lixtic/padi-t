@@ -845,3 +845,29 @@ html { overscroll-behavior-y: none; }
 
 .set-links { display: flex; gap: 8px; justify-content: center; margin: 14px 12px 4px; font-size: 12.5px; color: var(--muted); }
 .set-links a, .as-foot a { color: inherit; text-decoration: underline; text-underline-offset: 2px; }
+
+/* Plan badge and "Your plan" sheet */
+.plan-badge { flex: none; display: inline-flex; align-items: center; height: 26px; padding: 0 10px; border-radius: 999px; border: 1px solid var(--card-line); background: var(--card); color: var(--muted); font: 700 11.5px/1 var(--font-ui); letter-spacing: .04em; text-transform: uppercase; cursor: pointer; }
+.plan-badge[hidden] { display: none; }
+.plan-badge[data-tier="free"] { color: var(--accent); border-color: color-mix(in srgb, var(--accent) 45%, var(--card-line)); background: var(--add-bg); }
+.plan-badge[data-tier="pro"] { color: #5C4300; border-color: color-mix(in srgb, var(--gold) 70%, var(--card-line)); background: linear-gradient(135deg, #FFD54A, var(--gold)); }
+.plan-badge[data-tier="pro"]::before { content: "★"; margin-right: 5px; font-size: 11px; }
+:root[data-theme="dark"] .plan-badge[data-tier="pro"] { color: #2B2000; }
+.ps-badge { cursor: default; margin-bottom: 10px; }
+.ps-h { margin: 18px 0 6px; font-size: 13px; letter-spacing: .04em; text-transform: uppercase; color: var(--muted); }
+.ps-meter { margin: 14px 0 0; }
+.ps-bar { height: 8px; border-radius: 999px; background: var(--code-bg); overflow: hidden; }
+.ps-bar span { display: block; height: 100%; width: 0; background: var(--accent); border-radius: 999px; transition: width .3s var(--ease); }
+.ps-meter small { display: block; margin-top: 6px; font-size: 12.5px; color: var(--muted); }
+.ps-list { list-style: none; margin: 0 0 16px; padding: 0; border: 1px solid var(--card-line); border-radius: 16px; background: var(--card); overflow: hidden; }
+.ps-list li { display: flex; gap: 10px; padding: 11px 14px; align-items: flex-start; }
+.ps-list li + li { border-top: 1px solid var(--card-line); }
+.ps-mark { flex: none; width: 20px; text-align: center; color: var(--accent); font-weight: 700; line-height: 1.35; }
+.ps-body { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.ps-body strong { font-size: 14px; font-weight: 600; }
+.ps-body small { font-size: 12.5px; color: var(--muted); line-height: 1.4; }
+.ps-body .ps-pro { color: var(--accent); font-weight: 600; }
+.ps-list li.locked .ps-body strong { color: var(--muted); }
+.ps-cta { display: block; width: 100%; min-height: 48px; padding: 12px 16px; border: 0; border-radius: 14px; background: var(--accent); color: var(--on-accent); font: 600 15px var(--font-ui); cursor: pointer; }
+.ps-cta:hover { background: var(--accent-h); }
+.ps-cta[hidden] { display: none; }
