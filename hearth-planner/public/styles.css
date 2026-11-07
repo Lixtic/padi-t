@@ -797,3 +797,48 @@ html { overscroll-behavior-y: none; }
 .opt-toggle[aria-expanded="true"] .disc-chev { transform: rotate(180deg); }
 .as-detail { margin: 8px 0 0; font: 12px/1.45 ui-monospace, SFMono-Regular, Menlo, monospace; color: var(--muted); word-break: break-word; user-select: all; }
 .as-detail[hidden] { display: none; }
+
+/* ───────── Plan card (sidebar) and upgrade sheet ───────── */
+.plan-row { display: flex; align-items: center; gap: 10px; width: 100%; min-height: 56px; padding: 8px 8px 8px 14px; border-radius: 16px; border: 1px solid var(--card-line); background: var(--card); text-align: left; color: var(--text); }
+.plan-row[hidden] { display: none; }
+.plan-row:hover { border-color: var(--accent); }
+.plan-text { flex: 1; min-width: 0; display: flex; flex-direction: column; line-height: 1.25; }
+.plan-text strong { font-size: 14.5px; font-weight: 600; }
+.plan-text small { font-size: 12.5px; color: var(--muted); }
+.plan-cta { flex: none; padding: 8px 12px; border-radius: 999px; background: var(--accent); color: var(--on-accent); font-size: 13px; font-weight: 600; white-space: nowrap; }
+.plan-row[data-tier="pro"] { background: linear-gradient(135deg, color-mix(in srgb, var(--gold) 22%, var(--card)), var(--card)); border-color: color-mix(in srgb, var(--gold) 55%, var(--card-line)); }
+.plan-row[data-tier="pro"] .plan-cta { background: transparent; color: var(--accent); border: 1px solid var(--accent); }
+
+.up-reason { margin: 0 0 14px; padding: 10px 12px; border-radius: 12px; background: color-mix(in srgb, var(--gold) 22%, var(--card)); color: var(--text); font-size: 14px; line-height: 1.45; }
+.up-reason[hidden] { display: none; }
+.up-table { display: flex; flex-direction: column; margin: 0 0 16px; border: 1px solid var(--card-line); border-radius: 16px; overflow: hidden; background: var(--card); }
+.up-row { display: grid; grid-template-columns: 1.15fr 1fr 1fr; gap: 8px; padding: 11px 12px; font-size: 13.5px; line-height: 1.3; align-items: center; }
+.up-row + .up-row { border-top: 1px solid var(--card-line); }
+.up-what { font-weight: 600; }
+.up-free { color: var(--muted); }
+.up-pro { color: var(--accent); font-weight: 600; }
+.up-buy { display: grid; gap: 10px; }
+.up-btn { position: relative; display: grid; grid-template-columns: 1fr auto; grid-template-areas: "label amount" "days amount"; align-items: center; column-gap: 12px; min-height: 64px; padding: 10px 16px; border-radius: 16px; border: 1.5px solid var(--card-line); background: var(--card); color: var(--text); text-align: left; }
+.up-btn:hover:not(:disabled) { border-color: var(--accent); }
+.up-btn:disabled { opacity: .55; }
+.up-btn.busy { opacity: .7; }
+.up-best { border-color: var(--accent); background: color-mix(in srgb, var(--accent) 8%, var(--card)); }
+.up-label { grid-area: label; font-weight: 650; font-size: 15.5px; }
+.up-days { grid-area: days; font-size: 12.5px; color: var(--muted); }
+.up-amount { grid-area: amount; font-size: 19px; font-weight: 700; color: var(--accent); }
+.up-tag { position: absolute; top: -9px; right: 14px; padding: 2px 9px; border-radius: 999px; background: var(--gold); color: #3a2a00; font-size: 11.5px; font-weight: 700; }
+.up-tag[hidden] { display: none; }
+.up-err { margin: 12px 0 0; color: var(--danger, #b3261e); font-size: 14px; }
+.up-err[hidden] { display: none; }
+
+/* A guest's taster ends with this card */
+.paywall { margin: 14px 0 0; padding: 18px; border-radius: 18px; border: 1px solid color-mix(in srgb, var(--accent) 40%, var(--card-line)); background: linear-gradient(180deg, color-mix(in srgb, var(--accent) 7%, var(--card)), var(--card)); }
+.paywall h3 { margin: 0 0 6px; font-family: var(--font-serif); font-size: 20px; font-weight: 600; }
+.paywall p { margin: 0 0 12px; color: var(--muted); font-size: 14.5px; line-height: 1.5; }
+.paywall ul { margin: 0 0 14px; padding: 0; list-style: none; display: grid; gap: 7px; }
+.paywall li { display: flex; gap: 9px; align-items: flex-start; font-size: 14.5px; line-height: 1.4; }
+.paywall li::before { content: "🔒"; font-size: 13px; line-height: 1.6; filter: grayscale(.2); }
+.paywall .pw-actions { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+.paywall .pw-main { min-height: 46px; padding: 0 20px; border-radius: 999px; background: var(--accent); color: var(--on-accent); font-weight: 650; font-size: 15px; }
+.paywall .pw-sub { font-size: 13px; color: var(--muted); }
+.plan-cta[hidden] { display: none; }

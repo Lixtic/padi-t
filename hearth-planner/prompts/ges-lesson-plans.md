@@ -130,6 +130,14 @@ The request may include `Study notes:` and `BECE practice:` lines. Each is `on` 
 - If a later message asks `Add the study notes for this week`, write only section 3 in full, with the same 7 elements and the Key Terms table. If it asks `Add the BECE practice questions for this week`, write only section 4 in full with the marking guide. Use the same topics as the lessons already written in this conversation, start directly with the heading and end with the `<ElicitationsGroup>`.
 - These options do not limit the follow-up documents below. Write the extra BECE set or any other follow-up document whenever asked.
 
+## Preview mode
+
+If the request contains the line `Mode: preview`, write a short taster so the teacher can judge the quality before creating an account. Ignore the 3,500 to 6,000 word target and the section order above for this request only.
+
+- Write the `# Lesson Metadata` table exactly as described above, then **Lesson 1 only**, headed `## Lesson 1`: the lesson title, the learning objectives, the prerequisite knowledge, the Starter phase written in full, and the first step of the Main activity written in full.
+- Keep the whole answer under about 700 words. Stop after the first step of the Main activity.
+- Do not write Lesson 2, Study Notes, BECE Practice, the Assessment Rubric, an Interactive Closing, a closing group or any follow-up chips. Do not say that anything was left out, do not mention accounts or payments, and do not add a closing line.
+
 ## Follow-up documents
 
 If the request is exactly one of the three below, write only that document (no lesson plan and no study notes). Start directly with its heading. Use the same subject, class, week, class size and resource settings as the original request, and the same topics as the lessons already written in this conversation. Keep the language simple and suited to the class. Then end with the `<ElicitationsGroup>`.

@@ -133,3 +133,24 @@ Phones and strict browsers block cookies set by another site, which made sign-in
 and plans never synced. GuidEd now sends Neon Auth calls through `/api/neon-auth` on your own domain (a small proxy in
 `api/neon-auth.js`), so the session cookie is first-party. No new settings are needed; it uses `NEON_AUTH_BASE_URL`.
 Set `NEON_AUTH_DIRECT=1` to go straight to Neon again. Your domain must still be a trusted origin in Neon Auth.
+
+## Guest preview, Free and Pro
+
+Plans are described by what a teacher gets, not by tokens. Every number is an environment variable (see `.env.example`).
+
+| | Guest (no account) | Free (signed in) | Pro (paid) |
+|---|---|---|---|
+| Plans | A taster: Lesson 1 only, 2 a day | 3 full plans a week | Unlimited |
+| Classes | 1 | 1 per week | Basic 7, 8 and 9 |
+| Word files | Create an account first | With a "Made with GuidEd" footer | Clean |
+| Sync across devices | No | Yes | Yes |
+
+**Guests cost almost nothing.** A taster is short (about 700 words, capped at `PREVIEW_MAX_TOKENS`), and it goes into the shared cache, so the next visitor who asks for the same subject, class and week is served for free. Only tasters that spend tokens count against the 2 a day. Under the taster is a card that leads to creating an account.
+
+**Paying.** Payments are one-off through [Paystack](https://paystack.com), because mobile money cannot be charged automatically. Cards, MTN MoMo, Telecel Cash and AT Money all work. Each payment adds 30 days (monthly) or 120 days (term) to the teacher's Pro period, on top of any time left.
+
+1. Add `PAYSTACK_SECRET_KEY` in Vercel (Paystack dashboard, Settings, API Keys).
+2. In the Paystack dashboard (Settings, API Keys and Webhooks), set the webhook URL to `https://YOUR-DOMAIN/api/billing?action=webhook`. This unlocks Pro even if the teacher closes the page before returning.
+3. Use a test key first. Paystack's test cards and mobile money numbers are in their docs.
+
+Use `PRO_EMAILS` to give staff and testers Pro without paying. `TIERS=off` removes every limit.

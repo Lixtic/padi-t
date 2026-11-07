@@ -23,6 +23,7 @@
   <script src="vendor/neon-realtime.js" defer></script>
   <script src="vendor/neon-auth.js" defer></script>
   <script src="sync.js" defer></script>
+  <script src="plans.js" defer></script>
   <script src="docx-export.js" defer></script>
   <script src="schemes.js" defer></script>
   <script src="sample.js" defer></script>
@@ -128,6 +129,25 @@
   </section>
 </dialog>
 
+<!-- ───────── Upgrade to Pro ───────── -->
+<dialog class="acct-sheet up-sheet" id="upSheet" aria-labelledby="upTitle">
+  <button type="button" class="icon-btn as-close" id="upClose" aria-label="Close"><svg class="ico"><use href="#i-x"/></svg></button>
+  <section>
+    <svg class="as-logo" aria-hidden="true"><use href="#i-logo"/></svg>
+    <h2 id="upTitle">Go further with GuidEd Pro</h2>
+    <p class="as-sub" id="upLead"></p>
+    <p class="up-reason" id="upReason" role="status" hidden></p>
+    <div class="up-table" id="upTable" role="table" aria-label="Free and Pro compared"></div>
+    <div class="up-buy">
+      <button type="button" class="up-btn" id="upBuyMonthly"><span class="up-tag" hidden></span><span class="up-label"></span><span class="up-amount"></span><span class="up-days"></span></button>
+      <button type="button" class="up-btn up-best" id="upBuyTerm"><span class="up-tag" hidden></span><span class="up-label"></span><span class="up-amount"></span><span class="up-days"></span></button>
+    </div>
+    <p class="up-err" id="upMsg" role="alert" hidden></p>
+    <p class="as-foot" id="upNote"></p>
+  </section>
+</dialog>
+
+
 <div class="app" id="app">
 
   <!-- ───────── Sidebar ───────── -->
@@ -185,6 +205,11 @@
         </div>
         <p class="acct-msg" id="acctMsg" role="status" aria-live="polite"></p>
       </div>
+
+      <button type="button" class="plan-row" id="planRow" hidden>
+        <span class="plan-text"><strong id="planRowTitle"></strong><small id="planRowSub"></small></span>
+        <span class="plan-cta" id="planRowCta"></span>
+      </button>
 
       <button type="button" class="disc" id="setToggle" data-disc="setPanel" aria-expanded="false" aria-controls="setPanel">
         <svg class="ico"><use href="#i-sliders"/></svg><span>Settings</span><svg class="ico disc-chev"><use href="#i-chevron"/></svg>

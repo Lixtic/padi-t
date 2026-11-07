@@ -5,6 +5,7 @@ const { activeProvider, ADAPTERS } = require('./_providers');
 const Cache = require('./_cache');
 const Quota = require('./_quota');
 const A = require('./_auth');
+const Entitle = require('./_entitle');
 
 const ERR_MARK = '<<SCHOOLPADI_ERROR>>';   // the browser looks for this at the end of the stream
 
@@ -31,33 +32,64 @@ module.exports = async (req, res) => {
   const v = validate(body);
   if (v.error) return sendJson(res, 400, { error: 'bad_request', message: v.error });
 
-  const messages = [{ role: 'user', content: firstMessage(v.params) }].concat(v.thread);
-
   // Who is asking: a signed-in teacher if a valid token came with the request, otherwise the network address.
   const me = req.headers.authorization ? await A.authed(req).catch(() => null) : null;
   const subject = Quota.subjectFor(me, clientIp(req));
+
+  // Tiers (see _entitle.js). Visitors who are not signed in get a short taster of Lesson 1, never the full plan.
+  let ent = null;
+  try { ent = Entitle.enabled() ? await Entitle.resolve(me, clientIp(req)) : null; } catch (e) { console.error('[generate] tier lookup failed', e && e.message); }
+  const guest = !!ent && ent.tier === 'guest';
+  const firstTurn = v.thread.length === 0;
+  if (guest && !firstTurn) {
+    return sendJson(res, 402, { error: 'account', message: 'Create a free account to refine a plan, or to add study notes and BECE questions.' });
+  }
+  const makeFirst = (p) => (guest ? firstMessage(Object.assign({}, p, { studyNotes: false, bece: false })) + '\nMode: preview' : firstMessage(p));
+  const messages = [{ role: 'user', content: makeFirst(v.params) }].concat(v.thread);
+  const fresh = body.fresh === true && !guest;          // a taster is never regenerated: it would spend tokens for nothing
+  const sendHeaders = (cache) => {
+    res.setHeader('Content-Type', 'text/plain; charset=utf-8');
+    res.setHeader('Cache-Control', 'no-store, no-transform');
+    res.setHeader('X-Padi-Cache', cache);
+    if (ent) res.setHeader('X-Guided-Tier', ent.tier);
+    if (guest) res.setHeader('X-Guided-Preview', '1');
+  };
+
+  // Signed-in teachers on the free tier: stop here when this week's plans (or classes) are used up.
+  if (ent && ent.tier === 'free' && firstTurn) {
+    let g = { ok: true };
+    try { g = await Entitle.checkFree(ent, v.params.cls); } catch (e) { console.error('[generate] free check failed', e && e.message); }
+    if (!g.ok) return sendJson(res, 402, { error: 'limit', reason: g.reason, resetsAt: g.resetsAt, message: Entitle.message('free', g) });
+  }
 
   // 1. A repeat of a recent request is served from the cache, at no token cost and with no quota used.
   //    "fresh" (the Regenerate button) skips the lookup and replaces the stored answer.
   const ck = Cache.keyFor({
     ver: Cache.version(SYSTEM_PROMPT, provider),
-    settingsText: firstMessage(Object.assign({}, v.params, { notes: '' })),
+    settingsText: makeFirst(Object.assign({}, v.params, { notes: '' })),
     notes: v.params.notes, thread: v.thread, subject,
   });
-  if (body.fresh !== true) {
+  if (!fresh) {
     const hit = await Cache.lookup(ck);
     if (hit) {
       res.statusCode = 200;
-      res.setHeader('Content-Type', 'text/plain; charset=utf-8');
-      res.setHeader('Cache-Control', 'no-store, no-transform');
-      res.setHeader('X-Padi-Cache', hit.how);
-      return res.end(hit.text);
+      sendHeaders(hit.how);
+      res.end(hit.text);
+      if (ent && ent.tier === 'free' && firstTurn) await Entitle.countFree(ent, v.params.cls).catch(() => {});
+      return;
     }
+  }
+
+  // A taster that was not cached will cost tokens, so each visitor gets only a few a day.
+  if (guest) {
+    let g = { ok: true };
+    try { g = await Entitle.checkGuest(ent); } catch (e) { console.error('[generate] guest check failed', e && e.message); }
+    if (!g.ok) return sendJson(res, 402, { error: 'guest_limit', resetsAt: g.resetsAt, message: Entitle.message('guest', g) });
   }
 
   // 2. Not cached, so it will cost tokens. Stop here if today's allowance is used up.
   const inputTokens = Quota.estimateTokens(SYSTEM_PROMPT.length + messages.reduce((n, m) => n + m.content.length, 0));
-  const q = await Quota.check(subject, inputTokens);
+  const q = await Quota.check(subject, inputTokens, ent && ent.tier === 'pro' && Entitle.cfg().proTokenDaily ? { limit: Entitle.cfg().proTokenDaily } : undefined);
   if (!q.ok) {
     return sendJson(res, 429, { error: 'quota', message: Quota.message(q) }, { 'Retry-After': String(q.retryAfter) });
   }
@@ -65,7 +97,7 @@ module.exports = async (req, res) => {
   const ctrl = new AbortController();
   res.on('close', () => { if (!res.writableEnded) ctrl.abort(); });
 
-  const stream = ADAPTERS[provider]({ system: SYSTEM_PROMPT, messages, signal: ctrl.signal });
+  const stream = ADAPTERS[provider]({ system: SYSTEM_PROMPT, messages, signal: ctrl.signal, maxTokens: guest ? Entitle.cfg().previewMaxTokens : undefined });
   const it = stream[Symbol.asyncIterator]();
   let first;
   try {
@@ -75,10 +107,8 @@ module.exports = async (req, res) => {
   }
 
   res.statusCode = 200;
-  res.setHeader('Content-Type', 'text/plain; charset=utf-8');
-  res.setHeader('Cache-Control', 'no-store, no-transform');
+  sendHeaders('miss');
   res.setHeader('X-Accel-Buffering', 'no');
-  res.setHeader('X-Padi-Cache', 'miss');
 
   let wroteText = false;
   let finish = 'stop';
@@ -94,7 +124,7 @@ module.exports = async (req, res) => {
     if (!first.done) take(first.value);
     for (let n = await it.next(); !n.done; n = await it.next()) take(n.value);
     if (!wroteText) { failed = true; res.write(ERR_MARK + 'The model returned an empty answer. Please try again.'); }
-    else if (finish === 'length') { failed = true; res.write('\n' + ERR_MARK + 'The answer reached the length limit and was cut short. Use Regenerate, or raise MAX_OUTPUT_TOKENS.'); }
+    else if (finish === 'length' && !guest) { failed = true; res.write('\n' + ERR_MARK + 'The answer reached the length limit and was cut short. Use Regenerate, or raise MAX_OUTPUT_TOKENS.'); }
   } catch (e) {
     failed = true;
     if (!ctrl.signal.aborted) {
@@ -107,7 +137,10 @@ module.exports = async (req, res) => {
   // 3. Count the tokens used (even if the teacher pressed Stop, they were spent) and keep a complete answer for next time.
   const used = inputTokens + Quota.estimateTokens(outChars);
   const tasks = [Quota.record(subject, used)];
-  if (!failed && !ctrl.signal.aborted && finish === 'stop') tasks.push(Cache.store(ck, full, v.thread.length, used));
+  const complete = !failed && !ctrl.signal.aborted && (finish === 'stop' || (guest && wroteText));
+  if (complete) tasks.push(Cache.store(ck, full, v.thread.length, used));
+  if (guest && wroteText) tasks.push(Entitle.countGuest(ent));                     // a taster that spent tokens
+  else if (ent && ent.tier === 'free' && firstTurn && !fresh && complete) tasks.push(Entitle.countFree(ent, v.params.cls));
   await Promise.all(tasks).catch(() => {});
 };
 

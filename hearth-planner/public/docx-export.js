@@ -271,7 +271,7 @@
           new D.TextRun({ children: [D.PageNumber.CURRENT], size: 16, color: GREY, font: FONT }),
           new D.TextRun({ text: ' of ', size: 16, color: GREY, font: FONT }),
           new D.TextRun({ children: [D.PageNumber.TOTAL_PAGES], size: 16, color: GREY, font: FONT })
-        ]
+        ].concat(opts && opts.footer ? [new D.TextRun({ text: '   |   ' + String(opts.footer).slice(0, 60), size: 16, color: GREY, font: FONT })] : [])
       })]
     });
 

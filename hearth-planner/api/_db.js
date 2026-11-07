@@ -21,6 +21,11 @@ const SCHEMA = [
   'create table if not exists response_cache (scope text not null, key text not null, params_key text not null, notes_norm text not null default \'\', response text not null, thread_len int not null default 0, tokens int not null default 0, created_at bigint not null, hits int not null default 0, primary key (scope, key))',
   'create index if not exists response_cache_lookup on response_cache (scope, params_key, created_at)',
   'create table if not exists usage (subject text not null, day text not null, tokens bigint not null default 0, requests int not null default 0, primary key (subject, day))',
+  // Teacher tiers: paid periods, payments (one row per Paystack reference), and plans written per week (or guest previews per day).
+  'create table if not exists subscriptions (user_id text primary key, expires_at bigint not null default 0, plan text not null default \'\', updated_at bigint not null)',
+  'create table if not exists payments (reference text primary key, user_id text not null, email text not null default \'\', plan text not null, amount bigint not null, currency text not null, status text not null default \'pending\', created_at bigint not null, paid_at bigint)',
+  'create index if not exists payments_user on payments (user_id, created_at)',
+  'create table if not exists plan_log (subject text not null, period text not null, cls text not null, n int not null default 0, primary key (subject, period, cls))',
 ];
 
 // Creates the tables the first time a function runs after a deploy.

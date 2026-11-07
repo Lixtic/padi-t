@@ -67,11 +67,11 @@ async function post(provider, url, headers, payload, signal) {
   return r;
 }
 
-async function* anthropic({ system, messages, signal }) {
+async function* anthropic({ system, messages, signal, maxTokens: cap }) {
   const base = (process.env.ANTHROPIC_BASE_URL || 'https://api.anthropic.com').replace(/\/$/, '');
   const r = await post('anthropic', base + '/v1/messages',
     { 'x-api-key': process.env.ANTHROPIC_API_KEY, 'anthropic-version': '2023-06-01' },
-    { model: process.env.ANTHROPIC_MODEL || DEFAULTS.anthropic, max_tokens: maxTokens(), stream: true, system, messages }, signal);
+    { model: process.env.ANTHROPIC_MODEL || DEFAULTS.anthropic, max_tokens: cap || maxTokens(), stream: true, system, messages }, signal);
   for await (const d of sseData(r.body)) {
     const j = safeJson(d);
     if (!j) continue;
@@ -81,11 +81,11 @@ async function* anthropic({ system, messages, signal }) {
   }
 }
 
-async function* openai({ system, messages, signal }) {
+async function* openai({ system, messages, signal, maxTokens: cap }) {
   const base = (process.env.OPENAI_BASE_URL || 'https://api.openai.com/v1').replace(/\/$/, '');
   const r = await post('openai', base + '/chat/completions',
     { authorization: 'Bearer ' + process.env.OPENAI_API_KEY },
-    { model: process.env.OPENAI_MODEL || DEFAULTS.openai, max_completion_tokens: maxTokens(), stream: true,
+    { model: process.env.OPENAI_MODEL || DEFAULTS.openai, max_completion_tokens: cap || maxTokens(), stream: true,
       messages: [{ role: 'system', content: system }].concat(messages) }, signal);
   for await (const d of sseData(r.body)) {
     if (d === '[DONE]') break;
@@ -97,14 +97,14 @@ async function* openai({ system, messages, signal }) {
   }
 }
 
-async function* gemini({ system, messages, signal }) {
+async function* gemini({ system, messages, signal, maxTokens: cap }) {
   const base = (process.env.GEMINI_BASE_URL || 'https://generativelanguage.googleapis.com').replace(/\/$/, '');
   const model = process.env.GEMINI_MODEL || DEFAULTS.gemini;
   const r = await post('gemini', base + '/v1beta/models/' + encodeURIComponent(model) + ':streamGenerateContent?alt=sse',
     { 'x-goog-api-key': process.env.GEMINI_API_KEY || process.env.GOOGLE_API_KEY },
     { systemInstruction: { parts: [{ text: system }] },
       contents: messages.map((m) => ({ role: m.role === 'assistant' ? 'model' : 'user', parts: [{ text: m.content }] })),
-      generationConfig: { maxOutputTokens: maxTokens() } }, signal);
+      generationConfig: { maxOutputTokens: cap || maxTokens() } }, signal);
   for await (const d of sseData(r.body)) {
     const j = safeJson(d);
     const c = j && j.candidates && j.candidates[0];
