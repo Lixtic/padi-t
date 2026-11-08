@@ -15,13 +15,6 @@
     return (classRows(subject, cls, term) || []).filter(function (x) { return x.type === 'teach'; });
   }
 
-  // The Ghana school year: Term 1 starts in September, Term 2 in January and Term 3 around 20 April. August still counts as Term 3.
-  function currentTerm(date) {
-    var d = date || new Date(), m = d.getMonth() + 1, day = d.getDate();
-    if (m >= 9) return 1;
-    if (m <= 3 || (m === 4 && day < 20)) return 2;
-    return 3;
-  }
 
   // ───────── School calendar: the Friday that ends each week ─────────
   // GES publishes the dates each year. Terms open on a Tuesday; week 1 is the week the term opens. Years that are not listed are estimated
@@ -33,14 +26,21 @@
   function utc(iso) { var p = String(iso).split('-'); return Date.UTC(+p[0], +p[1] - 1, +p[2]); }
   function iso(ms) { return new Date(ms).toISOString().slice(0, 10); }
   function onOrAfter(ms, dow) { return ms + ((dow - new Date(ms).getUTCDay() + 7) % 7) * DAY; }   // the next day with this weekday number (0 = Sunday)
-  // The academic year a date falls in is named by the year its Term 1 opens: September to December 2026 and January to August 2027 are both 2026.
-  function academicYear(date) { var d = date || new Date(); return d.getMonth() >= 8 ? d.getFullYear() : d.getFullYear() - 1; }
+  // The academic year a date falls in is named by the year its Term 1 opens. It turns over in August, after Term 3 has closed: August 2026 to July 2027 is 2026.
+  function academicYear(date) { var d = date || new Date(); return d.getMonth() >= 7 ? d.getFullYear() : d.getFullYear() - 1; }
   function termDates(ay, term) {
     var known = CALENDAR[ay] && CALENDAR[ay][term];
     if (known) return { open: known.open, close: known.close, estimated: false };
     var open = term === 1 ? onOrAfter(Date.UTC(ay, 8, 7), 2) : term === 2 ? onOrAfter(Date.UTC(ay + 1, 0, 4), 2) : onOrAfter(Date.UTC(ay + 1, 3, 19), 2);
     var weeks = term === 2 ? 12 : term === 1 ? 14 : 14;
     return { open: iso(open), close: iso(open + (weeks * 7 - 5) * DAY), estimated: true };
+  }
+  // The term a date belongs to. During a holiday it is the term that is about to open, so a teacher coming back after the break lands in the new term.
+  function currentTerm(date) {
+    var d = date || new Date(), today = Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()), ay = academicYear(d), term = 1;
+    for (var t = 1; t <= 3; t++) if (utc(termDates(ay, t).open) <= today) term = t;
+    if (term < 3 && today > utc(termDates(ay, term).close)) term += 1;
+    return term;
   }
   // The Friday that ends a week of a term. opts: { today: Date, open: 'YYYY-MM-DD' (the school's own opening date) }.
   // Returns { iso, label, estimated, afterClose } or null.

@@ -1002,7 +1002,7 @@
     if (window.GuidedProfile && session.messages.length === 2 && session.params && !aborted) {
       const sp = session.params, same = sp.cls === state.params.cls && sp.subject === state.params.subject;
       window.GuidedProfile.planned({ cls: sp.cls, subject: sp.subject, term: sp.term || termNow(), week: sp.week });
-      if (same && state.params.week === sp.week && !planQueue.length) { continueWeek(); syncPills(); }   // the week pill moves on to the next one
+      if (same && state.params.week === sp.week && !planQueue.length) { continueWeek(true); syncPills(); }   // the week pill moves on to the next one
     }
     bot.set(text, true, msg);
     updateSend(); renderSessions(); updateTopbar(); updateView(); store.save();
@@ -1222,10 +1222,24 @@
      and is dropped when the calendar moves on to the next term. */
   /* The teacher profile (profile.js): classes and subjects shown first, and the week after the last one planned. */
   const mySubjectsOf = (cls) => (window.GuidedProfile ? window.GuidedProfile.mySubjects(cls) : []);
-  function continueWeek() {
-    const GP = window.GuidedProfile; if (!GP) return;
-    const w = GP.nextWeek(state.params.cls, state.params.subject, termNow());
-    if (w) state.params.week = w;
+  // The teaching week today falls in, from the calendar and the school's opening date. A weekend counts as the coming week, and a holiday as week 1.
+  // It is null when the teacher has picked a term other than the current one.
+  function calendarWeek() {
+    const S = window.SchoolPadiSchemes, term = termNow();
+    if (!S || term !== S.currentTerm()) return null;
+    const d = new Date(), day = d.getDay();
+    d.setDate(d.getDate() + (day === 6 ? 2 : day === 0 ? 1 : 0));            // Saturday and Sunday look ahead to Monday
+    const today = d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+    for (let w = 1; w <= WEEKS.length; w++) { const we = weekEnd(term, w); if (we && we.iso >= today) return w; }
+    return WEEKS.length;
+  }
+  // After a plan is written the pill moves to the next week; otherwise it sits on this week, or on the week after the last one planned when there is no calendar.
+  function continueWeek(afterPlan) {
+    const GP = window.GuidedProfile;
+    const next = GP ? GP.nextWeek(state.params.cls, state.params.subject, termNow()) : null;
+    const now = calendarWeek();
+    if (afterPlan) { if (next) state.params.week = next; return; }
+    if (now) state.params.week = now; else if (next) state.params.week = next;
   }
   function applyProfile() {                           // the profile changed: make the menus and the choice fit it
     const GP = window.GuidedProfile; if (!GP) return;
@@ -1819,7 +1833,7 @@
     }, label: (x) => x });
     const ddTerm = makeDropdown($('#ddTerm'), { name: 'Term', items: () => [1, 2, 3].map((x) => ({ id: x, label: 'Term ' + x + (x === termAuto() ? ' (now)' : '') })), get: () => termNow(), set: (v) => { termSet(v); continueWeek(); syncPills(); }, label: (x) => 'Term ' + x });
     window.addEventListener('guided:account', () => { ddTerm.build(); syncScheme(); });
-    makeDropdown($('#ddWeek'), { name: 'Week', items: () => WEEKS.map((x) => { const we = weekEnd(termNow(), x); return { id: x, label: 'Week ' + x, sub: we && !we.afterClose ? we.short : '' }; }), get: () => state.params.week, set: (v) => { state.params.week = v; store.save(); syncScheme(); }, label: (x) => 'Week ' + x });
+    makeDropdown($('#ddWeek'), { name: 'Week', items: () => WEEKS.map((x) => { const we = weekEnd(termNow(), x); return { id: x, label: 'Week ' + x, sub: we && !we.afterClose ? we.short + (x === calendarWeek() ? ' · this week' : '') : '' }; }), get: () => state.params.week, set: (v) => { state.params.week = v; store.save(); syncScheme(); }, label: (x) => 'Week ' + x });
 
     makeDropdown($('#ddSize'), { name: 'Class size', items: SIZES.map((x) => ({ id: x, label: x + ' learners' })), get: () => state.params.size, set: (v) => { state.params.size = v; syncSummary(); store.save(); }, label: (x) => x + ' learners' });
     syncHook(); syncLight(); syncContent(); syncScheme(); syncAlso();
