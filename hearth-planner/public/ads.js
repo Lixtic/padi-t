@@ -18,10 +18,18 @@
     ins.setAttribute('data-ad-slot', cfg.slot);
     var q = window.adsbygoogle = window.adsbygoogle || [];
     if (!cfg.personalized) q.requestNonPersonalizedAds = 1;
+    var present = document.querySelector('script[src*="pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"]');
+    var push = function () { try { (window.adsbygoogle = window.adsbygoogle || []).push({}); } catch (e) { /* no ad this time */ } };
+    if (present) {                                            // the page already loads it in <head> (AdSense site check); just queue the ad
+      present.addEventListener('error', function () { failed = true; slot.hidden = true; });
+      push();
+      setTimeout(function () { if (!ins.getAttribute('data-adsbygoogle-status')) { failed = true; slot.hidden = true; } }, 5000);   // blocked before we looked: no empty box
+      return;
+    }
     var s = document.createElement('script');
     s.async = true; s.crossOrigin = 'anonymous';
     s.src = 'https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=' + encodeURIComponent(cfg.client);
-    s.onload = function () { try { (window.adsbygoogle = window.adsbygoogle || []).push({}); } catch (e) { /* no ad this time */ } };
+    s.onload = push;
     s.onerror = function () { failed = true; slot.hidden = true; };           // blocked by an ad blocker or the network: no empty box
     document.head.appendChild(s);
   }
