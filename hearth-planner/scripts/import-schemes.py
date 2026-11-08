@@ -62,7 +62,7 @@ def norm_class(text):
 
 def split_heading(text):
     """Returns (class, subject text or '') for 'Basic 2 - Our World Our People', 'B4', or 'Mathematics (Basic 7)'. None when it is not a class heading."""
-    t = text.strip()
+    t = re.sub(r'^((?:Basic|B|P|Primary)\s*-?\s*\d|SHS\s*-?\s*\d)\s+(?:Scheme(?: of Learning)?|Curriculum)\b\s*', r'\1 ', text.strip(), flags=re.I)
     m = re.match(r'^(.*?)\s*\(\s*((?:Basic|B|P|Primary)\s*-?\s*\d|SHS\s*-?\s*\d)[^)]*\)\s*$', t, re.I)
     if m and m.group(1) and not norm_class(m.group(1)):
         cls = norm_class(m.group(2))
@@ -104,8 +104,8 @@ def find_cols(header):
         for key, names in COLS.items():
             if key not in cols and any(n in h for n in names) and not (key == 'strand' and 'sub' in h):
                 cols[key] = i
-    if 'week' not in cols or 'indicator' not in cols:
-        sys.exit('Cannot find the Week and Indicator columns in: ' + ' | '.join(header))
+    if 'indicator' not in cols:
+        sys.exit('Cannot find the Indicator column in: ' + ' | '.join(header))
     return cols
 
 def clean(s):
@@ -137,10 +137,29 @@ def read_meta(doc):
     sm = re.search(r'^\s*Subject:\s*(.+)$', text, re.M)
     return term, (sm.group(1).strip() if sm else '')
 
+TEACH_WEEKS = list(range(2, 13))      # week 1 revises last term, 13 revises this term, 14-15 are the examination
+
+def spread(body, col):
+    """For documents with no Week column: lays the rows over the whole term, one entry per week, so every week has a topic."""
+    get = lambda r, k: clean(r[col[k]]) if k in col and col[k] < len(r) else ''
+    items = [r for r in body if any(x.strip() for x in r)]
+    n = len(items); base, extra = divmod(len(TEACH_WEEKS), n)
+    out = [{'weeks': [1], 'type': 'revision', 'strand': '', 'substrand': '', 'standard': '', 'indicators': [], 'focus': 'Key ideas from last term that this class needs'}]
+    w = 0
+    for i, r in enumerate(items):
+        k = base + (1 if i < extra else 0)
+        for j in range(k):
+            e = {'weeks': [TEACH_WEEKS[w]], 'type': 'teach', 'strand': get(r, 'strand'), 'substrand': get(r, 'substrand'), 'standard': get(r, 'standard'), 'indicators': split_indicators(r[col['indicator']])}
+            if k > 1: e['part'] = [j + 1, k]
+            out.append(e); w += 1
+    out.append({'weeks': [13], 'type': 'revision', 'strand': '', 'substrand': '', 'standard': '', 'indicators': [], 'focus': ''})
+    out.append({'weeks': [14, 15], 'type': 'exam', 'strand': '', 'substrand': '', 'standard': '', 'indicators': [], 'focus': ''})
+    return out
+
 def main(path, subject_arg=''):
     doc = Document(path)
     term, doc_subject = read_meta(doc)
-    heads = [p.text.strip() for p in doc.paragraphs if p.style.name != 'Title' and split_heading(p.text) and (p.style.name.startswith('Heading') or len(p.text.strip()) < 70)]
+    heads = [p.text.strip() for p in doc.paragraphs if split_heading(p.text) and (p.style.name != 'Title' or (split_heading(p.text)[1] and resolve_subject(split_heading(p.text)[1], split_heading(p.text)[0]))) and (p.style.name.startswith('Heading') or len(p.text.strip()) < 70)]
     if len(heads) != len(doc.tables):
         sys.exit('Found %d class headings but %d tables. Check the document.' % (len(heads), len(doc.tables)))
     data = json.load(open(OUT, encoding='utf-8')) if os.path.exists(OUT) else {'subjects': {}}
@@ -156,6 +175,10 @@ def main(path, subject_arg=''):
         col = find_cols(rows[0])
         cell = lambda r, k: r[col[k]] if k in col and col[k] < len(r) else ''
         entries = []
+        if 'week' not in col:
+            entries = spread(rows[1:], col)
+            print('%-26s %-8s no Week column: %d rows spread over weeks 2-12' % (subject, cls, len([r for r in rows[1:] if any(x.strip() for x in r)])))
+            rows = [rows[0]]
         for r in rows[1:]:
             if not any(x.strip() for x in r): continue
             strand, sub, std = clean(cell(r, 'strand')), clean(cell(r, 'substrand')), clean(cell(r, 'standard'))
