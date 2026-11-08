@@ -92,8 +92,9 @@ function validate(body) {
   if (!Number.isInteger(week) || week < 1 || week > 20) return { error: 'Please choose a week between 1 and 20.' };
   if (notes.length > MAX_NOTES) return { error: 'Notes are too long (max ' + MAX_NOTES + ' characters).' };
 
-  const scheme = Schemes.lookup(subject, cls, week);   // looked up here, never taken from the browser
-  if (scheme && scheme.type === 'exam') return { error: 'Weeks ' + scheme.weeks.join(' and ') + ' are examination weeks, so there is no lesson plan. Choose another week.' };
+  const term = [1, 2, 3].includes(Number(body.params && body.params.term)) ? Number(body.params.term) : Schemes.currentTerm();
+  const scheme = Schemes.lookup(subject, cls, term, week);   // looked up here, never taken from the browser
+  if (scheme && scheme.type === 'exam') return { error: 'Week ' + scheme.weeks.join(' and ') + ' is an examination week, so there is no lesson plan. Choose another week.' };
 
   const thread = Array.isArray(body.thread) ? body.thread : [];
   if (thread.length > MAX_THREAD) return { error: 'This conversation is too long. Start a new plan.' };
@@ -111,7 +112,7 @@ function validate(body) {
   if (thread.length && thread[thread.length - 1].role !== 'user') return { error: 'The last message must be a request.' };
 
   return {
-    params: { subject, cls, week, notes, hook, light, studyNotes, bece, size, scheme },
+    params: { subject, cls, week, term, notes, hook, light, studyNotes, bece, size, scheme },
     thread: thread.map((t) => ({ role: t.role, content: t.content })),
   };
 }
@@ -128,6 +129,7 @@ function firstMessage(p) {
     'Subject: ' + p.subject,
     'Class: ' + p.cls,
     ...(levelLine(p.cls)),
+    'Term: ' + p.term,
     'Week: ' + p.week,
     'Hook: ' + (p.hook === false ? 'off' : 'on'),
     'Resources: ' + (p.light ? 'light' : 'standard'),

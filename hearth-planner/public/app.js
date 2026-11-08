@@ -41,7 +41,7 @@
   const examOf = (cls) => levelOf(cls).exam;
   const notesOf = (cls) => levelOf(cls).notes;
   const SUBJECTS = levelOf('Basic 8').subjects;
-  const WEEKS = Array.from({ length: 15 }, (_, i) => i + 1);
+  const WEEKS = Array.from({ length: 14 }, (_, i) => i + 1);
 
   /* ───────── Helpers ───────── */
   const $ = (s, r = document) => r.querySelector(s);
@@ -716,7 +716,7 @@
     const res = await fetch('/api/generate', {
       method: 'POST', signal,
       headers: Object.assign({ 'content-type': 'application/json', 'x-access-code': state.access || '' }, who),
-      body: JSON.stringify({ params: { subject: p.subject, cls: p.cls, week: p.week, hook: p.hook !== false, light: p.light === true, studyNotes: p.studyNotes !== false, bece: p.bece !== false, size: p.size || '', notes: session.messages[0].content || '' }, thread: threadOf(session), fresh }),
+      body: JSON.stringify({ params: { subject: p.subject, cls: p.cls, week: p.week, term: p.term || termNow(), hook: p.hook !== false, light: p.light === true, studyNotes: p.studyNotes !== false, bece: p.bece !== false, size: p.size || '', notes: session.messages[0].content || '' }, thread: threadOf(session), fresh }),
     });
     if (!res.ok) {
       let j = {};
@@ -787,13 +787,14 @@
     if (s.messages.length && !text) return;
     if (!s.messages.length) {                       // examination weeks have no plan
       const sc = schemeFor(state.params);
-      if (sc && sc.type === 'exam') { toast('Weeks ' + sc.weeks.join(' and ') + ' are examination weeks. Choose another week.'); return; }
+      if (sc && sc.type === 'exam') { toast('Week ' + sc.weeks.join(' and ') + ' is an examination week. Choose another week.'); return; }
     }
     if (!rateOk()) { planQueue = []; return; }
 
     if (!s.messages.length) {                       // new plan
       const p = Object.assign({}, state.params);
       delete p.also;
+      p.term = termNow();
       if (fromQueue !== true) {                     // "Also plan for": the other classes follow, one after another
         planQueue = [];
         const skipped = [];
@@ -1075,22 +1076,32 @@
   notesBtn.addEventListener('click', () => { state.params.studyNotes = state.params.studyNotes === false; syncContent(); store.save(); });
   beceBtn.addEventListener('click', () => { state.params.bece = state.params.bece === false; syncContent(); store.save(); });
   /* The school's NaCCA scheme for the chosen subject, class and week (when one is loaded). */
+  /* The school term. It follows the calendar by itself (Term 1 from September, Term 2 from January, Term 3 from late April), so a teacher
+     who comes back after the break lands in the new term. A teacher can pick another term; that choice is kept per account on this device
+     and is dropped when the calendar moves on to the next term. */
+  const termAuto = () => (window.SchoolPadiSchemes ? window.SchoolPadiSchemes.currentTerm() : 1);
+  const termKey = () => { const u = window.PadiSync && window.PadiSync.user && window.PadiSync.user(); return 'guided.term.' + ((u && (u.id || u.email)) || 'guest'); };
+  function termNow() {
+    try { const t = JSON.parse(localStorage.getItem(termKey())); if (t && t.auto === termAuto() && [1, 2, 3].includes(t.v)) return t.v; } catch (e) { /* use the calendar */ }
+    return termAuto();
+  }
+  function termSet(v) { try { localStorage.setItem(termKey(), JSON.stringify({ v, auto: termAuto() })); } catch (e) { /* the calendar term still works */ } }
   const schemeStrip = $('#schemeStrip');
-  const schemeFor = (p) => (window.SchoolPadiSchemes ? window.SchoolPadiSchemes.lookup(p.subject, p.cls, p.week) : null);
+  const schemeFor = (p) => (window.SchoolPadiSchemes ? window.SchoolPadiSchemes.lookup(p.subject, p.cls, p.term || termNow(), p.week) : null);
   function syncScheme() {
     const S = window.SchoolPadiSchemes;
     if (!S) { schemeStrip.hidden = true; return; }
     const p = state.params;
     const e = schemeFor(p);
     schemeStrip.classList.toggle('is-exam', !!e && e.type === 'exam');
-    const tag = (w) => h('span', { class: 'scheme-tag', text: e.term + ' scheme · Week ' + w });
+    const tag = (w) => h('span', { class: 'scheme-tag', text: e.term + ' · Week ' + w });
     if (!e) {
-      const last = S.span(p.subject, p.cls);
+      const last = S.span(p.subject, p.cls, p.term || termNow());
       schemeStrip.replaceChildren(h('p', { class: 'scheme-note', text: last
-        ? 'Your scheme covers Weeks 1 to ' + last + '. Claude will choose the topic for Week ' + p.week + '.'
+        ? 'Your Term ' + (p.term || termNow()) + ' scheme covers Weeks 1 to ' + last + '. Claude will choose the topic for Week ' + p.week + '.'
         : 'No scheme is loaded for this subject and class yet. Claude will choose the strand and topic.' }));
     } else if (e.type === 'exam') {
-      schemeStrip.replaceChildren(h('div', { class: 'scheme-top' }, h('span', { class: 'scheme-tag', text: e.term + ' scheme' }), h('span', { class: 'scheme-line', text: 'Weeks ' + e.weeks.join(' and ') + ': examinations' })),
+      schemeStrip.replaceChildren(h('div', { class: 'scheme-top' }, h('span', { class: 'scheme-tag', text: e.term }), h('span', { class: 'scheme-line', text: 'Week ' + e.weeks.join(' and ') + ': examinations' })),
         h('p', { class: 'scheme-note', text: 'There is no lesson plan for examination weeks. Choose another week.' }));
     } else if (e.type === 'revision') {
       const names = e.topics.map((t) => t.split(' > ').pop());
@@ -1257,6 +1268,7 @@
     if (!ok) return;
     const u = P.user();
     acct.out.hidden = !!u; acct.inn.hidden = !u;
+    window.dispatchEvent(new Event('guided:account'));
     acct.top.dataset.state = u ? (problemKind ? 'warn' : 'in') : 'out';
     acct.top.setAttribute('aria-label', u ? 'Account: ' + (u.email || 'signed in') : 'Sign in or create account');
     if (u) { acct.who.textContent = u.email || 'Signed in'; acct.avatar.textContent = String(u.email || 'G').charAt(0); if (lastSync) acctStatus('Synced ' + ago(lastSync)); }
@@ -1611,6 +1623,8 @@
       if (!subjectsOf(v).includes(state.params.subject)) state.params.subject = subjectsOf(v)[0];   // a subject that is not taught at this level falls back to the first one
       ddSubject.build(); syncContent(); store.save(); syncScheme(); syncAlso();
     }, label: (x) => x });
+    const ddTerm = makeDropdown($('#ddTerm'), { name: 'Term', items: () => [1, 2, 3].map((x) => ({ id: x, label: 'Term ' + x + (x === termAuto() ? ' (now)' : '') })), get: () => termNow(), set: (v) => { termSet(v); syncScheme(); }, label: (x) => 'Term ' + x });
+    window.addEventListener('guided:account', () => { ddTerm.build(); syncScheme(); });
     makeDropdown($('#ddWeek'), { name: 'Week', items: WEEKS.map((x) => ({ id: x, label: 'Week ' + x })), get: () => state.params.week, set: (v) => { state.params.week = v; store.save(); syncScheme(); }, label: (x) => 'Week ' + x });
 
     makeDropdown($('#ddSize'), { name: 'Class size', items: SIZES.map((x) => ({ id: x, label: x + ' learners' })), get: () => state.params.size, set: (v) => { state.params.size = v; syncSummary(); store.save(); }, label: (x) => x + ' learners' });
