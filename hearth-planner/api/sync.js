@@ -2,6 +2,7 @@
 const { sendJson, readJson } = require('./_lib');
 const db = require('./_db');
 const A = require('./_auth');
+const Levels = require('./_levels');
 
 const MAX_ROWS = 20, MAX_ROW_BYTES = 400000;
 
@@ -57,7 +58,18 @@ module.exports = async (req, res) => {
       const d = body.data && typeof body.data === 'object' ? body.data : {};
       const ts = Number(body.updated_at);
       if (!Number.isFinite(ts) || ts <= 0 || ts > maxTs) return sendJson(res, 400, { error: 'bad_request', message: 'Invalid details.' });
-      const clean = { teacher: String(d.teacher || '').slice(0, 80), school: String(d.school || '').slice(0, 100) };
+      const known = new Set(Levels.LEVELS.flatMap((l) => l.subjects));
+      const list = (a, ok, max) => (Array.isArray(a) ? a : []).filter((x, i, all) => typeof x === 'string' && ok(x) && all.indexOf(x) === i).slice(0, max);
+      const last = {};
+      Object.keys(d.last && typeof d.last === 'object' ? d.last : {}).slice(0, 80).forEach((k) => {
+        const v = d.last[k], [c, sub] = k.split('|');
+        if (Levels.isClass(c) && known.has(sub) && Array.isArray(v) && [1, 2, 3].includes(v[0]) && Number.isInteger(v[1]) && v[1] >= 1 && v[1] <= 14) last[k] = [v[0], v[1]];
+      });
+      const clean = {
+        teacher: String(d.teacher || '').slice(0, 80), school: String(d.school || '').slice(0, 100),
+        classes: list(d.classes, (x) => Levels.isClass(x), 12), subjects: list(d.subjects, (x) => known.has(x), 20),
+        asked: list(d.asked, (x) => x.length <= 80, 40), last, setupDone: d.setupDone === true,
+      };
       await db.query('insert into profiles (user_id, data, updated_at) values ($1, $2::jsonb, $3) on conflict (user_id) do update set data = excluded.data, updated_at = excluded.updated_at where profiles.updated_at <= excluded.updated_at',
         [me.uid, JSON.stringify(clean), Math.round(ts)]);
       return sendJson(res, 200, { ok: true });

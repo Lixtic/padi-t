@@ -27,6 +27,7 @@
   <script src="feedback.js" defer></script>
   <script src="docx-export.js" defer></script>
   <script src="levels.js"></script>
+  <script src="profile.js" defer></script>
   <script src="schemes.js" defer></script>
   <script src="sample.js" defer></script>
   <script src="editor.js" defer></script>
@@ -132,6 +133,28 @@
 </dialog>
 
 <!-- ───────── Upgrade to Pro ───────── -->
+<dialog class="acct-sheet up-sheet" id="profileSheet" aria-labelledby="pfTitle">
+  <button type="button" class="icon-btn as-close" id="pfClose" aria-label="Close"><svg class="ico"><use href="#i-x"/></svg></button>
+  <section>
+    <h2 id="pfTitle">Your teacher profile</h2>
+    <p class="as-sub" id="pfSub"></p>
+    <div class="as-field">
+      <label for="teacherInput">Your name <span class="fb-opt">(printed on Word files)</span></label>
+      <input id="teacherInput" type="text" placeholder="e.g. Mr. K. Mensah" maxlength="80" autocomplete="name">
+    </div>
+    <div class="as-field">
+      <label for="schoolInput">School</label>
+      <input id="schoolInput" type="text" placeholder="School name" maxlength="100" autocomplete="organization">
+    </div>
+    <h3 class="ps-h">Classes you teach</h3>
+    <div id="pfClasses"></div>
+    <h3 class="ps-h">Subjects you teach</h3>
+    <div class="fb-kinds pf-chips" id="pfSubjects" role="group" aria-label="Subjects you teach"></div>
+    <p class="as-foot">Leave subjects empty if you teach every subject, as a class teacher does. You can still plan any class or subject from the menus.</p>
+    <button type="button" class="as-submit" id="pfDone"><span>Done</span></button>
+  </section>
+</dialog>
+
 <dialog class="acct-sheet up-sheet" id="fbSheet" aria-labelledby="fbTitle">
   <button type="button" class="icon-btn as-close" id="fbClose" aria-label="Close"><svg class="ico"><use href="#i-x"/></svg></button>
   <section id="fbFormWrap">
@@ -313,15 +336,9 @@
           </button>
         </div>
 
-        <button type="button" class="disc disc-sub" data-disc="profileRow" aria-expanded="false" aria-controls="profileRow">
-          <svg class="ico"><use href="#i-pencil"/></svg><span>Teacher details <small>printed on Word files</small></span><svg class="ico disc-chev"><use href="#i-chevron"/></svg>
-      </button>
-        <div class="set-fields profile-row" id="profileRow" hidden>
-          <label class="sr-only" for="teacherInput">Teacher name</label>
-          <input id="teacherInput" type="text" placeholder="Your name, e.g. Mr. K. Mensah" maxlength="80" autocomplete="name">
-          <label class="sr-only" for="schoolInput">School name</label>
-          <input id="schoolInput" type="text" placeholder="School name" maxlength="100" autocomplete="organization">
-        </div>
+        <button type="button" class="set-action" id="profileBtn">
+          <svg class="ico"><use href="#i-pencil"/></svg><span>My teacher profile <small>classes, subjects, name</small></span>
+        </button>
 
         <button type="button" class="set-action set-install" id="installBtn" hidden>
           <svg class="ico"><use href="#i-download"/></svg><span>Install app</span>
@@ -354,6 +371,7 @@
         <span class="dot dot-online" id="statusDot"></span><span id="statusText">Online</span>
       </span>
     </header>
+    <div class="pro-banner profile-ask" id="profileAsk" role="status" hidden></div>
     <div class="pro-banner" id="proBanner" role="status" hidden><span id="proBannerText"></span><button type="button" class="pb-go" id="proBannerGo">Extend Pro</button><button type="button" class="pb-x" id="proBannerX" aria-label="Dismiss">×</button></div>
 
     <section class="stage" id="stage">

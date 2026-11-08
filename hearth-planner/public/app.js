@@ -270,7 +270,7 @@
   /* Teacher details: saved once on this device, printed under the title of every Word file. */
   const profile = () => { try { return JSON.parse(localStorage.getItem(PROFILE_KEY)) || {}; } catch (e) { return {}; } };
   function saveProfile() {
-    try { localStorage.setItem(PROFILE_KEY, JSON.stringify({ teacher: teacherInput.value.trim(), school: schoolInput.value.trim(), updatedAt: Date.now() })); } catch (e) { /* storage blocked */ }
+    try { localStorage.setItem(PROFILE_KEY, JSON.stringify(Object.assign(profile(), { teacher: teacherInput.value.trim(), school: schoolInput.value.trim(), updatedAt: Date.now() }))); } catch (e) { /* storage blocked */ }
     if (typeof scheduleSync === 'function') scheduleSync();
   }
   [teacherInput, schoolInput].forEach((el) => el.addEventListener('input', saveProfile));
@@ -939,6 +939,11 @@
     if (!text.trim()) { bot.error(warning || 'The model returned nothing. Please try again.', () => { bot.root.remove(); state.bots.pop(); runGenerate(session); }); updateSend(); renderSessions(); updateTopbar(); return; }
     session.messages.push(msg);
     session.updatedAt = Date.now();
+    if (window.GuidedProfile && session.messages.length === 2 && session.params && !aborted) {
+      const sp = session.params, same = sp.cls === state.params.cls && sp.subject === state.params.subject;
+      window.GuidedProfile.planned({ cls: sp.cls, subject: sp.subject, term: sp.term || termNow(), week: sp.week });
+      if (same && state.params.week === sp.week && !planQueue.length) { continueWeek(); syncPills(); }   // the week pill moves on to the next one
+    }
     bot.set(text, true, msg);
     updateSend(); renderSessions(); updateTopbar(); updateView(); store.save();
     scrollBottom();
@@ -1079,6 +1084,23 @@
   /* The school term. It follows the calendar by itself (Term 1 from September, Term 2 from January, Term 3 from late April), so a teacher
      who comes back after the break lands in the new term. A teacher can pick another term; that choice is kept per account on this device
      and is dropped when the calendar moves on to the next term. */
+  /* The teacher profile (profile.js): classes and subjects shown first, and the week after the last one planned. */
+  const mySubjectsOf = (cls) => (window.GuidedProfile ? window.GuidedProfile.mySubjects(cls) : []);
+  function continueWeek() {
+    const GP = window.GuidedProfile; if (!GP) return;
+    const w = GP.nextWeek(state.params.cls, state.params.subject, termNow());
+    if (w) state.params.week = w;
+  }
+  function applyProfile() {                           // the profile changed: make the menus and the choice fit it
+    const GP = window.GuidedProfile; if (!GP) return;
+    const mine = GP.myClasses();
+    if (mine.length && !mine.includes(state.params.cls)) state.params.cls = mine[0];
+    const subs = GP.mySubjects(state.params.cls);
+    if (subs.length && !subs.includes(state.params.subject)) state.params.subject = subs[0];
+    if (!subjectsOf(state.params.cls).includes(state.params.subject)) state.params.subject = subjectsOf(state.params.cls)[0];
+    continueWeek();
+    syncPills(); store.save();
+  }
   const termAuto = () => (window.SchoolPadiSchemes ? window.SchoolPadiSchemes.currentTerm() : 1);
   const termKey = () => { const u = window.PadiSync && window.PadiSync.user && window.PadiSync.user(); return 'guided.term.' + ((u && (u.id || u.email)) || 'guest'); };
   function termNow() {
@@ -1323,14 +1345,18 @@
 
       // teacher details
       try {
-        const rp = await P.getProfile(), lp = profile(), lts = lp.updatedAt || 0, empty = !lp.teacher && !lp.school;
+        const rp = await P.getProfile(), lp = profile(), lts = lp.updatedAt || 0;
+        const empty = !lp.teacher && !lp.school && !(lp.classes || []).length && !(lp.subjects || []).length && !lp.setupDone;
         if (rp && (empty || rp.updated_at > lts)) {
           const d = rp.data || {};
           teacherInput.value = String(d.teacher || '').slice(0, 80); schoolInput.value = String(d.school || '').slice(0, 100);
-          try { localStorage.setItem(PROFILE_KEY, JSON.stringify({ teacher: teacherInput.value, school: schoolInput.value, updatedAt: rp.updated_at })); } catch (e) { /* ignore */ }
+          try { localStorage.setItem(PROFILE_KEY, JSON.stringify(Object.assign({}, d, { teacher: teacherInput.value, school: schoolInput.value, updatedAt: rp.updated_at }))); } catch (e) { /* ignore */ }
+          applyProfile();
         } else if (!empty && (!rp || lts > rp.updated_at)) {
-          await P.setProfile({ teacher: lp.teacher || '', school: lp.school || '' }, lts || Date.now());
+          const out = Object.assign({}, lp); delete out.updatedAt;
+          await P.setProfile(out, lts || Date.now());
         }
+        if (window.GuidedProfile && !state.streaming) window.GuidedProfile.afterSync();
       } catch (e) { if (e.offline) throw e; }
 
       if ((take.size || drop.size) && !state.streaming) {
@@ -1614,16 +1640,30 @@
       state.params = { subject: saved.params.subject, cls: saved.params.cls, week: saved.params.week, hook: saved.params.hook !== false, size: SIZES.includes(saved.params.size) ? saved.params.size : state.params.size, light: saved.params.light === true, studyNotes: saved.params.studyNotes !== false, bece: saved.params.bece !== false };
     }
     try { state.access = localStorage.getItem(ACCESS_KEY) || ''; accessInput.value = state.access; } catch (e) { /* ignore */ }
+    if (window.GuidedProfile) {
+      window.GuidedProfile.init({ toast, signedIn, changed: () => scheduleSync(), apply: applyProfile });
+      const d = !saved || !saved.params ? window.GuidedProfile.defaults() : null;
+      if (d) { state.params.cls = d.cls; state.params.subject = d.subject; }
+      continueWeek();
+    }
 
     applyTheme(document.documentElement.getAttribute('data-theme') === 'dark' ? 'dark' : 'light', false);
 
-    const ddSubject = makeDropdown($('#ddSubject'), { name: 'Subject', items: () => subjectsOf(state.params.cls).map((x) => ({ id: x, label: x })), get: () => state.params.subject, set: (v) => { state.params.subject = v; store.save(); syncScheme(); }, label: (x) => x });
-    makeDropdown($('#ddClass'), { name: 'Class', items: () => GL.LEVELS.flatMap((l) => [{ header: l.name }, ...l.classes.map((x) => ({ id: x, label: x }))]), get: () => state.params.cls, set: (v) => {
+    const ddSubject = makeDropdown($('#ddSubject'), { name: 'Subject', items: () => {
+      const all = subjectsOf(state.params.cls), mine = mySubjectsOf(state.params.cls), rest = all.filter((x) => !mine.includes(x));
+      return mine.length && rest.length ? [{ header: 'My subjects' }, ...mine.map((x) => ({ id: x, label: x })), { header: 'Other subjects' }, ...rest.map((x) => ({ id: x, label: x }))] : all.map((x) => ({ id: x, label: x }));
+    }, get: () => state.params.subject, set: (v) => { state.params.subject = v; continueWeek(); store.save(); syncPills(); }, label: (x) => x });
+    makeDropdown($('#ddClass'), { name: 'Class', items: () => {
+      const mine = window.GuidedProfile ? window.GuidedProfile.myClasses() : [];
+      const rest = (l) => l.classes.filter((x) => !mine.includes(x));
+      return (mine.length ? [{ header: 'My classes' }, ...mine.map((x) => ({ id: x, label: x }))] : [])
+        .concat(GL.LEVELS.flatMap((l) => rest(l).length ? [{ header: mine.length ? 'Other ' + l.name : l.name }, ...rest(l).map((x) => ({ id: x, label: x }))] : []));
+    }, get: () => state.params.cls, set: (v) => {
       state.params.cls = v;
-      if (!subjectsOf(v).includes(state.params.subject)) state.params.subject = subjectsOf(v)[0];   // a subject that is not taught at this level falls back to the first one
-      ddSubject.build(); syncContent(); store.save(); syncScheme(); syncAlso();
+      if (!subjectsOf(v).includes(state.params.subject)) state.params.subject = mySubjectsOf(v)[0] || subjectsOf(v)[0];   // a subject that is not taught at this level falls back to the teacher's first one
+      continueWeek(); ddSubject.build(); syncPills(); store.save();
     }, label: (x) => x });
-    const ddTerm = makeDropdown($('#ddTerm'), { name: 'Term', items: () => [1, 2, 3].map((x) => ({ id: x, label: 'Term ' + x + (x === termAuto() ? ' (now)' : '') })), get: () => termNow(), set: (v) => { termSet(v); syncScheme(); }, label: (x) => 'Term ' + x });
+    const ddTerm = makeDropdown($('#ddTerm'), { name: 'Term', items: () => [1, 2, 3].map((x) => ({ id: x, label: 'Term ' + x + (x === termAuto() ? ' (now)' : '') })), get: () => termNow(), set: (v) => { termSet(v); continueWeek(); syncPills(); }, label: (x) => 'Term ' + x });
     window.addEventListener('guided:account', () => { ddTerm.build(); syncScheme(); });
     makeDropdown($('#ddWeek'), { name: 'Week', items: WEEKS.map((x) => ({ id: x, label: 'Week ' + x })), get: () => state.params.week, set: (v) => { state.params.week = v; store.save(); syncScheme(); }, label: (x) => 'Week ' + x });
 
