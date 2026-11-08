@@ -2,7 +2,7 @@
  "subjects": {
   "Computing": {
    "term": "1st Term 2026/27",
-   "source": "Basic 4 Curriculum Indicators",
+   "source": "Basic 1 Curriculum Indicators",
    "classes": {
     "Basic 7": [
      {
@@ -1094,6 +1094,630 @@
       "standard": "B4.6.1.1 Demonstrate understanding of computer lab safety rules",
       "indicators": [
        "B4.6.1.1.1 Observe safety rules in the computer lab"
+      ]
+     },
+     {
+      "weeks": [
+       13
+      ],
+      "type": "revision",
+      "strand": "",
+      "substrand": "",
+      "standard": "",
+      "indicators": [],
+      "focus": ""
+     },
+     {
+      "weeks": [
+       14,
+       15
+      ],
+      "type": "exam",
+      "strand": "",
+      "substrand": "",
+      "standard": "",
+      "indicators": [],
+      "focus": ""
+     }
+    ],
+    "Basic 3": [
+     {
+      "weeks": [
+       1
+      ],
+      "type": "revision",
+      "strand": "",
+      "substrand": "",
+      "standard": "",
+      "indicators": [],
+      "focus": "Key ideas from last term that this class needs"
+     },
+     {
+      "weeks": [
+       2
+      ],
+      "type": "teach",
+      "strand": "1. Introduction to Computing",
+      "substrand": "1.1 Computer Hardware",
+      "standard": "B3.1.1.1 Demonstrate understanding of parts of a computer",
+      "indicators": [
+       "B3.1.1.1.1 Identify the main parts of a computer system"
+      ],
+      "part": [
+       1,
+       2
+      ]
+     },
+     {
+      "weeks": [
+       3
+      ],
+      "type": "teach",
+      "strand": "1. Introduction to Computing",
+      "substrand": "1.1 Computer Hardware",
+      "standard": "B3.1.1.1 Demonstrate understanding of parts of a computer",
+      "indicators": [
+       "B3.1.1.1.1 Identify the main parts of a computer system"
+      ],
+      "part": [
+       2,
+       2
+      ]
+     },
+     {
+      "weeks": [
+       4
+      ],
+      "type": "teach",
+      "strand": "2. Presentation",
+      "substrand": "2.1 Introduction to MS Powerpoint",
+      "standard": "B3.2.1.1 Demonstrate understanding of presentation software",
+      "indicators": [
+       "B3.2.1.1.1 Open and close a presentation application"
+      ],
+      "part": [
+       1,
+       2
+      ]
+     },
+     {
+      "weeks": [
+       5
+      ],
+      "type": "teach",
+      "strand": "2. Presentation",
+      "substrand": "2.1 Introduction to MS Powerpoint",
+      "standard": "B3.2.1.1 Demonstrate understanding of presentation software",
+      "indicators": [
+       "B3.2.1.1.1 Open and close a presentation application"
+      ],
+      "part": [
+       2,
+       2
+      ]
+     },
+     {
+      "weeks": [
+       6
+      ],
+      "type": "teach",
+      "strand": "3. Word Processing",
+      "substrand": "3.1 Introduction to MS Word",
+      "standard": "B3.3.1.1 Demonstrate understanding of word processing",
+      "indicators": [
+       "B3.3.1.1.1 Identify the MS Word icon on the desktop"
+      ],
+      "part": [
+       1,
+       2
+      ]
+     },
+     {
+      "weeks": [
+       7
+      ],
+      "type": "teach",
+      "strand": "3. Word Processing",
+      "substrand": "3.1 Introduction to MS Word",
+      "standard": "B3.3.1.1 Demonstrate understanding of word processing",
+      "indicators": [
+       "B3.3.1.1.1 Identify the MS Word icon on the desktop"
+      ],
+      "part": [
+       2,
+       2
+      ]
+     },
+     {
+      "weeks": [
+       8
+      ],
+      "type": "teach",
+      "strand": "4. Programming",
+      "substrand": "4.1 Introduction to Scratch",
+      "standard": "B3.4.1.1 Demonstrate understanding of visual programming",
+      "indicators": [
+       "B3.4.1.1.1 State what a computer program is"
+      ],
+      "part": [
+       1,
+       2
+      ]
+     },
+     {
+      "weeks": [
+       9
+      ],
+      "type": "teach",
+      "strand": "4. Programming",
+      "substrand": "4.1 Introduction to Scratch",
+      "standard": "B3.4.1.1 Demonstrate understanding of visual programming",
+      "indicators": [
+       "B3.4.1.1.1 State what a computer program is"
+      ],
+      "part": [
+       2,
+       2
+      ]
+     },
+     {
+      "weeks": [
+       10
+      ],
+      "type": "teach",
+      "strand": "5. Internet and Social Media",
+      "substrand": "5.1 Web Browsers",
+      "standard": "B3.5.1.1 Demonstrate understanding of the internet",
+      "indicators": [
+       "B3.5.1.1.1 Describe the internet in simple terms"
+      ],
+      "part": [
+       1,
+       2
+      ]
+     },
+     {
+      "weeks": [
+       11
+      ],
+      "type": "teach",
+      "strand": "5. Internet and Social Media",
+      "substrand": "5.1 Web Browsers",
+      "standard": "B3.5.1.1 Demonstrate understanding of the internet",
+      "indicators": [
+       "B3.5.1.1.1 Describe the internet in simple terms"
+      ],
+      "part": [
+       2,
+       2
+      ]
+     },
+     {
+      "weeks": [
+       12
+      ],
+      "type": "teach",
+      "strand": "6. Health and Safety",
+      "substrand": "6.1 Ergonomics",
+      "standard": "B3.6.1.1 Demonstrate understanding of computer lab safety",
+      "indicators": [
+       "B3.6.1.1.1 Mention rules to follow in the computer lab"
+      ]
+     },
+     {
+      "weeks": [
+       13
+      ],
+      "type": "revision",
+      "strand": "",
+      "substrand": "",
+      "standard": "",
+      "indicators": [],
+      "focus": ""
+     },
+     {
+      "weeks": [
+       14,
+       15
+      ],
+      "type": "exam",
+      "strand": "",
+      "substrand": "",
+      "standard": "",
+      "indicators": [],
+      "focus": ""
+     }
+    ],
+    "Basic 2": [
+     {
+      "weeks": [
+       1
+      ],
+      "type": "revision",
+      "strand": "",
+      "substrand": "",
+      "standard": "",
+      "indicators": [],
+      "focus": "Key ideas from last term that this class needs"
+     },
+     {
+      "weeks": [
+       2
+      ],
+      "type": "teach",
+      "strand": "1. Introduction to Computing",
+      "substrand": "1.1 Computer Hardware",
+      "standard": "B2.1.1.1 Identify the monitor and keyboard",
+      "indicators": [
+       "B2.1.1.1.1 Point to the monitor and keyboard"
+      ],
+      "part": [
+       1,
+       2
+      ]
+     },
+     {
+      "weeks": [
+       3
+      ],
+      "type": "teach",
+      "strand": "1. Introduction to Computing",
+      "substrand": "1.1 Computer Hardware",
+      "standard": "B2.1.1.1 Identify the monitor and keyboard",
+      "indicators": [
+       "B2.1.1.1.1 Point to the monitor and keyboard"
+      ],
+      "part": [
+       2,
+       2
+      ]
+     },
+     {
+      "weeks": [
+       4
+      ],
+      "type": "teach",
+      "strand": "2. Presentation",
+      "substrand": "2.1 Introduction to MS Powerpoint",
+      "standard": "B2.2.1.1 Recognize presentation software",
+      "indicators": [
+       "B2.2.1.1.1 Identify the PowerPoint icon"
+      ],
+      "part": [
+       1,
+       2
+      ]
+     },
+     {
+      "weeks": [
+       5
+      ],
+      "type": "teach",
+      "strand": "2. Presentation",
+      "substrand": "2.1 Introduction to MS Powerpoint",
+      "standard": "B2.2.1.1 Recognize presentation software",
+      "indicators": [
+       "B2.2.1.1.1 Identify the PowerPoint icon"
+      ],
+      "part": [
+       2,
+       2
+      ]
+     },
+     {
+      "weeks": [
+       6
+      ],
+      "type": "teach",
+      "strand": "3. Word Processing",
+      "substrand": "3.1 Introduction to MS Word",
+      "standard": "B2.3.1.1 Recognize word processing tools",
+      "indicators": [
+       "B2.3.1.1.1 Recognize letters on the keyboard"
+      ],
+      "part": [
+       1,
+       2
+      ]
+     },
+     {
+      "weeks": [
+       7
+      ],
+      "type": "teach",
+      "strand": "3. Word Processing",
+      "substrand": "3.1 Introduction to MS Word",
+      "standard": "B2.3.1.1 Recognize word processing tools",
+      "indicators": [
+       "B2.3.1.1.1 Recognize letters on the keyboard"
+      ],
+      "part": [
+       2,
+       2
+      ]
+     },
+     {
+      "weeks": [
+       8
+      ],
+      "type": "teach",
+      "strand": "4. Programming",
+      "substrand": "4.1 Introduction to Scratch",
+      "standard": "B2.4.1.1 Recognize visual programming environments",
+      "indicators": [
+       "B2.4.1.1.1 Identify pictures/icons on screen"
+      ],
+      "part": [
+       1,
+       2
+      ]
+     },
+     {
+      "weeks": [
+       9
+      ],
+      "type": "teach",
+      "strand": "4. Programming",
+      "substrand": "4.1 Introduction to Scratch",
+      "standard": "B2.4.1.1 Recognize visual programming environments",
+      "indicators": [
+       "B2.4.1.1.1 Identify pictures/icons on screen"
+      ],
+      "part": [
+       2,
+       2
+      ]
+     },
+     {
+      "weeks": [
+       10
+      ],
+      "type": "teach",
+      "strand": "5. Internet and Social Media",
+      "substrand": "5.1 Web Browsers",
+      "standard": "B2.5.1.1 Recognize digital devices",
+      "indicators": [
+       "B2.5.1.1.1 Identify screens used for viewing media"
+      ],
+      "part": [
+       1,
+       2
+      ]
+     },
+     {
+      "weeks": [
+       11
+      ],
+      "type": "teach",
+      "strand": "5. Internet and Social Media",
+      "substrand": "5.1 Web Browsers",
+      "standard": "B2.5.1.1 Recognize digital devices",
+      "indicators": [
+       "B2.5.1.1.1 Identify screens used for viewing media"
+      ],
+      "part": [
+       2,
+       2
+      ]
+     },
+     {
+      "weeks": [
+       12
+      ],
+      "type": "teach",
+      "strand": "6. Health and Safety",
+      "substrand": "6.1 Ergonomics",
+      "standard": "B2.6.1.1 Practice basic lab safety",
+      "indicators": [
+       "B2.6.1.1.1 Wash hands before using equipment"
+      ]
+     },
+     {
+      "weeks": [
+       13
+      ],
+      "type": "revision",
+      "strand": "",
+      "substrand": "",
+      "standard": "",
+      "indicators": [],
+      "focus": ""
+     },
+     {
+      "weeks": [
+       14,
+       15
+      ],
+      "type": "exam",
+      "strand": "",
+      "substrand": "",
+      "standard": "",
+      "indicators": [],
+      "focus": ""
+     }
+    ],
+    "Basic 1": [
+     {
+      "weeks": [
+       1
+      ],
+      "type": "revision",
+      "strand": "",
+      "substrand": "",
+      "standard": "",
+      "indicators": [],
+      "focus": "Key ideas from last term that this class needs"
+     },
+     {
+      "weeks": [
+       2
+      ],
+      "type": "teach",
+      "strand": "1. Introduction to Computing",
+      "substrand": "1.1 Computer Hardware",
+      "standard": "B1.1.1.1 Identify the computer and its parts",
+      "indicators": [
+       "B1.1.1.1.1 Point to a computer set"
+      ],
+      "part": [
+       1,
+       2
+      ]
+     },
+     {
+      "weeks": [
+       3
+      ],
+      "type": "teach",
+      "strand": "1. Introduction to Computing",
+      "substrand": "1.1 Computer Hardware",
+      "standard": "B1.1.1.1 Identify the computer and its parts",
+      "indicators": [
+       "B1.1.1.1.1 Point to a computer set"
+      ],
+      "part": [
+       2,
+       2
+      ]
+     },
+     {
+      "weeks": [
+       4
+      ],
+      "type": "teach",
+      "strand": "2. Presentation",
+      "substrand": "2.1 Introduction to MS Powerpoint",
+      "standard": "B1.2.1.1 Recognize pictures on screen",
+      "indicators": [
+       "B1.2.1.1.1 Look at colorful slides on a screen"
+      ],
+      "part": [
+       1,
+       2
+      ]
+     },
+     {
+      "weeks": [
+       5
+      ],
+      "type": "teach",
+      "strand": "2. Presentation",
+      "substrand": "2.1 Introduction to MS Powerpoint",
+      "standard": "B1.2.1.1 Recognize pictures on screen",
+      "indicators": [
+       "B1.2.1.1.1 Look at colorful slides on a screen"
+      ],
+      "part": [
+       2,
+       2
+      ]
+     },
+     {
+      "weeks": [
+       6
+      ],
+      "type": "teach",
+      "strand": "3. Word Processing",
+      "substrand": "3.1 Introduction to MS Word",
+      "standard": "B1.3.1.1 Recognize the keyboard",
+      "indicators": [
+       "B1.3.1.1.1 Identify letters on the computer keyboard"
+      ],
+      "part": [
+       1,
+       2
+      ]
+     },
+     {
+      "weeks": [
+       7
+      ],
+      "type": "teach",
+      "strand": "3. Word Processing",
+      "substrand": "3.1 Introduction to MS Word",
+      "standard": "B1.3.1.1 Recognize the keyboard",
+      "indicators": [
+       "B1.3.1.1.1 Identify letters on the computer keyboard"
+      ],
+      "part": [
+       2,
+       2
+      ]
+     },
+     {
+      "weeks": [
+       8
+      ],
+      "type": "teach",
+      "strand": "4. Programming",
+      "substrand": "4.1 Introduction to Scratch",
+      "standard": "B1.4.1.1 Recognize symbols and icons",
+      "indicators": [
+       "B1.4.1.1.1 Tap or click simple icons on a screen"
+      ],
+      "part": [
+       1,
+       2
+      ]
+     },
+     {
+      "weeks": [
+       9
+      ],
+      "type": "teach",
+      "strand": "4. Programming",
+      "substrand": "4.1 Introduction to Scratch",
+      "standard": "B1.4.1.1 Recognize symbols and icons",
+      "indicators": [
+       "B1.4.1.1.1 Tap or click simple icons on a screen"
+      ],
+      "part": [
+       2,
+       2
+      ]
+     },
+     {
+      "weeks": [
+       10
+      ],
+      "type": "teach",
+      "strand": "5. Internet and Social Media",
+      "substrand": "5.1 Web Browsers",
+      "standard": "B1.5.1.1 Recognize digital displays",
+      "indicators": [
+       "B1.5.1.1.1 Look at pictures on digital devices"
+      ],
+      "part": [
+       1,
+       2
+      ]
+     },
+     {
+      "weeks": [
+       11
+      ],
+      "type": "teach",
+      "strand": "5. Internet and Social Media",
+      "substrand": "5.1 Web Browsers",
+      "standard": "B1.5.1.1 Recognize digital displays",
+      "indicators": [
+       "B1.5.1.1.1 Look at pictures on digital devices"
+      ],
+      "part": [
+       2,
+       2
+      ]
+     },
+     {
+      "weeks": [
+       12
+      ],
+      "type": "teach",
+      "strand": "6. Health and Safety",
+      "substrand": "6.1 Ergonomics",
+      "standard": "B1.6.1.1 Practice clean habits",
+      "indicators": [
+       "B1.6.1.1.1 Keep hands clean before touching toys or learning tools"
       ]
      },
      {
@@ -2636,10 +3260,586 @@
       "indicators": [],
       "focus": ""
      }
+    ],
+    "Basic 3": [
+     {
+      "weeks": [
+       1
+      ],
+      "type": "revision",
+      "strand": "",
+      "substrand": "",
+      "standard": "",
+      "indicators": [],
+      "focus": "Key ideas from last term that this class needs"
+     },
+     {
+      "weeks": [
+       2
+      ],
+      "type": "teach",
+      "strand": "1. Oral Language",
+      "substrand": "1.1 Songs, Poems, Rhymes and Drama",
+      "standard": "B3.1.1.1 Demonstrate understanding of songs and rhymes",
+      "indicators": [
+       "B3.1.1.1.1 Recite poems and sing songs"
+      ],
+      "part": [
+       1,
+       2
+      ]
+     },
+     {
+      "weeks": [
+       3
+      ],
+      "type": "teach",
+      "strand": "1. Oral Language",
+      "substrand": "1.1 Songs, Poems, Rhymes and Drama",
+      "standard": "B3.1.1.1 Demonstrate understanding of songs and rhymes",
+      "indicators": [
+       "B3.1.1.1.1 Recite poems and sing songs"
+      ],
+      "part": [
+       2,
+       2
+      ]
+     },
+     {
+      "weeks": [
+       4
+      ],
+      "type": "teach",
+      "strand": "1. Oral Language",
+      "substrand": "1.2 Listening and Comprehension",
+      "standard": "B3.1.2.1 Listen to and understand short texts",
+      "indicators": [
+       "B3.1.2.1.1 Listen to stories and answer simple questions"
+      ],
+      "part": [
+       1,
+       2
+      ]
+     },
+     {
+      "weeks": [
+       5
+      ],
+      "type": "teach",
+      "strand": "1. Oral Language",
+      "substrand": "1.2 Listening and Comprehension",
+      "standard": "B3.1.2.1 Listen to and understand short texts",
+      "indicators": [
+       "B3.1.2.1.1 Listen to stories and answer simple questions"
+      ],
+      "part": [
+       2,
+       2
+      ]
+     },
+     {
+      "weeks": [
+       6
+      ],
+      "type": "teach",
+      "strand": "2. Reading",
+      "substrand": "2.1 Phonics and Word Knowledge",
+      "standard": "B3.2.1.1 Demonstrate knowledge of phonics",
+      "indicators": [
+       "B3.2.1.1.1 Blend letter sounds to read words"
+      ],
+      "part": [
+       1,
+       2
+      ]
+     },
+     {
+      "weeks": [
+       7
+      ],
+      "type": "teach",
+      "strand": "2. Reading",
+      "substrand": "2.1 Phonics and Word Knowledge",
+      "standard": "B3.2.1.1 Demonstrate knowledge of phonics",
+      "indicators": [
+       "B3.2.1.1.1 Blend letter sounds to read words"
+      ],
+      "part": [
+       2,
+       2
+      ]
+     },
+     {
+      "weeks": [
+       8
+      ],
+      "type": "teach",
+      "strand": "2. Reading",
+      "substrand": "2.2 Comprehension",
+      "standard": "B3.2.2.1 Read and understand simple texts",
+      "indicators": [
+       "B3.2.2.1.1 Read aloud with appropriate fluency and answer questions"
+      ]
+     },
+     {
+      "weeks": [
+       9
+      ],
+      "type": "teach",
+      "strand": "3. Grammar",
+      "substrand": "3.1 Grammar and Usage",
+      "standard": "B3.3.1.1 Understand parts of speech",
+      "indicators": [
+       "B3.3.1.1.1 Identify and use action verbs and nouns in sentences"
+      ]
+     },
+     {
+      "weeks": [
+       10
+      ],
+      "type": "teach",
+      "strand": "3. Grammar",
+      "substrand": "3.2 Punctuation",
+      "standard": "B3.3.2.1 Understand punctuation marks",
+      "indicators": [
+       "B3.3.2.1.1 Use capital letters and full stops in sentences"
+      ]
+     },
+     {
+      "weeks": [
+       11
+      ],
+      "type": "teach",
+      "strand": "4. Writing",
+      "substrand": "4.1 Composition",
+      "standard": "B3.4.1.1 Write short texts",
+      "indicators": [
+       "B3.4.1.1.1 Write simple sentences on familiar topics"
+      ]
+     },
+     {
+      "weeks": [
+       12
+      ],
+      "type": "teach",
+      "strand": "5. Literature",
+      "substrand": "5.1 Appreciating Literature",
+      "standard": "B3.5.1.1 Appreciate simple literature",
+      "indicators": [
+       "B3.5.1.1.1 Read and discuss simple storybooks"
+      ]
+     },
+     {
+      "weeks": [
+       13
+      ],
+      "type": "revision",
+      "strand": "",
+      "substrand": "",
+      "standard": "",
+      "indicators": [],
+      "focus": ""
+     },
+     {
+      "weeks": [
+       14,
+       15
+      ],
+      "type": "exam",
+      "strand": "",
+      "substrand": "",
+      "standard": "",
+      "indicators": [],
+      "focus": ""
+     }
+    ],
+    "Basic 2": [
+     {
+      "weeks": [
+       1
+      ],
+      "type": "revision",
+      "strand": "",
+      "substrand": "",
+      "standard": "",
+      "indicators": [],
+      "focus": "Key ideas from last term that this class needs"
+     },
+     {
+      "weeks": [
+       2
+      ],
+      "type": "teach",
+      "strand": "",
+      "substrand": "1.1 Songs, Poems, Rhymes and Drama",
+      "standard": "B2.1.1.1 Listen to and enjoy rhymes and simple songs",
+      "indicators": [
+       "B2.1.1.1.1 Sing action songs and recite short poems"
+      ],
+      "part": [
+       1,
+       2
+      ]
+     },
+     {
+      "weeks": [
+       3
+      ],
+      "type": "teach",
+      "strand": "",
+      "substrand": "1.1 Songs, Poems, Rhymes and Drama",
+      "standard": "B2.1.1.1 Listen to and enjoy rhymes and simple songs",
+      "indicators": [
+       "B2.1.1.1.1 Sing action songs and recite short poems"
+      ],
+      "part": [
+       2,
+       2
+      ]
+     },
+     {
+      "weeks": [
+       4
+      ],
+      "type": "teach",
+      "strand": "",
+      "substrand": "1.2 Listening and Comprehension",
+      "standard": "B2.1.2.1 Listen to short audio or stories and respond",
+      "indicators": [
+       "B2.1.2.1.1 Answer simple questions based on a story told"
+      ],
+      "part": [
+       1,
+       2
+      ]
+     },
+     {
+      "weeks": [
+       5
+      ],
+      "type": "teach",
+      "strand": "",
+      "substrand": "1.2 Listening and Comprehension",
+      "standard": "B2.1.2.1 Listen to short audio or stories and respond",
+      "indicators": [
+       "B2.1.2.1.1 Answer simple questions based on a story told"
+      ],
+      "part": [
+       2,
+       2
+      ]
+     },
+     {
+      "weeks": [
+       6
+      ],
+      "type": "teach",
+      "strand": "",
+      "substrand": "2.1 Phonics and Word Knowledge",
+      "standard": "B2.2.1.1 Blend sounds to read simple CVC words",
+      "indicators": [
+       "B2.2.1.1.1 Read three-letter words fluently"
+      ],
+      "part": [
+       1,
+       2
+      ]
+     },
+     {
+      "weeks": [
+       7
+      ],
+      "type": "teach",
+      "strand": "",
+      "substrand": "2.1 Phonics and Word Knowledge",
+      "standard": "B2.2.1.1 Blend sounds to read simple CVC words",
+      "indicators": [
+       "B2.2.1.1.1 Read three-letter words fluently"
+      ],
+      "part": [
+       2,
+       2
+      ]
+     },
+     {
+      "weeks": [
+       8
+      ],
+      "type": "teach",
+      "strand": "",
+      "substrand": "2.2 Comprehension",
+      "standard": "B2.2.2.1 Read and understand short sentences",
+      "indicators": [
+       "B2.2.2.1.1 Read simple sentences and match with pictures"
+      ]
+     },
+     {
+      "weeks": [
+       9
+      ],
+      "type": "teach",
+      "strand": "",
+      "substrand": "3.1 Grammar and Usage",
+      "standard": "B2.3.1.1 Use simple nouns and pronouns",
+      "indicators": [
+       "B2.3.1.1.1 Identify naming words (nouns) in sentences"
+      ]
+     },
+     {
+      "weeks": [
+       10
+      ],
+      "type": "teach",
+      "strand": "",
+      "substrand": "3.2 Punctuation",
+      "standard": "B2.3.2.1 Recognize basic punctuation",
+      "indicators": [
+       "B2.3.2.1.1 Spot full stops at the end of sentences"
+      ]
+     },
+     {
+      "weeks": [
+       11
+      ],
+      "type": "teach",
+      "strand": "",
+      "substrand": "4.1 Composition",
+      "standard": "B2.4.1.1 Write words and short phrases",
+      "indicators": [
+       "B2.4.1.1.1 Copy short sentences neatly"
+      ]
+     },
+     {
+      "weeks": [
+       12
+      ],
+      "type": "teach",
+      "strand": "",
+      "substrand": "5.1 Appreciating Literature",
+      "standard": "B2.5.1.1 Enjoy listening to folktales",
+      "indicators": [
+       "B2.5.1.1.1 Retell parts of a favorite story"
+      ]
+     },
+     {
+      "weeks": [
+       13
+      ],
+      "type": "revision",
+      "strand": "",
+      "substrand": "",
+      "standard": "",
+      "indicators": [],
+      "focus": ""
+     },
+     {
+      "weeks": [
+       14,
+       15
+      ],
+      "type": "exam",
+      "strand": "",
+      "substrand": "",
+      "standard": "",
+      "indicators": [],
+      "focus": ""
+     }
+    ],
+    "Basic 1": [
+     {
+      "weeks": [
+       1
+      ],
+      "type": "revision",
+      "strand": "",
+      "substrand": "",
+      "standard": "",
+      "indicators": [],
+      "focus": "Key ideas from last term that this class needs"
+     },
+     {
+      "weeks": [
+       2
+      ],
+      "type": "teach",
+      "strand": "",
+      "substrand": "1.1 Songs, Poems, Rhymes and Drama",
+      "standard": "B1.1.1.1 Listen and respond to rhymes",
+      "indicators": [
+       "B1.1.1.1.1 Join in singing familiar nursery rhymes"
+      ],
+      "part": [
+       1,
+       2
+      ]
+     },
+     {
+      "weeks": [
+       3
+      ],
+      "type": "teach",
+      "strand": "",
+      "substrand": "1.1 Songs, Poems, Rhymes and Drama",
+      "standard": "B1.1.1.1 Listen and respond to rhymes",
+      "indicators": [
+       "B1.1.1.1.1 Join in singing familiar nursery rhymes"
+      ],
+      "part": [
+       2,
+       2
+      ]
+     },
+     {
+      "weeks": [
+       4
+      ],
+      "type": "teach",
+      "strand": "",
+      "substrand": "1.2 Listening and Comprehension",
+      "standard": "B1.2.1.1 Listen to simple instructions",
+      "indicators": [
+       "B1.2.1.1.1 Follow basic 1-step classroom instructions"
+      ],
+      "part": [
+       1,
+       2
+      ]
+     },
+     {
+      "weeks": [
+       5
+      ],
+      "type": "teach",
+      "strand": "",
+      "substrand": "1.2 Listening and Comprehension",
+      "standard": "B1.2.1.1 Listen to simple instructions",
+      "indicators": [
+       "B1.2.1.1.1 Follow basic 1-step classroom instructions"
+      ],
+      "part": [
+       2,
+       2
+      ]
+     },
+     {
+      "weeks": [
+       6
+      ],
+      "type": "teach",
+      "strand": "",
+      "substrand": "2.1 Phonics and Word Knowledge",
+      "standard": "B1.2.1.1 Recognize letter sounds",
+      "indicators": [
+       "B1.2.1.1.1 Produce sounds of single letters (a-z)"
+      ],
+      "part": [
+       1,
+       2
+      ]
+     },
+     {
+      "weeks": [
+       7
+      ],
+      "type": "teach",
+      "strand": "",
+      "substrand": "2.1 Phonics and Word Knowledge",
+      "standard": "B1.2.1.1 Recognize letter sounds",
+      "indicators": [
+       "B1.2.1.1.1 Produce sounds of single letters (a-z)"
+      ],
+      "part": [
+       2,
+       2
+      ]
+     },
+     {
+      "weeks": [
+       8
+      ],
+      "type": "teach",
+      "strand": "",
+      "substrand": "2.2 Comprehension",
+      "standard": "B1.2.2.1 Look at picture books",
+      "indicators": [
+       "B1.2.2.1.1 Talk about pictures in a storybook"
+      ]
+     },
+     {
+      "weeks": [
+       9
+      ],
+      "type": "teach",
+      "strand": "",
+      "substrand": "3.1 Grammar and Usage",
+      "standard": "B1.3.1.1 Recognize naming words",
+      "indicators": [
+       "B1.3.1.1.1 Point to familiar objects in the classroom"
+      ]
+     },
+     {
+      "weeks": [
+       10
+      ],
+      "type": "teach",
+      "strand": "",
+      "substrand": "3.2 Punctuation",
+      "standard": "B1.3.2.1 Notice print features",
+      "indicators": [
+       "B1.3.2.1.1 Distinguish between letters and spaces"
+      ]
+     },
+     {
+      "weeks": [
+       11
+      ],
+      "type": "teach",
+      "strand": "",
+      "substrand": "4.1 Composition",
+      "standard": "B1.4.1.1 Trace lines and patterns",
+      "indicators": [
+       "B1.4.1.1.1 Trace zig-zag and curved lines with a pencil"
+      ]
+     },
+     {
+      "weeks": [
+       12
+      ],
+      "type": "teach",
+      "strand": "",
+      "substrand": "5.1 Appreciating Literature",
+      "standard": "B1.5.1.1 Listen to folktales",
+      "indicators": [
+       "B1.5.1.1.1 Listen attentively to short animal stories"
+      ]
+     },
+     {
+      "weeks": [
+       13
+      ],
+      "type": "revision",
+      "strand": "",
+      "substrand": "",
+      "standard": "",
+      "indicators": [],
+      "focus": ""
+     },
+     {
+      "weeks": [
+       14,
+       15
+      ],
+      "type": "exam",
+      "strand": "",
+      "substrand": "",
+      "standard": "",
+      "indicators": [],
+      "focus": ""
+     }
     ]
    },
    "term": "1st Term",
-   "source": "Basic 4 Curriculum Indicators"
+   "source": "Basic 1 Curriculum Indicators"
   },
   "Integrated Science": {
    "classes": {
@@ -5016,10 +6216,610 @@
       "indicators": [],
       "focus": ""
      }
+    ],
+    "Basic 3": [
+     {
+      "weeks": [
+       1
+      ],
+      "type": "revision",
+      "strand": "",
+      "substrand": "",
+      "standard": "",
+      "indicators": [],
+      "focus": "Key ideas from last term that this class needs"
+     },
+     {
+      "weeks": [
+       2
+      ],
+      "type": "teach",
+      "strand": "1. Number",
+      "substrand": "1.1 Counting, Representation, Cardinality & Ordinality",
+      "standard": "B3.1.1.1 Demonstrate understanding of numbers up to 1,000",
+      "indicators": [
+       "B3.1.1.1.1 Model, read and write numbers up to 1,000"
+      ],
+      "part": [
+       1,
+       2
+      ]
+     },
+     {
+      "weeks": [
+       3
+      ],
+      "type": "teach",
+      "strand": "1. Number",
+      "substrand": "1.1 Counting, Representation, Cardinality & Ordinality",
+      "standard": "B3.1.1.1 Demonstrate understanding of numbers up to 1,000",
+      "indicators": [
+       "B3.1.1.1.1 Model, read and write numbers up to 1,000"
+      ],
+      "part": [
+       2,
+       2
+      ]
+     },
+     {
+      "weeks": [
+       4
+      ],
+      "type": "teach",
+      "strand": "1. Number",
+      "substrand": "1.2 Operations",
+      "standard": "B3.1.2.1 Apply mental and written strategies for addition and subtraction",
+      "indicators": [
+       "B3.1.2.1.1 Add and subtract numbers up to 1,000"
+      ],
+      "part": [
+       1,
+       2
+      ]
+     },
+     {
+      "weeks": [
+       5
+      ],
+      "type": "teach",
+      "strand": "1. Number",
+      "substrand": "1.2 Operations",
+      "standard": "B3.1.2.1 Apply mental and written strategies for addition and subtraction",
+      "indicators": [
+       "B3.1.2.1.1 Add and subtract numbers up to 1,000"
+      ],
+      "part": [
+       2,
+       2
+      ]
+     },
+     {
+      "weeks": [
+       6
+      ],
+      "type": "teach",
+      "strand": "1. Number",
+      "substrand": "1.3 Fractions",
+      "standard": "B3.1.3.1 Understand unit fractions",
+      "indicators": [
+       "B3.1.3.1.1 Identify and write unit fractions"
+      ],
+      "part": [
+       1,
+       2
+      ]
+     },
+     {
+      "weeks": [
+       7
+      ],
+      "type": "teach",
+      "strand": "1. Number",
+      "substrand": "1.3 Fractions",
+      "standard": "B3.1.3.1 Understand unit fractions",
+      "indicators": [
+       "B3.1.3.1.1 Identify and write unit fractions"
+      ],
+      "part": [
+       2,
+       2
+      ]
+     },
+     {
+      "weeks": [
+       8
+      ],
+      "type": "teach",
+      "strand": "2. Algebra",
+      "substrand": "2.1 Patterns and Relationships",
+      "standard": "B3.2.1.1 Recognize and create patterns",
+      "indicators": [
+       "B3.2.1.1.1 Identify missing elements in a repeating pattern"
+      ],
+      "part": [
+       1,
+       2
+      ]
+     },
+     {
+      "weeks": [
+       9
+      ],
+      "type": "teach",
+      "strand": "2. Algebra",
+      "substrand": "2.1 Patterns and Relationships",
+      "standard": "B3.2.1.1 Recognize and create patterns",
+      "indicators": [
+       "B3.2.1.1.1 Identify missing elements in a repeating pattern"
+      ],
+      "part": [
+       2,
+       2
+      ]
+     },
+     {
+      "weeks": [
+       10
+      ],
+      "type": "teach",
+      "strand": "3. Geometry and Measurement",
+      "substrand": "3.1 2D and 3D Shapes",
+      "standard": "B3.3.1.1 Describe properties of 2D and 3D shapes",
+      "indicators": [
+       "B3.3.1.1.1 Sort 2D and 3D shapes based on their properties"
+      ]
+     },
+     {
+      "weeks": [
+       11
+      ],
+      "type": "teach",
+      "strand": "3. Geometry and Measurement",
+      "substrand": "3.2 Measurement",
+      "standard": "B3.3.2.1 Measure length, mass, and capacity",
+      "indicators": [
+       "B3.3.2.1.1 Estimate and measure lengths in non-standard and standard units"
+      ]
+     },
+     {
+      "weeks": [
+       12
+      ],
+      "type": "teach",
+      "strand": "4. Data",
+      "substrand": "4.1 Data Collection, Organization and Interpretation",
+      "standard": "B3.4.1.1 Collect and represent data",
+      "indicators": [
+       "B3.4.1.1.1 Draw and interpret simple block graphs"
+      ]
+     },
+     {
+      "weeks": [
+       13
+      ],
+      "type": "revision",
+      "strand": "",
+      "substrand": "",
+      "standard": "",
+      "indicators": [],
+      "focus": ""
+     },
+     {
+      "weeks": [
+       14,
+       15
+      ],
+      "type": "exam",
+      "strand": "",
+      "substrand": "",
+      "standard": "",
+      "indicators": [],
+      "focus": ""
+     }
+    ],
+    "Basic 2": [
+     {
+      "weeks": [
+       1
+      ],
+      "type": "revision",
+      "strand": "",
+      "substrand": "",
+      "standard": "",
+      "indicators": [],
+      "focus": "Key ideas from last term that this class needs"
+     },
+     {
+      "weeks": [
+       2
+      ],
+      "type": "teach",
+      "strand": "",
+      "substrand": "1.1 Counting, Representation, Cardinality & Ordinality",
+      "standard": "B2.1.1.1 Count and represent numbers up to 100",
+      "indicators": [
+       "B2.1.1.1.1 Read and write numbers from 1 to 100"
+      ],
+      "part": [
+       1,
+       2
+      ]
+     },
+     {
+      "weeks": [
+       3
+      ],
+      "type": "teach",
+      "strand": "",
+      "substrand": "1.1 Counting, Representation, Cardinality & Ordinality",
+      "standard": "B2.1.1.1 Count and represent numbers up to 100",
+      "indicators": [
+       "B2.1.1.1.1 Read and write numbers from 1 to 100"
+      ],
+      "part": [
+       2,
+       2
+      ]
+     },
+     {
+      "weeks": [
+       4
+      ],
+      "type": "teach",
+      "strand": "",
+      "substrand": "1.2 Operations",
+      "standard": "B2.1.2.1 Add and subtract numbers up to 50",
+      "indicators": [
+       "B2.1.2.1.1 Add single and double-digit numbers without regrouping"
+      ],
+      "part": [
+       1,
+       2
+      ]
+     },
+     {
+      "weeks": [
+       5
+      ],
+      "type": "teach",
+      "strand": "",
+      "substrand": "1.2 Operations",
+      "standard": "B2.1.2.1 Add and subtract numbers up to 50",
+      "indicators": [
+       "B2.1.2.1.1 Add single and double-digit numbers without regrouping"
+      ],
+      "part": [
+       2,
+       2
+      ]
+     },
+     {
+      "weeks": [
+       6
+      ],
+      "type": "teach",
+      "strand": "",
+      "substrand": "1.3 Fractions",
+      "standard": "B2.1.3.1 Understand halves and quarters",
+      "indicators": [
+       "B2.1.3.1.1 Identify half and quarter of a whole"
+      ],
+      "part": [
+       1,
+       2
+      ]
+     },
+     {
+      "weeks": [
+       7
+      ],
+      "type": "teach",
+      "strand": "",
+      "substrand": "1.3 Fractions",
+      "standard": "B2.1.3.1 Understand halves and quarters",
+      "indicators": [
+       "B2.1.3.1.1 Identify half and quarter of a whole"
+      ],
+      "part": [
+       2,
+       2
+      ]
+     },
+     {
+      "weeks": [
+       8
+      ],
+      "type": "teach",
+      "strand": "",
+      "substrand": "2.1 Patterns and Relationships",
+      "standard": "B2.2.1.1 Create and describe patterns",
+      "indicators": [
+       "B2.2.1.1.1 Extend simple repeating shape patterns"
+      ],
+      "part": [
+       1,
+       2
+      ]
+     },
+     {
+      "weeks": [
+       9
+      ],
+      "type": "teach",
+      "strand": "",
+      "substrand": "2.1 Patterns and Relationships",
+      "standard": "B2.2.1.1 Create and describe patterns",
+      "indicators": [
+       "B2.2.1.1.1 Extend simple repeating shape patterns"
+      ],
+      "part": [
+       2,
+       2
+      ]
+     },
+     {
+      "weeks": [
+       10
+      ],
+      "type": "teach",
+      "strand": "",
+      "substrand": "3.1 2D and 3D Shapes",
+      "standard": "B2.3.1.1 Describe common shapes",
+      "indicators": [
+       "B2.3.1.1.1 Identify squares, rectangles, triangles, and circles"
+      ]
+     },
+     {
+      "weeks": [
+       11
+      ],
+      "type": "teach",
+      "strand": "",
+      "substrand": "3.2 Measurement",
+      "standard": "B2.3.2.1 Measure length and mass using non-standard units",
+      "indicators": [
+       "B2.3.2.1.1 Measure length using objects like handspans or paces"
+      ]
+     },
+     {
+      "weeks": [
+       12
+      ],
+      "type": "teach",
+      "strand": "",
+      "substrand": "4.1 Data Collection, Organization and Interpretation",
+      "standard": "B2.4.1.1 Collect and sort data",
+      "indicators": [
+       "B2.4.1.1.1 Sort objects by color and size"
+      ]
+     },
+     {
+      "weeks": [
+       13
+      ],
+      "type": "revision",
+      "strand": "",
+      "substrand": "",
+      "standard": "",
+      "indicators": [],
+      "focus": ""
+     },
+     {
+      "weeks": [
+       14,
+       15
+      ],
+      "type": "exam",
+      "strand": "",
+      "substrand": "",
+      "standard": "",
+      "indicators": [],
+      "focus": ""
+     }
+    ],
+    "Basic 1": [
+     {
+      "weeks": [
+       1
+      ],
+      "type": "revision",
+      "strand": "",
+      "substrand": "",
+      "standard": "",
+      "indicators": [],
+      "focus": "Key ideas from last term that this class needs"
+     },
+     {
+      "weeks": [
+       2
+      ],
+      "type": "teach",
+      "strand": "",
+      "substrand": "1.1 Counting, Representation, Cardinality & Ordinality",
+      "standard": "B1.1.1.1 Count and represent quantities up to 20",
+      "indicators": [
+       "B1.1.1.1.1 Count objects from 1 to 20 correctly"
+      ],
+      "part": [
+       1,
+       2
+      ]
+     },
+     {
+      "weeks": [
+       3
+      ],
+      "type": "teach",
+      "strand": "",
+      "substrand": "1.1 Counting, Representation, Cardinality & Ordinality",
+      "standard": "B1.1.1.1 Count and represent quantities up to 20",
+      "indicators": [
+       "B1.1.1.1.1 Count objects from 1 to 20 correctly"
+      ],
+      "part": [
+       2,
+       2
+      ]
+     },
+     {
+      "weeks": [
+       4
+      ],
+      "type": "teach",
+      "strand": "",
+      "substrand": "1.2 Operations",
+      "standard": "B1.1.2.1 Add and subtract numbers up to 10",
+      "indicators": [
+       "B1.1.2.1.1 Add small collections of objects up to 10"
+      ],
+      "part": [
+       1,
+       2
+      ]
+     },
+     {
+      "weeks": [
+       5
+      ],
+      "type": "teach",
+      "strand": "",
+      "substrand": "1.2 Operations",
+      "standard": "B1.1.2.1 Add and subtract numbers up to 10",
+      "indicators": [
+       "B1.1.2.1.1 Add small collections of objects up to 10"
+      ],
+      "part": [
+       2,
+       2
+      ]
+     },
+     {
+      "weeks": [
+       6
+      ],
+      "type": "teach",
+      "strand": "",
+      "substrand": "1.3 Fractions",
+      "standard": "B1.1.3.1 Recognize whole items",
+      "indicators": [
+       "B1.1.3.1.1 Identify a whole object or fruit"
+      ],
+      "part": [
+       1,
+       2
+      ]
+     },
+     {
+      "weeks": [
+       7
+      ],
+      "type": "teach",
+      "strand": "",
+      "substrand": "1.3 Fractions",
+      "standard": "B1.1.3.1 Recognize whole items",
+      "indicators": [
+       "B1.1.3.1.1 Identify a whole object or fruit"
+      ],
+      "part": [
+       2,
+       2
+      ]
+     },
+     {
+      "weeks": [
+       8
+      ],
+      "type": "teach",
+      "strand": "",
+      "substrand": "2.1 Patterns and Relationships",
+      "standard": "B1.2.1.1 Sort and match objects",
+      "indicators": [
+       "B1.2.1.1.1 Match objects by color and shape"
+      ],
+      "part": [
+       1,
+       2
+      ]
+     },
+     {
+      "weeks": [
+       9
+      ],
+      "type": "teach",
+      "strand": "",
+      "substrand": "2.1 Patterns and Relationships",
+      "standard": "B1.2.1.1 Sort and match objects",
+      "indicators": [
+       "B1.2.1.1.1 Match objects by color and shape"
+      ],
+      "part": [
+       2,
+       2
+      ]
+     },
+     {
+      "weeks": [
+       10
+      ],
+      "type": "teach",
+      "strand": "",
+      "substrand": "3.1 2D and 3D Shapes",
+      "standard": "B1.3.1.1 Recognize basic shapes",
+      "indicators": [
+       "B1.3.1.1.1 Identify circles and squares in the classroom"
+      ]
+     },
+     {
+      "weeks": [
+       11
+      ],
+      "type": "teach",
+      "strand": "",
+      "substrand": "3.2 Measurement",
+      "standard": "B1.3.2.1 Compare lengths and sizes",
+      "indicators": [
+       "B1.3.2.1.1 Compare two objects as longer, shorter, bigger, or smaller"
+      ]
+     },
+     {
+      "weeks": [
+       12
+      ],
+      "type": "teach",
+      "strand": "",
+      "substrand": "4.1 Data Collection, Organization and Interpretation",
+      "standard": "B1.4.1.1 Sort items into groups",
+      "indicators": [
+       "B1.4.1.1.1 Group bottle caps or counters by color"
+      ]
+     },
+     {
+      "weeks": [
+       13
+      ],
+      "type": "revision",
+      "strand": "",
+      "substrand": "",
+      "standard": "",
+      "indicators": [],
+      "focus": ""
+     },
+     {
+      "weeks": [
+       14,
+       15
+      ],
+      "type": "exam",
+      "strand": "",
+      "substrand": "",
+      "standard": "",
+      "indicators": [],
+      "focus": ""
+     }
     ]
    },
    "term": "",
-   "source": "Basic 4 Curriculum Indicators"
+   "source": "Basic 1 Curriculum Indicators"
   },
   "Ghanaian Language": {
    "classes": {
@@ -6130,10 +7930,646 @@
       "indicators": [],
       "focus": ""
      }
+    ],
+    "Basic 3": [
+     {
+      "weeks": [
+       1
+      ],
+      "type": "revision",
+      "strand": "",
+      "substrand": "",
+      "standard": "",
+      "indicators": [],
+      "focus": "Key ideas from last term that this class needs"
+     },
+     {
+      "weeks": [
+       2
+      ],
+      "type": "teach",
+      "strand": "1. Oral Language",
+      "substrand": "1.1 Listening and Speaking",
+      "standard": "B3.1.1.1 Demonstrate understanding of oral instructions and stories",
+      "indicators": [
+       "B3.1.1.1.1 Listen to and retell simple stories"
+      ],
+      "part": [
+       1,
+       3
+      ]
+     },
+     {
+      "weeks": [
+       3
+      ],
+      "type": "teach",
+      "strand": "1. Oral Language",
+      "substrand": "1.1 Listening and Speaking",
+      "standard": "B3.1.1.1 Demonstrate understanding of oral instructions and stories",
+      "indicators": [
+       "B3.1.1.1.1 Listen to and retell simple stories"
+      ],
+      "part": [
+       2,
+       3
+      ]
+     },
+     {
+      "weeks": [
+       4
+      ],
+      "type": "teach",
+      "strand": "1. Oral Language",
+      "substrand": "1.1 Listening and Speaking",
+      "standard": "B3.1.1.1 Demonstrate understanding of oral instructions and stories",
+      "indicators": [
+       "B3.1.1.1.1 Listen to and retell simple stories"
+      ],
+      "part": [
+       3,
+       3
+      ]
+     },
+     {
+      "weeks": [
+       5
+      ],
+      "type": "teach",
+      "strand": "2. Reading",
+      "substrand": "2.1 Reading Comprehension",
+      "standard": "B3.2.1.1 Read simple texts fluently",
+      "indicators": [
+       "B3.2.1.1.1 Read short sentences and answer questions"
+      ],
+      "part": [
+       1,
+       2
+      ]
+     },
+     {
+      "weeks": [
+       6
+      ],
+      "type": "teach",
+      "strand": "2. Reading",
+      "substrand": "2.1 Reading Comprehension",
+      "standard": "B3.2.1.1 Read simple texts fluently",
+      "indicators": [
+       "B3.2.1.1.1 Read short sentences and answer questions"
+      ],
+      "part": [
+       2,
+       2
+      ]
+     },
+     {
+      "weeks": [
+       7
+      ],
+      "type": "teach",
+      "strand": "3. Writing",
+      "substrand": "3.1 Writing Mechanics",
+      "standard": "B3.1.1.1 Write letters and simple words",
+      "indicators": [
+       "B3.1.1.1.1 Form letters correctly and write simple words"
+      ],
+      "part": [
+       1,
+       2
+      ]
+     },
+     {
+      "weeks": [
+       8
+      ],
+      "type": "teach",
+      "strand": "3. Writing",
+      "substrand": "3.1 Writing Mechanics",
+      "standard": "B3.1.1.1 Write letters and simple words",
+      "indicators": [
+       "B3.1.1.1.1 Form letters correctly and write simple words"
+      ],
+      "part": [
+       2,
+       2
+      ]
+     },
+     {
+      "weeks": [
+       9
+      ],
+      "type": "teach",
+      "strand": "4. Composition",
+      "substrand": "4.1 Narrative Writing",
+      "standard": "B3.4.1.1 Write simple sentences",
+      "indicators": [
+       "B3.4.1.1.1 Write about personal experiences"
+      ],
+      "part": [
+       1,
+       2
+      ]
+     },
+     {
+      "weeks": [
+       10
+      ],
+      "type": "teach",
+      "strand": "4. Composition",
+      "substrand": "4.1 Narrative Writing",
+      "standard": "B3.4.1.1 Write simple sentences",
+      "indicators": [
+       "B3.4.1.1.1 Write about personal experiences"
+      ],
+      "part": [
+       2,
+       2
+      ]
+     },
+     {
+      "weeks": [
+       11
+      ],
+      "type": "teach",
+      "strand": "5. Literature and Culture",
+      "substrand": "5.1 Customs and Institutions",
+      "standard": "B3.5.1.1 Understand cultural practices",
+      "indicators": [
+       "B3.5.1.1.1 Talk about polite greetings in the community"
+      ],
+      "part": [
+       1,
+       2
+      ]
+     },
+     {
+      "weeks": [
+       12
+      ],
+      "type": "teach",
+      "strand": "5. Literature and Culture",
+      "substrand": "5.1 Customs and Institutions",
+      "standard": "B3.5.1.1 Understand cultural practices",
+      "indicators": [
+       "B3.5.1.1.1 Talk about polite greetings in the community"
+      ],
+      "part": [
+       2,
+       2
+      ]
+     },
+     {
+      "weeks": [
+       13
+      ],
+      "type": "revision",
+      "strand": "",
+      "substrand": "",
+      "standard": "",
+      "indicators": [],
+      "focus": ""
+     },
+     {
+      "weeks": [
+       14,
+       15
+      ],
+      "type": "exam",
+      "strand": "",
+      "substrand": "",
+      "standard": "",
+      "indicators": [],
+      "focus": ""
+     }
+    ],
+    "Basic 2": [
+     {
+      "weeks": [
+       1
+      ],
+      "type": "revision",
+      "strand": "",
+      "substrand": "",
+      "standard": "",
+      "indicators": [],
+      "focus": "Key ideas from last term that this class needs"
+     },
+     {
+      "weeks": [
+       2
+      ],
+      "type": "teach",
+      "strand": "1. Oral Language",
+      "substrand": "1.1 Listening and Speaking",
+      "standard": "B2.1.1.1 Respond to greetings and simple questions",
+      "indicators": [
+       "B2.1.1.1.1 Use appropriate morning and afternoon greetings in the local language"
+      ],
+      "part": [
+       1,
+       3
+      ]
+     },
+     {
+      "weeks": [
+       3
+      ],
+      "type": "teach",
+      "strand": "1. Oral Language",
+      "substrand": "1.1 Listening and Speaking",
+      "standard": "B2.1.1.1 Respond to greetings and simple questions",
+      "indicators": [
+       "B2.1.1.1.1 Use appropriate morning and afternoon greetings in the local language"
+      ],
+      "part": [
+       2,
+       3
+      ]
+     },
+     {
+      "weeks": [
+       4
+      ],
+      "type": "teach",
+      "strand": "1. Oral Language",
+      "substrand": "1.1 Listening and Speaking",
+      "standard": "B2.1.1.1 Respond to greetings and simple questions",
+      "indicators": [
+       "B2.1.1.1.1 Use appropriate morning and afternoon greetings in the local language"
+      ],
+      "part": [
+       3,
+       3
+      ]
+     },
+     {
+      "weeks": [
+       5
+      ],
+      "type": "teach",
+      "strand": "2. Reading",
+      "substrand": "2.1 Reading Comprehension",
+      "standard": "B2.2.1.1 Recognize letters of the local alphabet",
+      "indicators": [
+       "B2.2.1.1.1 Sound out basic vowels and consonants"
+      ],
+      "part": [
+       1,
+       2
+      ]
+     },
+     {
+      "weeks": [
+       6
+      ],
+      "type": "teach",
+      "strand": "2. Reading",
+      "substrand": "2.1 Reading Comprehension",
+      "standard": "B2.2.1.1 Recognize letters of the local alphabet",
+      "indicators": [
+       "B2.2.1.1.1 Sound out basic vowels and consonants"
+      ],
+      "part": [
+       2,
+       2
+      ]
+     },
+     {
+      "weeks": [
+       7
+      ],
+      "type": "teach",
+      "strand": "3. Writing",
+      "substrand": "3.1 Writing Mechanics",
+      "standard": "B2.3.1.1 Trace and write letters",
+      "indicators": [
+       "B2.3.1.1.1 Write simple alphabets and syllables correctly"
+      ],
+      "part": [
+       1,
+       2
+      ]
+     },
+     {
+      "weeks": [
+       8
+      ],
+      "type": "teach",
+      "strand": "3. Writing",
+      "substrand": "3.1 Writing Mechanics",
+      "standard": "B2.3.1.1 Trace and write letters",
+      "indicators": [
+       "B2.3.1.1.1 Write simple alphabets and syllables correctly"
+      ],
+      "part": [
+       2,
+       2
+      ]
+     },
+     {
+      "weeks": [
+       9
+      ],
+      "type": "teach",
+      "strand": "4. Composition",
+      "substrand": "4.1 Narrative Writing",
+      "standard": "B2.4.1.1 Write single words for objects",
+      "indicators": [
+       "B2.4.1.1.1 Label common classroom objects in the local language"
+      ],
+      "part": [
+       1,
+       2
+      ]
+     },
+     {
+      "weeks": [
+       10
+      ],
+      "type": "teach",
+      "strand": "4. Composition",
+      "substrand": "4.1 Narrative Writing",
+      "standard": "B2.4.1.1 Write single words for objects",
+      "indicators": [
+       "B2.4.1.1.1 Label common classroom objects in the local language"
+      ],
+      "part": [
+       2,
+       2
+      ]
+     },
+     {
+      "weeks": [
+       11
+      ],
+      "type": "teach",
+      "strand": "5. Literature and Culture",
+      "substrand": "5.1 Customs and Institutions",
+      "standard": "B2.5.1.1 Learn traditional proverbs or riddles",
+      "indicators": [
+       "B2.5.1.1.1 Answer simple riddles in the local language"
+      ],
+      "part": [
+       1,
+       2
+      ]
+     },
+     {
+      "weeks": [
+       12
+      ],
+      "type": "teach",
+      "strand": "5. Literature and Culture",
+      "substrand": "5.1 Customs and Institutions",
+      "standard": "B2.5.1.1 Learn traditional proverbs or riddles",
+      "indicators": [
+       "B2.5.1.1.1 Answer simple riddles in the local language"
+      ],
+      "part": [
+       2,
+       2
+      ]
+     },
+     {
+      "weeks": [
+       13
+      ],
+      "type": "revision",
+      "strand": "",
+      "substrand": "",
+      "standard": "",
+      "indicators": [],
+      "focus": ""
+     },
+     {
+      "weeks": [
+       14,
+       15
+      ],
+      "type": "exam",
+      "strand": "",
+      "substrand": "",
+      "standard": "",
+      "indicators": [],
+      "focus": ""
+     }
+    ],
+    "Basic 1": [
+     {
+      "weeks": [
+       1
+      ],
+      "type": "revision",
+      "strand": "",
+      "substrand": "",
+      "standard": "",
+      "indicators": [],
+      "focus": "Key ideas from last term that this class needs"
+     },
+     {
+      "weeks": [
+       2
+      ],
+      "type": "teach",
+      "strand": "1. Oral Language",
+      "substrand": "1.1 Listening and Speaking",
+      "standard": "B1.1.1.1 Listen and speak simple words",
+      "indicators": [
+       "B1.1.1.1.1 Respond to simple name calls and instructions in the local language"
+      ],
+      "part": [
+       1,
+       3
+      ]
+     },
+     {
+      "weeks": [
+       3
+      ],
+      "type": "teach",
+      "strand": "1. Oral Language",
+      "substrand": "1.1 Listening and Speaking",
+      "standard": "B1.1.1.1 Listen and speak simple words",
+      "indicators": [
+       "B1.1.1.1.1 Respond to simple name calls and instructions in the local language"
+      ],
+      "part": [
+       2,
+       3
+      ]
+     },
+     {
+      "weeks": [
+       4
+      ],
+      "type": "teach",
+      "strand": "1. Oral Language",
+      "substrand": "1.1 Listening and Speaking",
+      "standard": "B1.1.1.1 Listen and speak simple words",
+      "indicators": [
+       "B1.1.1.1.1 Respond to simple name calls and instructions in the local language"
+      ],
+      "part": [
+       3,
+       3
+      ]
+     },
+     {
+      "weeks": [
+       5
+      ],
+      "type": "teach",
+      "strand": "2. Reading",
+      "substrand": "2.1 Reading Comprehension",
+      "standard": "B1.2.1.1 Recognize local alphabet letters",
+      "indicators": [
+       "B1.2.1.1.1 Point to familiar letters of the local alphabet chart"
+      ],
+      "part": [
+       1,
+       2
+      ]
+     },
+     {
+      "weeks": [
+       6
+      ],
+      "type": "teach",
+      "strand": "2. Reading",
+      "substrand": "2.1 Reading Comprehension",
+      "standard": "B1.2.1.1 Recognize local alphabet letters",
+      "indicators": [
+       "B1.2.1.1.1 Point to familiar letters of the local alphabet chart"
+      ],
+      "part": [
+       2,
+       2
+      ]
+     },
+     {
+      "weeks": [
+       7
+      ],
+      "type": "teach",
+      "strand": "3. Writing",
+      "substrand": "3.1 Writing Mechanics",
+      "standard": "B1.3.1.1 Trace basic shapes and strokes",
+      "indicators": [
+       "B1.3.1.1.1 Trace vertical and horizontal lines in writing books"
+      ],
+      "part": [
+       1,
+       2
+      ]
+     },
+     {
+      "weeks": [
+       8
+      ],
+      "type": "teach",
+      "strand": "3. Writing",
+      "substrand": "3.1 Writing Mechanics",
+      "standard": "B1.3.1.1 Trace basic shapes and strokes",
+      "indicators": [
+       "B1.3.1.1.1 Trace vertical and horizontal lines in writing books"
+      ],
+      "part": [
+       2,
+       2
+      ]
+     },
+     {
+      "weeks": [
+       9
+      ],
+      "type": "teach",
+      "strand": "4. Composition",
+      "substrand": "4.1 Narrative Writing",
+      "standard": "B1.4.1.1 Draw and talk about objects",
+      "indicators": [
+       "B1.4.1.1.1 Draw a familiar object (like a pot or ball) and name it"
+      ],
+      "part": [
+       1,
+       2
+      ]
+     },
+     {
+      "weeks": [
+       10
+      ],
+      "type": "teach",
+      "strand": "4. Composition",
+      "substrand": "4.1 Narrative Writing",
+      "standard": "B1.4.1.1 Draw and talk about objects",
+      "indicators": [
+       "B1.4.1.1.1 Draw a familiar object (like a pot or ball) and name it"
+      ],
+      "part": [
+       2,
+       2
+      ]
+     },
+     {
+      "weeks": [
+       11
+      ],
+      "type": "teach",
+      "strand": "5. Literature and Culture",
+      "substrand": "5.1 Customs and Institutions",
+      "standard": "B1.5.1.1 Listen to local folklore",
+      "indicators": [
+       "B1.5.1.1.1 Enjoy listening to short traditional stories told by elders"
+      ],
+      "part": [
+       1,
+       2
+      ]
+     },
+     {
+      "weeks": [
+       12
+      ],
+      "type": "teach",
+      "strand": "5. Literature and Culture",
+      "substrand": "5.1 Customs and Institutions",
+      "standard": "B1.5.1.1 Listen to local folklore",
+      "indicators": [
+       "B1.5.1.1.1 Enjoy listening to short traditional stories told by elders"
+      ],
+      "part": [
+       2,
+       2
+      ]
+     },
+     {
+      "weeks": [
+       13
+      ],
+      "type": "revision",
+      "strand": "",
+      "substrand": "",
+      "standard": "",
+      "indicators": [],
+      "focus": ""
+     },
+     {
+      "weeks": [
+       14,
+       15
+      ],
+      "type": "exam",
+      "strand": "",
+      "substrand": "",
+      "standard": "",
+      "indicators": [],
+      "focus": ""
+     }
     ]
    },
    "term": "",
-   "source": "Basic 4 Curriculum Indicators"
+   "source": "Basic 1 Curriculum Indicators"
   },
   "Religious and Moral Education": {
    "classes": {
@@ -6837,10 +9273,634 @@
       "indicators": [],
       "focus": ""
      }
+    ],
+    "Basic 3": [
+     {
+      "weeks": [
+       1
+      ],
+      "type": "revision",
+      "strand": "",
+      "substrand": "",
+      "standard": "",
+      "indicators": [],
+      "focus": "Key ideas from last term that this class needs"
+     },
+     {
+      "weeks": [
+       2
+      ],
+      "type": "teach",
+      "strand": "1. God, His Creation and Attributes",
+      "substrand": "1.1 God the Creator",
+      "standard": "B3.1.1.1 Demonstrate understanding of God's creation",
+      "indicators": [
+       "B3.1.1.1.1 Identify things created by God"
+      ],
+      "part": [
+       1,
+       2
+      ]
+     },
+     {
+      "weeks": [
+       3
+      ],
+      "type": "teach",
+      "strand": "1. God, His Creation and Attributes",
+      "substrand": "1.1 God the Creator",
+      "standard": "B3.1.1.1 Demonstrate understanding of God's creation",
+      "indicators": [
+       "B3.1.1.1.1 Identify things created by God"
+      ],
+      "part": [
+       2,
+       2
+      ]
+     },
+     {
+      "weeks": [
+       4
+      ],
+      "type": "teach",
+      "strand": "2. Religious Practices and their Moral Implications",
+      "substrand": "2.1 Worship",
+      "standard": "B3.2.1.1 Understand the modes of worship",
+      "indicators": [
+       "B3.2.1.1.1 Describe how different religions worship"
+      ],
+      "part": [
+       1,
+       2
+      ]
+     },
+     {
+      "weeks": [
+       5
+      ],
+      "type": "teach",
+      "strand": "2. Religious Practices and their Moral Implications",
+      "substrand": "2.1 Worship",
+      "standard": "B3.2.1.1 Understand the modes of worship",
+      "indicators": [
+       "B3.2.1.1.1 Describe how different religions worship"
+      ],
+      "part": [
+       2,
+       2
+      ]
+     },
+     {
+      "weeks": [
+       6
+      ],
+      "type": "teach",
+      "strand": "3. The Family and the Community",
+      "substrand": "3.1 Roles and Relationships",
+      "standard": "B3.3.1.1 Understand family systems",
+      "indicators": [
+       "B3.3.1.1.1 Identify members of the extended family"
+      ],
+      "part": [
+       1,
+       2
+      ]
+     },
+     {
+      "weeks": [
+       7
+      ],
+      "type": "teach",
+      "strand": "3. The Family and the Community",
+      "substrand": "3.1 Roles and Relationships",
+      "standard": "B3.3.1.1 Understand family systems",
+      "indicators": [
+       "B3.3.1.1.1 Identify members of the extended family"
+      ],
+      "part": [
+       2,
+       2
+      ]
+     },
+     {
+      "weeks": [
+       8
+      ],
+      "type": "teach",
+      "strand": "4. Religious Leaders and Personalities",
+      "substrand": "4.1 Religious Leaders",
+      "standard": "B3.4.1.1 Know the religious leaders",
+      "indicators": [
+       "B3.4.1.1.1 Name the leaders of the three major religions"
+      ],
+      "part": [
+       1,
+       2
+      ]
+     },
+     {
+      "weeks": [
+       9
+      ],
+      "type": "teach",
+      "strand": "4. Religious Leaders and Personalities",
+      "substrand": "4.1 Religious Leaders",
+      "standard": "B3.4.1.1 Know the religious leaders",
+      "indicators": [
+       "B3.4.1.1.1 Name the leaders of the three major religions"
+      ],
+      "part": [
+       2,
+       2
+      ]
+     },
+     {
+      "weeks": [
+       10
+      ],
+      "type": "teach",
+      "strand": "5. Ethics and Moral Life",
+      "substrand": "5.1 Good Manners",
+      "standard": "B3.5.1.1 Demonstrate good manners",
+      "indicators": [
+       "B3.5.1.1.1 Practice good manners at home and school"
+      ],
+      "part": [
+       1,
+       2
+      ]
+     },
+     {
+      "weeks": [
+       11
+      ],
+      "type": "teach",
+      "strand": "5. Ethics and Moral Life",
+      "substrand": "5.1 Good Manners",
+      "standard": "B3.5.1.1 Demonstrate good manners",
+      "indicators": [
+       "B3.5.1.1.1 Practice good manners at home and school"
+      ],
+      "part": [
+       2,
+       2
+      ]
+     },
+     {
+      "weeks": [
+       12
+      ],
+      "type": "teach",
+      "strand": "6. Religion and Economic Life",
+      "substrand": "6.1 Work and Productivity",
+      "standard": "B3.6.1.1 Appreciate honest work",
+      "indicators": [
+       "B3.6.1.1.1 Explain the need for honest work"
+      ]
+     },
+     {
+      "weeks": [
+       13
+      ],
+      "type": "revision",
+      "strand": "",
+      "substrand": "",
+      "standard": "",
+      "indicators": [],
+      "focus": ""
+     },
+     {
+      "weeks": [
+       14,
+       15
+      ],
+      "type": "exam",
+      "strand": "",
+      "substrand": "",
+      "standard": "",
+      "indicators": [],
+      "focus": ""
+     }
+    ],
+    "Basic 2": [
+     {
+      "weeks": [
+       1
+      ],
+      "type": "revision",
+      "strand": "",
+      "substrand": "",
+      "standard": "",
+      "indicators": [],
+      "focus": "Key ideas from last term that this class needs"
+     },
+     {
+      "weeks": [
+       2
+      ],
+      "type": "teach",
+      "strand": "1. God, His Creation and Attributes",
+      "substrand": "1.1 God the Creator",
+      "standard": "B2.1.1.1 Appreciate God's creation",
+      "indicators": [
+       "B2.1.1.1.1 Name plants and animals created by God"
+      ],
+      "part": [
+       1,
+       2
+      ]
+     },
+     {
+      "weeks": [
+       3
+      ],
+      "type": "teach",
+      "strand": "1. God, His Creation and Attributes",
+      "substrand": "1.1 God the Creator",
+      "standard": "B2.1.1.1 Appreciate God's creation",
+      "indicators": [
+       "B2.1.1.1.1 Name plants and animals created by God"
+      ],
+      "part": [
+       2,
+       2
+      ]
+     },
+     {
+      "weeks": [
+       4
+      ],
+      "type": "teach",
+      "strand": "2. Religious Practices and their Moral Implications",
+      "substrand": "2.1 Worship",
+      "standard": "B2.2.1.1 Recognize places of worship",
+      "indicators": [
+       "B2.2.1.1.1 Identify churches, mosques, and shrines"
+      ],
+      "part": [
+       1,
+       2
+      ]
+     },
+     {
+      "weeks": [
+       5
+      ],
+      "type": "teach",
+      "strand": "2. Religious Practices and their Moral Implications",
+      "substrand": "2.1 Worship",
+      "standard": "B2.2.1.1 Recognize places of worship",
+      "indicators": [
+       "B2.2.1.1.1 Identify churches, mosques, and shrines"
+      ],
+      "part": [
+       2,
+       2
+      ]
+     },
+     {
+      "weeks": [
+       6
+      ],
+      "type": "teach",
+      "strand": "3. The Family and the Community",
+      "substrand": "3.1 Roles and Relationships",
+      "standard": "B2.3.1.1 Recognize nuclear family members",
+      "indicators": [
+       "B2.3.1.1.1 State the roles of parents and children"
+      ],
+      "part": [
+       1,
+       2
+      ]
+     },
+     {
+      "weeks": [
+       7
+      ],
+      "type": "teach",
+      "strand": "3. The Family and the Community",
+      "substrand": "3.1 Roles and Relationships",
+      "standard": "B2.3.1.1 Recognize nuclear family members",
+      "indicators": [
+       "B2.3.1.1.1 State the roles of parents and children"
+      ],
+      "part": [
+       2,
+       2
+      ]
+     },
+     {
+      "weeks": [
+       8
+      ],
+      "type": "teach",
+      "strand": "4. Religious Leaders and Personalities",
+      "substrand": "4.1 Religious Leaders",
+      "standard": "B2.4.1.1 Know major religious figures",
+      "indicators": [
+       "B2.4.1.1.1 Mention names of founders of major religions"
+      ],
+      "part": [
+       1,
+       2
+      ]
+     },
+     {
+      "weeks": [
+       9
+      ],
+      "type": "teach",
+      "strand": "4. Religious Leaders and Personalities",
+      "substrand": "4.1 Religious Leaders",
+      "standard": "B2.4.1.1 Know major religious figures",
+      "indicators": [
+       "B2.4.1.1.1 Mention names of founders of major religions"
+      ],
+      "part": [
+       2,
+       2
+      ]
+     },
+     {
+      "weeks": [
+       10
+      ],
+      "type": "teach",
+      "strand": "5. Ethics and Moral Life",
+      "substrand": "5.1 Good Manners",
+      "standard": "B2.5.1.1 Exhibit obedience",
+      "indicators": [
+       "B2.5.1.1.1 Show respect to elders and teachers"
+      ],
+      "part": [
+       1,
+       2
+      ]
+     },
+     {
+      "weeks": [
+       11
+      ],
+      "type": "teach",
+      "strand": "5. Ethics and Moral Life",
+      "substrand": "5.1 Good Manners",
+      "standard": "B2.5.1.1 Exhibit obedience",
+      "indicators": [
+       "B2.5.1.1.1 Show respect to elders and teachers"
+      ],
+      "part": [
+       2,
+       2
+      ]
+     },
+     {
+      "weeks": [
+       12
+      ],
+      "type": "teach",
+      "strand": "6. Religion and Economic Life",
+      "substrand": "6.1 Work and Productivity",
+      "standard": "B2.6.1.1 Understand the value of helping out",
+      "indicators": [
+       "B2.6.1.1.1 Perform simple chores at home"
+      ]
+     },
+     {
+      "weeks": [
+       13
+      ],
+      "type": "revision",
+      "strand": "",
+      "substrand": "",
+      "standard": "",
+      "indicators": [],
+      "focus": ""
+     },
+     {
+      "weeks": [
+       14,
+       15
+      ],
+      "type": "exam",
+      "strand": "",
+      "substrand": "",
+      "standard": "",
+      "indicators": [],
+      "focus": ""
+     }
+    ],
+    "Basic 1": [
+     {
+      "weeks": [
+       1
+      ],
+      "type": "revision",
+      "strand": "",
+      "substrand": "",
+      "standard": "",
+      "indicators": [],
+      "focus": "Key ideas from last term that this class needs"
+     },
+     {
+      "weeks": [
+       2
+      ],
+      "type": "teach",
+      "strand": "1. God, His Creation and Attributes",
+      "substrand": "1.1 God the Creator",
+      "standard": "B1.1.1.1 Recognize God as creator of things",
+      "indicators": [
+       "B1.1.1.1.1 Name the sun, moon, and stars created by God"
+      ],
+      "part": [
+       1,
+       2
+      ]
+     },
+     {
+      "weeks": [
+       3
+      ],
+      "type": "teach",
+      "strand": "1. God, His Creation and Attributes",
+      "substrand": "1.1 God the Creator",
+      "standard": "B1.1.1.1 Recognize God as creator of things",
+      "indicators": [
+       "B1.1.1.1.1 Name the sun, moon, and stars created by God"
+      ],
+      "part": [
+       2,
+       2
+      ]
+     },
+     {
+      "weeks": [
+       4
+      ],
+      "type": "teach",
+      "strand": "2. Religious Practices and their Moral Implications",
+      "substrand": "2.1 Worship",
+      "standard": "B1.2.1.1 Know that people pray",
+      "indicators": [
+       "B1.2.1.1.1 Observe adults praying or singing religious songs"
+      ],
+      "part": [
+       1,
+       2
+      ]
+     },
+     {
+      "weeks": [
+       5
+      ],
+      "type": "teach",
+      "strand": "2. Religious Practices and their Moral Implications",
+      "substrand": "2.1 Worship",
+      "standard": "B1.2.1.1 Know that people pray",
+      "indicators": [
+       "B1.2.1.1.1 Observe adults praying or singing religious songs"
+      ],
+      "part": [
+       2,
+       2
+      ]
+     },
+     {
+      "weeks": [
+       6
+      ],
+      "type": "teach",
+      "strand": "3. The Family and the Community",
+      "substrand": "3.1 Roles and Relationships",
+      "standard": "B1.3.1.1 Know family members",
+      "indicators": [
+       "B1.3.1.1.1 Mention mother, father, brother, and sister"
+      ],
+      "part": [
+       1,
+       2
+      ]
+     },
+     {
+      "weeks": [
+       7
+      ],
+      "type": "teach",
+      "strand": "3. The Family and the Community",
+      "substrand": "3.1 Roles and Relationships",
+      "standard": "B1.3.1.1 Know family members",
+      "indicators": [
+       "B1.3.1.1.1 Mention mother, father, brother, and sister"
+      ],
+      "part": [
+       2,
+       2
+      ]
+     },
+     {
+      "weeks": [
+       8
+      ],
+      "type": "teach",
+      "strand": "4. Religious Leaders and Personalities",
+      "substrand": "4.1 Religious Leaders",
+      "standard": "B1.4.1.1 Know holy books or leaders",
+      "indicators": [
+       "B1.4.1.1.1 Listen to stories of great religious personalities"
+      ],
+      "part": [
+       1,
+       2
+      ]
+     },
+     {
+      "weeks": [
+       9
+      ],
+      "type": "teach",
+      "strand": "4. Religious Leaders and Personalities",
+      "substrand": "4.1 Religious Leaders",
+      "standard": "B1.4.1.1 Know holy books or leaders",
+      "indicators": [
+       "B1.4.1.1.1 Listen to stories of great religious personalities"
+      ],
+      "part": [
+       2,
+       2
+      ]
+     },
+     {
+      "weeks": [
+       10
+      ],
+      "type": "teach",
+      "strand": "5. Ethics and Moral Life",
+      "substrand": "5.1 Good Manners",
+      "standard": "B1.5.1.1 Say polite words",
+      "indicators": [
+       "B1.5.1.1.1 Use words like \"Please\", \"Thank you\", and \"Sorry\""
+      ],
+      "part": [
+       1,
+       2
+      ]
+     },
+     {
+      "weeks": [
+       11
+      ],
+      "type": "teach",
+      "strand": "5. Ethics and Moral Life",
+      "substrand": "5.1 Good Manners",
+      "standard": "B1.5.1.1 Say polite words",
+      "indicators": [
+       "B1.5.1.1.1 Use words like \"Please\", \"Thank you\", and \"Sorry\""
+      ],
+      "part": [
+       2,
+       2
+      ]
+     },
+     {
+      "weeks": [
+       12
+      ],
+      "type": "teach",
+      "strand": "6. Religion and Economic Life",
+      "substrand": "6.1 Work and Productivity",
+      "standard": "B1.6.1.1 Appreciate parents working",
+      "indicators": [
+       "B1.6.1.1.1 State that parents go to work to provide food"
+      ]
+     },
+     {
+      "weeks": [
+       13
+      ],
+      "type": "revision",
+      "strand": "",
+      "substrand": "",
+      "standard": "",
+      "indicators": [],
+      "focus": ""
+     },
+     {
+      "weeks": [
+       14,
+       15
+      ],
+      "type": "exam",
+      "strand": "",
+      "substrand": "",
+      "standard": "",
+      "indicators": [],
+      "focus": ""
+     }
     ]
    },
    "term": "",
-   "source": "Basic 4 Curriculum Indicators"
+   "source": "Basic 1 Curriculum Indicators"
   },
   "Creative Arts": {
    "classes": {
@@ -7419,10 +10479,586 @@
       "indicators": [],
       "focus": ""
      }
+    ],
+    "Basic 3": [
+     {
+      "weeks": [
+       1
+      ],
+      "type": "revision",
+      "strand": "",
+      "substrand": "",
+      "standard": "",
+      "indicators": [],
+      "focus": "Key ideas from last term that this class needs"
+     },
+     {
+      "weeks": [
+       2
+      ],
+      "type": "teach",
+      "strand": "1. Visual Arts",
+      "substrand": "1.1 Thinking and Exploring Ideas",
+      "standard": "B3.1.1.1 Demonstrate understanding of generating ideas for visual artworks",
+      "indicators": [
+       "B3.1.1.1.1 Explore environment for visual art motifs"
+      ],
+      "part": [
+       1,
+       2
+      ]
+     },
+     {
+      "weeks": [
+       3
+      ],
+      "type": "teach",
+      "strand": "1. Visual Arts",
+      "substrand": "1.1 Thinking and Exploring Ideas",
+      "standard": "B3.1.1.1 Demonstrate understanding of generating ideas for visual artworks",
+      "indicators": [
+       "B3.1.1.1.1 Explore environment for visual art motifs"
+      ],
+      "part": [
+       2,
+       2
+      ]
+     },
+     {
+      "weeks": [
+       4
+      ],
+      "type": "teach",
+      "strand": "1. Visual Arts",
+      "substrand": "1.2 Planning, Making and Composing",
+      "standard": "B3.1.2.1 Demonstrate ability to plan and create visual artworks",
+      "indicators": [
+       "B3.1.2.1.1 Use local materials to create simple visual artworks"
+      ],
+      "part": [
+       1,
+       2
+      ]
+     },
+     {
+      "weeks": [
+       5
+      ],
+      "type": "teach",
+      "strand": "1. Visual Arts",
+      "substrand": "1.2 Planning, Making and Composing",
+      "standard": "B3.1.2.1 Demonstrate ability to plan and create visual artworks",
+      "indicators": [
+       "B3.1.2.1.1 Use local materials to create simple visual artworks"
+      ],
+      "part": [
+       2,
+       2
+      ]
+     },
+     {
+      "weeks": [
+       6
+      ],
+      "type": "teach",
+      "strand": "1. Visual Arts",
+      "substrand": "1.3 Displaying and Sharing",
+      "standard": "B3.1.3.1 Demonstrate ability to exhibit visual artworks",
+      "indicators": [
+       "B3.1.3.1.1 Display and talk about own artworks"
+      ],
+      "part": [
+       1,
+       2
+      ]
+     },
+     {
+      "weeks": [
+       7
+      ],
+      "type": "teach",
+      "strand": "1. Visual Arts",
+      "substrand": "1.3 Displaying and Sharing",
+      "standard": "B3.1.3.1 Demonstrate ability to exhibit visual artworks",
+      "indicators": [
+       "B3.1.3.1.1 Display and talk about own artworks"
+      ],
+      "part": [
+       2,
+       2
+      ]
+     },
+     {
+      "weeks": [
+       8
+      ],
+      "type": "teach",
+      "strand": "1. Visual Arts",
+      "substrand": "1.4 Appreciating and Appraising",
+      "standard": "B3.1.4.1 Appreciate visual artworks",
+      "indicators": [
+       "B3.1.4.1.1 Express personal views on artworks"
+      ]
+     },
+     {
+      "weeks": [
+       9
+      ],
+      "type": "teach",
+      "strand": "2. Performing Arts",
+      "substrand": "2.1 Thinking and Exploring Ideas",
+      "standard": "B3.2.1.1 Demonstrate understanding of generating ideas for performing arts",
+      "indicators": [
+       "B3.2.1.1.1 Explore sounds and movements in the environment"
+      ]
+     },
+     {
+      "weeks": [
+       10
+      ],
+      "type": "teach",
+      "strand": "2. Performing Arts",
+      "substrand": "2.2 Planning, Making and Composing",
+      "standard": "B3.2.2.1 Demonstrate ability to plan and create performances",
+      "indicators": [
+       "B3.2.2.1.1 Create simple dances or songs"
+      ]
+     },
+     {
+      "weeks": [
+       11
+      ],
+      "type": "teach",
+      "strand": "2. Performing Arts",
+      "substrand": "2.3 Displaying and Sharing",
+      "standard": "B3.2.3.1 Demonstrate ability to share performances",
+      "indicators": [
+       "B3.2.3.1.1 Perform simple creative items"
+      ]
+     },
+     {
+      "weeks": [
+       12
+      ],
+      "type": "teach",
+      "strand": "2. Performing Arts",
+      "substrand": "2.4 Appreciating and Appraising",
+      "standard": "B3.2.4.1 Appreciate performing arts",
+      "indicators": [
+       "B3.2.4.1.1 Talk about performances"
+      ]
+     },
+     {
+      "weeks": [
+       13
+      ],
+      "type": "revision",
+      "strand": "",
+      "substrand": "",
+      "standard": "",
+      "indicators": [],
+      "focus": ""
+     },
+     {
+      "weeks": [
+       14,
+       15
+      ],
+      "type": "exam",
+      "strand": "",
+      "substrand": "",
+      "standard": "",
+      "indicators": [],
+      "focus": ""
+     }
+    ],
+    "Basic 2": [
+     {
+      "weeks": [
+       1
+      ],
+      "type": "revision",
+      "strand": "",
+      "substrand": "",
+      "standard": "",
+      "indicators": [],
+      "focus": "Key ideas from last term that this class needs"
+     },
+     {
+      "weeks": [
+       2
+      ],
+      "type": "teach",
+      "strand": "",
+      "substrand": "1.1 Thinking and Exploring Ideas",
+      "standard": "B2.1.1.1 Explore lines and shapes in nature",
+      "indicators": [
+       "B2.1.1.1.1 Draw curved and straight lines observed around them"
+      ],
+      "part": [
+       1,
+       2
+      ]
+     },
+     {
+      "weeks": [
+       3
+      ],
+      "type": "teach",
+      "strand": "",
+      "substrand": "1.1 Thinking and Exploring Ideas",
+      "standard": "B2.1.1.1 Explore lines and shapes in nature",
+      "indicators": [
+       "B2.1.1.1.1 Draw curved and straight lines observed around them"
+      ],
+      "part": [
+       2,
+       2
+      ]
+     },
+     {
+      "weeks": [
+       4
+      ],
+      "type": "teach",
+      "strand": "",
+      "substrand": "1.2 Planning, Making and Composing",
+      "standard": "B2.1.2.1 Model objects with clay or playdough",
+      "indicators": [
+       "B2.1.2.1.1 Shape local clay into simple fruits or balls"
+      ],
+      "part": [
+       1,
+       2
+      ]
+     },
+     {
+      "weeks": [
+       5
+      ],
+      "type": "teach",
+      "strand": "",
+      "substrand": "1.2 Planning, Making and Composing",
+      "standard": "B2.1.2.1 Model objects with clay or playdough",
+      "indicators": [
+       "B2.1.2.1.1 Shape local clay into simple fruits or balls"
+      ],
+      "part": [
+       2,
+       2
+      ]
+     },
+     {
+      "weeks": [
+       6
+      ],
+      "type": "teach",
+      "strand": "",
+      "substrand": "1.3 Displaying and Sharing",
+      "standard": "B2.1.3.1 Show artwork to peers",
+      "indicators": [
+       "B2.1.3.1.1 Display drawings on desks for others to see"
+      ],
+      "part": [
+       1,
+       2
+      ]
+     },
+     {
+      "weeks": [
+       7
+      ],
+      "type": "teach",
+      "strand": "",
+      "substrand": "1.3 Displaying and Sharing",
+      "standard": "B2.1.3.1 Show artwork to peers",
+      "indicators": [
+       "B2.1.3.1.1 Display drawings on desks for others to see"
+      ],
+      "part": [
+       2,
+       2
+      ]
+     },
+     {
+      "weeks": [
+       8
+      ],
+      "type": "teach",
+      "strand": "",
+      "substrand": "1.4 Appreciating and Appraising",
+      "standard": "B2.1.4.1 Express liking for artworks",
+      "indicators": [
+       "B2.1.4.1.1 Point out favorite colors in a drawing"
+      ]
+     },
+     {
+      "weeks": [
+       9
+      ],
+      "type": "teach",
+      "strand": "",
+      "substrand": "2.1 Thinking and Exploring Ideas",
+      "standard": "B2.2.1.1 Listen to rhythmic sounds",
+      "indicators": [
+       "B2.2.1.1.1 Clap hands to a steady beat"
+      ]
+     },
+     {
+      "weeks": [
+       10
+      ],
+      "type": "teach",
+      "strand": "",
+      "substrand": "2.2 Planning, Making and Composing",
+      "standard": "B2.2.2.1 Create simple body movements",
+      "indicators": [
+       "B2.2.2.1.1 March on the spot to music"
+      ]
+     },
+     {
+      "weeks": [
+       11
+      ],
+      "type": "teach",
+      "strand": "",
+      "substrand": "2.3 Displaying and Sharing",
+      "standard": "B2.2.3.1 Sing short songs in groups",
+      "indicators": [
+       "B2.2.3.1.1 Sing nursery rhymes together"
+      ]
+     },
+     {
+      "weeks": [
+       12
+      ],
+      "type": "teach",
+      "strand": "",
+      "substrand": "2.4 Appreciating and Appraising",
+      "standard": "B2.2.4.1 Talk about songs and dances",
+      "indicators": [
+       "B2.2.4.1.1 Mention which songs they enjoy most"
+      ]
+     },
+     {
+      "weeks": [
+       13
+      ],
+      "type": "revision",
+      "strand": "",
+      "substrand": "",
+      "standard": "",
+      "indicators": [],
+      "focus": ""
+     },
+     {
+      "weeks": [
+       14,
+       15
+      ],
+      "type": "exam",
+      "strand": "",
+      "substrand": "",
+      "standard": "",
+      "indicators": [],
+      "focus": ""
+     }
+    ],
+    "Basic 1": [
+     {
+      "weeks": [
+       1
+      ],
+      "type": "revision",
+      "strand": "",
+      "substrand": "",
+      "standard": "",
+      "indicators": [],
+      "focus": "Key ideas from last term that this class needs"
+     },
+     {
+      "weeks": [
+       2
+      ],
+      "type": "teach",
+      "strand": "",
+      "substrand": "1.1 Thinking and Exploring Ideas",
+      "standard": "B1.1.1.1 Make marks on paper",
+      "indicators": [
+       "B1.1.1.1.1 Scribble freely with crayons or pencils"
+      ],
+      "part": [
+       1,
+       2
+      ]
+     },
+     {
+      "weeks": [
+       3
+      ],
+      "type": "teach",
+      "strand": "",
+      "substrand": "1.1 Thinking and Exploring Ideas",
+      "standard": "B1.1.1.1 Make marks on paper",
+      "indicators": [
+       "B1.1.1.1.1 Scribble freely with crayons or pencils"
+      ],
+      "part": [
+       2,
+       2
+      ]
+     },
+     {
+      "weeks": [
+       4
+      ],
+      "type": "teach",
+      "strand": "",
+      "substrand": "1.2 Planning, Making and Composing",
+      "standard": "B1.2.1.1 Roll and mold sand or clay",
+      "indicators": [
+       "B1.2.1.1.1 Make simple mud balls or sand pies"
+      ],
+      "part": [
+       1,
+       2
+      ]
+     },
+     {
+      "weeks": [
+       5
+      ],
+      "type": "teach",
+      "strand": "",
+      "substrand": "1.2 Planning, Making and Composing",
+      "standard": "B1.2.1.1 Roll and mold sand or clay",
+      "indicators": [
+       "B1.2.1.1.1 Make simple mud balls or sand pies"
+      ],
+      "part": [
+       2,
+       2
+      ]
+     },
+     {
+      "weeks": [
+       6
+      ],
+      "type": "teach",
+      "strand": "",
+      "substrand": "1.3 Displaying and Sharing",
+      "standard": "B1.3.1.1 Show work to friends",
+      "indicators": [
+       "B1.3.1.1.1 Hold up drawings to show classmates"
+      ],
+      "part": [
+       1,
+       2
+      ]
+     },
+     {
+      "weeks": [
+       7
+      ],
+      "type": "teach",
+      "strand": "",
+      "substrand": "1.3 Displaying and Sharing",
+      "standard": "B1.3.1.1 Show work to friends",
+      "indicators": [
+       "B1.3.1.1.1 Hold up drawings to show classmates"
+      ],
+      "part": [
+       2,
+       2
+      ]
+     },
+     {
+      "weeks": [
+       8
+      ],
+      "type": "teach",
+      "strand": "",
+      "substrand": "1.4 Appreciating and Appraising",
+      "standard": "B1.4.1.1 Look at colorful things",
+      "indicators": [
+       "B1.4.1.1.1 Point out bright colors in artwork"
+      ]
+     },
+     {
+      "weeks": [
+       9
+      ],
+      "type": "teach",
+      "strand": "",
+      "substrand": "2.1 Thinking and Exploring Ideas",
+      "standard": "B1.2.1.1 Listen to music and sounds",
+      "indicators": [
+       "B1.2.1.1.1 Move the body freely to drumbeats"
+      ]
+     },
+     {
+      "weeks": [
+       10
+      ],
+      "type": "teach",
+      "strand": "",
+      "substrand": "2.2 Planning, Making and Composing",
+      "standard": "B1.2.2.1 Make sound with local items",
+      "indicators": [
+       "B1.2.2.1.1 Tap empty tins or plastic bottles to make rhythm"
+      ]
+     },
+     {
+      "weeks": [
+       11
+      ],
+      "type": "teach",
+      "strand": "",
+      "substrand": "2.3 Displaying and Sharing",
+      "standard": "B1.2.3.1 Take part in action songs",
+      "indicators": [
+       "B1.2.3.1.1 Sing and dance in a circle with peers"
+      ]
+     },
+     {
+      "weeks": [
+       12
+      ],
+      "type": "teach",
+      "strand": "",
+      "substrand": "2.4 Appreciating and Appraising",
+      "standard": "B1.2.4.1 Enjoy performances",
+      "indicators": [
+       "B1.2.4.1.1 Smile and clap when others perform"
+      ]
+     },
+     {
+      "weeks": [
+       13
+      ],
+      "type": "revision",
+      "strand": "",
+      "substrand": "",
+      "standard": "",
+      "indicators": [],
+      "focus": ""
+     },
+     {
+      "weeks": [
+       14,
+       15
+      ],
+      "type": "exam",
+      "strand": "",
+      "substrand": "",
+      "standard": "",
+      "indicators": [],
+      "focus": ""
+     }
     ]
    },
    "term": "",
-   "source": "Basic 4 Curriculum Indicators"
+   "source": "Basic 1 Curriculum Indicators"
   },
   "History": {
    "classes": {
@@ -8049,10 +11685,634 @@
       "indicators": [],
       "focus": ""
      }
+    ],
+    "Basic 3": [
+     {
+      "weeks": [
+       1
+      ],
+      "type": "revision",
+      "strand": "",
+      "substrand": "",
+      "standard": "",
+      "indicators": [],
+      "focus": "Key ideas from last term that this class needs"
+     },
+     {
+      "weeks": [
+       2
+      ],
+      "type": "teach",
+      "strand": "1. History as a Subject",
+      "substrand": "1.1 Why and how we study history",
+      "standard": "B3.1.1.1 Understand the meaning of history",
+      "indicators": [
+       "B3.1.1.1.1 Explain the concept of history"
+      ],
+      "part": [
+       1,
+       2
+      ]
+     },
+     {
+      "weeks": [
+       3
+      ],
+      "type": "teach",
+      "strand": "1. History as a Subject",
+      "substrand": "1.1 Why and how we study history",
+      "standard": "B3.1.1.1 Understand the meaning of history",
+      "indicators": [
+       "B3.1.1.1.1 Explain the concept of history"
+      ],
+      "part": [
+       2,
+       2
+      ]
+     },
+     {
+      "weeks": [
+       4
+      ],
+      "type": "teach",
+      "strand": "2. My Country Ghana",
+      "substrand": "2.1 The Major Festivals",
+      "standard": "B3.2.1.1 Know the major festivals",
+      "indicators": [
+       "B3.2.1.1.1 Name major festivals celebrated in Ghana"
+      ],
+      "part": [
+       1,
+       2
+      ]
+     },
+     {
+      "weeks": [
+       5
+      ],
+      "type": "teach",
+      "strand": "2. My Country Ghana",
+      "substrand": "2.1 The Major Festivals",
+      "standard": "B3.2.1.1 Know the major festivals",
+      "indicators": [
+       "B3.2.1.1.1 Name major festivals celebrated in Ghana"
+      ],
+      "part": [
+       2,
+       2
+      ]
+     },
+     {
+      "weeks": [
+       6
+      ],
+      "type": "teach",
+      "strand": "3. Europeans in Ghana",
+      "substrand": "3.2 Arrival of Europeans",
+      "standard": "B3.3.1.1 Know the early Europeans",
+      "indicators": [
+       "B3.3.1.1.1 Identify the first Europeans to arrive in Ghana"
+      ],
+      "part": [
+       1,
+       2
+      ]
+     },
+     {
+      "weeks": [
+       7
+      ],
+      "type": "teach",
+      "strand": "3. Europeans in Ghana",
+      "substrand": "3.2 Arrival of Europeans",
+      "standard": "B3.3.1.1 Know the early Europeans",
+      "indicators": [
+       "B3.3.1.1.1 Identify the first Europeans to arrive in Ghana"
+      ],
+      "part": [
+       2,
+       2
+      ]
+     },
+     {
+      "weeks": [
+       8
+      ],
+      "type": "teach",
+      "strand": "4. Colonization and Developments under Colonial Rule",
+      "substrand": "4.1 British Colonial Rule",
+      "standard": "B3.4.1.1 Understand early British rule",
+      "indicators": [
+       "B3.4.1.1.1 Mention early British governors"
+      ],
+      "part": [
+       1,
+       2
+      ]
+     },
+     {
+      "weeks": [
+       9
+      ],
+      "type": "teach",
+      "strand": "4. Colonization and Developments under Colonial Rule",
+      "substrand": "4.1 British Colonial Rule",
+      "standard": "B3.4.1.1 Understand early British rule",
+      "indicators": [
+       "B3.4.1.1.1 Mention early British governors"
+      ],
+      "part": [
+       2,
+       2
+      ]
+     },
+     {
+      "weeks": [
+       10
+      ],
+      "type": "teach",
+      "strand": "5. Journey to Independence",
+      "substrand": "5.1 Early Protest Movements",
+      "standard": "B3.5.1.1 Know early nationalist leaders",
+      "indicators": [
+       "B3.5.1.1.1 Identify members of the Big Six"
+      ],
+      "part": [
+       1,
+       2
+      ]
+     },
+     {
+      "weeks": [
+       11
+      ],
+      "type": "teach",
+      "strand": "5. Journey to Independence",
+      "substrand": "5.1 Early Protest Movements",
+      "standard": "B3.5.1.1 Know early nationalist leaders",
+      "indicators": [
+       "B3.5.1.1.1 Identify members of the Big Six"
+      ],
+      "part": [
+       2,
+       2
+      ]
+     },
+     {
+      "weeks": [
+       12
+      ],
+      "type": "teach",
+      "strand": "6. Independent Ghana",
+      "substrand": "6.1 Symbols of Nationhood",
+      "standard": "B3.6.1.1 Know national symbols",
+      "indicators": [
+       "B3.6.1.1.1 Identify the national symbols of Ghana"
+      ]
+     },
+     {
+      "weeks": [
+       13
+      ],
+      "type": "revision",
+      "strand": "",
+      "substrand": "",
+      "standard": "",
+      "indicators": [],
+      "focus": ""
+     },
+     {
+      "weeks": [
+       14,
+       15
+      ],
+      "type": "exam",
+      "strand": "",
+      "substrand": "",
+      "standard": "",
+      "indicators": [],
+      "focus": ""
+     }
+    ],
+    "Basic 2": [
+     {
+      "weeks": [
+       1
+      ],
+      "type": "revision",
+      "strand": "",
+      "substrand": "",
+      "standard": "",
+      "indicators": [],
+      "focus": "Key ideas from last term that this class needs"
+     },
+     {
+      "weeks": [
+       2
+      ],
+      "type": "teach",
+      "strand": "1. History as a Subject",
+      "substrand": "1.1 Why and how we study history",
+      "standard": "B2.1.1.1 Understand personal history",
+      "indicators": [
+       "B2.1.1.1.1 Tell simple stories about when they were babies"
+      ],
+      "part": [
+       1,
+       2
+      ]
+     },
+     {
+      "weeks": [
+       3
+      ],
+      "type": "teach",
+      "strand": "1. History as a Subject",
+      "substrand": "1.1 Why and how we study history",
+      "standard": "B2.1.1.1 Understand personal history",
+      "indicators": [
+       "B2.1.1.1.1 Tell simple stories about when they were babies"
+      ],
+      "part": [
+       2,
+       2
+      ]
+     },
+     {
+      "weeks": [
+       4
+      ],
+      "type": "teach",
+      "strand": "2. My Country Ghana",
+      "substrand": "2.1 The Major Festivals",
+      "standard": "B2.2.1.1 Identify local festivals",
+      "indicators": [
+       "B2.2.1.1.1 Name one festival celebrated in their hometown"
+      ],
+      "part": [
+       1,
+       2
+      ]
+     },
+     {
+      "weeks": [
+       5
+      ],
+      "type": "teach",
+      "strand": "2. My Country Ghana",
+      "substrand": "2.1 The Major Festivals",
+      "standard": "B2.2.1.1 Identify local festivals",
+      "indicators": [
+       "B2.2.1.1.1 Name one festival celebrated in their hometown"
+      ],
+      "part": [
+       2,
+       2
+      ]
+     },
+     {
+      "weeks": [
+       6
+      ],
+      "type": "teach",
+      "strand": "3. Europeans in Ghana",
+      "substrand": "3.2 Arrival of Europeans",
+      "standard": "B2.3.1.1 Know castles and forts",
+      "indicators": [
+       "B2.3.1.1.1 Identify that castles exist along the coast"
+      ],
+      "part": [
+       1,
+       2
+      ]
+     },
+     {
+      "weeks": [
+       7
+      ],
+      "type": "teach",
+      "strand": "3. Europeans in Ghana",
+      "substrand": "3.2 Arrival of Europeans",
+      "standard": "B2.3.1.1 Know castles and forts",
+      "indicators": [
+       "B2.3.1.1.1 Identify that castles exist along the coast"
+      ],
+      "part": [
+       2,
+       2
+      ]
+     },
+     {
+      "weeks": [
+       8
+      ],
+      "type": "teach",
+      "strand": "4. Colonization and Developments under Colonial Rule",
+      "substrand": "4.1 British Colonial Rule",
+      "standard": "B2.4.1.1 Recognize past leaders",
+      "indicators": [
+       "B2.4.1.1.1 Mention elders and traditional rulers in the community"
+      ],
+      "part": [
+       1,
+       2
+      ]
+     },
+     {
+      "weeks": [
+       9
+      ],
+      "type": "teach",
+      "strand": "4. Colonization and Developments under Colonial Rule",
+      "substrand": "4.1 British Colonial Rule",
+      "standard": "B2.4.1.1 Recognize past leaders",
+      "indicators": [
+       "B2.4.1.1.1 Mention elders and traditional rulers in the community"
+      ],
+      "part": [
+       2,
+       2
+      ]
+     },
+     {
+      "weeks": [
+       10
+      ],
+      "type": "teach",
+      "strand": "5. Journey to Independence",
+      "substrand": "5.1 Early Protest Movements",
+      "standard": "B2.5.1.1 Understand unity",
+      "indicators": [
+       "B2.5.1.1.1 Explain why working together is important"
+      ],
+      "part": [
+       1,
+       2
+      ]
+     },
+     {
+      "weeks": [
+       11
+      ],
+      "type": "teach",
+      "strand": "5. Journey to Independence",
+      "substrand": "5.1 Early Protest Movements",
+      "standard": "B2.5.1.1 Understand unity",
+      "indicators": [
+       "B2.5.1.1.1 Explain why working together is important"
+      ],
+      "part": [
+       2,
+       2
+      ]
+     },
+     {
+      "weeks": [
+       12
+      ],
+      "type": "teach",
+      "strand": "6. Independent Ghana",
+      "substrand": "6.1 Symbols of Nationhood",
+      "standard": "B2.6.1.1 Recognize the currency",
+      "indicators": [
+       "B2.6.1.1.1 Identify the Ghanaian Cedi notes and coins"
+      ]
+     },
+     {
+      "weeks": [
+       13
+      ],
+      "type": "revision",
+      "strand": "",
+      "substrand": "",
+      "standard": "",
+      "indicators": [],
+      "focus": ""
+     },
+     {
+      "weeks": [
+       14,
+       15
+      ],
+      "type": "exam",
+      "strand": "",
+      "substrand": "",
+      "standard": "",
+      "indicators": [],
+      "focus": ""
+     }
+    ],
+    "Basic 1": [
+     {
+      "weeks": [
+       1
+      ],
+      "type": "revision",
+      "strand": "",
+      "substrand": "",
+      "standard": "",
+      "indicators": [],
+      "focus": "Key ideas from last term that this class needs"
+     },
+     {
+      "weeks": [
+       2
+      ],
+      "type": "teach",
+      "strand": "1. History as a Subject",
+      "substrand": "1.1 Why and how we study history",
+      "standard": "B1.1.1.1 Know one's background",
+      "indicators": [
+       "B1.1.1.1.1 State one's family name and hometown"
+      ],
+      "part": [
+       1,
+       2
+      ]
+     },
+     {
+      "weeks": [
+       3
+      ],
+      "type": "teach",
+      "strand": "1. History as a Subject",
+      "substrand": "1.1 Why and how we study history",
+      "standard": "B1.1.1.1 Know one's background",
+      "indicators": [
+       "B1.1.1.1.1 State one's family name and hometown"
+      ],
+      "part": [
+       2,
+       2
+      ]
+     },
+     {
+      "weeks": [
+       4
+      ],
+      "type": "teach",
+      "strand": "2. My Country Ghana",
+      "substrand": "2.1 The Major Festivals",
+      "standard": "B1.2.1.1 Enjoy cultural displays",
+      "indicators": [
+       "B1.2.1.1.1 Watch drumming and dancing during festive occasions"
+      ],
+      "part": [
+       1,
+       2
+      ]
+     },
+     {
+      "weeks": [
+       5
+      ],
+      "type": "teach",
+      "strand": "2. My Country Ghana",
+      "substrand": "2.1 The Major Festivals",
+      "standard": "B1.2.1.1 Enjoy cultural displays",
+      "indicators": [
+       "B1.2.1.1.1 Watch drumming and dancing during festive occasions"
+      ],
+      "part": [
+       2,
+       2
+      ]
+     },
+     {
+      "weeks": [
+       6
+      ],
+      "type": "teach",
+      "strand": "3. Europeans in Ghana",
+      "substrand": "3.2 Arrival of Europeans",
+      "standard": "B1.3.1.1 See pictures of old buildings",
+      "indicators": [
+       "B1.3.1.1.1 Look at pictures of big stone houses by the sea"
+      ],
+      "part": [
+       1,
+       2
+      ]
+     },
+     {
+      "weeks": [
+       7
+      ],
+      "type": "teach",
+      "strand": "3. Europeans in Ghana",
+      "substrand": "3.2 Arrival of Europeans",
+      "standard": "B1.3.1.1 See pictures of old buildings",
+      "indicators": [
+       "B1.3.1.1.1 Look at pictures of big stone houses by the sea"
+      ],
+      "part": [
+       2,
+       2
+      ]
+     },
+     {
+      "weeks": [
+       8
+      ],
+      "type": "teach",
+      "strand": "4. Colonization and Developments under Colonial Rule",
+      "substrand": "4.1 British Colonial Rule",
+      "standard": "B1.4.1.1 Respect community elders",
+      "indicators": [
+       "B1.4.1.1.1 Identify local chiefs and elders in the community"
+      ],
+      "part": [
+       1,
+       2
+      ]
+     },
+     {
+      "weeks": [
+       9
+      ],
+      "type": "teach",
+      "strand": "4. Colonization and Developments under Colonial Rule",
+      "substrand": "4.1 British Colonial Rule",
+      "standard": "B1.4.1.1 Respect community elders",
+      "indicators": [
+       "B1.4.1.1.1 Identify local chiefs and elders in the community"
+      ],
+      "part": [
+       2,
+       2
+      ]
+     },
+     {
+      "weeks": [
+       10
+      ],
+      "type": "teach",
+      "strand": "5. Journey to Independence",
+      "substrand": "5.1 Early Protest Movements",
+      "standard": "B1.5.1.1 Live in harmony",
+      "indicators": [
+       "B1.5.1.1.1 Share toys and play peacefully with friends"
+      ],
+      "part": [
+       1,
+       2
+      ]
+     },
+     {
+      "weeks": [
+       11
+      ],
+      "type": "teach",
+      "strand": "5. Journey to Independence",
+      "substrand": "5.1 Early Protest Movements",
+      "standard": "B1.5.1.1 Live in harmony",
+      "indicators": [
+       "B1.5.1.1.1 Share toys and play peacefully with friends"
+      ],
+      "part": [
+       2,
+       2
+      ]
+     },
+     {
+      "weeks": [
+       12
+      ],
+      "type": "teach",
+      "strand": "6. Independent Ghana",
+      "substrand": "6.1 Symbols of Nationhood",
+      "standard": "B1.6.1.1 See the national flag",
+      "indicators": [
+       "B1.6.1.1.1 Recognize the colors of the Ghana flag (Red, Gold, Green with Black star)"
+      ]
+     },
+     {
+      "weeks": [
+       13
+      ],
+      "type": "revision",
+      "strand": "",
+      "substrand": "",
+      "standard": "",
+      "indicators": [],
+      "focus": ""
+     },
+     {
+      "weeks": [
+       14,
+       15
+      ],
+      "type": "exam",
+      "strand": "",
+      "substrand": "",
+      "standard": "",
+      "indicators": [],
+      "focus": ""
+     }
     ]
    },
    "term": "",
-   "source": "Basic 4 Curriculum Indicators"
+   "source": "Basic 1 Curriculum Indicators"
   },
   "Our World Our People": {
    "classes": {
@@ -8679,10 +12939,634 @@
       "indicators": [],
       "focus": ""
      }
+    ],
+    "Basic 3": [
+     {
+      "weeks": [
+       1
+      ],
+      "type": "revision",
+      "strand": "",
+      "substrand": "",
+      "standard": "",
+      "indicators": [],
+      "focus": "Key ideas from last term that this class needs"
+     },
+     {
+      "weeks": [
+       2
+      ],
+      "type": "teach",
+      "strand": "1. All About Us",
+      "substrand": "1.1 Nature of God",
+      "standard": "B3.1.1.1 Understand the attributes of God",
+      "indicators": [
+       "B3.1.1.1.1 Mention some attributes of God"
+      ],
+      "part": [
+       1,
+       2
+      ]
+     },
+     {
+      "weeks": [
+       3
+      ],
+      "type": "teach",
+      "strand": "1. All About Us",
+      "substrand": "1.1 Nature of God",
+      "standard": "B3.1.1.1 Understand the attributes of God",
+      "indicators": [
+       "B3.1.1.1.1 Mention some attributes of God"
+      ],
+      "part": [
+       2,
+       2
+      ]
+     },
+     {
+      "weeks": [
+       4
+      ],
+      "type": "teach",
+      "strand": "1. All About Us",
+      "substrand": "1.2 Oneself",
+      "standard": "B3.1.2.1 Recognize personal strengths",
+      "indicators": [
+       "B3.1.2.1.1 Identify own strengths and weaknesses"
+      ],
+      "part": [
+       1,
+       2
+      ]
+     },
+     {
+      "weeks": [
+       5
+      ],
+      "type": "teach",
+      "strand": "1. All About Us",
+      "substrand": "1.2 Oneself",
+      "standard": "B3.1.2.1 Recognize personal strengths",
+      "indicators": [
+       "B3.1.2.1.1 Identify own strengths and weaknesses"
+      ],
+      "part": [
+       2,
+       2
+      ]
+     },
+     {
+      "weeks": [
+       6
+      ],
+      "type": "teach",
+      "strand": "2. All Around Us",
+      "substrand": "2.1 The Environment and the Weather",
+      "standard": "B3.2.1.1 Appreciate the environment",
+      "indicators": [
+       "B3.2.1.1.1 Mention ways of caring for the environment"
+      ],
+      "part": [
+       1,
+       2
+      ]
+     },
+     {
+      "weeks": [
+       7
+      ],
+      "type": "teach",
+      "strand": "2. All Around Us",
+      "substrand": "2.1 The Environment and the Weather",
+      "standard": "B3.2.1.1 Appreciate the environment",
+      "indicators": [
+       "B3.2.1.1.1 Mention ways of caring for the environment"
+      ],
+      "part": [
+       2,
+       2
+      ]
+     },
+     {
+      "weeks": [
+       8
+      ],
+      "type": "teach",
+      "strand": "3. Our Beliefs and Values",
+      "substrand": "3.1 Worship",
+      "standard": "B3.3.1.1 Understand importance of worship",
+      "indicators": [
+       "B3.3.1.1.1 State reasons why people worship"
+      ],
+      "part": [
+       1,
+       2
+      ]
+     },
+     {
+      "weeks": [
+       9
+      ],
+      "type": "teach",
+      "strand": "3. Our Beliefs and Values",
+      "substrand": "3.1 Worship",
+      "standard": "B3.3.1.1 Understand importance of worship",
+      "indicators": [
+       "B3.3.1.1.1 State reasons why people worship"
+      ],
+      "part": [
+       2,
+       2
+      ]
+     },
+     {
+      "weeks": [
+       10
+      ],
+      "type": "teach",
+      "strand": "4. Our Nation Ghana",
+      "substrand": "4.1 Being a Citizen",
+      "standard": "B3.4.1.1 Understand citizenship",
+      "indicators": [
+       "B3.4.1.1.1 State the duties of a good citizen"
+      ],
+      "part": [
+       1,
+       2
+      ]
+     },
+     {
+      "weeks": [
+       11
+      ],
+      "type": "teach",
+      "strand": "4. Our Nation Ghana",
+      "substrand": "4.1 Being a Citizen",
+      "standard": "B3.4.1.1 Understand citizenship",
+      "indicators": [
+       "B3.4.1.1.1 State the duties of a good citizen"
+      ],
+      "part": [
+       2,
+       2
+      ]
+     },
+     {
+      "weeks": [
+       12
+      ],
+      "type": "teach",
+      "strand": "5. My Global Community",
+      "substrand": "5.1 Africa and the International Community",
+      "standard": "B3.5.1.1 Know neighboring countries",
+      "indicators": [
+       "B3.5.1.1.1 Name the countries that share borders with Ghana"
+      ]
+     },
+     {
+      "weeks": [
+       13
+      ],
+      "type": "revision",
+      "strand": "",
+      "substrand": "",
+      "standard": "",
+      "indicators": [],
+      "focus": ""
+     },
+     {
+      "weeks": [
+       14,
+       15
+      ],
+      "type": "exam",
+      "strand": "",
+      "substrand": "",
+      "standard": "",
+      "indicators": [],
+      "focus": ""
+     }
+    ],
+    "Basic 2": [
+     {
+      "weeks": [
+       1
+      ],
+      "type": "revision",
+      "strand": "",
+      "substrand": "",
+      "standard": "",
+      "indicators": [],
+      "focus": "Key ideas from last term that this class needs"
+     },
+     {
+      "weeks": [
+       2
+      ],
+      "type": "teach",
+      "strand": "",
+      "substrand": "1.1 Nature of God",
+      "standard": "B2.1.1.1 Recognize God as provider",
+      "indicators": [
+       "B2.1.1.1.1 Express gratitude for food, water, and air"
+      ],
+      "part": [
+       1,
+       2
+      ]
+     },
+     {
+      "weeks": [
+       3
+      ],
+      "type": "teach",
+      "strand": "",
+      "substrand": "1.1 Nature of God",
+      "standard": "B2.1.1.1 Recognize God as provider",
+      "indicators": [
+       "B2.1.1.1.1 Express gratitude for food, water, and air"
+      ],
+      "part": [
+       2,
+       2
+      ]
+     },
+     {
+      "weeks": [
+       4
+      ],
+      "type": "teach",
+      "strand": "",
+      "substrand": "1.2 Oneself",
+      "standard": "B2.1.2.1 Know personal details",
+      "indicators": [
+       "B2.1.2.1.1 State full name, age, and home town"
+      ],
+      "part": [
+       1,
+       2
+      ]
+     },
+     {
+      "weeks": [
+       5
+      ],
+      "type": "teach",
+      "strand": "",
+      "substrand": "1.2 Oneself",
+      "standard": "B2.1.2.1 Know personal details",
+      "indicators": [
+       "B2.1.2.1.1 State full name, age, and home town"
+      ],
+      "part": [
+       2,
+       2
+      ]
+     },
+     {
+      "weeks": [
+       6
+      ],
+      "type": "teach",
+      "strand": "",
+      "substrand": "2.2 The Environment and the Weather",
+      "standard": "B2.2.1.1 Keep surroundings clean",
+      "indicators": [
+       "B2.2.1.1.1 Pick up litter around the classroom"
+      ],
+      "part": [
+       1,
+       2
+      ]
+     },
+     {
+      "weeks": [
+       7
+      ],
+      "type": "teach",
+      "strand": "",
+      "substrand": "2.2 The Environment and the Weather",
+      "standard": "B2.2.1.1 Keep surroundings clean",
+      "indicators": [
+       "B2.2.1.1.1 Pick up litter around the classroom"
+      ],
+      "part": [
+       2,
+       2
+      ]
+     },
+     {
+      "weeks": [
+       8
+      ],
+      "type": "teach",
+      "strand": "",
+      "substrand": "3.1 Worship",
+      "standard": "B2.3.1.1 Appreciate religious songs",
+      "indicators": [
+       "B2.3.1.1.1 Sing songs of praise from different traditions"
+      ],
+      "part": [
+       1,
+       2
+      ]
+     },
+     {
+      "weeks": [
+       9
+      ],
+      "type": "teach",
+      "strand": "",
+      "substrand": "3.1 Worship",
+      "standard": "B2.3.1.1 Appreciate religious songs",
+      "indicators": [
+       "B2.3.1.1.1 Sing songs of praise from different traditions"
+      ],
+      "part": [
+       2,
+       2
+      ]
+     },
+     {
+      "weeks": [
+       10
+      ],
+      "type": "teach",
+      "strand": "",
+      "substrand": "4.1 Being a Citizen",
+      "standard": "B2.4.1.1 Identify national symbols",
+      "indicators": [
+       "B2.4.1.1.1 Recognize the national flag colors"
+      ],
+      "part": [
+       1,
+       2
+      ]
+     },
+     {
+      "weeks": [
+       11
+      ],
+      "type": "teach",
+      "strand": "",
+      "substrand": "4.1 Being a Citizen",
+      "standard": "B2.4.1.1 Identify national symbols",
+      "indicators": [
+       "B2.4.1.1.1 Recognize the national flag colors"
+      ],
+      "part": [
+       2,
+       2
+      ]
+     },
+     {
+      "weeks": [
+       12
+      ],
+      "type": "teach",
+      "strand": "",
+      "substrand": "5.1 Home and School",
+      "standard": "B2.5.1.1 Identify school landmarks",
+      "indicators": [
+       "B2.5.1.1.1 Locate the classroom, office, and canteen"
+      ]
+     },
+     {
+      "weeks": [
+       13
+      ],
+      "type": "revision",
+      "strand": "",
+      "substrand": "",
+      "standard": "",
+      "indicators": [],
+      "focus": ""
+     },
+     {
+      "weeks": [
+       14,
+       15
+      ],
+      "type": "exam",
+      "strand": "",
+      "substrand": "",
+      "standard": "",
+      "indicators": [],
+      "focus": ""
+     }
+    ],
+    "Basic 1": [
+     {
+      "weeks": [
+       1
+      ],
+      "type": "revision",
+      "strand": "",
+      "substrand": "",
+      "standard": "",
+      "indicators": [],
+      "focus": "Key ideas from last term that this class needs"
+     },
+     {
+      "weeks": [
+       2
+      ],
+      "type": "teach",
+      "strand": "",
+      "substrand": "1.1 Nature of God",
+      "standard": "B1.1.1.1 Appreciate things in nature",
+      "indicators": [
+       "B1.1.1.1.1 Identify trees, flowers, and animals"
+      ],
+      "part": [
+       1,
+       2
+      ]
+     },
+     {
+      "weeks": [
+       3
+      ],
+      "type": "teach",
+      "strand": "",
+      "substrand": "1.1 Nature of God",
+      "standard": "B1.1.1.1 Appreciate things in nature",
+      "indicators": [
+       "B1.1.1.1.1 Identify trees, flowers, and animals"
+      ],
+      "part": [
+       2,
+       2
+      ]
+     },
+     {
+      "weeks": [
+       4
+      ],
+      "type": "teach",
+      "strand": "",
+      "substrand": "1.2 Oneself",
+      "standard": "B1.2.1.1 Identify oneself",
+      "indicators": [
+       "B1.2.1.1.1 State whether one is a boy or a girl"
+      ],
+      "part": [
+       1,
+       2
+      ]
+     },
+     {
+      "weeks": [
+       5
+      ],
+      "type": "teach",
+      "strand": "",
+      "substrand": "1.2 Oneself",
+      "standard": "B1.2.1.1 Identify oneself",
+      "indicators": [
+       "B1.2.1.1.1 State whether one is a boy or a girl"
+      ],
+      "part": [
+       2,
+       2
+      ]
+     },
+     {
+      "weeks": [
+       6
+      ],
+      "type": "teach",
+      "strand": "",
+      "substrand": "2.2 The Environment and the Weather",
+      "standard": "B1.2.1.1 Observe the weather",
+      "indicators": [
+       "B1.2.1.1.1 Notice when the sun is shining brightly"
+      ],
+      "part": [
+       1,
+       2
+      ]
+     },
+     {
+      "weeks": [
+       7
+      ],
+      "type": "teach",
+      "strand": "",
+      "substrand": "2.2 The Environment and the Weather",
+      "standard": "B1.2.1.1 Observe the weather",
+      "indicators": [
+       "B1.2.1.1.1 Notice when the sun is shining brightly"
+      ],
+      "part": [
+       2,
+       2
+      ]
+     },
+     {
+      "weeks": [
+       8
+      ],
+      "type": "teach",
+      "strand": "",
+      "substrand": "3.1 Worship",
+      "standard": "B1.3.1.1 Appreciate festivals",
+      "indicators": [
+       "B1.3.1.1.1 Talk about happy community gatherings"
+      ],
+      "part": [
+       1,
+       2
+      ]
+     },
+     {
+      "weeks": [
+       9
+      ],
+      "type": "teach",
+      "strand": "",
+      "substrand": "3.1 Worship",
+      "standard": "B1.3.1.1 Appreciate festivals",
+      "indicators": [
+       "B1.3.1.1.1 Talk about happy community gatherings"
+      ],
+      "part": [
+       2,
+       2
+      ]
+     },
+     {
+      "weeks": [
+       10
+      ],
+      "type": "teach",
+      "strand": "",
+      "substrand": "4.1 Being a Citizen",
+      "standard": "B1.4.1.1 Know our country",
+      "indicators": [
+       "B1.4.1.1.1 Mention the name of our country, Ghana"
+      ],
+      "part": [
+       1,
+       2
+      ]
+     },
+     {
+      "weeks": [
+       11
+      ],
+      "type": "teach",
+      "strand": "",
+      "substrand": "4.1 Being a Citizen",
+      "standard": "B1.4.1.1 Know our country",
+      "indicators": [
+       "B1.4.1.1.1 Mention the name of our country, Ghana"
+      ],
+      "part": [
+       2,
+       2
+      ]
+     },
+     {
+      "weeks": [
+       12
+      ],
+      "type": "teach",
+      "strand": "",
+      "substrand": "5.1 Home and School",
+      "standard": "B1.5.1.1 Identify home environment",
+      "indicators": [
+       "B1.5.1.1.1 Point to where one lives or sleeps at home"
+      ]
+     },
+     {
+      "weeks": [
+       13
+      ],
+      "type": "revision",
+      "strand": "",
+      "substrand": "",
+      "standard": "",
+      "indicators": [],
+      "focus": ""
+     },
+     {
+      "weeks": [
+       14,
+       15
+      ],
+      "type": "exam",
+      "strand": "",
+      "substrand": "",
+      "standard": "",
+      "indicators": [],
+      "focus": ""
+     }
     ]
    },
    "term": "",
-   "source": "Basic 4 Curriculum Indicators"
+   "source": "Basic 1 Curriculum Indicators"
   },
   "Science": {
    "classes": {
@@ -9321,10 +14205,646 @@
       "indicators": [],
       "focus": ""
      }
+    ],
+    "Basic 3": [
+     {
+      "weeks": [
+       1
+      ],
+      "type": "revision",
+      "strand": "",
+      "substrand": "",
+      "standard": "",
+      "indicators": [],
+      "focus": "Key ideas from last term that this class needs"
+     },
+     {
+      "weeks": [
+       2
+      ],
+      "type": "teach",
+      "strand": "1. Diversity of Matter",
+      "substrand": "1.1 Materials",
+      "standard": "B3.1.1.1 Group materials based on observable properties",
+      "indicators": [
+       "B3.1.1.1.1 Sort materials into living and non-living things"
+      ],
+      "part": [
+       1,
+       3
+      ]
+     },
+     {
+      "weeks": [
+       3
+      ],
+      "type": "teach",
+      "strand": "1. Diversity of Matter",
+      "substrand": "1.1 Materials",
+      "standard": "B3.1.1.1 Group materials based on observable properties",
+      "indicators": [
+       "B3.1.1.1.1 Sort materials into living and non-living things"
+      ],
+      "part": [
+       2,
+       3
+      ]
+     },
+     {
+      "weeks": [
+       4
+      ],
+      "type": "teach",
+      "strand": "1. Diversity of Matter",
+      "substrand": "1.1 Materials",
+      "standard": "B3.1.1.1 Group materials based on observable properties",
+      "indicators": [
+       "B3.1.1.1.1 Sort materials into living and non-living things"
+      ],
+      "part": [
+       3,
+       3
+      ]
+     },
+     {
+      "weeks": [
+       5
+      ],
+      "type": "teach",
+      "strand": "2. Cycles",
+      "substrand": "2.1 Earth Science",
+      "standard": "B3.2.1.1 Understand the changes in the weather",
+      "indicators": [
+       "B3.2.1.1.1 Identify different weather conditions"
+      ],
+      "part": [
+       1,
+       2
+      ]
+     },
+     {
+      "weeks": [
+       6
+      ],
+      "type": "teach",
+      "strand": "2. Cycles",
+      "substrand": "2.1 Earth Science",
+      "standard": "B3.2.1.1 Understand the changes in the weather",
+      "indicators": [
+       "B3.2.1.1.1 Identify different weather conditions"
+      ],
+      "part": [
+       2,
+       2
+      ]
+     },
+     {
+      "weeks": [
+       7
+      ],
+      "type": "teach",
+      "strand": "3. Systems",
+      "substrand": "3.1 The Human Body System",
+      "standard": "B3.3.1.1 Understand the external parts of the human body",
+      "indicators": [
+       "B3.3.1.1.1 Name and state the functions of external body parts"
+      ],
+      "part": [
+       1,
+       2
+      ]
+     },
+     {
+      "weeks": [
+       8
+      ],
+      "type": "teach",
+      "strand": "3. Systems",
+      "substrand": "3.1 The Human Body System",
+      "standard": "B3.3.1.1 Understand the external parts of the human body",
+      "indicators": [
+       "B3.3.1.1.1 Name and state the functions of external body parts"
+      ],
+      "part": [
+       2,
+       2
+      ]
+     },
+     {
+      "weeks": [
+       9
+      ],
+      "type": "teach",
+      "strand": "4. Forces and Energy",
+      "substrand": "4.1 Sources and Forms of Energy",
+      "standard": "B3.4.1.1 Demonstrate understanding of sources of light",
+      "indicators": [
+       "B3.4.1.1.1 Identify natural and artificial sources of light"
+      ],
+      "part": [
+       1,
+       2
+      ]
+     },
+     {
+      "weeks": [
+       10
+      ],
+      "type": "teach",
+      "strand": "4. Forces and Energy",
+      "substrand": "4.1 Sources and Forms of Energy",
+      "standard": "B3.4.1.1 Demonstrate understanding of sources of light",
+      "indicators": [
+       "B3.4.1.1.1 Identify natural and artificial sources of light"
+      ],
+      "part": [
+       2,
+       2
+      ]
+     },
+     {
+      "weeks": [
+       11
+      ],
+      "type": "teach",
+      "strand": "5. Humans and the Environment",
+      "substrand": "5.1 Personal Hygiene and Sanitation",
+      "standard": "B3.5.1.1 Appreciate the need for personal hygiene",
+      "indicators": [
+       "B3.5.1.1.1 Demonstrate proper ways of washing hands and brushing teeth"
+      ],
+      "part": [
+       1,
+       2
+      ]
+     },
+     {
+      "weeks": [
+       12
+      ],
+      "type": "teach",
+      "strand": "5. Humans and the Environment",
+      "substrand": "5.1 Personal Hygiene and Sanitation",
+      "standard": "B3.5.1.1 Appreciate the need for personal hygiene",
+      "indicators": [
+       "B3.5.1.1.1 Demonstrate proper ways of washing hands and brushing teeth"
+      ],
+      "part": [
+       2,
+       2
+      ]
+     },
+     {
+      "weeks": [
+       13
+      ],
+      "type": "revision",
+      "strand": "",
+      "substrand": "",
+      "standard": "",
+      "indicators": [],
+      "focus": ""
+     },
+     {
+      "weeks": [
+       14,
+       15
+      ],
+      "type": "exam",
+      "strand": "",
+      "substrand": "",
+      "standard": "",
+      "indicators": [],
+      "focus": ""
+     }
+    ],
+    "Basic 2": [
+     {
+      "weeks": [
+       1
+      ],
+      "type": "revision",
+      "strand": "",
+      "substrand": "",
+      "standard": "",
+      "indicators": [],
+      "focus": "Key ideas from last term that this class needs"
+     },
+     {
+      "weeks": [
+       2
+      ],
+      "type": "teach",
+      "strand": "1. Diversity of Matter",
+      "substrand": "1.1 Materials",
+      "standard": "B2.1.1.1 Identify objects and their materials",
+      "indicators": [
+       "B2.1.1.1.1 Group objects by what they are made of (wood, plastic, metal)"
+      ],
+      "part": [
+       1,
+       3
+      ]
+     },
+     {
+      "weeks": [
+       3
+      ],
+      "type": "teach",
+      "strand": "1. Diversity of Matter",
+      "substrand": "1.1 Materials",
+      "standard": "B2.1.1.1 Identify objects and their materials",
+      "indicators": [
+       "B2.1.1.1.1 Group objects by what they are made of (wood, plastic, metal)"
+      ],
+      "part": [
+       2,
+       3
+      ]
+     },
+     {
+      "weeks": [
+       4
+      ],
+      "type": "teach",
+      "strand": "1. Diversity of Matter",
+      "substrand": "1.1 Materials",
+      "standard": "B2.1.1.1 Identify objects and their materials",
+      "indicators": [
+       "B2.1.1.1.1 Group objects by what they are made of (wood, plastic, metal)"
+      ],
+      "part": [
+       3,
+       3
+      ]
+     },
+     {
+      "weeks": [
+       5
+      ],
+      "type": "teach",
+      "strand": "2. Cycles",
+      "substrand": "2.1 Earth Science",
+      "standard": "B2.2.1.1 Observe daily changes in weather",
+      "indicators": [
+       "B2.2.1.1.1 Describe sunny and rainy days"
+      ],
+      "part": [
+       1,
+       2
+      ]
+     },
+     {
+      "weeks": [
+       6
+      ],
+      "type": "teach",
+      "strand": "2. Cycles",
+      "substrand": "2.1 Earth Science",
+      "standard": "B2.2.1.1 Observe daily changes in weather",
+      "indicators": [
+       "B2.2.1.1.1 Describe sunny and rainy days"
+      ],
+      "part": [
+       2,
+       2
+      ]
+     },
+     {
+      "weeks": [
+       7
+      ],
+      "type": "teach",
+      "strand": "3. Systems",
+      "substrand": "3.1 The Human Body System",
+      "standard": "B2.3.1.1 Know the five senses",
+      "indicators": [
+       "B2.3.1.1.1 Match senses to their corresponding organs (eyes, ears, nose, skin, tongue)"
+      ],
+      "part": [
+       1,
+       2
+      ]
+     },
+     {
+      "weeks": [
+       8
+      ],
+      "type": "teach",
+      "strand": "3. Systems",
+      "substrand": "3.1 The Human Body System",
+      "standard": "B2.3.1.1 Know the five senses",
+      "indicators": [
+       "B2.3.1.1.1 Match senses to their corresponding organs (eyes, ears, nose, skin, tongue)"
+      ],
+      "part": [
+       2,
+       2
+      ]
+     },
+     {
+      "weeks": [
+       9
+      ],
+      "type": "teach",
+      "strand": "4. Forces and Energy",
+      "substrand": "4.1 Sources and Forms of Energy",
+      "standard": "B2.4.1.1 Explore pushes and pulls",
+      "indicators": [
+       "B2.4.1.1.1 Demonstrate how pushes and pulls move objects"
+      ],
+      "part": [
+       1,
+       2
+      ]
+     },
+     {
+      "weeks": [
+       10
+      ],
+      "type": "teach",
+      "strand": "4. Forces and Energy",
+      "substrand": "4.1 Sources and Forms of Energy",
+      "standard": "B2.4.1.1 Explore pushes and pulls",
+      "indicators": [
+       "B2.4.1.1.1 Demonstrate how pushes and pulls move objects"
+      ],
+      "part": [
+       2,
+       2
+      ]
+     },
+     {
+      "weeks": [
+       11
+      ],
+      "type": "teach",
+      "strand": "5. Humans and the Environment",
+      "substrand": "5.1 Personal Hygiene and Sanitation",
+      "standard": "B2.5.1.1 Practice cleanliness",
+      "indicators": [
+       "B2.5.1.1.1 Identify items used for bathing and keeping clean"
+      ],
+      "part": [
+       1,
+       2
+      ]
+     },
+     {
+      "weeks": [
+       12
+      ],
+      "type": "teach",
+      "strand": "5. Humans and the Environment",
+      "substrand": "5.1 Personal Hygiene and Sanitation",
+      "standard": "B2.5.1.1 Practice cleanliness",
+      "indicators": [
+       "B2.5.1.1.1 Identify items used for bathing and keeping clean"
+      ],
+      "part": [
+       2,
+       2
+      ]
+     },
+     {
+      "weeks": [
+       13
+      ],
+      "type": "revision",
+      "strand": "",
+      "substrand": "",
+      "standard": "",
+      "indicators": [],
+      "focus": ""
+     },
+     {
+      "weeks": [
+       14,
+       15
+      ],
+      "type": "exam",
+      "strand": "",
+      "substrand": "",
+      "standard": "",
+      "indicators": [],
+      "focus": ""
+     }
+    ],
+    "Basic 1": [
+     {
+      "weeks": [
+       1
+      ],
+      "type": "revision",
+      "strand": "",
+      "substrand": "",
+      "standard": "",
+      "indicators": [],
+      "focus": "Key ideas from last term that this class needs"
+     },
+     {
+      "weeks": [
+       2
+      ],
+      "type": "teach",
+      "strand": "1. Diversity of Matter",
+      "substrand": "1.1 Materials",
+      "standard": "B1.1.1.1 Explore objects around us",
+      "indicators": [
+       "B1.1.1.1.1 Identify soft and hard objects"
+      ],
+      "part": [
+       1,
+       3
+      ]
+     },
+     {
+      "weeks": [
+       3
+      ],
+      "type": "teach",
+      "strand": "1. Diversity of Matter",
+      "substrand": "1.1 Materials",
+      "standard": "B1.1.1.1 Explore objects around us",
+      "indicators": [
+       "B1.1.1.1.1 Identify soft and hard objects"
+      ],
+      "part": [
+       2,
+       3
+      ]
+     },
+     {
+      "weeks": [
+       4
+      ],
+      "type": "teach",
+      "strand": "1. Diversity of Matter",
+      "substrand": "1.1 Materials",
+      "standard": "B1.1.1.1 Explore objects around us",
+      "indicators": [
+       "B1.1.1.1.1 Identify soft and hard objects"
+      ],
+      "part": [
+       3,
+       3
+      ]
+     },
+     {
+      "weeks": [
+       5
+      ],
+      "type": "teach",
+      "strand": "2. Cycles",
+      "substrand": "2.1 Earth Science",
+      "standard": "B1.2.1.1 Observe day and night",
+      "indicators": [
+       "B1.2.1.1.1 Tell the difference between daytime and nighttime"
+      ],
+      "part": [
+       1,
+       2
+      ]
+     },
+     {
+      "weeks": [
+       6
+      ],
+      "type": "teach",
+      "strand": "2. Cycles",
+      "substrand": "2.1 Earth Science",
+      "standard": "B1.2.1.1 Observe day and night",
+      "indicators": [
+       "B1.2.1.1.1 Tell the difference between daytime and nighttime"
+      ],
+      "part": [
+       2,
+       2
+      ]
+     },
+     {
+      "weeks": [
+       7
+      ],
+      "type": "teach",
+      "strand": "3. Systems",
+      "substrand": "3.1 The Human Body System",
+      "standard": "B1.3.1.1 Identify parts of the body",
+      "indicators": [
+       "B1.3.1.1.1 Point to the head, hands, legs, and feet"
+      ],
+      "part": [
+       1,
+       2
+      ]
+     },
+     {
+      "weeks": [
+       8
+      ],
+      "type": "teach",
+      "strand": "3. Systems",
+      "substrand": "3.1 The Human Body System",
+      "standard": "B1.3.1.1 Identify parts of the body",
+      "indicators": [
+       "B1.3.1.1.1 Point to the head, hands, legs, and feet"
+      ],
+      "part": [
+       2,
+       2
+      ]
+     },
+     {
+      "weeks": [
+       9
+      ],
+      "type": "teach",
+      "strand": "4. Forces and Energy",
+      "substrand": "4.1 Sources and Forms of Energy",
+      "standard": "B1.4.1.1 Experience sounds in the environment",
+      "indicators": [
+       "B1.4.1.1.1 Identify loud and soft sounds around the school"
+      ],
+      "part": [
+       1,
+       2
+      ]
+     },
+     {
+      "weeks": [
+       10
+      ],
+      "type": "teach",
+      "strand": "4. Forces and Energy",
+      "substrand": "4.1 Sources and Forms of Energy",
+      "standard": "B1.4.1.1 Experience sounds in the environment",
+      "indicators": [
+       "B1.4.1.1.1 Identify loud and soft sounds around the school"
+      ],
+      "part": [
+       2,
+       2
+      ]
+     },
+     {
+      "weeks": [
+       11
+      ],
+      "type": "teach",
+      "strand": "5. Humans and the Environment",
+      "substrand": "5.1 Personal Hygiene and Sanitation",
+      "standard": "B1.5.1.1 Keep the body clean",
+      "indicators": [
+       "B1.5.1.1.1 Wash hands before eating and after visiting the restroom"
+      ],
+      "part": [
+       1,
+       2
+      ]
+     },
+     {
+      "weeks": [
+       12
+      ],
+      "type": "teach",
+      "strand": "5. Humans and the Environment",
+      "substrand": "5.1 Personal Hygiene and Sanitation",
+      "standard": "B1.5.1.1 Keep the body clean",
+      "indicators": [
+       "B1.5.1.1.1 Wash hands before eating and after visiting the restroom"
+      ],
+      "part": [
+       2,
+       2
+      ]
+     },
+     {
+      "weeks": [
+       13
+      ],
+      "type": "revision",
+      "strand": "",
+      "substrand": "",
+      "standard": "",
+      "indicators": [],
+      "focus": ""
+     },
+     {
+      "weeks": [
+       14,
+       15
+      ],
+      "type": "exam",
+      "strand": "",
+      "substrand": "",
+      "standard": "",
+      "indicators": [],
+      "focus": ""
+     }
     ]
    },
    "term": "",
-   "source": "Basic 4 Curriculum Indicators"
+   "source": "Basic 1 Curriculum Indicators"
   },
   "Physical Education": {
    "classes": {
@@ -9963,10 +15483,646 @@
       "indicators": [],
       "focus": ""
      }
+    ],
+    "Basic 3": [
+     {
+      "weeks": [
+       1
+      ],
+      "type": "revision",
+      "strand": "",
+      "substrand": "",
+      "standard": "",
+      "indicators": [],
+      "focus": "Key ideas from last term that this class needs"
+     },
+     {
+      "weeks": [
+       2
+      ],
+      "type": "teach",
+      "strand": "1. Motor Skill and Movement Patterns",
+      "substrand": "1.1 Locomotor Skills",
+      "standard": "B3.1.1.1 Demonstrate understanding of locomotor skills",
+      "indicators": [
+       "B3.1.1.1.1 Perform varied locomotor skills in different directions"
+      ],
+      "part": [
+       1,
+       3
+      ]
+     },
+     {
+      "weeks": [
+       3
+      ],
+      "type": "teach",
+      "strand": "1. Motor Skill and Movement Patterns",
+      "substrand": "1.1 Locomotor Skills",
+      "standard": "B3.1.1.1 Demonstrate understanding of locomotor skills",
+      "indicators": [
+       "B3.1.1.1.1 Perform varied locomotor skills in different directions"
+      ],
+      "part": [
+       2,
+       3
+      ]
+     },
+     {
+      "weeks": [
+       4
+      ],
+      "type": "teach",
+      "strand": "1. Motor Skill and Movement Patterns",
+      "substrand": "1.1 Locomotor Skills",
+      "standard": "B3.1.1.1 Demonstrate understanding of locomotor skills",
+      "indicators": [
+       "B3.1.1.1.1 Perform varied locomotor skills in different directions"
+      ],
+      "part": [
+       3,
+       3
+      ]
+     },
+     {
+      "weeks": [
+       5
+      ],
+      "type": "teach",
+      "strand": "2. Movement Concepts, Principles and Strategies",
+      "substrand": "2.1 Space Awareness",
+      "standard": "B3.2.1.1 Demonstrate understanding of space awareness",
+      "indicators": [
+       "B3.2.1.1.1 Move safely in general space"
+      ],
+      "part": [
+       1,
+       2
+      ]
+     },
+     {
+      "weeks": [
+       6
+      ],
+      "type": "teach",
+      "strand": "2. Movement Concepts, Principles and Strategies",
+      "substrand": "2.1 Space Awareness",
+      "standard": "B3.2.1.1 Demonstrate understanding of space awareness",
+      "indicators": [
+       "B3.2.1.1.1 Move safely in general space"
+      ],
+      "part": [
+       2,
+       2
+      ]
+     },
+     {
+      "weeks": [
+       7
+      ],
+      "type": "teach",
+      "strand": "3. Physical Fitness",
+      "substrand": "3.1 Aerobic Capacity",
+      "standard": "B3.3.1.1 Demonstrate understanding of physical fitness",
+      "indicators": [
+       "B3.3.1.1.1 Participate in fun fitness games"
+      ],
+      "part": [
+       1,
+       2
+      ]
+     },
+     {
+      "weeks": [
+       8
+      ],
+      "type": "teach",
+      "strand": "3. Physical Fitness",
+      "substrand": "3.1 Aerobic Capacity",
+      "standard": "B3.3.1.1 Demonstrate understanding of physical fitness",
+      "indicators": [
+       "B3.3.1.1.1 Participate in fun fitness games"
+      ],
+      "part": [
+       2,
+       2
+      ]
+     },
+     {
+      "weeks": [
+       9
+      ],
+      "type": "teach",
+      "strand": "4. Physical Activity and Fitness Concepts",
+      "substrand": "4.1 Health-Related Fitness",
+      "standard": "B3.4.1.1 Understand health-related fitness",
+      "indicators": [
+       "B3.4.1.1.1 Identify active play habits"
+      ],
+      "part": [
+       1,
+       2
+      ]
+     },
+     {
+      "weeks": [
+       10
+      ],
+      "type": "teach",
+      "strand": "4. Physical Activity and Fitness Concepts",
+      "substrand": "4.1 Health-Related Fitness",
+      "standard": "B3.4.1.1 Understand health-related fitness",
+      "indicators": [
+       "B3.4.1.1.1 Identify active play habits"
+      ],
+      "part": [
+       2,
+       2
+      ]
+     },
+     {
+      "weeks": [
+       11
+      ],
+      "type": "teach",
+      "strand": "5. Values and Psychological Factors",
+      "substrand": "5.1 Self-Responsibility and Social Interaction",
+      "standard": "B3.5.1.1 Exhibit social cooperation",
+      "indicators": [
+       "B3.5.1.1.1 Follow rules and play cooperatively"
+      ],
+      "part": [
+       1,
+       2
+      ]
+     },
+     {
+      "weeks": [
+       12
+      ],
+      "type": "teach",
+      "strand": "5. Values and Psychological Factors",
+      "substrand": "5.1 Self-Responsibility and Social Interaction",
+      "standard": "B3.5.1.1 Exhibit social cooperation",
+      "indicators": [
+       "B3.5.1.1.1 Follow rules and play cooperatively"
+      ],
+      "part": [
+       2,
+       2
+      ]
+     },
+     {
+      "weeks": [
+       13
+      ],
+      "type": "revision",
+      "strand": "",
+      "substrand": "",
+      "standard": "",
+      "indicators": [],
+      "focus": ""
+     },
+     {
+      "weeks": [
+       14,
+       15
+      ],
+      "type": "exam",
+      "strand": "",
+      "substrand": "",
+      "standard": "",
+      "indicators": [],
+      "focus": ""
+     }
+    ],
+    "Basic 2": [
+     {
+      "weeks": [
+       1
+      ],
+      "type": "revision",
+      "strand": "",
+      "substrand": "",
+      "standard": "",
+      "indicators": [],
+      "focus": "Key ideas from last term that this class needs"
+     },
+     {
+      "weeks": [
+       2
+      ],
+      "type": "teach",
+      "strand": "1. Motor Skill and Movement Patterns",
+      "substrand": "1.1 Locomotor Skills",
+      "standard": "B2.1.1.1 Jump and hop with balance",
+      "indicators": [
+       "B2.1.1.1.1 Hop on one foot and jump forward safely"
+      ],
+      "part": [
+       1,
+       3
+      ]
+     },
+     {
+      "weeks": [
+       3
+      ],
+      "type": "teach",
+      "strand": "1. Motor Skill and Movement Patterns",
+      "substrand": "1.1 Locomotor Skills",
+      "standard": "B2.1.1.1 Jump and hop with balance",
+      "indicators": [
+       "B2.1.1.1.1 Hop on one foot and jump forward safely"
+      ],
+      "part": [
+       2,
+       3
+      ]
+     },
+     {
+      "weeks": [
+       4
+      ],
+      "type": "teach",
+      "strand": "1. Motor Skill and Movement Patterns",
+      "substrand": "1.1 Locomotor Skills",
+      "standard": "B2.1.1.1 Jump and hop with balance",
+      "indicators": [
+       "B2.1.1.1.1 Hop on one foot and jump forward safely"
+      ],
+      "part": [
+       3,
+       3
+      ]
+     },
+     {
+      "weeks": [
+       5
+      ],
+      "type": "teach",
+      "strand": "2. Movement Concepts, Principles and Strategies",
+      "substrand": "2.1 Space Awareness",
+      "standard": "B2.1.2.1 Move in different directions",
+      "indicators": [
+       "B2.1.2.1.1 Walk forward, backward, and sideways on command"
+      ],
+      "part": [
+       1,
+       2
+      ]
+     },
+     {
+      "weeks": [
+       6
+      ],
+      "type": "teach",
+      "strand": "2. Movement Concepts, Principles and Strategies",
+      "substrand": "2.1 Space Awareness",
+      "standard": "B2.1.2.1 Move in different directions",
+      "indicators": [
+       "B2.1.2.1.1 Walk forward, backward, and sideways on command"
+      ],
+      "part": [
+       2,
+       2
+      ]
+     },
+     {
+      "weeks": [
+       7
+      ],
+      "type": "teach",
+      "strand": "3. Physical Fitness",
+      "substrand": "3.1 Aerobic Capacity",
+      "standard": "B2.1.3.1 Engage in running games",
+      "indicators": [
+       "B2.1.3.1.1 Participate in short relay games"
+      ],
+      "part": [
+       1,
+       2
+      ]
+     },
+     {
+      "weeks": [
+       8
+      ],
+      "type": "teach",
+      "strand": "3. Physical Fitness",
+      "substrand": "3.1 Aerobic Capacity",
+      "standard": "B2.1.3.1 Engage in running games",
+      "indicators": [
+       "B2.1.3.1.1 Participate in short relay games"
+      ],
+      "part": [
+       2,
+       2
+      ]
+     },
+     {
+      "weeks": [
+       9
+      ],
+      "type": "teach",
+      "strand": "4. Physical Activity and Fitness Concepts",
+      "substrand": "4.1 Health-Related Fitness",
+      "standard": "B2.1.4.1 Understand exercise",
+      "indicators": [
+       "B2.1.4.1.1 Breathe deeply after physical activity"
+      ],
+      "part": [
+       1,
+       2
+      ]
+     },
+     {
+      "weeks": [
+       10
+      ],
+      "type": "teach",
+      "strand": "4. Physical Activity and Fitness Concepts",
+      "substrand": "4.1 Health-Related Fitness",
+      "standard": "B2.1.4.1 Understand exercise",
+      "indicators": [
+       "B2.1.4.1.1 Breathe deeply after physical activity"
+      ],
+      "part": [
+       2,
+       2
+      ]
+     },
+     {
+      "weeks": [
+       11
+      ],
+      "type": "teach",
+      "strand": "5. Values and Psychological Factors",
+      "substrand": "5.1 Self-Responsibility and Social Interaction",
+      "standard": "B2.1.5.1 Play nicely with others",
+      "indicators": [
+       "B2.1.5.1.1 Share playground equipment with classmates"
+      ],
+      "part": [
+       1,
+       2
+      ]
+     },
+     {
+      "weeks": [
+       12
+      ],
+      "type": "teach",
+      "strand": "5. Values and Psychological Factors",
+      "substrand": "5.1 Self-Responsibility and Social Interaction",
+      "standard": "B2.1.5.1 Play nicely with others",
+      "indicators": [
+       "B2.1.5.1.1 Share playground equipment with classmates"
+      ],
+      "part": [
+       2,
+       2
+      ]
+     },
+     {
+      "weeks": [
+       13
+      ],
+      "type": "revision",
+      "strand": "",
+      "substrand": "",
+      "standard": "",
+      "indicators": [],
+      "focus": ""
+     },
+     {
+      "weeks": [
+       14,
+       15
+      ],
+      "type": "exam",
+      "strand": "",
+      "substrand": "",
+      "standard": "",
+      "indicators": [],
+      "focus": ""
+     }
+    ],
+    "Basic 1": [
+     {
+      "weeks": [
+       1
+      ],
+      "type": "revision",
+      "strand": "",
+      "substrand": "",
+      "standard": "",
+      "indicators": [],
+      "focus": "Key ideas from last term that this class needs"
+     },
+     {
+      "weeks": [
+       2
+      ],
+      "type": "teach",
+      "strand": "1. Motor Skill and Movement Patterns",
+      "substrand": "1.1 Locomotor Skills",
+      "standard": "B1.1.1.1 Run and walk freely",
+      "indicators": [
+       "B1.1.1.1.1 Walk and jog across the school compound without falling"
+      ],
+      "part": [
+       1,
+       3
+      ]
+     },
+     {
+      "weeks": [
+       3
+      ],
+      "type": "teach",
+      "strand": "1. Motor Skill and Movement Patterns",
+      "substrand": "1.1 Locomotor Skills",
+      "standard": "B1.1.1.1 Run and walk freely",
+      "indicators": [
+       "B1.1.1.1.1 Walk and jog across the school compound without falling"
+      ],
+      "part": [
+       2,
+       3
+      ]
+     },
+     {
+      "weeks": [
+       4
+      ],
+      "type": "teach",
+      "strand": "1. Motor Skill and Movement Patterns",
+      "substrand": "1.1 Locomotor Skills",
+      "standard": "B1.1.1.1 Run and walk freely",
+      "indicators": [
+       "B1.1.1.1.1 Walk and jog across the school compound without falling"
+      ],
+      "part": [
+       3,
+       3
+      ]
+     },
+     {
+      "weeks": [
+       5
+      ],
+      "type": "teach",
+      "strand": "2. Movement Concepts, Principles and Strategies",
+      "substrand": "2.1 Space Awareness",
+      "standard": "B1.2.1.1 Move in personal space",
+      "indicators": [
+       "B1.2.1.1.1 Stretch arms and legs without touching neighbors"
+      ],
+      "part": [
+       1,
+       2
+      ]
+     },
+     {
+      "weeks": [
+       6
+      ],
+      "type": "teach",
+      "strand": "2. Movement Concepts, Principles and Strategies",
+      "substrand": "2.1 Space Awareness",
+      "standard": "B1.2.1.1 Move in personal space",
+      "indicators": [
+       "B1.2.1.1.1 Stretch arms and legs without touching neighbors"
+      ],
+      "part": [
+       2,
+       2
+      ]
+     },
+     {
+      "weeks": [
+       7
+      ],
+      "type": "teach",
+      "strand": "3. Physical Fitness",
+      "substrand": "3.1 Aerobic Capacity",
+      "standard": "B1.3.1.1 Engage in fun active play",
+      "indicators": [
+       "B1.3.1.1.1 Play tag and simple running games"
+      ],
+      "part": [
+       1,
+       2
+      ]
+     },
+     {
+      "weeks": [
+       8
+      ],
+      "type": "teach",
+      "strand": "3. Physical Fitness",
+      "substrand": "3.1 Aerobic Capacity",
+      "standard": "B1.3.1.1 Engage in fun active play",
+      "indicators": [
+       "B1.3.1.1.1 Play tag and simple running games"
+      ],
+      "part": [
+       2,
+       2
+      ]
+     },
+     {
+      "weeks": [
+       9
+      ],
+      "type": "teach",
+      "strand": "4. Physical Activity and Fitness Concepts",
+      "substrand": "4.1 Health-Related Fitness",
+      "standard": "B1.4.1.1 Rest after play",
+      "indicators": [
+       "B1.4.1.1.1 Sit quietly and catch breath after running"
+      ],
+      "part": [
+       1,
+       2
+      ]
+     },
+     {
+      "weeks": [
+       10
+      ],
+      "type": "teach",
+      "strand": "4. Physical Activity and Fitness Concepts",
+      "substrand": "4.1 Health-Related Fitness",
+      "standard": "B1.4.1.1 Rest after play",
+      "indicators": [
+       "B1.4.1.1.1 Sit quietly and catch breath after running"
+      ],
+      "part": [
+       2,
+       2
+      ]
+     },
+     {
+      "weeks": [
+       11
+      ],
+      "type": "teach",
+      "strand": "5. Values and Psychological Factors",
+      "substrand": "5.1 Self-Responsibility and Social Interaction",
+      "standard": "B1.5.1.1 Play safely together",
+      "indicators": [
+       "B1.5.1.1.1 Avoid pushing others during playtime"
+      ],
+      "part": [
+       1,
+       2
+      ]
+     },
+     {
+      "weeks": [
+       12
+      ],
+      "type": "teach",
+      "strand": "5. Values and Psychological Factors",
+      "substrand": "5.1 Self-Responsibility and Social Interaction",
+      "standard": "B1.5.1.1 Play safely together",
+      "indicators": [
+       "B1.5.1.1.1 Avoid pushing others during playtime"
+      ],
+      "part": [
+       2,
+       2
+      ]
+     },
+     {
+      "weeks": [
+       13
+      ],
+      "type": "revision",
+      "strand": "",
+      "substrand": "",
+      "standard": "",
+      "indicators": [],
+      "focus": ""
+     },
+     {
+      "weeks": [
+       14,
+       15
+      ],
+      "type": "exam",
+      "strand": "",
+      "substrand": "",
+      "standard": "",
+      "indicators": [],
+      "focus": ""
+     }
     ]
    },
    "term": "",
-   "source": "Basic 4 Curriculum Indicators"
+   "source": "Basic 1 Curriculum Indicators"
   }
  }
 }

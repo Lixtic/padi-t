@@ -21,7 +21,7 @@ OUT = os.path.join(ROOT, 'data', 'schemes.json')
 LEVEL_ALIASES = {
     'lower': {'creative arts': 'Creative Arts', 'creative arts and design': 'Creative Arts', 'creative art': 'Creative Arts', 'physical education': 'Physical Education',
               'physical education and health': 'Physical Education', 'our world our people': 'Our World Our People', 'our world and our people': 'Our World Our People',
-              'owop': 'Our World Our People', 'literacy': 'English Language', 'numeracy': 'Mathematics', 'ict': 'Computing'},
+              'owop': 'Our World Our People', 'literacy': 'English Language', 'numeracy': 'Mathematics', 'ict': 'Computing', 'science': 'Science', 'history': 'History', 'history of ghana': 'History'},
     'upper': {'creative arts': 'Creative Arts', 'creative arts and design': 'Creative Arts', 'creative art': 'Creative Arts', 'physical education': 'Physical Education',
               'physical education and health': 'Physical Education', 'our world our people': 'Our World Our People', 'our world and our people': 'Our World Our People',
               'owop': 'Our World Our People', 'science': 'Science', 'history': 'History', 'history of ghana': 'History', 'ict': 'Computing'},

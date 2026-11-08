@@ -9,7 +9,7 @@
   const LEVELS = [
     {
       id: 'lower', name: 'Lower Primary', classes: ['Basic 1', 'Basic 2', 'Basic 3'],
-      subjects: ['English Language', 'Mathematics', 'Ghanaian Language', 'Our World Our People', 'Creative Arts', 'Religious and Moral Education', 'Physical Education', 'Computing'],
+      subjects: ['English Language', 'Mathematics', 'Ghanaian Language', 'Science', 'Our World Our People', 'History', 'Creative Arts', 'Religious and Moral Education', 'Physical Education', 'Computing'],
       exam: { id: 'class', toggle: 'Class exercise', section: 'Class Exercise', tag: 'No class exercise', title: ' – Class Exercise', more: '10 more class exercise questions', ask: "Write 10 more class exercise questions on this week's topics." },
       notes: { toggle: "Teacher's notes", tag: "No teacher's notes" },
     },
