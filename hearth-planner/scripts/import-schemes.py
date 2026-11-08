@@ -1,10 +1,12 @@
 """Imports a Schemes of Learning .docx into data/schemes.json.
 
 Usage:  python3 scripts/import-schemes.py path/to/schemes.docx [subject]
-Reads one table per class. Each table has the columns Week | Strand | Sub-Strand | Content Standard |
-Indicator (or "Indicator & Focus"), and is preceded by a heading that starts with the class, for example
-"Basic 7 (JHS 1) - Computing" or just "Basic 7 (JHS 1)". When the heading has no subject, the subject comes from the
-[subject] argument or from a "Subject: ..." line in the document.
+Reads one table per class, for any class from Basic 1 to Basic 9 and SHS 1 to SHS 3. Columns are found by their names:
+Week, Strand, Sub-Strand, Content Standard (or Learning Outcome) and Indicator (or "Learning Indicator", "Indicator & Focus").
+Only Week and Indicator are required. Each table is preceded by a heading that starts with the class, for example
+"Basic 7 (JHS 1) - Computing", "Basic 2 - Our World Our People", "B4" or "SHS 1 - General Science", or just the class.
+When the heading has no subject, the subject comes from the [subject] argument or from a "Subject: ..." line in the document.
+The subject must be one GuidEd offers at that level (see api/_levels.js), otherwise the import stops and says which.
 Rows with no strand are kept as they are: the planner then asks the model to match the NaCCA strand to the indicator code.
 Subjects already in data/schemes.json are replaced one class at a time. Then run:  node scripts/build-schemes.js
 Personal details in the document (teacher, school) are never stored.
@@ -15,7 +17,18 @@ from docx import Document
 ROOT = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..')
 OUT = os.path.join(ROOT, 'data', 'schemes.json')
 
-# Names used in schemes -> the name in the GuidEd subject list.
+# Names used in schemes -> the name in the GuidEd subject list. LEVEL_ALIASES win over ALIASES for classes at that level.
+LEVEL_ALIASES = {
+    'lower': {'creative arts': 'Creative Arts', 'creative arts and design': 'Creative Arts', 'creative art': 'Creative Arts', 'physical education': 'Physical Education',
+              'physical education and health': 'Physical Education', 'our world our people': 'Our World Our People', 'our world and our people': 'Our World Our People',
+              'owop': 'Our World Our People', 'literacy': 'English Language', 'numeracy': 'Mathematics', 'ict': 'Computing'},
+    'upper': {'creative arts': 'Creative Arts', 'creative arts and design': 'Creative Arts', 'creative art': 'Creative Arts', 'physical education': 'Physical Education',
+              'physical education and health': 'Physical Education', 'our world our people': 'Our World Our People', 'our world and our people': 'Our World Our People',
+              'owop': 'Our World Our People', 'science': 'Science', 'history': 'History', 'history of ghana': 'History', 'ict': 'Computing'},
+    'jhs': {'science': 'Integrated Science', 'ict': 'Computing'},
+    'shs': {'general science': 'General Science', 'core science': 'General Science', 'science': 'General Science', 'integrated science': 'General Science',
+            'core mathematics': 'Mathematics', 'mathematics (core)': 'Mathematics', 'english': 'English Language', 'social studies': 'Social Studies'},
+}
 ALIASES = {
     'computing': 'Computing',
     'creative design / arts': 'Creative Arts and Design',
@@ -33,6 +46,67 @@ ALIASES = {
     'french': 'French',
     'physical education and health': 'Physical Education and Health',
 }
+
+def level_of(cls):
+    n = int(cls.split()[-1])
+    if cls.startswith('SHS'): return 'shs'
+    return 'lower' if n <= 3 else 'upper' if n <= 6 else 'jhs'
+
+def norm_class(text):
+    """'Basic 7 (JHS 1)' -> 'Basic 7', 'B4' -> 'Basic 4', 'SHS 2' -> 'SHS 2'. None when it is not a class heading."""
+    m = re.match(r'\s*(?:(SHS|Senior High(?: School)?)\s*-?\s*(\d)\b|(?:Basic|B|P|Primary)\s*-?\s*(\d)\b)', text, re.I)
+    if not m: return None
+    if m.group(2): return 'SHS ' + m.group(2) if m.group(2) in '123' else None
+    n = int(m.group(3))
+    return 'Basic %d' % n if 1 <= n <= 9 else None
+
+def split_heading(text):
+    """Returns (class, subject text or '') for 'Basic 2 - Our World Our People', 'B4', or 'Mathematics (Basic 7)'. None when it is not a class heading."""
+    t = re.sub(r'^((?:Basic|B|P|Primary)\s*-?\s*\d|SHS\s*-?\s*\d)\s+(?:Scheme(?: of Learning)?|Curriculum)\b\s*', r'\1 ', text.strip(), flags=re.I)
+    m = re.match(r'^(.*?)\s*\(\s*((?:Basic|B|P|Primary)\s*-?\s*\d|SHS\s*-?\s*\d)[^)]*\)\s*$', t, re.I)
+    if m and m.group(1) and not norm_class(m.group(1)):
+        cls = norm_class(m.group(2))
+        return (cls, m.group(1).strip()) if cls else None
+    cls = norm_class(t)
+    if not cls: return None
+    rest = re.sub(r'^\s*(?:(?:SHS|Senior High(?: School)?)\s*-?\s*\d|(?:Basic|B|P|Primary)\s*-?\s*\d)\b', '', t, flags=re.I)
+    name = re.split(r'\s[-–—:]\s|^[-–—:]\s*', rest, maxsplit=1)[-1].strip() if re.search(r'[-–—:]', rest) else ''
+    return cls, re.sub(r'\(.*?\)', '', name).strip()
+
+CODE = r'(?:B\d\.\d+\.\d+\.\d+\.\d+|\d\.\d+\.\d+\.LI\.\d+)'
+
+def split_indicators(cell):
+    """One indicator per line. Some documents run them together on one line, so also split before each indicator code."""
+    out = []
+    for line in (cell or '').replace('\r', '').split('\n'):
+        for part in re.split(r'(?<=[.;:])\s+(?=' + CODE + r')', line):
+            part = clean(part)
+            if part: out.append(part)
+    return out
+
+def resolve_subject(name, cls):
+    n = re.sub(r'\s+', ' ', name.strip().lower())
+    return LEVEL_ALIASES[level_of(cls)].get(n) or ALIASES.get(n)
+
+def offered(cls):
+    """The subjects GuidEd offers at this class's level, read from api/_levels.js so the two never disagree."""
+    import subprocess
+    out = subprocess.check_output(['node', '-e', "const L=require('./api/_levels.js');console.log(JSON.stringify(L.levelOfClass(process.argv[1])))", cls], cwd=ROOT)
+    return set(json.loads(out)['subjects'])
+
+COLS = {'week': ('week',), 'strand': ('strand',), 'substrand': ('sub-strand', 'substrand', 'sub strand'),
+        'standard': ('content standard', 'learning outcome', 'standard'), 'indicator': ('indicator',)}
+
+def find_cols(header):
+    """Maps each field to a column index by its heading text. Week and indicator are required."""
+    cols = {}
+    for i, h in enumerate(x.strip().lower() for x in header):
+        for key, names in COLS.items():
+            if key not in cols and any(n in h for n in names) and not (key == 'strand' and 'sub' in h):
+                cols[key] = i
+    if 'indicator' not in cols:
+        sys.exit('Cannot find the Indicator column in: ' + ' | '.join(header))
+    return cols
 
 def clean(s):
     s = re.sub(r'[ \t]+', ' ', (s or '').replace('\r', '')).strip()
@@ -63,35 +137,65 @@ def read_meta(doc):
     sm = re.search(r'^\s*Subject:\s*(.+)$', text, re.M)
     return term, (sm.group(1).strip() if sm else '')
 
+TEACH_WEEKS = list(range(2, 13))      # week 1 revises last term, 13 revises this term, 14-15 are the examination
+
+def spread(body, col):
+    """For documents with no Week column: lays the rows over the whole term, one entry per week, so every week has a topic."""
+    get = lambda r, k: clean(r[col[k]]) if k in col and col[k] < len(r) else ''
+    items = [r for r in body if any(x.strip() for x in r)]
+    n = len(items); base, extra = divmod(len(TEACH_WEEKS), n)
+    out = [{'weeks': [1], 'type': 'revision', 'strand': '', 'substrand': '', 'standard': '', 'indicators': [], 'focus': 'Key ideas from last term that this class needs'}]
+    w = 0
+    for i, r in enumerate(items):
+        k = base + (1 if i < extra else 0)
+        for j in range(k):
+            e = {'weeks': [TEACH_WEEKS[w]], 'type': 'teach', 'strand': get(r, 'strand'), 'substrand': get(r, 'substrand'), 'standard': get(r, 'standard'), 'indicators': split_indicators(r[col['indicator']])}
+            if k > 1: e['part'] = [j + 1, k]
+            out.append(e); w += 1
+    out.append({'weeks': [13], 'type': 'revision', 'strand': '', 'substrand': '', 'standard': '', 'indicators': [], 'focus': ''})
+    out.append({'weeks': [14, 15], 'type': 'exam', 'strand': '', 'substrand': '', 'standard': '', 'indicators': [], 'focus': ''})
+    return out
+
 def main(path, subject_arg=''):
     doc = Document(path)
     term, doc_subject = read_meta(doc)
-    heads = [p.text.strip() for p in doc.paragraphs if re.match(r'Basic\s*\d', p.text.strip()) and p.style.name.startswith('Heading')]
+    heads = [p.text.strip() for p in doc.paragraphs if split_heading(p.text) and (p.style.name != 'Title' or (split_heading(p.text)[1] and resolve_subject(split_heading(p.text)[1], split_heading(p.text)[0]))) and (p.style.name.startswith('Heading') or len(p.text.strip()) < 70)]
     if len(heads) != len(doc.tables):
         sys.exit('Found %d class headings but %d tables. Check the document.' % (len(heads), len(doc.tables)))
     data = json.load(open(OUT, encoding='utf-8')) if os.path.exists(OUT) else {'subjects': {}}
     base = re.sub(r'^[0-9a-f]{8}-', '', os.path.splitext(os.path.basename(path))[0]).replace('_', ' ')
     touched = {}
     for head, table in zip(heads, doc.tables):
-        m = re.match(r'Basic\s*(\d)\b(.*)$', head)
-        if not m: sys.exit('Cannot read heading: ' + head)
-        cls = 'Basic ' + m.group(1)
-        rest = m.group(2)
-        name = (rest.split('-', 1)[1] if '-' in rest else (subject_arg or doc_subject)).strip()
-        subject = ALIASES.get(name.lower())
-        if not subject: sys.exit('Unknown or missing subject (%r). Pass it as the second argument.' % name)
+        cls, name = split_heading(head)
+        name = name or subject_arg or doc_subject
+        subject = resolve_subject(name, cls)
+        if not subject: sys.exit('Unknown or missing subject (%r) for %s. Pass it as the second argument.' % (name, cls))
+        if subject not in offered(cls): sys.exit('%s is not one of the subjects GuidEd offers for %s. Check the name, or add it in api/_levels.js first.' % (subject, cls))
         rows = [[c.text for c in r.cells] for r in table.rows]
-        h = [x.strip().lower() for x in rows[0][:5]]
-        assert h[:4] == ['week', 'strand', 'sub-strand', 'content standard'] and h[4].startswith('indicator'), rows[0]
+        col = find_cols(rows[0])
+        cell = lambda r, k: r[col[k]] if k in col and col[k] < len(r) else ''
         entries = []
+        if 'week' not in col:
+            entries = spread(rows[1:], col)
+            print('%-26s %-8s no Week column: %d rows spread over weeks 2-12' % (subject, cls, len([r for r in rows[1:] if any(x.strip() for x in r)])))
+            rows = [rows[0]]
         for r in rows[1:]:
-            strand, sub, std = clean(r[1]), clean(r[2]), clean(r[3])
-            inds = [x for x in (clean(x) for x in r[4].split('\n')) if x]
-            kind = kind_of(strand, inds[0] if inds else '')
-            e = {'weeks': weeks_of(r[0]), 'type': kind, 'strand': strand, 'substrand': sub, 'standard': std, 'indicators': inds}
+            if not any(x.strip() for x in r): continue
+            strand, sub, std = clean(cell(r, 'strand')), clean(cell(r, 'substrand')), clean(cell(r, 'standard'))
+            inds = split_indicators(cell(r, 'indicator'))
+            if not (strand or sub or std or inds): continue      # a week the document leaves blank: no topic is imposed, the planner chooses
+            kind = kind_of(strand or std, inds[0] if inds else '')
+            e = {'weeks': weeks_of(cell(r, 'week')), 'type': kind, 'strand': strand, 'substrand': sub, 'standard': std, 'indicators': inds}
             if kind in ('revision', 'exam') and not strand and inds:     # "Revision of Basic 7 Concepts" is a focus, not an indicator
                 e['focus'] = inds[0]; e['indicators'] = []
+            elif kind in ('revision', 'exam') and not strand:           # "Revision" or "Examination" written in the Content Standard column
+                e['focus'] = std; e['standard'] = ''
+            elif not strand and not sub and not inds and std and kind == 'teach':   # only a content standard is given
+                pass
+            if not e['weeks']: sys.exit('A row in the %s %s table has no week number: %r' % (cls, subject, r[:2]))
             entries.append(e)
+        if not any(x['type'] == 'teach' for x in entries):
+            print('%-26s %-8s skipped: the table has no topics filled in' % (subject, cls)); continue
         s = data['subjects'].setdefault(subject, {'classes': {}})
         s['classes'][cls] = entries
         s['term'] = term or s.get('term', ''); s['source'] = base
