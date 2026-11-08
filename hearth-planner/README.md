@@ -188,3 +188,7 @@ The class menu is grouped by level, and the subjects change with the level. Each
 ## Share a plan
 
 The Share button on a lesson plan builds a Word file with only the Lesson Metadata table, each lesson's activity table and the Assessment Rubric (see `planTables` in `public/app.js`). Objectives lines, study or teacher's notes, exam practice and follow-ups stay out. On phones it opens the system share sheet (WhatsApp, email and so on); elsewhere it downloads the file.
+
+## Plan the whole term
+
+Options > "Plan the whole term" (Pro) writes every remaining week of the chosen term for the current class and subject, from the chosen week to week 13, skipping examination weeks and weeks already planned. It needs a loaded scheme of learning. Plans are written one after another as normal plans; the run waits by itself when the request limit is near, pauses with a Resume button if a week fails, and ends with a "Download term pack" button: one Word file holding each plan's lesson tables and rubric, one plan per page set (see `termRun` in `public/app.js`).

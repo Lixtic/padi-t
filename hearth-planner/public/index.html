@@ -143,6 +143,17 @@
 </dialog>
 
 <!-- ───────── Upgrade to Pro ───────── -->
+<dialog class="acct-sheet up-sheet" id="termSheet" aria-labelledby="tsTitle">
+  <button type="button" class="icon-btn as-close" id="tsClose" aria-label="Close"><svg class="ico"><use href="#i-x"/></svg></button>
+  <section>
+    <h2 id="tsTitle">Plan the whole term</h2>
+    <p class="as-sub" id="tsText"></p>
+    <p class="as-sub" id="tsTime"></p>
+    <button type="button" class="as-submit" id="tsGo"><span>Start writing</span></button>
+    <button type="button" class="as-second" id="tsCancel">Not now</button>
+  </section>
+</dialog>
+
 <dialog class="acct-sheet up-sheet" id="profileSheet" aria-labelledby="pfTitle">
   <button type="button" class="icon-btn as-close" id="pfClose" aria-label="Close"><svg class="ico"><use href="#i-x"/></svg></button>
   <section>
@@ -381,6 +392,7 @@
         <span class="dot dot-online" id="statusDot"></span><span id="statusText">Online</span>
       </span>
     </header>
+    <div class="pro-banner profile-ask" id="termBar" role="status" hidden></div>
     <div class="pro-banner profile-ask" id="profileAsk" role="status" hidden></div>
     <div class="pro-banner" id="proBanner" role="status" hidden><span id="proBannerText"></span><button type="button" class="pb-go" id="proBannerGo">Extend Pro</button><button type="button" class="pb-x" id="proBannerX" aria-label="Dismiss">×</button></div>
 
@@ -469,6 +481,10 @@
             <button type="button" class="opt-row" id="beceToggle" role="switch" aria-checked="true" title="Include BECE-style practice questions with a marking guide in the plan">
               <svg class="ico"><use href="#i-cap"/></svg>
               <span class="opt-text"><span class="dd-label">BECE practice questions</span><small>With a marking guide</small></span><span class="sw" aria-hidden="true"></span>
+            </button>
+            <button type="button" class="opt-row" id="termBtn" title="Write every remaining week of this term for this class and subject, one after another">
+              <svg class="ico"><use href="#i-calendar"/></svg>
+              <span class="opt-text"><span class="dd-label">Plan the whole term</span><small>Every remaining week, one after another (Pro)</small></span>
             </button>
             <div class="also" id="alsoRow" role="group" aria-label="Also plan for other classes"></div>
           </div>

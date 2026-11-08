@@ -36,7 +36,8 @@
     title = String(title || 'GES Lesson Plan').trim().slice(0, 150) || 'GES Lesson Plan';
     content = clean(content);
     var Join = root.SchoolPadiJoin || (typeof require === 'function' ? require('./plan-join.js') : null);
-    if (Join) content = Join.join(content);
+    // A file can hold several plans (the term pack): each one is joined on its own, and each starts on a new page.
+    if (Join) content = content.split(/\n(?=#+\s*Lesson Metadata)/i).map(function (part) { return Join.join(part); }).join('\n\n');
 
     function runs(text, o) {
       o = o || {};
@@ -217,7 +218,7 @@
     var who = [school ? 'School: ' + school : '', teacher ? 'Teacher: ' + teacher : ''].filter(Boolean).join('   |   ');
     if (who) children.push(new D.Paragraph({ alignment: D.AlignmentType.CENTER, spacing: { after: 120 }, children: runs(who, { size: 20, color: GREY }) }));
 
-    var lines = content.split('\n'), i = 0, lastHeading = '', wrote = false;
+    var lines = content.split('\n'), i = 0, lastHeading = '', wrote = false, metaSeen = false;
     var isTableLine = function (l) { return l.charAt(0) === '|' && (l.match(/\|/g) || []).length >= 2; };
 
     while (i < lines.length) {
@@ -255,7 +256,9 @@
       else if (text.length < 100 && text === text.toUpperCase() && /[A-Z]/.test(text) && !/^[-•*]\s/.test(text)) { level = 2; ht = text; }
       if (ht !== null) {
         ht = ht.replace(/^[*_\s]+|[*_\s]+$/g, '');
-        children.push(heading(ht, level, wrote && NEW_PAGE.test(ht)));
+        var newPlan = META_HEADING.test(ht) && level === 1 && metaSeen;
+        if (META_HEADING.test(ht) && level === 1) metaSeen = true;
+        children.push(heading(ht, level, wrote && (NEW_PAGE.test(ht) || newPlan)));
         lastHeading = ht; wrote = true;
         continue;
       }
