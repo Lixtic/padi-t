@@ -432,6 +432,7 @@
     const btnEdit = h('button', { type: 'button', class: 'tool', disabled: true, 'data-act': 'edit' }, icon('pencil'), h('span', { text: 'Edit' }));
     const btnReuse = h('button', { type: 'button', class: 'tool', disabled: true, 'data-act': 'reuse', title: 'Copy this plan into a new plan you can change freely' }, icon('layers'), h('span', { text: 'Reuse' }));
     const btnRegen = h('button', { type: 'button', class: 'tool', disabled: true }, icon('refresh'), h('span', { text: 'Regenerate' }));
+    const btnShare = h('button', { type: 'button', class: 'tool', disabled: true, 'data-act': 'share', title: 'Share only the lesson plan tables and the rubric' }, icon('share'), h('span', { text: 'Share' }));
     const btnDocx = h('button', { type: 'button', class: 'tool tool-main', disabled: true }, icon('download'), h('span', { text: 'Word (.docx)' }));
     const progress = h('span', { class: 'doc-progress', text: 'Writing…' });
     const root = h('div', { class: 'msg bot' },
@@ -440,11 +441,11 @@
         h('div', { class: 'doc' },
           h('div', { class: 'doc-bar' },
             h('div', { class: 'doc-id' }, titleEl, progress),
-            h('div', { class: 'doc-tools' }, btnCopy, btnEdit, btnReuse, btnRegen, btnDocx)),
+            h('div', { class: 'doc-tools' }, btnCopy, btnEdit, btnReuse, btnRegen, btnShare, btnDocx)),
           noteEl, bodyEl),
         chipsEl, extrasEl, metaEl));
 
-    const tools = [btnCopy, btnEdit, btnReuse, btnRegen, btnDocx];
+    const tools = [btnCopy, btnEdit, btnReuse, btnRegen, btnShare, btnDocx];
 
     function fillExtras() {
       if (demoted) { extrasEl.replaceChildren(); return; }
@@ -523,7 +524,7 @@
       root, text: '', msg: null,
       get title() { return baseTitle + (kindTitle(kind, session.params && session.params.cls) || ''); },
       get kind() { return kind; },
-      setKind(k) { kind = KIND_TITLE[k] !== undefined ? k : 'plan'; titleEl.textContent = api.title; },
+      setKind(k) { kind = KIND_TITLE[k] !== undefined ? k : 'plan'; titleEl.textContent = api.title; btnShare.hidden = kind !== 'plan'; },
       set(raw, final, msg) {
         api.text = raw;
         const pv = !!(msg && msg.preview);
@@ -563,6 +564,14 @@
       else startEdit();
     });
     btnReuse.addEventListener('click', () => reuseSession());
+    btnShare.addEventListener('click', () => {
+      if (api.msg && api.msg.preview) {
+        if (signedIn()) toast('This is a preview of Lesson 1. Write the full plan to share it.');
+        else openSignupSheet('Create a free account to unlock the full plan and share it.');
+        return;
+      }
+      sharePlan(api.text, baseTitle, btnShare);
+    });
     btnRegen.addEventListener('click', () => regenerate());
     btnDocx.addEventListener('click', () => {
       if (api.msg && api.msg.preview) {
@@ -662,6 +671,49 @@
     const a = h('a', { href: url, download: title.replace(/[^A-Za-z0-9._-]+/g, '_').replace(/^_+|_+$/g, '') + '.docx' });
     document.body.append(a); a.click(); a.remove();
     setTimeout(() => URL.revokeObjectURL(url), 4000);
+  }
+  /* Share: only the lesson plan tables and the rubric. The objectives lines, study or teacher's notes, exam practice and follow-up chips stay out. */
+  function planTables(md) {
+    const out = []; let keep = false, inTable = false;
+    String(md || '').replace(/\r/g, '').split('\n').forEach((line) => {
+      const hd = /^(#{1,2})\s+(.*)$/.exec(line);
+      if (hd) {
+        const t = hd[2].trim().toLowerCase();
+        keep = /^lesson metadata/.test(t) || /^lesson\s*\d/.test(t) || /^assessment rubric/.test(t);
+        inTable = false;
+        if (keep) { if (out.length) out.push(''); out.push(line.trim()); out.push(''); }
+        return;
+      }
+      if (!keep) return;
+      if (/^\s*\|/.test(line)) { out.push(line.trim()); inTable = true; }
+      else if (inTable) { out.push(''); inTable = false; }
+    });
+    return out.join('\n').replace(/\n{3,}/g, '\n\n').trim();
+  }
+  async function sharePlan(text, baseTitle, btn) {
+    const body = planTables(splitElic(text).body);
+    if (!/\|/.test(body)) { toast('There is no lesson plan table to share yet.'); return; }
+    const title = baseTitle + ' – lesson plan';
+    const label = $('span', btn), before = label.textContent;
+    btn.disabled = true; label.textContent = 'Preparing…';
+    try {
+      if (window.SchoolPadiArtifact) { const name = await window.SchoolPadiArtifact.save(title, body, 'landscape', profile()); toast('Saved ' + name); return; }
+      await loadDocxLib();
+      const who = profile(), GP = window.GuidedPlans;
+      const blob = await window.SchoolPadiDocx.toFile(window.docx, title, body, { portrait: false, teacher: who.teacher, school: who.school, footer: GP ? GP.footerText() : '' });
+      const name = title.replace(/[^A-Za-z0-9._-]+/g, '_').replace(/^_+|_+$/g, '') + '.docx';
+      const file = new File([blob], name, { type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' });
+      if (navigator.canShare && navigator.canShare({ files: [file] })) {
+        try { await navigator.share({ files: [file], title, text: title + ' (made with GuidEd)' }); return; }
+        catch (e) { if (e && e.name === 'AbortError') return; }          // closed the share sheet: nothing more to do; any other error falls through to a download
+      }
+      saveBlob(blob, title);
+      toast('Saved ' + name + '. Attach it to a message to share it.');
+    } catch (e) {
+      toast(e.message || 'Could not prepare the file.');
+    } finally {
+      btn.disabled = false; label.textContent = before;
+    }
   }
   async function exportDocx(text, title, btn, kind) {
     const layout = kind === 'worksheet' || kind === 'homework' ? 'portrait' : 'landscape';
@@ -1704,4 +1756,6 @@
   });
 
   init();
+  { const sp = document.getElementById('splash');            // the installed app's splash: shown a moment, then fades
+    if (sp) setTimeout(() => { sp.classList.add('is-out'); setTimeout(() => sp.remove(), 450); }, document.documentElement.classList.contains('splash-on') ? 900 : 0); }
 })();
