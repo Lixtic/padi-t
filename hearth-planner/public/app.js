@@ -690,12 +690,11 @@
     });
     return out.join('\n').replace(/\n{3,}/g, '\n\n').trim();
   }
-  async function sharePlan(text, baseTitle, btn) {
-    const body = planTables(splitElic(text).body);
+  function sharePlan(text, baseTitle, btn) { return shareBody(planTables(splitElic(text).body), baseTitle + ' – lesson plan', btn); }
+  async function shareBody(body, title, btn) {
     if (!/\|/.test(body)) { toast('There is no lesson plan table to share yet.'); return; }
-    const title = baseTitle + ' – lesson plan';
-    const label = $('span', btn), before = label.textContent;
-    btn.disabled = true; label.textContent = 'Preparing…';
+    const label = btn ? $('span', btn) : null, before = label ? label.textContent : '';
+    if (btn) { btn.disabled = true; label.textContent = 'Preparing…'; }
     try {
       if (window.SchoolPadiArtifact) { const name = await window.SchoolPadiArtifact.save(title, body, 'landscape', profile()); toast('Saved ' + name); return; }
       await loadDocxLib();
@@ -712,7 +711,7 @@
     } catch (e) {
       toast(e.message || 'Could not prepare the file.');
     } finally {
-      btn.disabled = false; label.textContent = before;
+      if (btn) { btn.disabled = false; label.textContent = before; }
     }
   }
   async function exportDocx(text, title, btn, kind) {
@@ -815,6 +814,13 @@
   const RATE_WINDOW = 10 * 60 * 1000, RATE_KEY = 'schoolpadi.rate.v1';
   const rateMax = () => Math.max(1, Number(window.SCHOOLPADI_RATE_MAX) || 6);   // 6 per 10 minutes unless a page sets it
   let rateMem = [];
+  function rateDelay() {                              // minutes until a request is allowed (0 when one is allowed now)
+    if (state.config.demo) return 0;
+    let hits = rateMem;
+    try { hits = JSON.parse(localStorage.getItem(RATE_KEY)) || rateMem; } catch (e) { /* use memory */ }
+    hits = hits.filter((t) => Date.now() - t < RATE_WINDOW);
+    return hits.length >= rateMax() ? Math.max(1, Math.ceil((RATE_WINDOW - (Date.now() - hits[0])) / 60000)) : 0;
+  }
   function rateOk() {
     if (state.config.demo) return true;
     const now = Date.now();
@@ -832,7 +838,7 @@
   }
 
   function submit(fromQueue) {
-    if (state.streaming) { planQueue = []; stopStreaming(); return; }
+    if (state.streaming) { if (termRun) termEnd(true); else { planQueue = []; stopStreaming(); } return; }
     const s = current();
     const text = promptEl.value.trim();
     if (!s) return;
@@ -841,7 +847,7 @@
       const sc = schemeFor(state.params);
       if (sc && sc.type === 'exam') { toast('Week ' + sc.weeks.join(' and ') + ' is an examination week. Choose another week.'); return; }
     }
-    if (!rateOk()) { planQueue = []; return; }
+    if (!rateOk()) { if (termRun) termPaused('The request limit was reached.'); else planQueue = []; return; }
 
     if (!s.messages.length) {                       // new plan
       const p = Object.assign({}, state.params);
@@ -971,6 +977,7 @@
       bot.error(err.message, isFirst ? () => { bot.root.remove(); state.bots.pop(); runGenerate(session); } : null);
       session.updatedAt = Date.now();
       updateSend(); renderSessions(); updateTopbar(); store.save();
+      if (termRun && isFirst) { deleteSession(session.id); termPaused(err.message); }   // the failed week goes back in the queue; Resume tries it again
       return;
     }
 
@@ -986,6 +993,7 @@
       return;
     }
 
+    if (kind === 'plan') text = fillWeekEnding(text, session.params);
     const msg = { role: 'assistant', kind, content: text, seconds: (performance.now() - t0) / 1000, stopped: aborted, demo: state.config.demo, warning };
     if (previewFlag) msg.preview = true;
     if (!text.trim()) { bot.error(warning || 'The model returned nothing. Please try again.', () => { bot.root.remove(); state.bots.pop(); runGenerate(session); }); updateSend(); renderSessions(); updateTopbar(); return; }
@@ -994,25 +1002,101 @@
     if (window.GuidedProfile && session.messages.length === 2 && session.params && !aborted) {
       const sp = session.params, same = sp.cls === state.params.cls && sp.subject === state.params.subject;
       window.GuidedProfile.planned({ cls: sp.cls, subject: sp.subject, term: sp.term || termNow(), week: sp.week });
-      if (same && state.params.week === sp.week && !planQueue.length) { continueWeek(); syncPills(); }   // the week pill moves on to the next one
+      if (same && state.params.week === sp.week && !planQueue.length) { continueWeek(true); syncPills(); }   // the week pill moves on to the next one
     }
     bot.set(text, true, msg);
     updateSend(); renderSessions(); updateTopbar(); updateView(); store.save();
     scrollBottom();
     if (window.GuidedPlans && !state.config.demo) window.GuidedPlans.load();       // refresh "plans left"
-    if (aborted) planQueue = []; else if (planQueue.length && session.messages.length === 2) setTimeout(nextInQueue, 700);
+    if (termRun && session.messages.length === 2 && !aborted) {
+      termRun.done++; termRun.ids.push(session.id); termRun.current = null;
+      if (planQueue.length) { termProgress(); setTimeout(nextInQueue, 700); } else termEnd(false);
+    } else if (aborted) planQueue = []; else if (planQueue.length && session.messages.length === 2) setTimeout(nextInQueue, 700);
   }
+
+  /* ───────── Plan the whole term ───────── */
+  let termRun = null;                                  // { cls, subject, term, total, done, ids, current, paused, timer }
+  const termBar = $('#termBar');
+  function termWeeks() {                               // the weeks still to write, from the chosen week to week 13; examination weeks and weeks already planned are skipped
+    const p = state.params, term = termNow(), S = window.SchoolPadiSchemes;
+    const have = new Set(state.sessions.filter((x) => x.params && x.params.cls === p.cls && x.params.subject === p.subject && (x.params.term || term) === term && x.messages.length >= 2 && !(x.messages[1] && x.messages[1].preview)).map((x) => x.params.week));
+    const out = [];
+    for (let w = Math.max(1, p.week); w <= 13; w++) {
+      const e = S && S.lookup(p.subject, p.cls, term, w);
+      if (e && e.type !== 'exam' && !have.has(w)) out.push(w);
+    }
+    return out;
+  }
+  function termBarShow(text, buttons) {
+    termBar.replaceChildren(h('span', { text }), ...(buttons || []).map(([label, fn, main]) => h('button', { type: 'button', class: main ? 'pa-yes' : 'pa-no', text: label, onclick: fn })));
+    termBar.hidden = !text;
+  }
+  function termProgress() {
+    const r = termRun; if (!r) { termBarShow(''); return; }
+    if (r.paused) { termBarShow('Term plan paused: ' + r.done + ' of ' + r.total + ' written. ' + r.paused, [['Resume', termResume, true], ['Stop', () => termEnd(true)]]); return; }
+    termBarShow('Writing the term plan: ' + r.done + ' of ' + r.total + ' ready. Keep this page open.', [['Stop', () => termEnd(true)]]);
+  }
+  function termEnd(stopped) {
+    const r = termRun; termRun = null; planQueue = [];
+    if (r && r.timer) clearTimeout(r.timer);
+    if (stopped && state.streaming) stopStreaming();
+    if (r && !stopped && r.done) {
+      termBarShow('All ' + r.done + ' plans are ready: ' + r.subject + ', ' + r.cls + ', Term ' + r.term + '.', [['Download term pack', () => termPack(r), true], ['Close', () => termBarShow('')]]);
+    } else if (r && stopped && r.done) {
+      termBarShow(r.done + ' of ' + r.total + ' plans were written before you stopped.', [['Download term pack', () => termPack(r), true], ['Close', () => termBarShow('')]]);
+    } else termBarShow('');
+  }
+  function termPaused(reason) {
+    if (!termRun) return;
+    if (termRun.current) planQueue.unshift(termRun.current);
+    termRun.current = null; termRun.paused = reason || 'Something went wrong.';
+    termProgress();
+  }
+  function termResume() { if (!termRun) return; termRun.paused = ''; termProgress(); nextInQueue(); }
+  function termPack(r) {                               // one Word file with every plan's lesson tables and rubric
+    const body = r.ids.map((id) => state.sessions.find((x) => x.id === id)).filter((x) => x && x.messages[1])
+      .sort((a, b) => a.params.week - b.params.week).map((x) => planTables(splitElic(x.messages[1].content).body)).filter(Boolean).join('\n\n');
+    shareBody(body, r.subject + ' – ' + r.cls + ' – Term ' + r.term + ' lesson plans', null);
+  }
+  function startTermRun() {
+    const GP = window.GuidedPlans, tier = GP && GP.tier();
+    if (state.streaming || termRun) { toast('Wait for the current plan to finish.'); return; }
+    if (tier === 'guest') { openSignupSheet('Create an account to plan a whole term.'); return; }
+    if (tier === 'free') { GP.openUpgrade('', 'Planning a whole term in one go is part of GuidEd Pro.'); return; }
+    const p = state.params, term = termNow();
+    if (!(window.SchoolPadiSchemes && window.SchoolPadiSchemes.has(p.subject, p.cls, term))) { toast('Term planning needs a scheme of learning for ' + p.subject + ', ' + p.cls + ', Term ' + term + ', and none is loaded yet.'); return; }
+    const weeks = termWeeks();
+    if (!weeks.length) { toast('Every week from Week ' + p.week + ' is already planned. Pick an earlier week to fill gaps.'); return; }
+    const dlg = $('#termSheet');
+    $('#tsText').textContent = p.subject + ' · ' + p.cls + ' · Term ' + term + '. GuidEd will write ' + (weeks.length === 1 ? 'Week ' + weeks[0] : 'Weeks ' + weeks[0] + ' to ' + weeks[weeks.length - 1] + ' (' + weeks.length + ' plans)') + ', one after another. Weeks you have already planned are skipped.';
+    $('#tsTime').textContent = 'This takes about ' + Math.max(2, Math.round(weeks.length * 1.5)) + ' minutes. Keep this page open; GuidEd pauses by itself if it needs to wait and lets you resume.';
+    $('#tsGo').onclick = () => {
+      dlg.close();
+      termRun = { cls: p.cls, subject: p.subject, term, total: weeks.length, done: 0, ids: [], current: null, paused: '' };
+      planQueue = weeks.map((w) => ({ cls: p.cls, subject: p.subject, week: w, term }));
+      termProgress(); nextInQueue();
+    };
+    dlg.showModal();
+  }
+  $('#termBtn').addEventListener('click', startTermRun);
+  $('#tsCancel').addEventListener('click', () => $('#termSheet').close());
+  $('#tsClose').addEventListener('click', () => $('#termSheet').close());
 
   function nextInQueue() {
     if (state.streaming || !planQueue.length) return;
+    if (termRun) {                                     // stay inside the request limit by waiting, not failing
+      const wait = rateDelay();
+      if (wait) { termRun.paused = ''; termBarShow('Waiting ' + wait + ' minute' + (wait === 1 ? '' : 's') + ' to stay within the limit. ' + termRun.done + ' of ' + termRun.total + ' ready.', [['Stop', () => termEnd(true)]]); clearTimeout(termRun.timer); termRun.timer = setTimeout(() => { if (termRun) { termProgress(); nextInQueue(); } }, wait * 60000 + 500); return; }
+    }
     const p = planQueue.shift();
+    if (termRun) termRun.current = p;
     state.params = Object.assign({}, state.params, p, { also: [] });
     syncPills(); syncAlso();
     const fresh = makeSession();
     state.sessions.unshift(fresh);
     promptEl.value = '';
     showSession(fresh.id);
-    toast('Now writing ' + p.cls + (planQueue.length ? ' (' + planQueue.length + ' more after this)' : ''));
+    toast(termRun ? 'Now writing Week ' + p.week + ' (' + (termRun.done + 1) + ' of ' + termRun.total + ')' : 'Now writing ' + p.cls + (planQueue.length ? ' (' + planQueue.length + ' more after this)' : ''));
     submit(true);
   }
 
@@ -1057,7 +1141,7 @@
       btn.setAttribute('aria-label', cfg.name + ': ' + cfg.label(cur));
       const list = typeof cfg.items === 'function' ? cfg.items() : cfg.items;
       menu.replaceChildren(...list.map((it) => it.header ? h('div', { class: 'menu-group', role: 'presentation', text: it.header }) : h('button', {
-        type: 'button', role: 'menuitemradio', class: 'menu-item', 'aria-checked': String(it.id === cur),
+        type: 'button', role: 'menuitemradio', class: 'menu-item', 'aria-checked': String(it.id === cur), 'data-sub': it.sub || undefined,
         onclick: () => { cfg.set(it.id); build(); close(); btn.focus(); },
       },
       h('span', { class: 'mi-text' }, h('span', { class: 'mi-label', text: it.label })),
@@ -1138,10 +1222,24 @@
      and is dropped when the calendar moves on to the next term. */
   /* The teacher profile (profile.js): classes and subjects shown first, and the week after the last one planned. */
   const mySubjectsOf = (cls) => (window.GuidedProfile ? window.GuidedProfile.mySubjects(cls) : []);
-  function continueWeek() {
-    const GP = window.GuidedProfile; if (!GP) return;
-    const w = GP.nextWeek(state.params.cls, state.params.subject, termNow());
-    if (w) state.params.week = w;
+  // The teaching week today falls in, from the calendar and the school's opening date. A weekend counts as the coming week, and a holiday as week 1.
+  // It is null when the teacher has picked a term other than the current one.
+  function calendarWeek() {
+    const S = window.SchoolPadiSchemes, term = termNow();
+    if (!S || term !== S.currentTerm()) return null;
+    const d = new Date(), day = d.getDay();
+    d.setDate(d.getDate() + (day === 6 ? 2 : day === 0 ? 1 : 0));            // Saturday and Sunday look ahead to Monday
+    const today = d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+    for (let w = 1; w <= WEEKS.length; w++) { const we = weekEnd(term, w); if (we && we.iso >= today) return w; }
+    return WEEKS.length;
+  }
+  // After a plan is written the pill moves to the next week; otherwise it sits on this week, or on the week after the last one planned when there is no calendar.
+  function continueWeek(afterPlan) {
+    const GP = window.GuidedProfile;
+    const next = GP ? GP.nextWeek(state.params.cls, state.params.subject, termNow()) : null;
+    const now = calendarWeek();
+    if (afterPlan) { if (next) state.params.week = next; return; }
+    if (now) state.params.week = now; else if (next) state.params.week = next;
   }
   function applyProfile() {                           // the profile changed: make the menus and the choice fit it
     const GP = window.GuidedProfile; if (!GP) return;
@@ -1152,6 +1250,24 @@
     if (!subjectsOf(state.params.cls).includes(state.params.subject)) state.params.subject = subjectsOf(state.params.cls)[0];
     continueWeek();
     syncPills(); store.save();
+  }
+  /* Week-ending dates: the Friday that closes each week, from the GES calendar or the school's own opening date (set in the profile). */
+  const ayNow = () => (window.SchoolPadiSchemes ? window.SchoolPadiSchemes.academicYear() : new Date().getFullYear());
+  const openKey = (term) => ayNow() + '-' + term;
+  function weekEnd(term, week) {
+    const S = window.SchoolPadiSchemes; if (!S) return null;
+    const o = window.GuidedProfile && window.GuidedProfile.get().termOpen;
+    return S.weekEnding(term, week, { open: o && o[openKey(term)] });
+  }
+  // The plan leaves the Week Ending cell as a blank to fill in; put the Friday there unless the teacher gave a date.
+  function fillWeekEnding(text, params) {
+    if (!params || !params.week) return text;
+    const we = weekEnd(params.term || termNow(), params.week);
+    if (!we || we.afterClose) return text;
+    return String(text).split('\n').map((line) => (/week[\s-]*ending/i.test(line) && line.indexOf('|') !== -1 ? line.split('|').map((cell) => {
+      const m = /^(\s*(?:\*\*)?\s*week[\s-]*ending\s*:?\s*(?:\*\*)?\s*:?)\s*(?:_{2,}|\.{3,}|…|\[[^\]]*\]|\(\s*\))?\s*$/i.exec(cell);
+      return m ? m[1].replace(/\s+$/, '') + ' ' + we.label + ' ' : cell;
+    }).join('|') : line)).join('\n');
   }
   const termAuto = () => (window.SchoolPadiSchemes ? window.SchoolPadiSchemes.currentTerm() : 1);
   const termKey = () => { const u = window.PadiSync && window.PadiSync.user && window.PadiSync.user(); return 'guided.term.' + ((u && (u.id || u.email)) || 'guest'); };
@@ -1693,7 +1809,7 @@
     }
     try { state.access = localStorage.getItem(ACCESS_KEY) || ''; accessInput.value = state.access; } catch (e) { /* ignore */ }
     if (window.GuidedProfile) {
-      window.GuidedProfile.init({ toast, signedIn, changed: () => scheduleSync(), apply: applyProfile });
+      window.GuidedProfile.init({ toast, signedIn, changed: () => scheduleSync(), apply: applyProfile, termInfo: () => { const t = termNow(), o = window.SchoolPadiSchemes.termOpening(t), mine = (window.GuidedProfile.get().termOpen || {})[openKey(t)]; return { term: t, key: openKey(t), calendar: o.open, mine: mine || '', estimated: o.estimated }; } });
       const d = !saved || !saved.params ? window.GuidedProfile.defaults() : null;
       if (d) { state.params.cls = d.cls; state.params.subject = d.subject; }
       continueWeek();
@@ -1717,7 +1833,7 @@
     }, label: (x) => x });
     const ddTerm = makeDropdown($('#ddTerm'), { name: 'Term', items: () => [1, 2, 3].map((x) => ({ id: x, label: 'Term ' + x + (x === termAuto() ? ' (now)' : '') })), get: () => termNow(), set: (v) => { termSet(v); continueWeek(); syncPills(); }, label: (x) => 'Term ' + x });
     window.addEventListener('guided:account', () => { ddTerm.build(); syncScheme(); });
-    makeDropdown($('#ddWeek'), { name: 'Week', items: WEEKS.map((x) => ({ id: x, label: 'Week ' + x })), get: () => state.params.week, set: (v) => { state.params.week = v; store.save(); syncScheme(); }, label: (x) => 'Week ' + x });
+    makeDropdown($('#ddWeek'), { name: 'Week', items: () => WEEKS.map((x) => { const we = weekEnd(termNow(), x); return { id: x, label: 'Week ' + x, sub: we && !we.afterClose ? we.short + (x === calendarWeek() ? ' · this week' : '') : '' }; }), get: () => state.params.week, set: (v) => { state.params.week = v; store.save(); syncScheme(); }, label: (x) => 'Week ' + x });
 
     makeDropdown($('#ddSize'), { name: 'Class size', items: SIZES.map((x) => ({ id: x, label: x + ' learners' })), get: () => state.params.size, set: (v) => { state.params.size = v; syncSummary(); store.save(); }, label: (x) => x + ' learners' });
     syncHook(); syncLight(); syncContent(); syncScheme(); syncAlso();

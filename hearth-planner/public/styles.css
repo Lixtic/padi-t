@@ -953,3 +953,6 @@ html.splash-on .splash { display: flex; }
 .splash i { font-style: normal; color: #F4B400; }
 .splash small { font: 400 13px var(--font-ui); opacity: .85; }
 @media (prefers-reduced-motion: reduce) { .splash { transition: none; } }
+
+.menu-item[data-sub]::after { content: attr(data-sub); order: 1; padding-left: 12px; color: var(--muted); font-size: 12px; white-space: nowrap; }
+.menu-item[data-sub] .mi-check { order: 2; }

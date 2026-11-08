@@ -188,3 +188,13 @@ The class menu is grouped by level, and the subjects change with the level. Each
 ## Share a plan
 
 The Share button on a lesson plan builds a Word file with only the Lesson Metadata table, each lesson's activity table and the Assessment Rubric (see `planTables` in `public/app.js`). Objectives lines, study or teacher's notes, exam practice and follow-ups stay out. On phones it opens the system share sheet (WhatsApp, email and so on); elsewhere it downloads the file.
+
+## Plan the whole term
+
+Options > "Plan the whole term" (Pro) writes every remaining week of the chosen term for the current class and subject, from the chosen week to week 13, skipping examination weeks and weeks already planned. It needs a loaded scheme of learning. Plans are written one after another as normal plans; the run waits by itself when the request limit is near, pauses with a Resume button if a week fails, and ends with a "Download term pack" button: one Word file holding each plan's lesson tables and rubric, one plan per page set (see `termRun` in `public/app.js`).
+
+## Week-ending dates
+
+The plan's Week Ending cell fills itself with the Friday that closes the week (`fillWeekEnding` in `public/app.js`; a date the teacher typed is left alone). Dates come from the GES calendar in `scripts/build-schemes.js` (`CALENDAR`: 2026/27 is loaded from the published GES calendar; other years are estimated from the usual pattern, so add each new year when GES publishes it). Week 1 is the week the term opens. Weeks that start after the term closes get no date. A teacher whose school opened on a different day can set it under My teacher profile > Term dates; that is saved per academic year and term and synced with the profile. The week menu shows each Friday next to the week.
+
+The app opens on the current teaching week: the week whose Friday has not passed yet (a Saturday or Sunday counts as the coming Monday, a holiday as week 1 of the term about to open), counted from the GES calendar or the teacher's own opening date. The week menu marks it "this week". After a plan is written the pill moves on to the next week. If the teacher has chosen a term other than the current one, there is no calendar week, so it falls back to the week after the last one planned.
