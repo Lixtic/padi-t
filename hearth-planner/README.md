@@ -180,3 +180,11 @@ The class menu is grouped by level, and the subjects change with the level. Each
 - The list of levels, classes and subjects lives in `api/_levels.js`. After editing it run `node scripts/build-levels.js` (`npm run build` does it too; the generated files are committed) so the browser copy matches.
 - The level profiles live in `prompts/ges-lesson-plans.md` (the `### Level:` sections). Only the matching profile is sent with a request, so JHS requests cost what they did before. Run `node scripts/build-prompt.js` after editing.
 - Schemes of learning (`data/schemes.json`) are stored per class and term. Basic 1 to 6 and SHS 1 to 3 come from yearly indicator lists that `scripts/import-schemes.py` spreads over three 14-week terms in the NaCCA order (week 1 revision, weeks 2 to 12 teaching, week 13 revision, week 14 examination); Basic 7 to 9 are Term 1 files with real week numbers. The app picks the term from the calendar (Term 1 from September, Term 2 from January, Term 3 from about 20 April, see `currentTerm` in `scripts/build-schemes.js`), and a teacher can pick another with the Term button; that choice is kept per account and is dropped when the calendar moves on.
+
+## Icons and splash screens
+
+`node scripts/build-icons.js` draws the GuidEd mark (a white G ring with a gold guiding star, on green) into `public/favicon.svg`, `public/icons/*.png` (any, maskable and Apple touch) and `public/splash/ios-*.png` (iPhone and iPad portrait startup images, linked from `index.html`). Android builds its own launch screen from the manifest colour and icon. The installed app also shows a short in-app splash once per launch (`#splash`).
+
+## Share a plan
+
+The Share button on a lesson plan builds a Word file with only the Lesson Metadata table, each lesson's activity table and the Assessment Rubric (see `planTables` in `public/app.js`). Objectives lines, study or teacher's notes, exam practice and follow-ups stay out. On phones it opens the system share sheet (WhatsApp, email and so on); elsewhere it downloads the file.

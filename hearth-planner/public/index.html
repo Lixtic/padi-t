@@ -14,6 +14,14 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
   <link rel="manifest" href="manifest.webmanifest">
   <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+  <link rel="apple-touch-startup-image" href="splash/ios-430x932.png" media="(device-width: 430px) and (device-height: 932px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)">
+  <link rel="apple-touch-startup-image" href="splash/ios-393x852.png" media="(device-width: 393px) and (device-height: 852px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)">
+  <link rel="apple-touch-startup-image" href="splash/ios-390x844.png" media="(device-width: 390px) and (device-height: 844px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)">
+  <link rel="apple-touch-startup-image" href="splash/ios-375x812.png" media="(device-width: 375px) and (device-height: 812px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)">
+  <link rel="apple-touch-startup-image" href="splash/ios-414x896.png" media="(device-width: 414px) and (device-height: 896px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)">
+  <link rel="apple-touch-startup-image" href="splash/ios-375x667.png" media="(device-width: 375px) and (device-height: 667px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)">
+  <link rel="apple-touch-startup-image" href="splash/ios-810x1080.png" media="(device-width: 810px) and (device-height: 1080px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)">
+  <link rel="apple-touch-startup-image" href="splash/ios-834x1194.png" media="(device-width: 834px) and (device-height: 1194px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)">
   <link rel="icon" href="favicon.svg" type="image/svg+xml">
   <link rel="icon" href="icons/icon-192.png" sizes="192x192" type="image/png">
   <!-- Sets the saved theme before first paint (no flash). -->
@@ -35,14 +43,16 @@
   <script src="pwa.js" defer></script>
 </head>
 <body>
+<div class="splash" id="splash" aria-hidden="true"><svg viewBox="0 0 512 512"><path d="M364.1 180.3A132 132 0 1 0 388 256" fill="none" stroke="#fff" stroke-width="46"/><rect x="318" y="233" width="92" height="46" fill="#fff"/><polygon points="256.0,182.0 267.2,231.1 300.4,235.0 286.2,264.4 301.6,300.0 256.0,282.0 210.4,300.0 225.8,264.4 211.6,235.0 244.8,231.1" fill="#F4B400"/></svg><b>Guid<i>Ed</i></b><small>Lesson plans, ready for Word</small></div>
 
 <svg class="sprite" aria-hidden="true" focusable="false">
-  <symbol id="i-logo" viewBox="0 0 32 32">
-    <rect width="32" height="32" rx="9" fill="currentColor"/>
-    <circle cx="16" cy="11.2" r="4.3" fill="#F4B400"/>
-    <path d="M6.5 15.2c3.6-.5 7.2.1 9.5 2 2.3-1.9 5.9-2.5 9.5-2v10.1c-3.6-.5-7.2.1-9.5 2-2.3-1.9-5.9-2.5-9.5-2z" fill="#fff"/>
-    <path d="M16 17.2v10.1" stroke="currentColor" stroke-width="1.4"/>
+  <symbol id="i-logo" viewBox="0 0 512 512">
+    <rect width="512" height="512" rx="112" fill="currentColor"/>
+    <path d="M364.1 180.3A132 132 0 1 0 388 256" fill="none" stroke="#fff" stroke-width="46"/>
+    <rect x="318" y="233" width="92" height="46" fill="#fff"/>
+    <polygon points="256.0,182.0 274.2,230.9 326.4,233.1 285.5,265.6 299.5,315.9 256.0,287.0 212.5,315.9 226.5,265.6 185.6,233.1 237.8,230.9" fill="#F4B400"/>
   </symbol>
+  <symbol id="i-share" viewBox="0 0 24 24"><path d="M12 15V4M7.5 8.5L12 4l4.5 4.5M5 13v5.5a1.5 1.5 0 0 0 1.5 1.5h11a1.5 1.5 0 0 0 1.5-1.5V13"/></symbol>
   <symbol id="i-download" viewBox="0 0 24 24"><path d="M12 4v11M7 10.5l5 5 5-5M5 19.5h14"/></symbol>
   <symbol id="i-menu" viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h16"/></symbol>
   <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
