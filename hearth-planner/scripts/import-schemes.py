@@ -26,7 +26,7 @@ LEVEL_ALIASES = {
               'physical education and health': 'Physical Education', 'our world our people': 'Our World Our People', 'our world and our people': 'Our World Our People',
               'owop': 'Our World Our People', 'science': 'Science', 'history': 'History', 'history of ghana': 'History', 'ict': 'Computing'},
     'jhs': {'science': 'Integrated Science', 'ict': 'Computing'},
-    'shs': {'general science': 'General Science', 'core science': 'General Science', 'science': 'General Science', 'integrated science': 'General Science',
+    'shs': {'general science': 'General Science', 'core mathematics': 'Mathematics', 'core maths': 'Mathematics', 'core english': 'English Language', 'core science': 'General Science', 'science': 'General Science', 'integrated science': 'General Science',
             'core mathematics': 'Mathematics', 'mathematics (core)': 'Mathematics', 'english': 'English Language', 'social studies': 'Social Studies'},
 }
 ALIASES = {
@@ -66,7 +66,8 @@ def split_heading(text):
     m = re.match(r'^(.*?)\s*\(\s*((?:Basic|B|P|Primary)\s*-?\s*\d|SHS\s*-?\s*\d)[^)]*\)\s*$', t, re.I)
     if m and m.group(1) and not norm_class(m.group(1)):
         cls = norm_class(m.group(2))
-        return (cls, m.group(1).strip()) if cls else None
+        nm = re.sub(r'\s*[-–—]\s*Form\s*\d\s*$', '', re.sub(r'^SHS\s+', '', m.group(1).strip(), flags=re.I), flags=re.I).strip()
+        return (cls, nm) if cls else None
     cls = norm_class(t)
     if not cls: return None
     rest = re.sub(r'^\s*(?:(?:SHS|Senior High(?: School)?)\s*-?\s*\d|(?:Basic|B|P|Primary)\s*-?\s*\d)\b', '', t, flags=re.I)
