@@ -198,3 +198,12 @@ Options > "Plan the whole term" (Pro) writes every remaining week of the chosen 
 The plan's Week Ending cell fills itself with the Friday that closes the week (`fillWeekEnding` in `public/app.js`; a date the teacher typed is left alone). Dates come from the GES calendar in `scripts/build-schemes.js` (`CALENDAR`: 2026/27 is loaded from the published GES calendar; other years are estimated from the usual pattern, so add each new year when GES publishes it). Week 1 is the week the term opens. Weeks that start after the term closes get no date. A teacher whose school opened on a different day can set it under My teacher profile > Term dates; that is saved per academic year and term and synced with the profile. The week menu shows each Friday next to the week.
 
 The app opens on the current teaching week: the week whose Friday has not passed yet (a Saturday or Sunday counts as the coming Monday, a holiday as week 1 of the term about to open), counted from the GES calendar or the teacher's own opening date. The week menu marks it "this week". After a plan is written the pill moves on to the next week. If the teacher has chosen a term other than the current one, there is no calendar week, so it falls back to the week after the last one planned.
+
+## Ads on the Free plan (Google AdSense)
+One banner on the start screen, shown only to Guest and Free teachers. Pro never sees it, and it never appears while a plan is written, inside a plan, in a Word file or in a share. It is off until you set both in Vercel:
+
+- `ADSENSE_CLIENT` – your publisher id, like `ca-pub-1234567890123456`
+- `ADSENSE_SLOT` – the ad unit id (digits) of a responsive display unit
+- `ADS_PERSONALIZED=1` – optional. Without it ads are requested as non-personalised.
+
+Notes: `vercel.json` now lets the page load AdSense (script, frames, images, connections for Google ad domains); nothing else changed. AdSense must approve the site first, and Google reviews the public pages (About, Privacy), so keep them live. `public/ads.txt` holds the Google line for publisher 4853272055022457. Teachers in the EEA/UK may need a consent banner (Google's Funding Choices). An ad blocker or an unfilled ad simply hides the slot. Tests: `e2e-ads.js`.
