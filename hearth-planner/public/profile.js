@@ -122,6 +122,20 @@
       cw.appendChild(row);
     });
     renderSubjects();
+    renderDates();
+  }
+  function renderDates() {
+    var info = hooks.termInfo && hooks.termInfo(); if (!info) return;
+    var nice = function (iso) { var d = new Date(iso + 'T00:00:00Z'); return d.toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric', timeZone: 'UTC' }); };
+    $('#pfOpenLabel').textContent = 'Term ' + info.term + ' opened on';
+    $('#pfOpen').value = info.mine || info.calendar;
+    $('#pfTermText').textContent = 'Week-ending dates are the Fridays counted from the day the term opens. The GES calendar says ' + nice(info.calendar) + (info.estimated ? ' (an estimate: the official dates are not published yet)' : '') + '. If your school opened on another day, change it here.';
+    $('#pfOpenReset').hidden = !info.mine;
+  }
+  function setOpen(iso) {
+    var info = hooks.termInfo && hooks.termInfo(); if (!info) return;
+    patch(function (x) { x.termOpen = x.termOpen || {}; if (!iso || iso === info.calendar) delete x.termOpen[info.key]; else x.termOpen[info.key] = iso; });
+    renderDates(); if (hooks.apply) hooks.apply();
   }
   function renderSubjects() {
     var o = read(), sw = $('#pfSubjects'); sw.replaceChildren();
@@ -147,6 +161,8 @@
       if (hooks.apply) hooks.apply();
     });
     dlg.addEventListener('click', function (e) { var r = dlg.getBoundingClientRect(); if (e.clientX < r.left || e.clientX > r.right || e.clientY < r.top || e.clientY > r.bottom) finish(); });
+    $('#pfOpen').addEventListener('change', function (e) { if (/^\d{4}-\d{2}-\d{2}$/.test(e.target.value)) setOpen(e.target.value); });
+    $('#pfOpenReset').addEventListener('click', function () { setOpen(''); });
     var b = $('#profileBtn'); if (b) b.addEventListener('click', function () { P.openSheet(); });
   }
 

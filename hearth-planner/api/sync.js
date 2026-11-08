@@ -65,10 +65,15 @@ module.exports = async (req, res) => {
         const v = d.last[k], [c, sub] = k.split('|');
         if (Levels.isClass(c) && known.has(sub) && Array.isArray(v) && [1, 2, 3].includes(v[0]) && Number.isInteger(v[1]) && v[1] >= 1 && v[1] <= 14) last[k] = [v[0], v[1]];
       });
+      const termOpen = {};
+      Object.keys(d.termOpen && typeof d.termOpen === 'object' ? d.termOpen : {}).slice(0, 12).forEach((k) => {
+        const v = d.termOpen[k];
+        if (/^\d{4}-[123]$/.test(k) && typeof v === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(v) && !isNaN(Date.parse(v))) termOpen[k] = v;
+      });
       const clean = {
         teacher: String(d.teacher || '').slice(0, 80), school: String(d.school || '').slice(0, 100),
         classes: list(d.classes, (x) => Levels.isClass(x), 12), subjects: list(d.subjects, (x) => known.has(x), 20),
-        asked: list(d.asked, (x) => x.length <= 80, 40), last, setupDone: d.setupDone === true,
+        asked: list(d.asked, (x) => x.length <= 80, 40), last, termOpen, setupDone: d.setupDone === true,
       };
       await db.query('insert into profiles (user_id, data, updated_at) values ($1, $2::jsonb, $3) on conflict (user_id) do update set data = excluded.data, updated_at = excluded.updated_at where profiles.updated_at <= excluded.updated_at',
         [me.uid, JSON.stringify(clean), Math.round(ts)]);

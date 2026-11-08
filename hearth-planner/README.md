@@ -192,3 +192,7 @@ The Share button on a lesson plan builds a Word file with only the Lesson Metada
 ## Plan the whole term
 
 Options > "Plan the whole term" (Pro) writes every remaining week of the chosen term for the current class and subject, from the chosen week to week 13, skipping examination weeks and weeks already planned. It needs a loaded scheme of learning. Plans are written one after another as normal plans; the run waits by itself when the request limit is near, pauses with a Resume button if a week fails, and ends with a "Download term pack" button: one Word file holding each plan's lesson tables and rubric, one plan per page set (see `termRun` in `public/app.js`).
+
+## Week-ending dates
+
+The plan's Week Ending cell fills itself with the Friday that closes the week (`fillWeekEnding` in `public/app.js`; a date the teacher typed is left alone). Dates come from the GES calendar in `scripts/build-schemes.js` (`CALENDAR`: 2026/27 is loaded from the published GES calendar; other years are estimated from the usual pattern, so add each new year when GES publishes it). Week 1 is the week the term opens. Weeks that start after the term closes get no date. A teacher whose school opened on a different day can set it under My teacher profile > Term dates; that is saved per academic year and term and synced with the profile. The week menu shows each Friday next to the week.

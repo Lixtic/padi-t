@@ -993,6 +993,7 @@
       return;
     }
 
+    if (kind === 'plan') text = fillWeekEnding(text, session.params);
     const msg = { role: 'assistant', kind, content: text, seconds: (performance.now() - t0) / 1000, stopped: aborted, demo: state.config.demo, warning };
     if (previewFlag) msg.preview = true;
     if (!text.trim()) { bot.error(warning || 'The model returned nothing. Please try again.', () => { bot.root.remove(); state.bots.pop(); runGenerate(session); }); updateSend(); renderSessions(); updateTopbar(); return; }
@@ -1140,7 +1141,7 @@
       btn.setAttribute('aria-label', cfg.name + ': ' + cfg.label(cur));
       const list = typeof cfg.items === 'function' ? cfg.items() : cfg.items;
       menu.replaceChildren(...list.map((it) => it.header ? h('div', { class: 'menu-group', role: 'presentation', text: it.header }) : h('button', {
-        type: 'button', role: 'menuitemradio', class: 'menu-item', 'aria-checked': String(it.id === cur),
+        type: 'button', role: 'menuitemradio', class: 'menu-item', 'aria-checked': String(it.id === cur), 'data-sub': it.sub || undefined,
         onclick: () => { cfg.set(it.id); build(); close(); btn.focus(); },
       },
       h('span', { class: 'mi-text' }, h('span', { class: 'mi-label', text: it.label })),
@@ -1235,6 +1236,24 @@
     if (!subjectsOf(state.params.cls).includes(state.params.subject)) state.params.subject = subjectsOf(state.params.cls)[0];
     continueWeek();
     syncPills(); store.save();
+  }
+  /* Week-ending dates: the Friday that closes each week, from the GES calendar or the school's own opening date (set in the profile). */
+  const ayNow = () => (window.SchoolPadiSchemes ? window.SchoolPadiSchemes.academicYear() : new Date().getFullYear());
+  const openKey = (term) => ayNow() + '-' + term;
+  function weekEnd(term, week) {
+    const S = window.SchoolPadiSchemes; if (!S) return null;
+    const o = window.GuidedProfile && window.GuidedProfile.get().termOpen;
+    return S.weekEnding(term, week, { open: o && o[openKey(term)] });
+  }
+  // The plan leaves the Week Ending cell as a blank to fill in; put the Friday there unless the teacher gave a date.
+  function fillWeekEnding(text, params) {
+    if (!params || !params.week) return text;
+    const we = weekEnd(params.term || termNow(), params.week);
+    if (!we || we.afterClose) return text;
+    return String(text).split('\n').map((line) => (/week[\s-]*ending/i.test(line) && line.indexOf('|') !== -1 ? line.split('|').map((cell) => {
+      const m = /^(\s*(?:\*\*)?\s*week[\s-]*ending\s*:?\s*(?:\*\*)?\s*:?)\s*(?:_{2,}|\.{3,}|…|\[[^\]]*\]|\(\s*\))?\s*$/i.exec(cell);
+      return m ? m[1].replace(/\s+$/, '') + ' ' + we.label + ' ' : cell;
+    }).join('|') : line)).join('\n');
   }
   const termAuto = () => (window.SchoolPadiSchemes ? window.SchoolPadiSchemes.currentTerm() : 1);
   const termKey = () => { const u = window.PadiSync && window.PadiSync.user && window.PadiSync.user(); return 'guided.term.' + ((u && (u.id || u.email)) || 'guest'); };
@@ -1776,7 +1795,7 @@
     }
     try { state.access = localStorage.getItem(ACCESS_KEY) || ''; accessInput.value = state.access; } catch (e) { /* ignore */ }
     if (window.GuidedProfile) {
-      window.GuidedProfile.init({ toast, signedIn, changed: () => scheduleSync(), apply: applyProfile });
+      window.GuidedProfile.init({ toast, signedIn, changed: () => scheduleSync(), apply: applyProfile, termInfo: () => { const t = termNow(), o = window.SchoolPadiSchemes.termOpening(t), mine = (window.GuidedProfile.get().termOpen || {})[openKey(t)]; return { term: t, key: openKey(t), calendar: o.open, mine: mine || '', estimated: o.estimated }; } });
       const d = !saved || !saved.params ? window.GuidedProfile.defaults() : null;
       if (d) { state.params.cls = d.cls; state.params.subject = d.subject; }
       continueWeek();
@@ -1800,7 +1819,7 @@
     }, label: (x) => x });
     const ddTerm = makeDropdown($('#ddTerm'), { name: 'Term', items: () => [1, 2, 3].map((x) => ({ id: x, label: 'Term ' + x + (x === termAuto() ? ' (now)' : '') })), get: () => termNow(), set: (v) => { termSet(v); continueWeek(); syncPills(); }, label: (x) => 'Term ' + x });
     window.addEventListener('guided:account', () => { ddTerm.build(); syncScheme(); });
-    makeDropdown($('#ddWeek'), { name: 'Week', items: WEEKS.map((x) => ({ id: x, label: 'Week ' + x })), get: () => state.params.week, set: (v) => { state.params.week = v; store.save(); syncScheme(); }, label: (x) => 'Week ' + x });
+    makeDropdown($('#ddWeek'), { name: 'Week', items: () => WEEKS.map((x) => { const we = weekEnd(termNow(), x); return { id: x, label: 'Week ' + x, sub: we && !we.afterClose ? we.short : '' }; }), get: () => state.params.week, set: (v) => { state.params.week = v; store.save(); syncScheme(); }, label: (x) => 'Week ' + x });
 
     makeDropdown($('#ddSize'), { name: 'Class size', items: SIZES.map((x) => ({ id: x, label: x + ' learners' })), get: () => state.params.size, set: (v) => { state.params.size = v; syncSummary(); store.save(); }, label: (x) => x + ' learners' });
     syncHook(); syncLight(); syncContent(); syncScheme(); syncAlso();
