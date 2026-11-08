@@ -2778,6 +2778,1041 @@
    },
    "term": "1st Term",
    "source": "Career Technology Basic 7-9 Week 1-12"
+  },
+  "Mathematics": {
+   "classes": {
+    "Basic 7": [
+     {
+      "weeks": [
+       2
+      ],
+      "type": "teach",
+      "strand": "",
+      "substrand": "",
+      "standard": "",
+      "indicators": [
+       "B7.1.1.1.1 Model number quantities more than 1,000,000,000 using graph sheets, isometric papers and multi-base blocks. B7.1.1.2 Compare and order whole numbers more than 1,000,000,000 and represent the comparison using \">, <, or =\".",
+       "B7.1.1.1.3 Round whole numbers more than 1,000,000,000 to the nearest hundred-thousand, ten-thousands, thousands, hundreds and tens."
+      ]
+     },
+     {
+      "weeks": [
+       3
+      ],
+      "type": "teach",
+      "strand": "",
+      "substrand": "",
+      "standard": "",
+      "indicators": [
+       "B7.1.1.1.4 Round decimals to the nearest tenth, hundredth, thousandths, etc.",
+       "B7.1.1.1.5 Express decimal numerals to given significant and decimal places."
+      ]
+     },
+     {
+      "weeks": [
+       4
+      ],
+      "type": "teach",
+      "strand": "",
+      "substrand": "",
+      "standard": "",
+      "indicators": [
+       "B7.1.2.1.1 Multiply and divide given numbers by multiples of 10 including decimals and benchmark fractions.",
+       "B7.1.2.1.2 Apply mental mathematics strategies and number properties used to do calculation.",
+       "B7.1.2.1.3 Apply mental mathematics strategies to solve word problems."
+      ]
+     },
+     {
+      "weeks": [
+       5
+      ],
+      "type": "teach",
+      "strand": "",
+      "substrand": "",
+      "standard": "",
+      "indicators": [
+       "B7.1.2.2.1 Add and subtract up to four-digit numbers.",
+       "B7.1.2.2.2 Multiply or divide multi-digit numbers by 1- and 2- digit numbers.",
+       "B7.1.2.2.3 Create and solve story problems involving decimals on the four basic operations."
+      ]
+     },
+     {
+      "weeks": [
+       6
+      ],
+      "type": "teach",
+      "strand": "",
+      "substrand": "",
+      "standard": "",
+      "indicators": [
+       "B7.1.2.3.1 Illustrate with examples the meaning of repeated factors using counting objects such as bottle tops or bundle sticks.",
+       "B7.1.2.3.2 Express a given number as a product of a given number or numbers, as well as, in the form of a power or two such numbers as product of powers."
+      ]
+     },
+     {
+      "weeks": [
+       7
+      ],
+      "type": "teach",
+      "strand": "",
+      "substrand": "",
+      "standard": "",
+      "indicators": [
+       "B7.1.2.3.3 Show that the value of any natural number with zero as its exponent or index is 1 and use it to solve problems."
+      ]
+     },
+     {
+      "weeks": [
+       8
+      ],
+      "type": "teach",
+      "strand": "",
+      "substrand": "",
+      "standard": "",
+      "indicators": [
+       "B7.1.2.3.4 Find the value of a number written in index form.",
+       "B7.1.2.3.5 Apply the concept of powers of numbers (product of prime) to find HCF."
+      ]
+     },
+     {
+      "weeks": [
+       9
+      ],
+      "type": "teach",
+      "strand": "",
+      "substrand": "",
+      "standard": "",
+      "indicators": [
+       "B7.1.3.1.1 Determine and recall the percentages and decimals of given benchmark fractions (i.e. tenths, fifths, fourths, thirds and halves) and use these to compare quantities.",
+       "B7.1.3.1.2 Compare and order fractions (i.e. common, percent and decimal fractions up to thousandths) limit to the benchmark fractions."
+      ]
+     },
+     {
+      "weeks": [
+       10
+      ],
+      "type": "teach",
+      "strand": "",
+      "substrand": "",
+      "standard": "",
+      "indicators": [
+       "B7.1.3.2.1 Explain the process of addition and subtraction of two or three unlike and mixed fractions.",
+       "B7.1.3.2.2 Solve problems involving addition or subtraction of fractions."
+      ]
+     },
+     {
+      "weeks": [
+       11
+      ],
+      "type": "teach",
+      "strand": "",
+      "substrand": "",
+      "standard": "",
+      "indicators": [
+       "B7.1.3.3.1 Explain the process of multiplying a fraction (i.e. common, percent and decimal fractions up to thousandths) by a whole number and by a fraction.",
+       "B7.1.3.3.2 Find a fraction of given quantity (i.e. money or given quantity of objects)."
+      ]
+     },
+     {
+      "weeks": [
+       12
+      ],
+      "type": "teach",
+      "strand": "",
+      "substrand": "",
+      "standard": "",
+      "indicators": [
+       "B7.1.3.3.3 Explain the process of dividing a fraction (i.e. common, percent and decimal fractions up to thousandths) by a 1-digit whole number and by a fraction.",
+       "B7.1.3.3.4 Determine the result of dividing a quantity (i.e. money or objects) or a fraction by a fraction."
+      ]
+     }
+    ],
+    "Basic 8": [
+     {
+      "weeks": [
+       1
+      ],
+      "type": "revision",
+      "strand": "",
+      "substrand": "",
+      "standard": "",
+      "indicators": [],
+      "focus": "Revision"
+     },
+     {
+      "weeks": [
+       2,
+       3
+      ],
+      "type": "teach",
+      "strand": "",
+      "substrand": "",
+      "standard": "B8.1.1.1 Demonstrate understanding and the use of place value for expressing quantities in standard form and rounding numbers and decimals to significant figures and a given number of decimal places",
+      "indicators": [
+       "B8.1.1.1.1 Apply the understanding of place value to read and write in number quantities over 1,000,000,000.",
+       "B8.1.1.1.2. Skip count forwards and backwards in 10,000s, 100,000s, 500,000s, etc.",
+       "B8.1.1.1.3. Compare and order whole numbers using \">, <, and =\"."
+      ]
+     },
+     {
+      "weeks": [
+       4,
+       5
+      ],
+      "type": "teach",
+      "strand": "",
+      "substrand": "",
+      "standard": "B8.1.1.1 Demonstrate understanding and the use of place value for expressing quantities in standard form and rounding numbers and decimals to significant figures and a given number of decimal places",
+      "indicators": [
+       "B8.1.1.1.4 Express integers of any size into standard form.",
+       "B8.1.1.1.5 Express integers in a given number of significant and decimal places.",
+       "B8.1.1.1.6 Create and solve word or real-life problems on place values."
+      ]
+     },
+     {
+      "weeks": [
+       6
+      ],
+      "type": "teach",
+      "strand": "",
+      "substrand": "",
+      "standard": "B8.1.1.2 Apply the concepts and vocabulary of sets on sets of factors of numbers to identify perfect squares, determine their square root and solve real life problems involving union and intersection of two sets",
+      "indicators": [
+       "B8.1.1.2.1. Use the concept of sets to identify perfect squares and determine the square roots. Use the knowledge on sets and sets of factors of numbers to solve problems."
+      ]
+     },
+     {
+      "weeks": [
+       7
+      ],
+      "type": "teach",
+      "strand": "",
+      "substrand": "",
+      "standard": "B8.1.1.2 Apply concepts of sets / B8.1.2.1 Apply mental mathematics strategies and number properties used to solve problems",
+      "indicators": [
+       "B8.1.1.2.2. Use the knowledge on sets and sets of factors of numbers to solve real life problems involving union and intersection.",
+       "B8.1.2.1.1 Multiply and divide by power of 10 including decimals and the benchmark fractions.",
+       "B8.1.2.1.2 Apply mental mathematics strategies and number properties to do calculation.",
+       "B8.1.2.1.3 Apply mental mathematics strategies to solve word problems."
+      ]
+     },
+     {
+      "weeks": [
+       8
+      ],
+      "type": "teach",
+      "strand": "",
+      "substrand": "",
+      "standard": "B8.1.2.2 Apply the understanding of the addition, subtraction, multiplication and division of (i) whole numbers within 10,000, and (ii) decimals up to 1/1000, to solve problems and round answers to given decimal places.",
+      "indicators": [
+       "B8.1.2.2.1 Add and subtract more than four-digit numbers.",
+       "B8.1.2.2.2 Multiply or divide multi-digit numbers by 2- and 3-digit numbers.",
+       "B8.1.2.2.3. Create and solve story problems involving decimals on the four basic operations."
+      ]
+     },
+     {
+      "weeks": [
+       9
+      ],
+      "type": "teach",
+      "strand": "",
+      "substrand": "",
+      "standard": "B8.1.2.3 Demonstrate understanding and the use of the laws of indices in solving problems (including real life problems) involving powers of natural numbers",
+      "indicators": [
+       "B8.1.2.3.1 Identify and explain the laws of indices.",
+       "B8.1.2.3.2 Apply the laws of indices to simplify and evaluate numbers involving powers of numbers. (PEDMAS)"
+      ]
+     },
+     {
+      "weeks": [
+       10
+      ],
+      "type": "teach",
+      "strand": "",
+      "substrand": "",
+      "standard": "B8.1.2.3 Demonstrate understanding and the use of the laws of indices in solving problems (including real life problems) involving powers of natural numbers",
+      "indicators": [
+       "B8.1.2.3.3 Solve exponential equations.",
+       "B8.1.2.3.4 Solve real life problems involving powers of natural numbers."
+      ]
+     },
+     {
+      "weeks": [
+       11
+      ],
+      "type": "teach",
+      "strand": "",
+      "substrand": "",
+      "standard": "B8.1.3.1 Apply the understanding of operation on fractions to solve problems involving fractions of given quantities and round the results to given decimal and significant places",
+      "indicators": [
+       "B8.1.3.1.1 Review fractions and solve problems involving basic operations on fractions."
+      ]
+     },
+     {
+      "weeks": [
+       12
+      ],
+      "type": "teach",
+      "strand": "",
+      "substrand": "",
+      "standard": "B8.1.3.1 Apply the understanding of operation on fractions to solve problems involving fractions of given quantities and round the results to given decimal and significant places",
+      "indicators": [
+       "B8.1.3.1.2 Add and/or subtract, multiply and/or divide given fractions, by using the principle of the order of operations (the rule of BODMAS or PEMDAS), and apply the understanding to solve problems.",
+       "B8.1.3.1.3. Review word problems involving basic operations on fractions and related concepts."
+      ]
+     },
+     {
+      "weeks": [
+       13
+      ],
+      "type": "revision",
+      "strand": "",
+      "substrand": "",
+      "standard": "",
+      "indicators": [],
+      "focus": "Revision"
+     },
+     {
+      "weeks": [
+       14,
+       15
+      ],
+      "type": "exam",
+      "strand": "",
+      "substrand": "",
+      "standard": "",
+      "indicators": [],
+      "focus": "Examination"
+     }
+    ],
+    "Basic 9": [
+     {
+      "weeks": [
+       1
+      ],
+      "type": "revision",
+      "strand": "",
+      "substrand": "",
+      "standard": "",
+      "indicators": [],
+      "focus": "Revision"
+     },
+     {
+      "weeks": [
+       2
+      ],
+      "type": "teach",
+      "strand": "",
+      "substrand": "",
+      "standard": "B9.1.1.1 Apply the understanding of place value in solving real life problems involving integers of any size, rounding this to given decimal places and significant figures",
+      "indicators": [
+       "B9.1.1.1.1 Express integers to a given number of significant and decimal places.",
+       "B9.1.1.1.2. Use knowledge and understanding of place value to solve real life problems."
+      ]
+     },
+     {
+      "weeks": [
+       3
+      ],
+      "type": "teach",
+      "strand": "",
+      "substrand": "",
+      "standard": "B9.1.1.2 Demonstrate an understanding of the relationship between members of the rational number system and solve real life problems involving union and intersection of three sets",
+      "indicators": [
+       "B9.1.1.2.1 Solve problems on relationship between members of the rational number system using knowledge and understanding of the concept of union and intersection of two sets.",
+       "B9.1.1.2.2 Apply the concept of sets to solve problems on relationship between members of rational number system and solve real life problems involving union and intersection of two sets."
+      ]
+     },
+     {
+      "weeks": [
+       4
+      ],
+      "type": "teach",
+      "strand": "",
+      "substrand": "",
+      "standard": "B.9.1.2.1 Apply mental mathematics and properties to determine answers for addition and subtraction of basic facts.",
+      "indicators": [
+       "B9.1.2.1.1 Multiply and divide given numbers by powers of 10 including decimals and benchmark fractions."
+      ]
+     },
+     {
+      "weeks": [
+       5
+      ],
+      "type": "teach",
+      "strand": "",
+      "substrand": "",
+      "standard": "B9.1.2.2 Apply the understanding of addition, subtraction, multiplication and division of decimal numbers to solve problems, and round answers to given decimal places and significant figures",
+      "indicators": [
+       "B9.1.2.2.1 Solve operations involving addition, subtraction, multiplication and division using word problems.",
+       "B9.1.2.2.2 Solve word problems involving the four basic operations and round the answers to the nearest two decimal figures or to some significant figures."
+      ]
+     },
+     {
+      "weeks": [
+       6
+      ],
+      "type": "teach",
+      "strand": "",
+      "substrand": "",
+      "standard": "B9.1.2.4 Demonstrate understanding of surds as real numbers, the process of adding and subtracting of surds as well as determining (using a calculator) the approximate square root of a number that is not a perfect square.",
+      "indicators": [
+       "B9.1.2.4.1 Identify simple and compound surds.",
+       "B9.1.2.4.2 Explain the identities/rules of surds."
+      ]
+     },
+     {
+      "weeks": [
+       7
+      ],
+      "type": "teach",
+      "strand": "",
+      "substrand": "",
+      "standard": "B9.1.2.4 Demonstrate understanding of surds as real numbers, the process of adding and subtracting of surds as well as determining (using a calculator) the approximate square root of a number that is not a perfect square.",
+      "indicators": [
+       "B9.1.2.4.3 Simplify given surds.",
+       "B9.1.2.4.4 Approximate the square roots of non-perfect squares with calculators/tables."
+      ]
+     },
+     {
+      "weeks": [
+       8
+      ],
+      "type": "teach",
+      "strand": "",
+      "substrand": "",
+      "standard": "B9.1.3.1 Apply the understanding of operations on fractions to solve problems involving fractions of given quantities and round the results to given decimal and significant places",
+      "indicators": [
+       "B9.1.3.1.1 Review fractions and solve problems involving basic operations on fractions."
+      ]
+     },
+     {
+      "weeks": [
+       9
+      ],
+      "type": "teach",
+      "strand": "",
+      "substrand": "",
+      "standard": "B9.1.3.1 Apply the understanding of operations on fractions to solve problems involving fractions of given quantities and round the results to given decimal and significant places",
+      "indicators": [
+       "B9.1.3.1.2 Add and/or subtract, multiply and/or divide given fractions, using the principle of order of operations including the use of the BODMAS or PEMDAS rule, and apply the understanding of these to solve problems.",
+       "B9.1.3.1.3. Review word problems involving basic operations on fractions."
+      ]
+     },
+     {
+      "weeks": [
+       10,
+       11
+      ],
+      "type": "teach",
+      "strand": "",
+      "substrand": "",
+      "standard": "B9.1.4.1 Apply the understanding of ratio, rate and proportions to solve problems that involve rates, ratios, and proportional reasoning and use it to solve real-world mathematical problems.",
+      "indicators": [
+       "B9.1.4.1.1 Represent proportional relationships by equations.",
+       "B9.1.4.1.2 Use proportional relationships to solve multistep ratio and percent problems, examples: simple interest, tax, discount and commissions, NHIL, depreciation, insurance, etc."
+      ]
+     },
+     {
+      "weeks": [
+       12
+      ],
+      "type": "teach",
+      "strand": "",
+      "substrand": "",
+      "standard": "B9.1.4.1 Apply the understanding of ratio, rate and proportions to solve problems that involve rates, ratios, and proportional reasoning and use it to solve real-world mathematical problems.",
+      "indicators": [
+       "B9.1.4.1.3 Use knowledge of rates and proportional reasoning to solve problems involving SSNIT benefits and contributions."
+      ]
+     },
+     {
+      "weeks": [
+       13
+      ],
+      "type": "revision",
+      "strand": "",
+      "substrand": "",
+      "standard": "",
+      "indicators": [],
+      "focus": "Revision"
+     },
+     {
+      "weeks": [
+       14,
+       15
+      ],
+      "type": "exam",
+      "strand": "",
+      "substrand": "",
+      "standard": "",
+      "indicators": [],
+      "focus": "Examination"
+     }
+    ]
+   },
+   "term": "",
+   "source": "Tabulated Scheme of Learning - Maths RME Gh Lang - Bs 7 8 9 - Weeks 1-15"
+  },
+  "Ghanaian Language": {
+   "classes": {
+    "Basic 7": [
+     {
+      "weeks": [
+       2
+      ],
+      "type": "teach",
+      "strand": "",
+      "substrand": "",
+      "standard": "",
+      "indicators": [
+       "B7.1.1.1.1 Identify the processes involved in naming a child.",
+       "B7.1.1.1.2 Discuss the significance of the processes in naming a child.",
+       "B7.1.1.1.3 Compare and contrast the naming processes in his/her culture to other Ghanaian cultures."
+      ]
+     },
+     {
+      "weeks": [
+       3
+      ],
+      "type": "teach",
+      "strand": "",
+      "substrand": "",
+      "standard": "",
+      "indicators": [
+       "B7.1.1.1.4 Compare and contrast the traditional naming process to the contemporary naming process.",
+       "B7.1.1.1.5 Role play a naming ceremony session in his/her culture."
+      ]
+     },
+     {
+      "weeks": [
+       4
+      ],
+      "type": "teach",
+      "strand": "",
+      "substrand": "",
+      "standard": "",
+      "indicators": [
+       "B7.2.1.1.1. Use appropriate register in everyday communication (informal and formal) with diverse partners on grade-level topics/texts/issues.",
+       "B7.2.1.1.2. Ask questions that elicit elaboration and respond to others' questions in conversation.",
+       "B7.2.1.1.3. Use appropriate language orally to describe experiences about oneself and others."
+      ]
+     },
+     {
+      "weeks": [
+       5
+      ],
+      "type": "teach",
+      "strand": "",
+      "substrand": "",
+      "standard": "",
+      "indicators": [
+       "B7.2.1.1.4 Listen to and give accurate directions to familiar places.",
+       "B7.2.1.1.5. Use techniques (voice modulation and eye contact) for effective oral communication."
+      ]
+     },
+     {
+      "weeks": [
+       6
+      ],
+      "type": "teach",
+      "strand": "",
+      "substrand": "",
+      "standard": "",
+      "indicators": [
+       "B7.1.2.1.1. Listen to a level-appropriate text attentively and identify key information.",
+       "B7.1.2.1.2. Listen to, discuss ideas and share opinions from a level-appropriate text."
+      ]
+     },
+     {
+      "weeks": [
+       7
+      ],
+      "type": "teach",
+      "strand": "",
+      "substrand": "",
+      "standard": "",
+      "indicators": [
+       "B7.2.3.1.1 Identify and produce the vowels in his/her language.",
+       "B7.2.3.1.2 Identify and produce the consonants in his/her language.",
+       "B7.2.3.1.3 Identify and produce one to four syllable words of the language of study."
+      ]
+     },
+     {
+      "weeks": [
+       8
+      ],
+      "type": "teach",
+      "strand": "",
+      "substrand": "",
+      "standard": "",
+      "indicators": [
+       "B7.2.4.1.1 Identify and produce the basic tones in his/her language."
+      ]
+     },
+     {
+      "weeks": [
+       9
+      ],
+      "type": "teach",
+      "strand": "",
+      "substrand": "",
+      "standard": "",
+      "indicators": [
+       "B7.2.5.1.1 Identify and produce words in the home and school environments and use them to form meaningful sentences."
+      ]
+     },
+     {
+      "weeks": [
+       10
+      ],
+      "type": "teach",
+      "strand": "",
+      "substrand": "",
+      "standard": "",
+      "indicators": [
+       "B7.2.6.1.1: Describe daily activities using appropriate register, structure and gestures for the contest being presented.",
+       "B7.3.1.1.1 Read and understand main ideas and supporting points in a range of texts on familiar and unfamiliar topics."
+      ]
+     },
+     {
+      "weeks": [
+       11
+      ],
+      "type": "teach",
+      "strand": "",
+      "substrand": "",
+      "standard": "",
+      "indicators": [
+       "B7.3.1.1.2 Read to understand and summarise the main ideas in a given grade level passage."
+      ]
+     },
+     {
+      "weeks": [
+       12
+      ],
+      "type": "teach",
+      "strand": "",
+      "substrand": "",
+      "standard": "",
+      "indicators": [
+       "B7.3.2.1.1 Translate words and phrases in his/her language."
+      ]
+     }
+    ],
+    "Basic 8": [
+     {
+      "weeks": [
+       1
+      ],
+      "type": "revision",
+      "strand": "",
+      "substrand": "",
+      "standard": "",
+      "indicators": [],
+      "focus": "Revision"
+     },
+     {
+      "weeks": [
+       2,
+       3
+      ],
+      "type": "teach",
+      "strand": "",
+      "substrand": "",
+      "standard": "B8.1.1.1 Demonstrate understanding of how puberty rites are performed in his/her linguistic community, its significance and compare with other cultures of Ghana.",
+      "indicators": [
+       "B8.1.1.1.1 Identify the processes involved in performing puberty rites in your culture.",
+       "B8.1.1.1.2 Compare and contrast the processes involved in performing puberty rites in his/her culture to other cultures of Ghana."
+      ]
+     },
+     {
+      "weeks": [
+       4
+      ],
+      "type": "teach",
+      "strand": "",
+      "substrand": "",
+      "standard": "B8.1.1.1 Demonstrate understanding of how puberty rites are performed in his/her linguistic community, its significance and compare with other cultures of Ghana.",
+      "indicators": [
+       "B8.1.1.1.3 Discuss the changes that has occurred in puberty rites performance over time."
+      ]
+     },
+     {
+      "weeks": [
+       5
+      ],
+      "type": "teach",
+      "strand": "",
+      "substrand": "",
+      "standard": "B8.2.5.1 Demonstrate knowledge of presentational skills in listening, following daily conversation, speaking clearly and explaining ideas.",
+      "indicators": [
+       "B8.2.5.1.1 Develop and modify his/her language in narrating some selected daily activities."
+      ]
+     },
+     {
+      "weeks": [
+       6
+      ],
+      "type": "teach",
+      "strand": "",
+      "substrand": "",
+      "standard": "B8.3.1.1 Understand the main ideas and supporting points in texts",
+      "indicators": [
+       "B8.3.1.1.1 Understand main ideas and supporting points in a range of extended texts on familiar and unfamiliar topics.",
+       "B8.3.1.1.2 Summarize long passages read."
+      ]
+     },
+     {
+      "weeks": [
+       7
+      ],
+      "type": "teach",
+      "strand": "",
+      "substrand": "",
+      "standard": "B8.3.2.1 Demonstrate knowledge of translating words, phrases and sentences",
+      "indicators": [
+       "B8.3.2.1.1 Establish the meaning of words, phrases and sentences in their various languages."
+      ]
+     },
+     {
+      "weeks": [
+       8
+      ],
+      "type": "teach",
+      "strand": "",
+      "substrand": "",
+      "standard": "B8.4.1.1 Demonstrate knowledge and understanding of nouns, pronouns and adjectives.",
+      "indicators": [
+       "B8.4.1.1.1 Classify nouns under various types (abstract, concrete, countable and uncountable nouns)."
+      ]
+     },
+     {
+      "weeks": [
+       9
+      ],
+      "type": "teach",
+      "strand": "",
+      "substrand": "",
+      "standard": "B8.4.2.1 Demonstrate knowledge and understanding of verbs, adverb, conjunctions",
+      "indicators": [
+       "B8.4.1.1.2 Determine the types of pronouns in his/her language.",
+       "B8.4.1.1.3 Determine and categorise adjectives under size, colour, shape, quantity, etc in his/her language.",
+       "B8.4.2.1.1 Recognise and use the tense and aspectual (habitual, progressive, future) forms of verbs in sentences.",
+       "B8.4.2.1.2 Identify and use adverbs appropriately in sentences.",
+       "B8.4.2.1.3 Identify and use an increasing range of conjunctions appropriately and correctly in a given text."
+      ]
+     },
+     {
+      "weeks": [
+       10
+      ],
+      "type": "teach",
+      "strand": "",
+      "substrand": "",
+      "standard": "B8.5.1.1 Demonstrate knowledge and understanding of the ability to write meaningful compositions on the various text types (persuasive/argumentative writing, informative/academic/expository and letter writing).",
+      "indicators": [
+       "B8.5.1.1.1 Develop coherent essay using the features of given text types."
+      ]
+     },
+     {
+      "weeks": [
+       11
+      ],
+      "type": "teach",
+      "strand": "",
+      "substrand": "",
+      "standard": "B8.6.1.1 Demonstrate knowledge and understanding of proverbs and idioms.",
+      "indicators": [
+       "B8.6.1.1.1 Discuss the features of proverbs and idioms."
+      ]
+     },
+     {
+      "weeks": [
+       12
+      ],
+      "type": "teach",
+      "strand": "",
+      "substrand": "",
+      "standard": "B8.6.1.2 Demonstrate knowledge and understanding on the writer's use of language in a prose, poetry and drama texts.",
+      "indicators": [
+       "B8.6.1.2.1 Discuss how writers use language to create effect in prose, poetry and drama."
+      ]
+     },
+     {
+      "weeks": [
+       13
+      ],
+      "type": "revision",
+      "strand": "",
+      "substrand": "",
+      "standard": "",
+      "indicators": [],
+      "focus": "Revision"
+     },
+     {
+      "weeks": [
+       14,
+       15
+      ],
+      "type": "exam",
+      "strand": "",
+      "substrand": "",
+      "standard": "",
+      "indicators": [],
+      "focus": "Examination"
+     }
+    ],
+    "Basic 9": [
+     {
+      "weeks": [
+       1
+      ],
+      "type": "revision",
+      "strand": "",
+      "substrand": "",
+      "standard": "",
+      "indicators": [],
+      "focus": "Revision"
+     },
+     {
+      "weeks": [
+       2
+      ],
+      "type": "teach",
+      "strand": "",
+      "substrand": "",
+      "standard": "B9.1.1.1 Demonstrate understanding of marriage of his/her culture and compare with other cultures of Ghana.",
+      "indicators": [
+       "B9.1.1.1.1 Discuss the processes involved in performing marriage rites in his/her culture."
+      ]
+     },
+     {
+      "weeks": [
+       3
+      ],
+      "type": "teach",
+      "strand": "",
+      "substrand": "",
+      "standard": "B9.1.1.1 Demonstrate understanding of marriage of his/her culture and compare with other cultures of Ghana.",
+      "indicators": [
+       "B9.1.1.1.2 Compare and contrast the marriage rites in his/her culture to other cultures of Ghana."
+      ]
+     },
+     {
+      "weeks": [
+       4
+      ],
+      "type": "teach",
+      "strand": "",
+      "substrand": "",
+      "standard": "B9.1.1.1 Demonstrate understanding of marriage of his/her culture and compare with other cultures of Ghana.",
+      "indicators": [
+       "B9.1.1.1.3 Compare and contrast the traditional marriage rites to the contemporary marriage rites and dramatise."
+      ]
+     },
+     {
+      "weeks": [
+       5,
+       6
+      ],
+      "type": "teach",
+      "strand": "",
+      "substrand": "",
+      "standard": "B9.2.1.1: Demonstrate use of appropriate language orally in specific situations",
+      "indicators": [
+       "B9.2.1.1.1. Use appropriate register in everyday communication (informal and formal) with diverse partners on grade-level topics/texts/issue.",
+       "B9.2.1.1.2. Ask questions that link the ideas of several speakers and respond to others' questions in a discussion.",
+       "B9.2.1.1.3. Use appropriate language orally to discuss grade-level national issues fluently.",
+       "B9.2.1.1.4. Express opinions and advice on a range of everyday issues and situations clearly.",
+       "B9.2.1.1.5. Demonstrate appropriate turn taking and use techniques for effective argument (debate)."
+      ]
+     },
+     {
+      "weeks": [
+       7
+      ],
+      "type": "teach",
+      "strand": "",
+      "substrand": "",
+      "standard": "B9.3.1.1 Read longer passages silently, identify main ideas, answer questions and summarise the passage",
+      "indicators": [
+       "B9.3.1.1.1 Locate the main and subsidiary points in a range of texts and rewrite logically with accuracy in his/her own words.",
+       "B9.3.1.1.2 Summarise passages read in given number of sentences."
+      ]
+     },
+     {
+      "weeks": [
+       8
+      ],
+      "type": "teach",
+      "strand": "",
+      "substrand": "",
+      "standard": "B9.3.2.1 Demonstrate knowledge of translating texts from source language to the target language.",
+      "indicators": [
+       "B9.3.2.1.1 Decode the meaning of texts and translate from source to target language."
+      ]
+     },
+     {
+      "weeks": [
+       9
+      ],
+      "type": "teach",
+      "strand": "",
+      "substrand": "",
+      "standard": "B9.4.1.1 Demonstrate knowledge of the use of singular and plural nouns in sentences and passages. / B9.4.1.2 Demonstrate knowledge of how adjectives are combined in a sentence.",
+      "indicators": [
+       "B9.4.1.1.1 Discuss nouns under singular and plural.",
+       "B9.4.1.2.1 Discuss how adjectives follow each other in a sentence."
+      ]
+     },
+     {
+      "weeks": [
+       10
+      ],
+      "type": "teach",
+      "strand": "",
+      "substrand": "",
+      "standard": "B9.4.2.1 Exhibit knowledge and understanding of the use of auxiliary verbs. / B9.4.2.2 Demonstrate knowledge of how adverbs are combined in a sentence.",
+      "indicators": [
+       "B9.4.2.1.1 Discuss auxiliary verbs in sentences.",
+       "B9.4.2.1.3 Discuss how adverbs follow each other in a sentence."
+      ]
+     },
+     {
+      "weeks": [
+       11
+      ],
+      "type": "teach",
+      "strand": "",
+      "substrand": "",
+      "standard": "B9.5.1.1 Demonstrate knowledge and understanding of the features of the various text types discussed and use the knowledge to write a coherent essay on the text types.",
+      "indicators": [
+       "B9.5.1.1.1 Plan and structure a range of extended texts using paragraphs to show progression from one idea to the next and linking paragraphs using cohesive language."
+      ]
+     },
+     {
+      "weeks": [
+       12
+      ],
+      "type": "teach",
+      "strand": "",
+      "substrand": "",
+      "standard": "B9.6.1.1 Demonstrate an understanding of drum language, appellations and war songs. / B9.6.1.2 Demonstrate knowledge and understanding on the writer's use of language in a prose, poetry and drama texts.",
+      "indicators": [
+       "B9.6.1.1.1 Explore drum language/appellations and war songs respectively.",
+       "B9.6.1.2.1 Discuss how writers use language to create effect in an increasing range of prose, poetry and drama."
+      ]
+     },
+     {
+      "weeks": [
+       13
+      ],
+      "type": "revision",
+      "strand": "",
+      "substrand": "",
+      "standard": "",
+      "indicators": [],
+      "focus": "Revision"
+     },
+     {
+      "weeks": [
+       14,
+       15
+      ],
+      "type": "exam",
+      "strand": "",
+      "substrand": "",
+      "standard": "",
+      "indicators": [],
+      "focus": "Examination"
+     }
+    ]
+   },
+   "term": "",
+   "source": "Tabulated Scheme of Learning - Maths RME Gh Lang - Bs 7 8 9 - Weeks 1-15"
+  },
+  "Religious and Moral Education": {
+   "classes": {
+    "Basic 9": [
+     {
+      "weeks": [
+       2,
+       3
+      ],
+      "type": "teach",
+      "strand": "",
+      "substrand": "",
+      "standard": "",
+      "indicators": [
+       "B9/JHS3 1.1.1.1: Identify the purpose and usefulness of God's creation."
+      ]
+     },
+     {
+      "weeks": [
+       4,
+       5
+      ],
+      "type": "teach",
+      "strand": "",
+      "substrand": "",
+      "standard": "",
+      "indicators": [
+       "B9/JHS3 1.1.1.2: Explain how the complex nature of things created by God reveals His nature."
+      ]
+     },
+     {
+      "weeks": [
+       6
+      ],
+      "type": "teach",
+      "strand": "",
+      "substrand": "",
+      "standard": "",
+      "indicators": [
+       "B9/JHS3 1.2.1.1: Describe human activities that destroy the environment. 9.1.2.1.2: Identify and describe how indigenous Ghanaian culture helps in taking care of the environment."
+      ]
+     },
+     {
+      "weeks": [
+       7,
+       8
+      ],
+      "type": "teach",
+      "strand": "",
+      "substrand": "",
+      "standard": "",
+      "indicators": [
+       "B9/JHS3 1.2.1.3: Discuss reasons for taking care for the environment."
+      ]
+     },
+     {
+      "weeks": [
+       9
+      ],
+      "type": "teach",
+      "strand": "",
+      "substrand": "",
+      "standard": "",
+      "indicators": [
+       "B9/JHS3 2.1.1.1: State the meaning and types of festivals."
+      ]
+     },
+     {
+      "weeks": [
+       10
+      ],
+      "type": "teach",
+      "strand": "",
+      "substrand": "",
+      "standard": "",
+      "indicators": [
+       "B9/JHS3 2.1.1.2: Describe the activities in festivals celebrated in the three main religions in Ghana. B9/JHS3 2.1.1.3: Identify and explain the social, religious and moral relevance of festivals in the three main religions and relate them to daily life."
+      ]
+     }
+    ]
+   },
+   "term": "",
+   "source": "Tabulated Scheme of Learning - Maths RME Gh Lang - Bs 7 8 9 - Weeks 1-15"
   }
  }
 }

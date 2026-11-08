@@ -60,6 +60,30 @@ def norm_class(text):
     n = int(m.group(3))
     return 'Basic %d' % n if 1 <= n <= 9 else None
 
+def split_heading(text):
+    """Returns (class, subject text or '') for 'Basic 2 - Our World Our People', 'B4', or 'Mathematics (Basic 7)'. None when it is not a class heading."""
+    t = text.strip()
+    m = re.match(r'^(.*?)\s*\(\s*((?:Basic|B|P|Primary)\s*-?\s*\d|SHS\s*-?\s*\d)[^)]*\)\s*$', t, re.I)
+    if m and m.group(1) and not norm_class(m.group(1)):
+        cls = norm_class(m.group(2))
+        return (cls, m.group(1).strip()) if cls else None
+    cls = norm_class(t)
+    if not cls: return None
+    rest = re.sub(r'^\s*(?:(?:SHS|Senior High(?: School)?)\s*-?\s*\d|(?:Basic|B|P|Primary)\s*-?\s*\d)\b', '', t, flags=re.I)
+    name = re.split(r'\s[-–—:]\s|^[-–—:]\s*', rest, maxsplit=1)[-1].strip() if re.search(r'[-–—:]', rest) else ''
+    return cls, re.sub(r'\(.*?\)', '', name).strip()
+
+CODE = r'(?:B\d\.\d+\.\d+\.\d+\.\d+|\d\.\d+\.\d+\.LI\.\d+)'
+
+def split_indicators(cell):
+    """One indicator per line. Some documents run them together on one line, so also split before each indicator code."""
+    out = []
+    for line in (cell or '').replace('\r', '').split('\n'):
+        for part in re.split(r'(?<=[.;:])\s+(?=' + CODE + r')', line):
+            part = clean(part)
+            if part: out.append(part)
+    return out
+
 def resolve_subject(name, cls):
     n = re.sub(r'\s+', ' ', name.strip().lower())
     return LEVEL_ALIASES[level_of(cls)].get(n) or ALIASES.get(n)
@@ -116,17 +140,15 @@ def read_meta(doc):
 def main(path, subject_arg=''):
     doc = Document(path)
     term, doc_subject = read_meta(doc)
-    heads = [p.text.strip() for p in doc.paragraphs if norm_class(p.text) and (p.style.name.startswith('Heading') or p.style.name == 'Title' or len(p.text.strip()) < 70)]
+    heads = [p.text.strip() for p in doc.paragraphs if p.style.name != 'Title' and split_heading(p.text) and (p.style.name.startswith('Heading') or len(p.text.strip()) < 70)]
     if len(heads) != len(doc.tables):
         sys.exit('Found %d class headings but %d tables. Check the document.' % (len(heads), len(doc.tables)))
     data = json.load(open(OUT, encoding='utf-8')) if os.path.exists(OUT) else {'subjects': {}}
     base = re.sub(r'^[0-9a-f]{8}-', '', os.path.splitext(os.path.basename(path))[0]).replace('_', ' ')
     touched = {}
     for head, table in zip(heads, doc.tables):
-        cls = norm_class(head)
-        rest = re.sub(r'^\s*(?:(?:SHS|Senior High(?: School)?)\s*-?\s*\d|(?:Basic|B|P|Primary)\s*-?\s*\d)\b', '', head, flags=re.I)
-        name = (re.split(r'\s[-–—:]\s|^[-–—:]\s*', rest, maxsplit=1)[-1] if re.search(r'[-–—:]', rest) else (subject_arg or doc_subject)).strip()
-        name = re.sub(r'\(.*?\)', '', name).strip()
+        cls, name = split_heading(head)
+        name = name or subject_arg or doc_subject
         subject = resolve_subject(name, cls)
         if not subject: sys.exit('Unknown or missing subject (%r) for %s. Pass it as the second argument.' % (name, cls))
         if subject not in offered(cls): sys.exit('%s is not one of the subjects GuidEd offers for %s. Check the name, or add it in api/_levels.js first.' % (subject, cls))
@@ -137,13 +159,20 @@ def main(path, subject_arg=''):
         for r in rows[1:]:
             if not any(x.strip() for x in r): continue
             strand, sub, std = clean(cell(r, 'strand')), clean(cell(r, 'substrand')), clean(cell(r, 'standard'))
-            inds = [x for x in (clean(x) for x in cell(r, 'indicator').split('\n')) if x]
-            kind = kind_of(strand, inds[0] if inds else '')
+            inds = split_indicators(cell(r, 'indicator'))
+            if not (strand or sub or std or inds): continue      # a week the document leaves blank: no topic is imposed, the planner chooses
+            kind = kind_of(strand or std, inds[0] if inds else '')
             e = {'weeks': weeks_of(cell(r, 'week')), 'type': kind, 'strand': strand, 'substrand': sub, 'standard': std, 'indicators': inds}
             if kind in ('revision', 'exam') and not strand and inds:     # "Revision of Basic 7 Concepts" is a focus, not an indicator
                 e['focus'] = inds[0]; e['indicators'] = []
+            elif kind in ('revision', 'exam') and not strand:           # "Revision" or "Examination" written in the Content Standard column
+                e['focus'] = std; e['standard'] = ''
+            elif not strand and not sub and not inds and std and kind == 'teach':   # only a content standard is given
+                pass
             if not e['weeks']: sys.exit('A row in the %s %s table has no week number: %r' % (cls, subject, r[:2]))
             entries.append(e)
+        if not any(x['type'] == 'teach' for x in entries):
+            print('%-26s %-8s skipped: the table has no topics filled in' % (subject, cls)); continue
         s = data['subjects'].setdefault(subject, {'classes': {}})
         s['classes'][cls] = entries
         s['term'] = term or s.get('term', ''); s['source'] = base
