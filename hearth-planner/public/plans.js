@@ -189,7 +189,9 @@
         ['Sync across your devices', true, 'Included'],
       ],
     };
-    return all[t];
+    var rows = all[t].slice();
+    if (window.GuidedAds && window.GuidedAds.enabled()) rows.push(t === 'pro' ? ['Ads', true, 'No ads'] : ['Ads', true, 'One small banner on the start screen', 'No ads with Pro']);
+    return rows;
   }
   function daysLeft(ms) { return Math.max(0, Math.ceil((ms - Date.now()) / 86400000)); }
   function renderPlan() {

@@ -337,6 +337,7 @@
     const s = current();
     const chat = !!(s && s.messages.length);
     main.dataset.view = chat ? 'chat' : 'landing';
+    if (window.GuidedAds) window.GuidedAds.sync(!chat && !state.streaming && !termRun);
     demoBanner.hidden = !state.config.demo;
     promptEl.placeholder = chat ? 'Ask for a change…' : 'Optional: topic or strand, class size, week-ending date…';
     if (!promptEl.value) autoGrow();                // the placeholder is shorter in chat, so the box can shrink
@@ -621,7 +622,7 @@
     });
     window.GuidedPlans.captureReturn();
     window.GuidedPlans.onChange(() => {
-      syncAlso();
+      syncAlso(); updateView();
       document.querySelectorAll('.pw-main').forEach((b) => { const guest = !signedIn(); b.textContent = guest ? 'Create free account' : 'Write the full plan'; });
     });
   }
@@ -1415,6 +1416,7 @@
       if (!res.ok) throw new Error('no api');
       const j = await res.json();
       state.config = { loaded: true, demo: !!j.demo, provider: j.provider || null, accessRequired: !!j.accessRequired };
+      if (window.GuidedAds) { window.GuidedAds.init(j.ads); updateView(); }
       initAccount(Object.assign({}, j.sync || {}, { enabled: !!(j.auth && j.auth.enabled), syncEnabled: !!j.sync, authUrl: j.auth && j.auth.url }));
     } catch (e) {
       state.config = { loaded: true, demo: true, provider: null, accessRequired: false };   // static preview, no server

@@ -16,5 +16,8 @@ module.exports = (req, res) => {
   const auth = process.env.NEON_AUTH_BASE_URL
     ? { enabled: true, url: process.env.NEON_AUTH_DIRECT === '1' ? process.env.NEON_AUTH_BASE_URL : '/api/neon-auth', proxied: process.env.NEON_AUTH_DIRECT !== '1' }
     : null;
-  sendJson(res, 200, { demo: !provider, provider: provider || null, accessRequired: accessRequired(), sync, auth });
+  // Ads on the Free plan: only when both ids are set and well formed. Personalised ads are off unless ADS_PERSONALIZED=1.
+  const client = String(process.env.ADSENSE_CLIENT || '').trim(), slot = String(process.env.ADSENSE_SLOT || '').trim();
+  const ads = /^ca-pub-[0-9]{10,20}$/.test(client) && /^[0-9]{6,15}$/.test(slot) ? { client, slot, personalized: process.env.ADS_PERSONALIZED === '1' } : null;
+  sendJson(res, 200, { demo: !provider, ads, provider: provider || null, accessRequired: accessRequired(), sync, auth });
 };

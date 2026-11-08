@@ -956,3 +956,11 @@ html.splash-on .splash { display: flex; }
 
 .menu-item[data-sub]::after { content: attr(data-sub); order: 1; padding-left: 12px; color: var(--muted); font-size: 12px; white-space: nowrap; }
 .menu-item[data-sub] .mi-check { order: 2; }
+
+/* Ads (Free and Guest start screen only) */
+.ad-slot { width: min(100%, 728px); margin: 18px auto 0; text-align: center; }
+.ad-slot[hidden] { display: none; }
+.ad-slot small { display: block; margin-bottom: 4px; font-size: 11px; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); }
+.ad-slot .adsbygoogle { display: block; min-height: 90px; }
+.ad-slot:has(.adsbygoogle[data-ad-status="unfilled"]) { display: none; }
+.ad-remove { margin-top: 6px; background: none; border: 0; color: var(--accent); font: 600 12px var(--font-ui); text-decoration: underline; cursor: pointer; }
