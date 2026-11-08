@@ -21,12 +21,12 @@ OUT = os.path.join(ROOT, 'data', 'schemes.json')
 LEVEL_ALIASES = {
     'lower': {'creative arts': 'Creative Arts', 'creative arts and design': 'Creative Arts', 'creative art': 'Creative Arts', 'physical education': 'Physical Education',
               'physical education and health': 'Physical Education', 'our world our people': 'Our World Our People', 'our world and our people': 'Our World Our People',
-              'owop': 'Our World Our People', 'literacy': 'English Language', 'numeracy': 'Mathematics', 'ict': 'Computing'},
+              'owop': 'Our World Our People', 'literacy': 'English Language', 'numeracy': 'Mathematics', 'ict': 'Computing', 'science': 'Science', 'history': 'History', 'history of ghana': 'History'},
     'upper': {'creative arts': 'Creative Arts', 'creative arts and design': 'Creative Arts', 'creative art': 'Creative Arts', 'physical education': 'Physical Education',
               'physical education and health': 'Physical Education', 'our world our people': 'Our World Our People', 'our world and our people': 'Our World Our People',
               'owop': 'Our World Our People', 'science': 'Science', 'history': 'History', 'history of ghana': 'History', 'ict': 'Computing'},
     'jhs': {'science': 'Integrated Science', 'ict': 'Computing'},
-    'shs': {'general science': 'General Science', 'core science': 'General Science', 'science': 'General Science', 'integrated science': 'General Science',
+    'shs': {'general science': 'General Science', 'core mathematics': 'Mathematics', 'core maths': 'Mathematics', 'core english': 'English Language', 'core science': 'General Science', 'science': 'General Science', 'integrated science': 'General Science',
             'core mathematics': 'Mathematics', 'mathematics (core)': 'Mathematics', 'english': 'English Language', 'social studies': 'Social Studies'},
 }
 ALIASES = {
@@ -66,7 +66,8 @@ def split_heading(text):
     m = re.match(r'^(.*?)\s*\(\s*((?:Basic|B|P|Primary)\s*-?\s*\d|SHS\s*-?\s*\d)[^)]*\)\s*$', t, re.I)
     if m and m.group(1) and not norm_class(m.group(1)):
         cls = norm_class(m.group(2))
-        return (cls, m.group(1).strip()) if cls else None
+        nm = re.sub(r'\s*[-–—]\s*Form\s*\d\s*$', '', re.sub(r'^SHS\s+', '', m.group(1).strip(), flags=re.I), flags=re.I).strip()
+        return (cls, nm) if cls else None
     cls = norm_class(t)
     if not cls: return None
     rest = re.sub(r'^\s*(?:(?:SHS|Senior High(?: School)?)\s*-?\s*\d|(?:Basic|B|P|Primary)\s*-?\s*\d)\b', '', t, flags=re.I)
@@ -137,24 +138,31 @@ def read_meta(doc):
     sm = re.search(r'^\s*Subject:\s*(.+)$', text, re.M)
     return term, (sm.group(1).strip() if sm else '')
 
-TEACH_WEEKS = list(range(2, 13))      # week 1 revises last term, 13 revises this term, 14-15 are the examination
+TEACH_WEEKS = list(range(2, 13))      # each term: week 1 revises, weeks 2-12 teach, 13 revises the term, 14 is the examination
+TERMS = 3
 
 def spread(body, col):
-    """For documents with no Week column: lays the rows over the whole term, one entry per week, so every week has a topic."""
+    """For documents that give one year of indicators and no Week column: lays the rows out over the year's 33 teaching weeks in order
+    (the NaCCA progression) and cuts them into three terms of 14 weeks. A row that runs past a term end carries on in the next term."""
     get = lambda r, k: clean(r[col[k]]) if k in col and col[k] < len(r) else ''
     items = [r for r in body if any(x.strip() for x in r)]
-    n = len(items); base, extra = divmod(len(TEACH_WEEKS), n)
-    out = [{'weeks': [1], 'type': 'revision', 'strand': '', 'substrand': '', 'standard': '', 'indicators': [], 'focus': 'Key ideas from last term that this class needs'}]
-    w = 0
+    slots = len(TEACH_WEEKS) * TERMS
+    base, extra = divmod(slots, len(items))
+    plan = []                                   # one row per teaching week of the year, with its place in that row's run
     for i, r in enumerate(items):
         k = base + (1 if i < extra else 0)
-        for j in range(k):
-            e = {'weeks': [TEACH_WEEKS[w]], 'type': 'teach', 'strand': get(r, 'strand'), 'substrand': get(r, 'substrand'), 'standard': get(r, 'standard'), 'indicators': split_indicators(r[col['indicator']])}
-            if k > 1: e['part'] = [j + 1, k]
-            out.append(e); w += 1
-    out.append({'weeks': [13], 'type': 'revision', 'strand': '', 'substrand': '', 'standard': '', 'indicators': [], 'focus': ''})
-    out.append({'weeks': [14, 15], 'type': 'exam', 'strand': '', 'substrand': '', 'standard': '', 'indicators': [], 'focus': ''})
-    return out
+        for j in range(k): plan.append((r, j + 1, k))
+    terms = {}
+    for t in range(TERMS):
+        out = [{'weeks': [1], 'type': 'revision', 'strand': '', 'substrand': '', 'standard': '', 'indicators': [], 'focus': 'Key ideas from last term that this class needs'}]
+        for w, (r, j, k) in zip(TEACH_WEEKS, plan[t * len(TEACH_WEEKS):(t + 1) * len(TEACH_WEEKS)]):
+            e = {'weeks': [w], 'type': 'teach', 'strand': get(r, 'strand'), 'substrand': get(r, 'substrand'), 'standard': get(r, 'standard'), 'indicators': split_indicators(r[col['indicator']])}
+            if k > 1: e['part'] = [j, k]
+            out.append(e)
+        out.append({'weeks': [13], 'type': 'revision', 'strand': '', 'substrand': '', 'standard': '', 'indicators': [], 'focus': ''})
+        out.append({'weeks': [14], 'type': 'exam', 'strand': '', 'substrand': '', 'standard': '', 'indicators': [], 'focus': ''})
+        terms[str(t + 1)] = out
+    return terms
 
 def main(path, subject_arg=''):
     doc = Document(path)
@@ -163,6 +171,10 @@ def main(path, subject_arg=''):
     if len(heads) != len(doc.tables):
         sys.exit('Found %d class headings but %d tables. Check the document.' % (len(heads), len(doc.tables)))
     data = json.load(open(OUT, encoding='utf-8')) if os.path.exists(OUT) else {'subjects': {}}
+    for sv in data['subjects'].values():
+        sv.pop('term', None)
+        for c, v in list(sv['classes'].items()):
+            if isinstance(v, list): sv['classes'][c] = {'1': v}
     base = re.sub(r'^[0-9a-f]{8}-', '', os.path.splitext(os.path.basename(path))[0]).replace('_', ' ')
     touched = {}
     for head, table in zip(heads, doc.tables):
@@ -175,9 +187,10 @@ def main(path, subject_arg=''):
         col = find_cols(rows[0])
         cell = lambda r, k: r[col[k]] if k in col and col[k] < len(r) else ''
         entries = []
+        yearly = None
         if 'week' not in col:
-            entries = spread(rows[1:], col)
-            print('%-26s %-8s no Week column: %d rows spread over weeks 2-12' % (subject, cls, len([r for r in rows[1:] if any(x.strip() for x in r)])))
+            yearly = spread(rows[1:], col)
+            print('%-26s %-8s yearly list: %d indicators spread over 3 terms' % (subject, cls, len([r for r in rows[1:] if any(x.strip() for x in r)])))
             rows = [rows[0]]
         for r in rows[1:]:
             if not any(x.strip() for x in r): continue
@@ -194,11 +207,18 @@ def main(path, subject_arg=''):
                 pass
             if not e['weeks']: sys.exit('A row in the %s %s table has no week number: %r' % (cls, subject, r[:2]))
             entries.append(e)
+        if yearly: entries = yearly['1']
         if not any(x['type'] == 'teach' for x in entries):
             print('%-26s %-8s skipped: the table has no topics filled in' % (subject, cls)); continue
         s = data['subjects'].setdefault(subject, {'classes': {}})
-        s['classes'][cls] = entries
-        s['term'] = term or s.get('term', ''); s['source'] = base
+        cur = s['classes'].get(cls)
+        if isinstance(cur, list): cur = {'1': cur}          # older files stored one term as a plain list
+        if yearly: cur = yearly
+        else:
+            tn = re.match(r'(\d)', term or '')
+            cur = dict(cur or {}); cur[tn.group(1) if tn else '1'] = entries
+        s['classes'][cls] = cur
+        s.pop('term', None); s['source'] = base
         touched.setdefault(subject, []).append(cls)
         print('%-26s %-8s %d rows' % (subject, cls, len(entries)))
     json.dump(data, open(OUT, 'w', encoding='utf-8'), ensure_ascii=False, indent=1)
