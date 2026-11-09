@@ -18,7 +18,6 @@
     ins.setAttribute('data-ad-slot', cfg.slot);
     var q = window.adsbygoogle = window.adsbygoogle || [];
     if (!cfg.personalized) q.requestNonPersonalizedAds = 1;
-    guard();
     var present = document.querySelector('script[src*="pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"]');
     var push = function () { try { (window.adsbygoogle = window.adsbygoogle || []).push({}); } catch (e) { /* no ad this time */ } };
     if (present) {                                            // the page already loads it in <head> (AdSense site check); just queue the ad
@@ -60,4 +59,5 @@
     sync: sync,
     enabled: function () { return !!cfg; },
   };
+  guard();   // the AdSense snippet sits in <head> for site verification, so watch from the start
 })();
