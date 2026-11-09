@@ -1,8 +1,8 @@
 /* GuidEd service worker: caches the app shell so it opens instantly and works offline
    for reading saved plans. API calls (/api/*) are never cached. Bump VERSION to force an update. */
-const VERSION = 'schoolpadi-v44';
+const VERSION = 'schoolpadi-v45';
 const SHELL = ['./', 'index.html', 'styles.css', 'app.js', 'editor.js', 'schemes.js', 'sample.js', 'plan-join.js', 'sync.js', 'levels.js', 'plans.js', 'profile.js', 'ads.js', 'feedback.js', 'docx-export.js', 'icons/apple-touch-icon.png', 'theme-init.js', 'pwa.js',
-  'about', 'privacy', 'legal.css', 'legal-theme.js', 'favicon.svg', 'manifest.webmanifest', 'vendor/neon-realtime.js', 'icons/icon-192.png', 'icons/icon-512.png'];
+  'about', 'privacy', 'refunds', 'legal.css', 'legal-theme.js', 'favicon.svg', 'manifest.webmanifest', 'vendor/neon-realtime.js', 'icons/icon-192.png', 'icons/icon-512.png'];
 
 self.addEventListener('install', (e) => {
   e.waitUntil(caches.open(VERSION).then((c) => c.addAll(SHELL)).then(() => self.skipWaiting()));
@@ -14,7 +14,7 @@ self.addEventListener('fetch', (e) => {
   const req = e.request, url = new URL(req.url);
   if (req.method !== 'GET' || url.origin !== location.origin || url.pathname.startsWith('/api/')) return;
   if (req.mode === 'navigate') {            // network first, fall back to the cached copy when offline
-    const key = /^\/(about|privacy)\/?$/.test(url.pathname) ? url.pathname.replace(/\/$/, '').slice(1) : 'index.html';
+    const key = /^\/(about|privacy|refunds)\/?$/.test(url.pathname) ? url.pathname.replace(/\/$/, '').slice(1) : 'index.html';
     e.respondWith(fetch(req).then((r) => { if (r.ok) { const copy = r.clone(); caches.open(VERSION).then((c) => c.put(key, copy)); } return r; })
       .catch(() => caches.match(key).then((hit) => hit || caches.match('index.html'))));
     return;
