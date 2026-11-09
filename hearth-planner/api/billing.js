@@ -125,6 +125,7 @@ module.exports = async (req, res) => {
       const plan = E.cfg().plans[key];
       if (!plan || !plan.amount) return sendJson(res, 400, { error: 'bad_request', message: 'Choose a plan.' });
       if (!me.email) return sendJson(res, 400, { error: 'no_email', message: 'Your account has no email address, which Paystack needs.' });
+      if ((await db.query('select 1 from blocked where user_id = $1', [me.uid]).catch(() => [])).length) return sendJson(res, 403, { error: 'blocked', message: 'This account has been paused. Please contact us.' });
       const currency = E.cfg().currency, amount = Math.round(plan.amount * 100);   // Paystack counts in pesewas
       const reference = 'gd_' + Date.now().toString(36) + '_' + crypto.randomBytes(6).toString('hex');
       await db.ensure();

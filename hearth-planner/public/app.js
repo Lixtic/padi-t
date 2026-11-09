@@ -1264,11 +1264,21 @@
   function fillWeekEnding(text, params) {
     if (!params || !params.week) return text;
     const we = weekEnd(params.term || termNow(), params.week);
-    if (!we || we.afterClose) return text;
+    if (!we) return text;
+    const when = we.afterClose ? 'To be confirmed' : we.label;   // the term calendar ends before this week: say so instead of printing a date after the break
     return String(text).split('\n').map((line) => (/week[\s-]*ending/i.test(line) && line.indexOf('|') !== -1 ? line.split('|').map((cell) => {
       const m = /^(\s*(?:\*\*)?\s*week[\s-]*ending\s*:?\s*(?:\*\*)?\s*:?)\s*(?:_{2,}|\.{3,}|…|\[[^\]]*\]|\(\s*\))?\s*$/i.exec(cell);
-      return m ? m[1].replace(/\s+$/, '') + ' ' + we.label + ' ' : cell;
+      return m ? m[1].replace(/\s+$/, '') + ' ' + when + ' ' : cell;
     }).join('|') : line)).join('\n');
+  }
+  /* The announcement an admin has switched on: a dismissible bar on the start screen. Dismissing hides that message only. */
+  function showNotice(n) {
+    const bar = $('#noticeBar'); if (!bar) return;
+    let gone = ''; try { gone = localStorage.getItem('guided.notice.gone') || ''; } catch (e) { /* shown again next time */ }
+    if (!n || !n.text || gone === n.id) { bar.hidden = true; return; }
+    bar.className = 'notice-bar' + (n.kind === 'warn' ? ' warn' : '');
+    $('#noticeText').textContent = n.text; bar.hidden = false;
+    $('#noticeX').onclick = () => { bar.hidden = true; try { localStorage.setItem('guided.notice.gone', n.id); } catch (e) { /* fine */ } };
   }
   const termAuto = () => (window.SchoolPadiSchemes ? window.SchoolPadiSchemes.currentTerm() : 1);
   const termKey = () => { const u = window.PadiSync && window.PadiSync.user && window.PadiSync.user(); return 'guided.term.' + ((u && (u.id || u.email)) || 'guest'); };
@@ -1416,7 +1426,7 @@
       if (!res.ok) throw new Error('no api');
       const j = await res.json();
       state.config = { loaded: true, demo: !!j.demo, provider: j.provider || null, accessRequired: !!j.accessRequired };
-      if (window.GuidedAds) { window.GuidedAds.init(j.ads); updateView(); }
+      if (window.GuidedAds) { window.GuidedAds.init(j.ads); showNotice(j.notice); updateView(); }
       initAccount(Object.assign({}, j.sync || {}, { enabled: !!(j.auth && j.auth.enabled), syncEnabled: !!j.sync, authUrl: j.auth && j.auth.url }));
     } catch (e) {
       state.config = { loaded: true, demo: true, provider: null, accessRequired: false };   // static preview, no server
@@ -1835,7 +1845,7 @@
     }, label: (x) => x });
     const ddTerm = makeDropdown($('#ddTerm'), { name: 'Term', items: () => [1, 2, 3].map((x) => ({ id: x, label: 'Term ' + x + (x === termAuto() ? ' (now)' : '') })), get: () => termNow(), set: (v) => { termSet(v); continueWeek(); syncPills(); }, label: (x) => 'Term ' + x });
     window.addEventListener('guided:account', () => { ddTerm.build(); syncScheme(); });
-    makeDropdown($('#ddWeek'), { name: 'Week', items: () => WEEKS.map((x) => { const we = weekEnd(termNow(), x); return { id: x, label: 'Week ' + x, sub: we && !we.afterClose ? we.short + (x === calendarWeek() ? ' · this week' : '') : '' }; }), get: () => state.params.week, set: (v) => { state.params.week = v; store.save(); syncScheme(); }, label: (x) => 'Week ' + x });
+    makeDropdown($('#ddWeek'), { name: 'Week', items: () => WEEKS.map((x) => { const we = weekEnd(termNow(), x); return { id: x, label: 'Week ' + x, sub: we ? (we.afterClose ? 'date to be confirmed' : we.short + (x === calendarWeek() ? ' · this week' : '')) : '' }; }), get: () => state.params.week, set: (v) => { state.params.week = v; store.save(); syncScheme(); }, label: (x) => 'Week ' + x });
 
     makeDropdown($('#ddSize'), { name: 'Class size', items: SIZES.map((x) => ({ id: x, label: x + ' learners' })), get: () => state.params.size, set: (v) => { state.params.size = v; syncSummary(); store.save(); }, label: (x) => x + ' learners' });
     syncHook(); syncLight(); syncContent(); syncScheme(); syncAlso();

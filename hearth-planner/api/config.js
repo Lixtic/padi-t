@@ -4,7 +4,7 @@ const { syncConfigured } = require('./_auth');
 const { activeProvider } = require('./_providers');
 
 // Tells the browser whether a model is connected. Never returns keys.
-module.exports = (req, res) => {
+module.exports = async (req, res) => {
   if (req.method !== 'GET') {
     res.setHeader('Allow', 'GET');
     return sendJson(res, 405, { error: 'method', message: 'Use GET.' });
@@ -19,5 +19,7 @@ module.exports = (req, res) => {
   // Ads on the Free plan: only when both ids are set and well formed. Personalised ads are off unless ADS_PERSONALIZED=1.
   const client = String(process.env.ADSENSE_CLIENT || '').trim(), slot = String(process.env.ADSENSE_SLOT || '').trim();
   const ads = /^ca-pub-[0-9]{10,20}$/.test(client) && /^[0-9]{6,15}$/.test(slot) ? { client, slot, personalized: process.env.ADS_PERSONALIZED === '1' } : null;
-  sendJson(res, 200, { demo: !provider, ads, provider: provider || null, accessRequired: accessRequired(), sync, auth });
+  let notice = null;
+  try { notice = await require('./_entitle').notice(); } catch (e) { notice = null; }
+  sendJson(res, 200, { demo: !provider, ads, notice, provider: provider || null, accessRequired: accessRequired(), sync, auth });
 };

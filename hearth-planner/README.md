@@ -166,6 +166,15 @@ Every menu has **Report a bug or suggest an idea**. Messages are saved in the `f
 - **Refunds:** press **Refund** on a payment. GuidEd asks Paystack to refund it in full, marks it refunded, and removes the Pro days that payment bought (never below today). Teachers who want a refund use **Need a refund or help with a payment?** in their plan sheet, which sends you a message in the feedback inbox. Pro does not renew by itself, so there is nothing for a teacher to cancel. The public policy is `public/refunds.html` (full refund within 7 days; later requests case by case) — edit it if your terms differ.
 - **Pro-ending warning:** in the last 7 days teachers see a banner and a warning on their plan card. Teachers also get one email 3 days before the end (change with `REMIND_DAYS`). The email needs `CRON_SECRET` and `SMTP_URL` in Vercel; without them only the in-app warning runs. Vercel Cron runs the job daily at 08:00 UTC.
 
+## More admin tools (menu, admins only)
+**Teachers and announcements** (same `ADMIN_EMAILS` rule as the inbox):
+- **Find a teacher** by part of their email: plan, Pro end date, plans this week, AI use, recent payments.
+- **Give Pro days** (a gift or a fix) or **take days off**, with a note. Days never go below today. A gift shows as plan `gift`.
+- **Pause account:** the teacher cannot write plans or start a payment until you **Restore** them. You cannot pause yourself.
+- **Announcement:** one message (200 characters) shown at the top of the start screen to everyone, as information or important, for 1 to 14 days or until you turn it off. Teachers can dismiss it; a new message shows again. It is read through `/api/config` and cached for a minute.
+- **Recent admin actions** lists who did what (table `admin_log`).
+- **Usage and payments** now also shows AI use: requests, estimated tokens, a daily bar chart and the heaviest teachers (the daily counters are kept for 35 days).
+
 ## Levels: Lower Primary, Upper Primary, JHS and SHS
 
 The class menu is grouped by level, and the subjects change with the level. Each level has its own style of plan.
