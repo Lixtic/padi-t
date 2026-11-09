@@ -74,8 +74,10 @@ async function resolve(me, ip) {
   noteAccount(me);
   let expiresAt = 0;
   try { expiresAt = await expiry(me.uid); } catch (e) { console.error('[entitle] expiry lookup failed', e && e.message); }
+  let blocked = false;
+  try { blocked = (await db.query('select 1 from blocked where user_id = $1', [me.uid])).length > 0; } catch (e) { /* a lookup failure never locks anyone out */ }
   const vip = !!me.email && proEmails().includes(me.email.toLowerCase());
-  return { tier: vip || expiresAt > Date.now() ? 'pro' : 'free', subject, uid: me.uid, email: me.email || '', expiresAt, vip };
+  return { tier: vip || expiresAt > Date.now() ? 'pro' : 'free', subject, uid: me.uid, email: me.email || '', expiresAt, vip, blocked };
 }
 
 async function log(subject, period) {
@@ -139,4 +141,20 @@ async function status(me, ip) {
   return out;
 }
 
-module.exports = { event, isAdmin, cfg, enabled, resolve, checkFree, countFree, checkGuest, countGuest, message, status, weekKey, expiry };
+// The announcement banner an admin may have switched on. Cached for a minute per server instance so it adds nothing to normal requests.
+let noticeCache = { at: 0, value: null };
+async function notice() {
+  if (!db.configured()) return null;
+  if (Date.now() - noticeCache.at < 60000) return noticeCache.value;
+  let value = null;
+  try {
+    await db.ensure();
+    const r = await db.query("select value, updated_at from settings where key = 'notice'");
+    if (r.length) { const n = JSON.parse(r[0].value || '{}'); if (n && n.on && n.text && (!n.until || Number(n.until) > Date.now())) value = { text: String(n.text), kind: n.kind === 'warn' ? 'warn' : 'info', id: String(r[0].updated_at) }; }
+  } catch (e) { value = null; }
+  noticeCache = { at: Date.now(), value };
+  return value;
+}
+const clearNoticeCache = () => { noticeCache = { at: 0, value: null }; };
+
+module.exports = { notice, clearNoticeCache, event, isAdmin, cfg, enabled, resolve, checkFree, countFree, checkGuest, countGuest, message, status, weekKey, expiry };

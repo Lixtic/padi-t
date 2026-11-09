@@ -34,6 +34,10 @@ const SCHEMA = [
   'alter table subscriptions add column if not exists reminded_for bigint not null default 0',
   'alter table payments add column if not exists refunded_at bigint',
   'insert into accounts (user_id, first_seen) select distinct user_id, 0 from plans on conflict do nothing',
+  // Owner tools: teachers an admin has blocked, one-row settings (the announcement banner), and a record of what admins did.
+  "create table if not exists blocked (user_id text primary key, email text not null default '', reason text not null default '', at bigint not null)",
+  "create table if not exists settings (key text primary key, value text not null default '', updated_at bigint not null)",
+  "create table if not exists admin_log (id text primary key, at bigint not null, admin text not null default '', action text not null, target text not null default '', detail text not null default '')",
   'create table if not exists plan_log (subject text not null, period text not null, cls text not null, n int not null default 0, primary key (subject, period, cls))',
 ];
 

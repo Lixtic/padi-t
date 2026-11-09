@@ -159,6 +159,24 @@
     if (m.allTime.length) pro.append(el2('p', 'us-note', 'All time: ' + m.allTime.map(function (x) { return cur(x.currency) + x.amount + ' from ' + x.count + ' payments'; }).join(', ') + (m.refunded.length ? '. Refunded: ' + m.refunded.map(function (x) { return cur(x.currency) + x.amount + ' (' + x.count + ')'; }).join(', ') : '') + '.'));
     body.append(pro);
 
+    if (s.ai) {
+      var ai = section('AI use');
+      var tk = s.ai.tokens >= 1e6 ? Math.round(s.ai.tokens / 1e5) / 10 + 'M' : s.ai.tokens >= 1e3 ? Math.round(s.ai.tokens / 1e3) + 'K' : String(s.ai.tokens);
+      var at = el2('div', 'us-tiles'); at.append(tile('AI requests', s.ai.requests, 'last ' + s.ai.days + ' days'), tile('Tokens used', tk, 'estimated'));
+      ai.append(at);
+      var mx = Math.max.apply(null, s.ai.daily.map(function (d) { return d.tokens; }).concat([1]));
+      var bars = el2('div', 'us-bars'); bars.setAttribute('role', 'img'); bars.setAttribute('aria-label', 'Tokens used each day');
+      s.ai.daily.forEach(function (d) { var b = document.createElement('i'); b.style.height = Math.max(3, Math.round(100 * d.tokens / mx)) + '%'; b.title = d.day + ': ' + d.tokens + ' tokens, ' + d.requests + ' requests'; bars.append(b); });
+      if (s.ai.daily.length) ai.append(bars);
+      if (s.ai.top.length) {
+        var tl = el2('ul', 'us-rows');
+        s.ai.top.forEach(function (x) { var li = el2('li'); li.append(el2('span', '', x.email), el2('b', '', x.tokens >= 1e3 ? Math.round(x.tokens / 1e3) + 'K' : String(x.tokens)), el2('small', '', x.requests + ' requests')); tl.append(li); });
+        ai.append(el2('p', 'us-note', 'Heaviest teachers'), tl);
+      }
+      ai.append(el2('p', 'us-note', s.ai.note));
+      body.append(ai);
+    }
+
     var pay = section('Recent payments');
     if (!s.payments.length) pay.append(el2('p', 'us-note', 'None yet.'));
     s.payments.forEach(function (p) {
@@ -200,16 +218,87 @@
     });
   }
 
+  /* ───────── Admin: find a teacher, give or take Pro days, pause an account, announcement ───────── */
+  function post(action, payload) {
+    return headers().then(function (h) {
+      return fetch('/api/admin?action=' + action, { method: 'POST', headers: Object.assign({ 'content-type': 'application/json' }, h), body: JSON.stringify(payload) }).then(function (r) { return r.json().catch(function () { return {}; }); });
+    });
+  }
+  function getA(q) { return headers().then(function (h) { return fetch('/api/admin?action=' + q, { headers: h }).then(function (r) { return r.json().catch(function () { return {}; }); }); }); }
+  function day(ms) { try { return new Date(ms).toLocaleDateString([], { day: 'numeric', month: 'short', year: 'numeric' }); } catch (e) { return ''; } }
+  function renderTeachers(list) {
+    var box = $('#adResults'); box.replaceChildren();
+    if (!list.length) { box.append(el2('p', 'us-note', 'No teacher found with that email.')); return; }
+    list.forEach(function (t) {
+      var c = el2('div', 'ad-t'), name = el2('b', '', t.email);
+      var tag = el2('span', 'tag' + (t.tier === 'pro' ? ' pro' : ''), t.tier === 'pro' ? 'Pro' : 'Free'); name.append(tag);
+      if (t.blocked) name.append(el2('span', 'tag bad', 'Paused'));
+      c.append(name);
+      c.append(el2('small', '', t.tier === 'pro' ? (t.proUntil ? 'Pro until ' + day(t.proUntil) : 'Pro (always, listed in PRO_EMAILS)') : 'Free plan'));
+      c.append(el2('small', '', 'Plans this week: ' + t.plansThisWeek + ' · AI: ' + t.aiRequests + ' requests, ' + Math.round(t.aiTokens / 1000) + 'K tokens · joined ' + (t.firstSeen ? day(t.firstSeen) : 'before tracking')));
+      if (t.blocked) c.append(el2('small', '', 'Paused' + (t.blocked.reason ? ': ' + t.blocked.reason : '') + ' · ' + day(t.blocked.at)));
+      t.payments.forEach(function (p) { c.append(el2('small', '', cur(p.currency) + p.amount + ' ' + p.plan + ' · ' + p.status + ' · ' + day(p.at))); });
+      var acts = el2('div', 'ad-acts');
+      function btn(label, cls, fn) { var b = el2('button', cls || '', label); b.type = 'button'; b.addEventListener('click', fn); acts.append(b); }
+      function after(j, okMsg) { if (j && j.ok) return findTeacher(true); window.alert((j && j.message) || 'That did not work.'); }
+      btn('Give Pro days', '', function () {
+        var d = window.prompt('How many Pro days to give ' + t.email + '? (1 to 730)', '30'); if (d === null) return;
+        var note = window.prompt('A short note for the record (optional):', '') || '';
+        post('grant', { user_id: t.user_id, days: parseInt(d, 10), note: note }).then(after);
+      });
+      if (t.proUntil) btn('Take days off', '', function () {
+        var d = window.prompt('How many Pro days to take off ' + t.email + '?', '7'); if (d === null) return;
+        post('grant', { user_id: t.user_id, days: -Math.abs(parseInt(d, 10)), note: window.prompt('A short note for the record (optional):', '') || '' }).then(after);
+      });
+      if (t.blocked) btn('Restore account', '', function () { post('block', { user_id: t.user_id, blocked: false }).then(after); });
+      else btn('Pause account', 'danger', function () {
+        var why = window.prompt('Pause ' + t.email + '? They will not be able to write plans or pay. Reason (for your record):', ''); if (why === null) return;
+        post('block', { user_id: t.user_id, blocked: true, reason: why }).then(after);
+      });
+      c.append(acts); box.append(c);
+    });
+  }
+  function findTeacher(keep) {
+    var q = $('#adQ').value.trim(); if (q.length < 3) { $('#adResults').replaceChildren(el2('p', 'us-note', 'Type at least 3 letters of the email.')); return Promise.resolve(); }
+    return getA('find&q=' + encodeURIComponent(q)).then(function (j) { if (j.results) renderTeachers(j.results); else $('#adResults').replaceChildren(el2('p', 'us-note', j.message || 'Could not search.')); loadLog(); });
+  }
+  var ACTIONS = { grant: 'Gave Pro days', remove: 'Took Pro days off', block: 'Paused', unblock: 'Restored', notice_on: 'Posted announcement', notice_off: 'Turned off announcement' };
+  function loadLog() {
+    return getA('log').then(function (j) {
+      var ul = $('#adLog'); ul.replaceChildren();
+      (j.log || []).slice(0, 15).forEach(function (x) { var li = el2('li'); li.append(el2('span', '', (ACTIONS[x.action] || x.action) + (x.target ? ' · ' + x.target : '')), el2('small', '', when(x.at) + (x.detail ? ' · ' + x.detail : ''))); ul.append(li); });
+      if (!ul.children.length) ul.append(el2('li', '', 'Nothing yet.'));
+    });
+  }
+  function loadNotice() {
+    return getA('notice').then(function (n) {
+      $('#adText').value = n.text || ''; $('#adKind').value = n.kind || 'info';
+      $('#adNoticeState').textContent = n.on ? 'Showing now' + (n.until ? ', until ' + day(n.until) : ', until you turn it off') + '.' : 'Not showing.';
+    });
+  }
+  function setupAdmin() {
+    var dlg = $('#adminSheet'), btn = $('#adminBtn'); if (!dlg || !btn) return;
+    backdropClose(dlg);
+    $('#adClose').addEventListener('click', function () { close(dlg); });
+    btn.addEventListener('click', function () { open(dlg); loadNotice(); loadLog(); });
+    $('#adFind').addEventListener('submit', function (e) { e.preventDefault(); findTeacher(); });
+    $('#adNotice').addEventListener('submit', function (e) {
+      e.preventDefault();
+      post('notice', { text: $('#adText').value, kind: $('#adKind').value, days: $('#adDays').value, on: true }).then(function () { loadNotice(); loadLog(); });
+    });
+    $('#adOff').addEventListener('click', function () { post('notice', { text: $('#adText').value, kind: $('#adKind').value, on: false }).then(function () { loadNotice(); loadLog(); }); });
+  }
+
   // Only admins (ADMIN_EMAILS) get the inbox entry. Checked again whenever the sign-in state changes.
   function checkAdmin() {
     headers().then(function (h) {
-      if (!h || !h.authorization && !h.Authorization) { isAdmin = false; $('#inboxBtn').hidden = true; $('#usageBtn').hidden = true; return; }
-      api('?action=me').then(function (j) { isAdmin = !!j.admin; $('#inboxBtn').hidden = !isAdmin; $('#usageBtn').hidden = !isAdmin; }, function () {});
+      if (!h || !h.authorization && !h.Authorization) { isAdmin = false; $('#inboxBtn').hidden = true; $('#usageBtn').hidden = true; $('#adminBtn').hidden = true; return; }
+      api('?action=me').then(function (j) { isAdmin = !!j.admin; $('#inboxBtn').hidden = !isAdmin; $('#usageBtn').hidden = !isAdmin; $('#adminBtn').hidden = !isAdmin; }, function () {});
     });
   }
 
   function init() {
-    setupForm(); setupInbox(); setupUsage(); checkAdmin();
+    setupForm(); setupInbox(); setupUsage(); setupAdmin(); checkAdmin();
     if (window.GuidedPlans && window.GuidedPlans.onChange) window.GuidedPlans.onChange(checkAdmin);
   }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init); else init();

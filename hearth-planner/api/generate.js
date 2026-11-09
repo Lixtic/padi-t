@@ -43,6 +43,7 @@ module.exports = async (req, res) => {
   // Tiers (see _entitle.js). Visitors who are not signed in get a short taster of Lesson 1, never the full plan.
   let ent = null;
   try { ent = Entitle.enabled() ? await Entitle.resolve(me, clientIp(req)) : null; } catch (e) { console.error('[generate] tier lookup failed', e && e.message); }
+  if (ent && ent.blocked) return sendJson(res, 403, { error: 'blocked', message: 'This account has been paused. Please contact us if you think this is a mistake.' });
   const guest = !!ent && ent.tier === 'guest';
   const firstTurn = v.thread.length === 0;
   if (guest && !firstTurn) {

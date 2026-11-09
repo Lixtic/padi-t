@@ -232,6 +232,36 @@
   </section>
 </dialog>
 
+<dialog class="acct-sheet up-sheet fb-inbox" id="adminSheet" aria-labelledby="adTitle">
+  <button type="button" class="icon-btn as-close" id="adClose" aria-label="Close"><svg class="ico"><use href="#i-x"/></svg></button>
+  <section>
+    <h2 id="adTitle">Teachers and announcements</h2>
+    <p class="as-sub">Look up a teacher, give or take off Pro days, pause an account, or post a message everyone sees.</p>
+    <div class="us-sec">
+      <h3 class="ps-h">Find a teacher</h3>
+      <form class="ad-find" id="adFind"><input type="search" id="adQ" placeholder="Part of their email" autocomplete="off" aria-label="Part of the teacher's email" minlength="3"><button type="submit" class="primary">Find</button></form>
+      <div id="adResults"></div>
+    </div>
+    <div class="us-sec">
+      <h3 class="ps-h">Announcement</h3>
+      <p class="us-note">One short message shown at the top of the start screen to every teacher. Teachers can dismiss it.</p>
+      <form class="ad-notice" id="adNotice">
+        <textarea id="adText" rows="2" maxlength="200" placeholder="For example: Term 2 schemes for Basic 7 to 9 are now in." aria-label="Announcement text"></textarea>
+        <div class="ad-row">
+          <label>Style <select id="adKind"><option value="info">Information</option><option value="warn">Important</option></select></label>
+          <label>Show for <select id="adDays"><option value="0">Until I turn it off</option><option value="1">1 day</option><option value="3">3 days</option><option value="7">7 days</option><option value="14">14 days</option></select></label>
+        </div>
+        <div class="ad-row"><button type="submit" class="primary" id="adPost">Show to everyone</button><button type="button" id="adOff">Turn off</button></div>
+        <p class="us-note" id="adNoticeState"></p>
+      </form>
+    </div>
+    <div class="us-sec">
+      <h3 class="ps-h">Recent admin actions</h3>
+      <ul class="us-rows" id="adLog"></ul>
+    </div>
+  </section>
+</dialog>
+
 <dialog class="acct-sheet up-sheet fb-inbox" id="inboxSheet" aria-labelledby="ibTitle">
   <button type="button" class="icon-btn as-close" id="ibClose" aria-label="Close"><svg class="ico"><use href="#i-x"/></svg></button>
   <section>
@@ -349,6 +379,9 @@
       <button type="button" class="foot-link" id="usageBtn" hidden>
         <svg class="ico"><use href="#i-sliders"/></svg><span>Usage and payments</span>
       </button>
+      <button type="button" class="foot-link" id="adminBtn" hidden>
+        <svg class="ico"><use href="#i-sliders"/></svg><span>Teachers and announcements</span>
+      </button>
       <button type="button" class="foot-link" id="inboxBtn" hidden>
         <svg class="ico"><use href="#i-layers"/></svg><span>Feedback inbox</span>
       </button>
@@ -409,7 +442,8 @@
     <section class="stage" id="stage">
       <div class="grow grow-top"></div>
 
-      <div class="hero" id="hero">
+      <div class="notice-bar" id="noticeBar" role="status" hidden><span id="noticeText"></span><button type="button" id="noticeX" aria-label="Dismiss">×</button></div>
+    <div class="hero" id="hero">
         <svg class="hero-mark" aria-hidden="true"><use href="#i-logo"/></svg>
         <h1>Which week are we planning?</h1>
         <p>Choose a subject, class and week. GuidEd writes two 60-minute lessons, study notes and BECE practice, ready for Word.</p>
