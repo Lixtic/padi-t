@@ -166,6 +166,15 @@ Every menu has **Report a bug or suggest an idea**. Messages are saved in the `f
 - **Refunds:** press **Refund** on a payment. GuidEd asks Paystack to refund it in full, marks it refunded, and removes the Pro days that payment bought (never below today). Teachers who want a refund use **Need a refund or help with a payment?** in their plan sheet, which sends you a message in the feedback inbox. Pro does not renew by itself, so there is nothing for a teacher to cancel. The public policy is `public/refunds.html` (full refund within 7 days; later requests case by case) — edit it if your terms differ.
 - **Pro-ending warning:** in the last 7 days teachers see a banner and a warning on their plan card. Teachers also get one email 3 days before the end (change with `REMIND_DAYS`). The email needs `CRON_SECRET` and `SMTP_URL` in Vercel; without them only the in-app warning runs. Vercel Cron runs the job daily at 08:00 UTC.
 
+## Rewarded video (watch a video for one more plan)
+Free teachers who have used the week's plans see **Watch a short video for 1 more plan** in the upgrade sheet. Off until you set it up. AdSense cannot show rewarded video on the web; Google **Ad Manager** can.
+
+1. Create a Google Ad Manager account (separate from AdSense) and get it approved for rewarded ads on your site. Create an **Out-of-page → Rewarded** ad unit.
+2. In Vercel set `REWARDED_ADS=gam` and `ADMANAGER_REWARDED_UNIT=/NETWORKCODE/unit_name`, then redeploy.
+3. `REWARD_PER_DAY` (default 2) and `REWARD_PLANS` (default 1) set the reward. `REWARDED_ADS=test` runs a plain countdown with no ad, for trying the flow only; do not leave it on.
+
+How it works: the page asks the server for a one-time token, plays the video, then asks the server to count it. The server only counts it if the token is the teacher's own, unused, between `REWARD_MIN_SECONDS` and 30 minutes old, and the daily cap is not reached. A bonus plan is used only after the weekly plans run out, and does not expire. Google's web rewarded ads give no server-side proof of watching, so the time check and the daily cap are the safeguards. Small sites may get few rewarded ads from Google; when none is available teachers see a friendly message and nothing is lost. Tests: `reward-test.js`, `e2e-reward.js`.
+
 ## More admin tools (menu, admins only)
 **Teachers and announcements** (same `ADMIN_EMAILS` rule as the inbox):
 - **Find a teacher** by part of their email: plan, Pro end date, plans this week, AI use, recent payments.

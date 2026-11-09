@@ -990,3 +990,12 @@ html.splash-on .splash { display: flex; }
 :root[data-theme="dark"] .notice-bar { background: #12352a; color: #cdeadd; } :root[data-theme="dark"] .notice-bar.warn { background: #3d2e0b; color: #ffe3a8; }
 main[data-view="chat"] .notice-bar { display: none; }
 .ad-find button, .ad-notice .primary { font: 700 14.5px var(--font-ui); padding: 9px 16px; border-radius: 12px; border: 0; background: #006A4E; color: #fff; cursor: pointer; }
+
+/* Optional rewarded video: shown when the weekly plans are used up */
+.up-bonus { margin: 0 0 12px; display: flex; flex-direction: column; gap: 6px; }
+.up-watch { font: 700 15.5px var(--font-ui); padding: 12px 16px; border-radius: 14px; border: 2px solid #006A4E; background: none; color: #006A4E; cursor: pointer; }
+.up-watch:disabled { opacity: .55; cursor: default; }
+.up-bonus small { color: var(--muted); font-size: 13px; line-height: 1.4; }
+.rw-count { font: 700 34px/1 var(--font-serif); margin: 8px 0; }
+.rw-test { font-size: 13px; color: var(--muted); margin: 0 0 8px; }
+#rwCancel { font: 600 14px var(--font-ui); padding: 10px 16px; border-radius: 12px; border: 1px solid var(--card-line); background: none; color: var(--ink); cursor: pointer; }

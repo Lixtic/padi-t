@@ -39,6 +39,7 @@
   <script src="levels.js"></script>
   <script src="profile.js" defer></script>
   <script src="ads.js" defer></script>
+  <script src="rewarded.js" defer></script>
   <script src="schemes.js" defer></script>
   <script src="sample.js" defer></script>
   <script src="editor.js" defer></script>
@@ -292,6 +293,16 @@
   </section>
 </dialog>
 
+<dialog class="acct-sheet up-sheet rw-sheet" id="rwSheet" aria-labelledby="rwTitle">
+  <section>
+    <h2 id="rwTitle">Short video</h2>
+    <p class="as-sub" id="rwText">Getting the video ready…</p>
+    <p class="rw-count" id="rwCount" hidden></p>
+    <p class="rw-test" id="rwTest" hidden>Test mode: no real ad is shown.</p>
+    <div class="up-buy"><button type="button" id="rwCancel">Cancel</button></div>
+  </section>
+</dialog>
+
 <dialog class="acct-sheet up-sheet" id="upSheet" aria-labelledby="upTitle">
   <button type="button" class="icon-btn as-close" id="upClose" aria-label="Close"><svg class="ico"><use href="#i-x"/></svg></button>
   <section>
@@ -299,6 +310,10 @@
     <h2 id="upTitle">Go further with GuidEd Pro</h2>
     <p class="as-sub" id="upLead"></p>
     <p class="up-reason" id="upReason" role="status" hidden></p>
+    <div class="up-bonus" id="upBonus" hidden>
+      <button type="button" class="up-watch" id="upWatch"><span id="upWatchLabel">Watch a short video for 1 more plan</span></button>
+      <small id="upWatchNote"></small>
+    </div>
     <div class="up-table" id="upTable" role="table" aria-label="Free and Pro compared"></div>
     <div class="up-buy">
       <button type="button" class="up-btn" id="upBuyMonthly"><span class="up-tag" hidden></span><span class="up-label"></span><span class="up-amount"></span><span class="up-days"></span></button>
@@ -414,7 +429,7 @@
       </button>
         <p class="install-hint" id="clearCacheNote">Fixes a stuck or outdated app. Your saved plans are kept.</p>
 
-        <p class="set-links"><a href="about">About</a><span aria-hidden="true">·</span><a href="privacy">Privacy</a><span aria-hidden="true">·</span><a href="refunds">Refunds</a></p>
+        <p class="set-links"><a href="about">About</a><span aria-hidden="true">·</span><a href="privacy">Privacy</a><span aria-hidden="true">·</span><a href="refunds">Refunds</a><span aria-hidden="true">·</span><a href="ads-policy">Ads</a></p>
       </div>
     </div>
   </aside>

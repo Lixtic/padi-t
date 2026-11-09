@@ -38,6 +38,10 @@ const SCHEMA = [
   "create table if not exists blocked (user_id text primary key, email text not null default '', reason text not null default '', at bigint not null)",
   "create table if not exists settings (key text primary key, value text not null default '', updated_at bigint not null)",
   "create table if not exists admin_log (id text primary key, at bigint not null, admin text not null default '', action text not null, target text not null default '', detail text not null default '')",
+  // Rewarded videos: one row per "start", marked claimed when the teacher finishes watching; bonus plans are a balance per teacher.
+  "create table if not exists reward_tokens (id text primary key, user_id text not null, started_at bigint not null, claimed_at bigint, day text not null)",
+  'create index if not exists reward_tokens_user on reward_tokens (user_id, day)',
+  'create table if not exists bonus (user_id text primary key, n int not null default 0)',
   'create table if not exists plan_log (subject text not null, period text not null, cls text not null, n int not null default 0, primary key (subject, period, cls))',
 ];
 

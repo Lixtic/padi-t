@@ -31,6 +31,13 @@
     configure: function (h) { hooks = h || {}; },
     onChange: function (f) { listeners.push(f); },
     info: function () { return info; },
+    headers: async function () { return hooks.authHeader ? await hooks.authHeader() : {}; },
+    // The optional video for one more plan: only on the free plan, only once the weekly plans are used up.
+    reward: function () {
+      var r = info && info.rewards, f = info && info.free;
+      if (P.tier() !== 'free' || !r || !r.enabled || !f) return null;
+      return { mode: r.mode, unit: r.unit || '', plans: r.plans, left: r.left, perDay: r.perDay, bonus: f.bonus || 0, exhausted: !!(f.limit && f.used >= f.limit) };
+    },
     // 'guest' | 'free' | 'pro', or null when plans are not in use (then nothing is limited or locked).
     tier: function () { return !demo && info && info.tiers ? info.tier : null; },
     setDemo: function (d) { demo = !!d; emit(); },
@@ -54,7 +61,7 @@
       el.reason.textContent = message || '';
       el.reason.hidden = !message;
       el.msg.textContent = ''; el.msg.hidden = true;
-      renderUpgrade();
+      renderUpgrade(); renderBonus();
       if (!el.dlg.open) el.dlg.showModal();
     },
     closeUpgrade: function () { if (el.dlg && el.dlg.open) el.dlg.close(); },
@@ -193,6 +200,17 @@
     if (window.GuidedAds && window.GuidedAds.enabled()) rows.push(t === 'pro' ? ['Ads', true, 'No ads'] : ['Ads', true, 'One small banner on the start screen', 'No ads with Pro']);
     return rows;
   }
+  function renderBonus() {
+    var box = document.getElementById('upBonus'); if (!box) return;
+    var r = P.reward(), btn = document.getElementById('upWatch'), note = document.getElementById('upWatchNote');
+    if (!r || (!r.exhausted && !r.bonus)) { box.hidden = true; return; }
+    box.hidden = false;
+    if (r.bonus > 0) { btn.hidden = true; note.textContent = 'You have ' + r.bonus + ' bonus ' + (r.bonus === 1 ? 'plan' : 'plans') + ' ready. Close this and tap Generate again.'; return; }
+    btn.hidden = false; btn.disabled = r.left < 1;
+    document.getElementById('upWatchLabel').textContent = r.left < 1 ? 'No more videos today' : 'Watch a short video for ' + r.plans + ' more ' + (r.plans === 1 ? 'plan' : 'plans');
+    note.textContent = r.left < 1 ? 'Video plans come back tomorrow. Pro has no limit.' : 'Your choice. It plays only after you tap. ' + r.left + ' of ' + r.perDay + ' left today.';
+  }
+  P.renderBonus = renderBonus;
   function daysLeft(ms) { return Math.max(0, Math.ceil((ms - Date.now()) / 86400000)); }
   function renderPlan() {
     var t = P.tier();
@@ -210,7 +228,7 @@
       var f = info.free || { used: 0, limit: 0 };
       el.psTitle.textContent = 'You are on the Free plan';
       sub = info.email ? 'Signed in as ' + info.email : 'Signed in';
-      if (f.limit) meter = { used: f.used, limit: f.limit, text: Math.max(0, f.limit - f.used) + ' of ' + f.limit + ' full plans left this week' + (f.resetsAt ? ' · renews Monday' : '') };
+      if (f.limit) meter = { used: f.used, limit: f.limit, text: Math.max(0, f.limit - f.used) + ' of ' + f.limit + ' full plans left this week' + (f.resetsAt ? ' · renews Monday' : '') + (f.bonus ? ' · +' + f.bonus + ' bonus' : '') };
       cta = 'Upgrade to Pro';
       note = 'Pro is a one-time payment for a set time. It never renews by itself.';
     } else {
