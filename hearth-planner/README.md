@@ -163,7 +163,7 @@ Every menu has **Report a bug or suggest an idea**. Messages are saved in the `f
 ## Usage, payments, refunds and Pro reminders
 
 - **Usage and payments** (menu, admins only, see `ADMIN_EMAILS`): new accounts, guest previews, plans written, how many guests and free teachers hit their limits, checkouts started versus completed, active Pro, money by plan, and recent payments. Counts start from the deploy that added them.
-- **Refunds:** press **Refund** on a payment. GuidEd asks Paystack to refund it in full, marks it refunded, and removes the Pro days that payment bought (never below today). Teachers who want a refund use **Need a refund or help with a payment?** in their plan sheet, which sends you a message in the feedback inbox. Pro does not renew by itself, so there is nothing for a teacher to cancel.
+- **Refunds:** press **Refund** on a payment. GuidEd asks Paystack to refund it in full, marks it refunded, and removes the Pro days that payment bought (never below today). Teachers who want a refund use **Need a refund or help with a payment?** in their plan sheet, which sends you a message in the feedback inbox. Pro does not renew by itself, so there is nothing for a teacher to cancel. The public policy is `public/refunds.html` (full refund within 7 days; later requests case by case) — edit it if your terms differ.
 - **Pro-ending warning:** in the last 7 days teachers see a banner and a warning on their plan card. Teachers also get one email 3 days before the end (change with `REMIND_DAYS`). The email needs `CRON_SECRET` and `SMTP_URL` in Vercel; without them only the in-app warning runs. Vercel Cron runs the job daily at 08:00 UTC.
 
 ## Levels: Lower Primary, Upper Primary, JHS and SHS
