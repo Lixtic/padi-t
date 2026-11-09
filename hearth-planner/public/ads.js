@@ -18,6 +18,7 @@
     ins.setAttribute('data-ad-slot', cfg.slot);
     var q = window.adsbygoogle = window.adsbygoogle || [];
     if (!cfg.personalized) q.requestNonPersonalizedAds = 1;
+    guard();
     var present = document.querySelector('script[src*="pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"]');
     var push = function () { try { (window.adsbygoogle = window.adsbygoogle || []).push({}); } catch (e) { /* no ad this time */ } };
     if (present) {                                            // the page already loads it in <head> (AdSense site check); just queue the ad
@@ -32,6 +33,20 @@
     s.onload = push;
     s.onerror = function () { failed = true; slot.hidden = true; };           // blocked by an ad blocker or the network: no empty box
     document.head.appendChild(s);
+  }
+
+  // Google's Auto ads can rewrite the page (height, overflow, padding) and stop the app scrolling. Undo that on <html> and <body>.
+  var guarding = false;
+  function guard() {
+    if (guarding || !window.MutationObserver) return; guarding = true;
+    var fix = function (el) {
+      ['height', 'min-height', 'overflow', 'overflow-y', 'position', 'padding-bottom', 'padding-top', 'margin-top', 'margin-bottom', 'top'].forEach(function (k) {
+        if (el.style.getPropertyValue(k)) el.style.removeProperty(k);
+      });
+    };
+    var mo = new MutationObserver(function () { mo.disconnect(); fix(document.documentElement); fix(document.body); watch(); });
+    function watch() { [document.documentElement, document.body].forEach(function (el) { mo.observe(el, { attributes: true, attributeFilter: ['style'] }); }); }
+    fix(document.documentElement); fix(document.body); watch();
   }
   // show: whether the start screen is showing and nothing is being written.
   function sync(show) {
