@@ -20,6 +20,11 @@ const cfg = () => ({
   guestPreviewsDaily: num('GUEST_PREVIEWS_DAILY', 2),     // 0 = unlimited
   proTokenDaily: num('PRO_TOKEN_QUOTA_DAILY', 600000),
   previewMaxTokens: Math.max(500, num('PREVIEW_MAX_TOKENS', 2200)),
+  rewardMode: String(process.env.REWARDED_ADS || '').toLowerCase(),   // '' = off, 'gam' = Google Ad Manager rewarded video, 'test' = a clearly marked placeholder countdown for testing only (no real ad)
+  rewardUnit: String(process.env.ADMANAGER_REWARDED_UNIT || '').trim(),   // Ad Manager ad unit path, like /1234567/guided_rewarded
+  rewardPerDay: num('REWARD_PER_DAY', 2),                 // videos that count, per teacher per day
+  rewardPlans: Math.max(1, num('REWARD_PLANS', 1)),       // bonus plans each video earns
+  rewardSeconds: Math.max(3, num('REWARD_MIN_SECONDS', String(process.env.REWARDED_ADS || '').toLowerCase() === 'gam' ? 6 : 10)),   // the least time a video can take before it counts
   currency: process.env.PRO_CURRENCY || 'GHS',
   plans: {
     monthly: { label: 'Monthly', amount: num('PRO_PRICE_MONTHLY', 23), days: num('PRO_DAYS_MONTHLY', 30) },
@@ -91,17 +96,66 @@ async function bump(subject, period, cls) {
   if (Math.random() < 0.02) db.query("delete from plan_log where period < to_char((now() at time zone 'utc') - interval '60 days', 'YYYY-MM-DD')").catch(() => {});
 }
 
+// ── Rewarded videos (off unless REWARDED_ADS is set) ──
+const UNIT_OK = /^\/[0-9]{4,}(\/[A-Za-z0-9_.\-]+)+$/;
+const rewardOn = () => { const c = cfg(); return c.rewardMode === 'test' || (c.rewardMode === 'gam' && UNIT_OK.test(c.rewardUnit)); };
+async function bonusLeft(uid) {
+  await db.ensure();
+  const r = await db.query('select n from bonus where user_id = $1', [uid]);
+  return r.length ? Number(r[0].n) : 0;
+}
+async function rewardsToday(uid) {
+  await db.ensure();
+  const r = await db.query('select count(*)::int as n from reward_tokens where user_id = $1 and day = $2 and claimed_at is not null', [uid, dayKey()]);
+  return r.length ? Number(r[0].n) : 0;
+}
+async function rewardStart(ent) {
+  const c = cfg();
+  if (!rewardOn()) return { status: 404, body: { error: 'off', message: 'Bonus plans are not available.' } };
+  if (ent.tier !== 'free') return { status: 400, body: { error: 'not_free', message: 'Bonus plans are for the free plan.' } };
+  if (ent.blocked) return { status: 403, body: { error: 'blocked', message: 'This account has been paused.' } };
+  if ((await rewardsToday(ent.uid)) >= c.rewardPerDay) return { status: 429, body: { error: 'daily', message: 'You have used all ' + c.rewardPerDay + ' bonus videos for today. They come back tomorrow.' } };
+  const id = require('crypto').randomBytes(16).toString('hex');
+  await db.query('insert into reward_tokens (id, user_id, started_at, day) values ($1, $2, $3, $4)', [id, ent.uid, Date.now(), dayKey()]);
+  if (Math.random() < 0.02) db.query("delete from reward_tokens where day < to_char((now() at time zone 'utc') - interval '30 days', 'YYYY-MM-DD')").catch(() => {});
+  return { status: 200, body: { token: id, seconds: c.rewardSeconds, mode: c.rewardMode } };
+}
+async function rewardClaim(ent, token) {
+  const c = cfg();
+  if (!rewardOn()) return { status: 404, body: { error: 'off', message: 'Bonus plans are not available.' } };
+  if (ent.tier !== 'free' || ent.blocked) return { status: 400, body: { error: 'not_free', message: 'Bonus plans are for the free plan.' } };
+  const rows = await db.query('select user_id, started_at, claimed_at from reward_tokens where id = $1', [String(token || '').slice(0, 64)]);
+  const row = rows[0];
+  if (!row || row.user_id !== ent.uid) return { status: 400, body: { error: 'unknown', message: 'That video was not recognised. Please try again.' } };
+  if (row.claimed_at) return { status: 409, body: { error: 'used', message: 'That video was already counted.' } };
+  const waited = Date.now() - Number(row.started_at);
+  if (waited < c.rewardSeconds * 1000) return { status: 400, body: { error: 'early', message: 'The video was not watched to the end.' } };
+  if (waited > 30 * 60000) return { status: 400, body: { error: 'stale', message: 'That took too long. Please start again.' } };
+  if ((await rewardsToday(ent.uid)) >= c.rewardPerDay) return { status: 429, body: { error: 'daily', message: 'You have used all ' + c.rewardPerDay + ' bonus videos for today.' } };
+  const won = await db.query('update reward_tokens set claimed_at = $2 where id = $1 and claimed_at is null returning id', [row.id || String(token).slice(0, 64), Date.now()]);
+  if (!won.length) return { status: 409, body: { error: 'used', message: 'That video was already counted.' } };
+  await db.query('insert into bonus (user_id, n) values ($1, $2) on conflict (user_id) do update set n = bonus.n + $2', [ent.uid, c.rewardPlans]);
+  event('reward');
+  return { status: 200, body: { ok: true, bonus: await bonusLeft(ent.uid), left: Math.max(0, c.rewardPerDay - await rewardsToday(ent.uid)) } };
+}
+
 // Signed-in teachers on the free tier: may this request start a new plan?
 async function checkFree(ent, cls) {
   const c = cfg();
   const rows = await log(ent.subject, weekKey());
   const used = rows.reduce((n, r) => n + r.n, 0);
   const classes = rows.map((r) => r.cls);
-  if (c.freePlansWeekly && used >= c.freePlansWeekly) return { ok: false, reason: 'plans', used, limit: c.freePlansWeekly, resetsAt: nextWeek() };
   if (c.freeClasses && !classes.includes(cls) && classes.length >= c.freeClasses) return { ok: false, reason: 'classes', classes, limit: c.freeClasses, resetsAt: nextWeek() };
+  if (c.freePlansWeekly && used >= c.freePlansWeekly) {
+    if (rewardOn() && ent.uid && (await bonusLeft(ent.uid)) > 0) { ent.useBonus = true; return { ok: true, used, limit: c.freePlansWeekly, bonus: true }; }   // a bonus plan earned by watching a video
+    return { ok: false, reason: 'plans', used, limit: c.freePlansWeekly, resetsAt: nextWeek() };
+  }
   return { ok: true, used, limit: c.freePlansWeekly };
 }
-const countFree = (ent, cls) => { event('plan_free'); return bump(ent.subject, weekKey(), cls); };
+const countFree = async (ent, cls) => {
+  if (ent.useBonus) { event('plan_bonus'); await db.query('update bonus set n = n - 1 where user_id = $1 and n > 0', [ent.uid]); return; }   // paid for with a bonus plan, not the weekly allowance
+  event('plan_free'); return bump(ent.subject, weekKey(), cls);
+};
 
 // Guests: previews that cost tokens today (previews served from the shared cache are free and not counted).
 async function guestUsed(ent) {
@@ -136,6 +190,11 @@ async function status(me, ip) {
     else if (ent.tier === 'free') {
       const rows = await log(ent.subject, weekKey());
       out.free = { used: rows.reduce((n, r) => n + r.n, 0), limit: c.freePlansWeekly, classes: rows.map((r) => r.cls), classLimit: c.freeClasses, resetsAt: nextWeek() };
+      if (rewardOn()) {
+        const done = await rewardsToday(ent.uid);
+        out.free.bonus = await bonusLeft(ent.uid);
+        out.rewards = { enabled: true, mode: c.rewardMode, unit: c.rewardMode === 'gam' ? c.rewardUnit : '', plans: c.rewardPlans, perDay: c.rewardPerDay, left: Math.max(0, c.rewardPerDay - done) };
+      }
     } else out.pro = { expiresAt: ent.vip && !ent.expiresAt ? 0 : ent.expiresAt, vip: ent.vip };
   } catch (e) { console.error('[entitle] status failed', e && e.message); }
   return out;
@@ -157,4 +216,4 @@ async function notice() {
 }
 const clearNoticeCache = () => { noticeCache = { at: 0, value: null }; };
 
-module.exports = { notice, clearNoticeCache, event, isAdmin, cfg, enabled, resolve, checkFree, countFree, checkGuest, countGuest, message, status, weekKey, expiry };
+module.exports = { rewardStart, rewardClaim, rewardOn, notice, clearNoticeCache, event, isAdmin, cfg, enabled, resolve, checkFree, countFree, checkGuest, countGuest, message, status, weekKey, expiry };

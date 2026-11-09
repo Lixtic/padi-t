@@ -117,6 +117,12 @@ module.exports = async (req, res) => {
     if (!E.enabled()) return sendJson(res, 404, { error: 'not_configured', message: 'Plans are not set up on this server.' });
     if (req.method !== 'POST') return sendJson(res, 405, { error: 'method', message: 'Use POST.' });
     if (!me || !me.uid) return sendJson(res, 401, { error: 'session', message: 'Please sign in first.' });
+    if (action === 'reward_start' || action === 'reward_claim') {
+      const ent = await E.resolve(me, clientIp(req));
+      const b = await readJson(req);
+      const r = action === 'reward_start' ? await E.rewardStart(ent) : await E.rewardClaim(ent, b.token);
+      return sendJson(res, r.status, r.body);
+    }
     if (!secret()) return sendJson(res, 503, { error: 'not_configured', message: 'Payments are not set up yet. Please try again later.' });
     const body = await readJson(req);
 
