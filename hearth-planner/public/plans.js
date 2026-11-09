@@ -27,6 +27,7 @@
   }
   function emit() { render(); renderBadge(); renderBanner(); if (el.ps && el.ps.open) renderPlan(); listeners.forEach(function (f) { try { f(info); } catch (e) { /* ignore */ } }); }
 
+  var upgradeLinkDone = false;
   var P = {
     configure: function (h) { hooks = h || {}; },
     onChange: function (f) { listeners.push(f); },
@@ -53,6 +54,12 @@
         info = await r.json();
       } catch (e) { info = null; }
       emit();
+      // The "Extend Pro" button in the reminder email opens the app with ?upgrade=1: show the plans straight away, once.
+      if (!upgradeLinkDone && /[?&]upgrade=1(&|$)/.test(location.search)) {
+        upgradeLinkDone = true;
+        try { history.replaceState(null, '', location.pathname + location.hash); } catch (e) { /* fine */ }
+        if (P.tier()) setTimeout(function () { P.openUpgrade('', ''); }, 400);
+      }
       return info;
     },
 

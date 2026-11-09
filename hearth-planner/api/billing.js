@@ -70,10 +70,9 @@ async function remindExpiring() {
   for (const r of rows) {
     if (!r.email) continue;
     const left = Math.max(1, Math.ceil((Number(r.expires_at) - now) / 86400000));
-    const when = new Date(Number(r.expires_at)).toUTCString().slice(0, 16);
     try {
-      const ok = await A.sendNotice(r.email, 'Your GuidEd Pro ends in ' + left + (left === 1 ? ' day' : ' days'),
-        'Hello,\n\nYour GuidEd Pro plan ends on ' + when + '. After that your account goes back to the free plan (a few full plans a week, one class, and a footer on Word files).\n\nTo keep Pro, open GuidEd, tap the PRO badge and choose Extend Pro. New time is added on top of what you have left, and nothing renews by itself.\n\nThank you for using GuidEd.');
+      const mail = require('./_mail').proEnding(left, r.expires_at);
+      const ok = await A.sendNotice(r.email, mail.subject, mail.text, mail.html);
       if (ok) { await db.query('update subscriptions set reminded_for = expires_at where user_id = $1', [r.user_id]); sent++; }
     } catch (e) { console.error('[billing] reminder failed', e && e.message); }
   }
