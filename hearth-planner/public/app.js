@@ -1264,10 +1264,11 @@
   function fillWeekEnding(text, params) {
     if (!params || !params.week) return text;
     const we = weekEnd(params.term || termNow(), params.week);
-    if (!we || we.afterClose) return text;
+    if (!we) return text;
+    const when = we.afterClose ? 'To be confirmed' : we.label;   // the term calendar ends before this week: say so instead of printing a date after the break
     return String(text).split('\n').map((line) => (/week[\s-]*ending/i.test(line) && line.indexOf('|') !== -1 ? line.split('|').map((cell) => {
       const m = /^(\s*(?:\*\*)?\s*week[\s-]*ending\s*:?\s*(?:\*\*)?\s*:?)\s*(?:_{2,}|\.{3,}|…|\[[^\]]*\]|\(\s*\))?\s*$/i.exec(cell);
-      return m ? m[1].replace(/\s+$/, '') + ' ' + we.label + ' ' : cell;
+      return m ? m[1].replace(/\s+$/, '') + ' ' + when + ' ' : cell;
     }).join('|') : line)).join('\n');
   }
   const termAuto = () => (window.SchoolPadiSchemes ? window.SchoolPadiSchemes.currentTerm() : 1);
@@ -1835,7 +1836,7 @@
     }, label: (x) => x });
     const ddTerm = makeDropdown($('#ddTerm'), { name: 'Term', items: () => [1, 2, 3].map((x) => ({ id: x, label: 'Term ' + x + (x === termAuto() ? ' (now)' : '') })), get: () => termNow(), set: (v) => { termSet(v); continueWeek(); syncPills(); }, label: (x) => 'Term ' + x });
     window.addEventListener('guided:account', () => { ddTerm.build(); syncScheme(); });
-    makeDropdown($('#ddWeek'), { name: 'Week', items: () => WEEKS.map((x) => { const we = weekEnd(termNow(), x); return { id: x, label: 'Week ' + x, sub: we && !we.afterClose ? we.short + (x === calendarWeek() ? ' · this week' : '') : '' }; }), get: () => state.params.week, set: (v) => { state.params.week = v; store.save(); syncScheme(); }, label: (x) => 'Week ' + x });
+    makeDropdown($('#ddWeek'), { name: 'Week', items: () => WEEKS.map((x) => { const we = weekEnd(termNow(), x); return { id: x, label: 'Week ' + x, sub: we ? (we.afterClose ? 'date to be confirmed' : we.short + (x === calendarWeek() ? ' · this week' : '')) : '' }; }), get: () => state.params.week, set: (v) => { state.params.week = v; store.save(); syncScheme(); }, label: (x) => 'Week ' + x });
 
     makeDropdown($('#ddSize'), { name: 'Class size', items: SIZES.map((x) => ({ id: x, label: x + ' learners' })), get: () => state.params.size, set: (v) => { state.params.size = v; syncSummary(); store.save(); }, label: (x) => x + ' learners' });
     syncHook(); syncLight(); syncContent(); syncScheme(); syncAlso();
