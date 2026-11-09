@@ -108,7 +108,7 @@ a { color: inherit; }
 .logo { width: 28px; height: 28px; flex: none; color: var(--accent); }
 
 /* ───────── Layout ───────── */
-.app { display: flex; height: 100vh; height: 100dvh; overflow: hidden; }
+.app { display: flex; height: 100vh; height: 100dvh; height: var(--app-h, 100dvh); overflow: hidden; }
 
 .sidebar {
   width: var(--sb-w); flex: none;
@@ -121,7 +121,7 @@ a { color: inherit; }
 .app.sb-collapsed .sidebar { margin-left: calc(var(--sb-w) * -1); }
 
 .main {
-  flex: 1; min-width: 0;
+  flex: 1; min-width: 0; min-height: 0;
   display: flex; flex-direction: column;
   background: var(--bg);
 }
@@ -575,7 +575,7 @@ html { overscroll-behavior-y: none; }
 
 @media (max-width: 560px) {
   /* Landing: let the page scroll on short phones instead of clipping the heading. */
-  .stage { overflow-y: auto; overscroll-behavior: contain; }
+  .stage { overflow-y: auto; overscroll-behavior: contain; -webkit-overflow-scrolling: touch; padding-bottom: 8px; }
   [data-view="landing"] .grow { flex: 0 0 8px; }
   [data-view="landing"] .hero { max-height: none; flex: none; margin-bottom: 16px; }
   [data-view="landing"] .messages-wrap { flex: none; }
