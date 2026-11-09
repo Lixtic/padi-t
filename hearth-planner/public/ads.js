@@ -34,18 +34,24 @@
     document.head.appendChild(s);
   }
 
-  // Google's Auto ads can rewrite the page (height, overflow, padding) and stop the app scrolling. Undo that on <html> and <body>.
-  var guarding = false;
+  // Google's ad code can rewrite the style of the page and of every element around the ad (height, overflow, width, padding),
+  // which stops the app scrolling. Undo those edits on the ad's ancestors, the stage included, and on <html> and <body>.
+  var guarding = false, BAD = ['height', 'min-height', 'max-height', 'overflow', 'overflow-x', 'overflow-y', 'position', 'width', 'max-width',
+    'padding', 'padding-top', 'padding-bottom', 'padding-left', 'padding-right', 'margin-top', 'margin-bottom', 'margin-left', 'margin-right', 'top', 'left', 'z-index'];
   function guard() {
     if (guarding || !window.MutationObserver) return; guarding = true;
-    var fix = function (el) {
-      ['height', 'min-height', 'overflow', 'overflow-y', 'position', 'padding-bottom', 'padding-top', 'margin-top', 'margin-bottom', 'top'].forEach(function (k) {
-        if (el.style.getPropertyValue(k)) el.style.removeProperty(k);
-      });
-    };
-    var mo = new MutationObserver(function () { mo.disconnect(); fix(document.documentElement); fix(document.body); watch(); });
-    function watch() { [document.documentElement, document.body].forEach(function (el) { mo.observe(el, { attributes: true, attributeFilter: ['style'] }); }); }
-    fix(document.documentElement); fix(document.body); watch();
+    function chain() {
+      var out = [document.documentElement, document.body], n = el();
+      while (n && n !== document.body) { out.push(n); n = n.parentElement; }
+      return out;
+    }
+    function fix() {
+      chain().forEach(function (e) { BAD.forEach(function (k) { if (e.style.getPropertyValue(k)) e.style.removeProperty(k); }); });
+    }
+    var mo = new MutationObserver(function () { mo.disconnect(); fix(); watch(); });
+    function watch() { chain().forEach(function (e) { mo.observe(e, { attributes: true, attributeFilter: ['style'] }); }); }
+    fix(); watch();
+    window.addEventListener('resize', function () { fix(); });
   }
   // show: whether the start screen is showing and nothing is being written.
   function sync(show) {
