@@ -65,7 +65,7 @@ async function remindExpiring() {
   await db.ensure();
   const days = Math.max(1, parseInt(process.env.REMIND_DAYS || '3', 10) || 3);
   const now = Date.now();
-  const rows = await db.query('select s.user_id, s.expires_at, (select email from payments p where p.user_id = s.user_id and p.status = \'success\' order by p.paid_at desc limit 1) as email from subscriptions s where s.expires_at > $1 and s.expires_at <= $2 and s.reminded_for <> s.expires_at', [now, now + days * 86400000]);
+  const rows = await db.query('select s.user_id, s.expires_at, coalesce((select email from payments p where p.user_id = s.user_id and p.status = \'success\' order by p.paid_at desc limit 1), (select a.email from accounts a where a.user_id = s.user_id)) as email from subscriptions s where s.expires_at > $1 and s.expires_at <= $2 and s.reminded_for <> s.expires_at', [now, now + days * 86400000]);
   let sent = 0;
   for (const r of rows) {
     if (!r.email) continue;
