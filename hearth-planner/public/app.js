@@ -436,6 +436,7 @@
             h('span', { class: 'tag', text: p.subject }), h('span', { class: 'tag', text: p.cls }), h('span', { class: 'tag', text: 'Week ' + p.week }),
             p.size ? h('span', { class: 'tag', text: p.size + ' learners' }) : null,
             p.light ? h('span', { class: 'tag', text: 'Low-resource' }) : null,
+            p.mode === 'resources' ? h('span', { class: 'tag', text: p.resourceType }) : p.mode === 'plan' ? h('span', { class: 'tag', text: 'Lesson plan only' }) : null,
             p.studyNotes === false ? h('span', { class: 'tag', text: notesOf(p.cls).tag }) : null,
             p.bece === false ? h('span', { class: 'tag', text: examOf(p.cls).tag }) : null),
           m.content ? h('div', { class: 'req-notes', text: m.content }) : null));
@@ -453,7 +454,7 @@
   }
 
   function makeBot(session) {
-    const baseTitle = planTitle(session.params || state.params);
+    const baseTitle = planTitle(session.params || state.params) + (session.params && session.params.mode === 'resources' ? ' – ' + session.params.resourceType : session.params && session.params.mode === 'plan' ? ' – Lesson plan' : '');
     let kind = 'plan', demoted = false, editBox = null, ta = null;
     const titleEl = h('span', { class: 'doc-title', text: baseTitle });
     const bodyEl = h('div', { class: 'doc-body md' });
@@ -559,7 +560,7 @@
       root, text: '', msg: null,
       get title() { return baseTitle + (kindTitle(kind, session.params && session.params.cls) || ''); },
       get kind() { return kind; },
-      setKind(k) { kind = KIND_TITLE[k] !== undefined ? k : 'plan'; titleEl.textContent = api.title; btnShare.hidden = kind !== 'plan'; },
+      setKind(k) { kind = KIND_TITLE[k] !== undefined ? k : 'plan'; titleEl.textContent = api.title; btnShare.hidden = kind !== 'plan' || !!(session.params && session.params.mode === 'resources'); },
       set(raw, final, msg) {
         api.text = raw;
         const pv = !!(msg && msg.preview);
@@ -626,13 +627,13 @@
   function paywallCard(session) {
     const btn = h('button', { type: 'button', class: 'pw-main', 'data-pw': '1' });
     const sub = h('span', { class: 'pw-sub', 'data-pw-sub': '1' });
-    const paint = () => { const guest = !signedIn(); btn.textContent = guest ? 'Create free account' : 'Write the full plan'; sub.textContent = guest ? 'Free. Takes about a minute.' : 'Uses one of your plans.'; };
+    const paint = () => { const guest = !signedIn(), resource = session.params && session.params.mode === 'resources'; btn.textContent = guest ? 'Create free account' : resource ? 'Generate full resource' : 'Write the full plan'; sub.textContent = guest ? 'Free. Takes about a minute.' : 'Uses one of your generations.'; };
     paint();
-    btn.addEventListener('click', () => { if (signedIn()) unlockFull(session); else openSignupSheet('Create a free account to unlock the full plan.'); });
+    btn.addEventListener('click', () => { if (signedIn()) unlockFull(session); else openSignupSheet(session.params && session.params.mode === 'resources' ? 'Create a free account to generate the full resource.' : 'Create a free account to unlock the full plan.'); });
     return h('div', { class: 'paywall' },
-      h('h3', { text: 'This is a preview of Lesson 1' }),
-      h('p', { text: 'The full plan is ready when you are:' }),
-      h('ul', null, ...['Lesson 2 and the complete weekly package', 'Study notes for every sub-topic', examOf(state.params.cls).section + ' questions with a marking guide', 'Word download, ready to print'].map((x) => h('li', { text: x }))),
+      h('h3', { text: session.params && session.params.mode === 'resources' ? 'This is a preview of your resource' : 'This is a preview of Lesson 1' }),
+      h('p', { text: session.params && session.params.mode === 'resources' ? 'Create an account to generate the complete resource and download it.' : 'The full plan is ready when you are:' }),
+      h('ul', null, ...(session.params && session.params.mode === 'resources' ? ['Complete learner-ready content', 'Examples and answer guide where relevant', 'Word download, ready to print'] : ['Lesson 2 and the complete weekly package', 'Study notes for every sub-topic', examOf(state.params.cls).section + ' questions with a marking guide', 'Word download, ready to print']).map((x) => h('li', { text: x }))),
       h('div', { class: 'pw-actions' }, btn, sub));
   }
   function openSignupSheet(msg) {
