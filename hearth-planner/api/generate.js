@@ -3,7 +3,13 @@ const BASE_PROMPT = require('./_prompt');
 const LEVEL_PROMPTS = require('./_prompt_levels');
 const Levels = require('./_levels');
 // JHS uses the main prompt as it is. Other levels add their own profile at the end.
-const systemFor = (cls) => { const l = Levels.levelOfClass(cls); return l && LEVEL_PROMPTS[l.id] ? BASE_PROMPT + '\n\n' + LEVEL_PROMPTS[l.id] : BASE_PROMPT; };
+const systemFor = (cls, mode, resourceType) => {
+  const l = Levels.levelOfClass(cls);
+  let system = l && LEVEL_PROMPTS[l.id] ? BASE_PROMPT + '\n\n' + LEVEL_PROMPTS[l.id] : BASE_PROMPT;
+  if (mode === 'plan') system += '\n\n## Task mode override: lesson plan only\nReturn ONLY Lesson Metadata, Lesson 1, Lesson 2 and the Assessment Rubric. Do not include Study Notes, BECE Practice, worksheets, homework, slides or any other teaching resources. Keep the full lesson plan structure, curriculum alignment, learning objectives, lesson activities, assessment and resources column.';
+  if (mode === 'resources') system += '\n\n## Task mode override: teaching resource only\nReturn ONLY the requested teaching resource. Do not include lesson metadata, lesson-plan tables, lesson phases or an assessment rubric. Use the supplied class, subject, term, week and scheme information to keep the resource aligned to the topic. For worksheets and homework, include learner instructions and an answer key. For BECE practice, include questions and a marking guide. For teaching slides, provide a slide-by-slide outline with concise learner-facing content and teacher notes. For study notes, write clear, complete student notes with examples and key terms.';
+  return system;
+};
 const { sendJson, clientIp, accessOk, readJson, validate, firstMessage } = require('./_lib');
 const Providers = require('./_providers');
 const { activeProvider, ADAPTERS } = Providers;
@@ -77,7 +83,7 @@ module.exports = async (req, res) => {
   // 1. A repeat of a recent request is served from the cache, at no token cost and with no quota used.
   //    "fresh" (the Regenerate button) skips the lookup and replaces the stored answer.
   const ck = Cache.keyFor({
-    ver: Cache.version(systemFor(v.params.cls), provider),
+    ver: Cache.version(systemFor(v.params.cls, v.params.mode, v.params.resourceType), provider),
     settingsText: makeFirst(Object.assign({}, v.params, { notes: '' })),
     notes: v.params.notes, thread: v.thread, subject,
   });
@@ -103,7 +109,7 @@ module.exports = async (req, res) => {
   }
 
   // 2. Not cached, so it will cost tokens. Stop here if today's allowance is used up.
-  const inputTokens = Quota.estimateTokens(systemFor(v.params.cls).length + messages.reduce((n, m) => n + m.content.length, 0));
+  const system = systemFor(v.params.cls, v.params.mode, v.params.resourceType);\n  const inputTokens = Quota.estimateTokens(system.length + messages.reduce((n, m) => n + m.content.length, 0));
   const outputCap = guest ? (Number(Entitle.cfg().previewMaxTokens) || 2200) : Providers.maxOutputTokens();
   let q;
   try {
@@ -120,7 +126,7 @@ module.exports = async (req, res) => {
   const ctrl = new AbortController();
   res.on('close', () => { if (!res.writableEnded) ctrl.abort(); });
 
-  const stream = ADAPTERS[provider]({ system: systemFor(v.params.cls), messages, signal: ctrl.signal, maxTokens: guest ? outputCap : undefined });
+  const stream = ADAPTERS[provider]({ system, messages, signal: ctrl.signal, maxTokens: guest ? outputCap : undefined });
   const it = stream[Symbol.asyncIterator]();
   let first;
   try {
