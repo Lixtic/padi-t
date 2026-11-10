@@ -1294,3 +1294,21 @@ main[data-view="chat"] .notice-bar { display: none; }
     padding-inline: clamp(12px, 2vw, 24px);
   }
 }
+
+
+/* Teaching Studio can tuck away once the teacher starts preparing a lesson. */
+.studio-heading-main { display:flex; flex-direction:column; gap:3px; min-width:0; }
+.studio-collapse-toggle {
+  display:inline-flex; align-items:center; gap:7px; width:max-content;
+  padding:0; border:0; background:transparent; color:var(--text); text-align:left;
+}
+.studio-collapse-toggle strong { font-size:14px; }
+.studio-collapse-toggle .studio-chevron {
+  width:16px; height:16px; color:var(--muted); transition:transform .18s ease;
+}
+.teaching-studio.is-collapsed .studio-content { display:none; }
+.teaching-studio.is-collapsed .studio-heading { margin-bottom:0; }
+.teaching-studio.is-collapsed .studio-collapse-toggle .studio-chevron { transform:rotate(-90deg); }
+@media(prefers-reduced-motion:reduce) {
+  .studio-collapse-toggle .studio-chevron { transition:none; }
+}
