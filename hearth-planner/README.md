@@ -166,6 +166,9 @@ Every menu has **Report a bug or suggest an idea**. Messages are saved in the `f
 - **Refunds:** press **Refund** on a payment. GuidEd asks Paystack to refund it in full, marks it refunded, and removes the Pro days that payment bought (never below today). Teachers who want a refund use **Need a refund or help with a payment?** in their plan sheet, which sends you a message in the feedback inbox. Pro does not renew by itself, so there is nothing for a teacher to cancel. The public policy is `public/refunds.html` (full refund within 7 days; later requests case by case) — edit it if your terms differ.
 - **Pro-ending warning:** in the last 7 days teachers see a banner and a warning on their plan card. Teachers also get one email 3 days before the end (change with `REMIND_DAYS`). The email needs `CRON_SECRET` and `SMTP_URL` in Vercel; without them only the in-app warning runs. Vercel Cron runs the job daily at 08:00 UTC.
 
+## Emails
+Branded HTML emails (with a plain-text twin) are built in `api/_mail.js` and sent through `SMTP_URL` / `MAIL_FROM`: a **welcome** email the first time a new account is seen (once; a mail failure never affects the app), and the **Pro-ending** reminder (3 days before, sent by the daily cron). Links use `SITE_URL` (default `https://www.guidedgh.site`). The sign-in codes and verification emails come from Neon Auth, not from here.
+
 ## Rewarded video (watch a video for one more plan)
 Free teachers who have used the week's plans see **Watch a short video for 1 more plan** in the upgrade sheet. Off until you set it up. AdSense cannot show rewarded video on the web; Google **Ad Manager** can.
 

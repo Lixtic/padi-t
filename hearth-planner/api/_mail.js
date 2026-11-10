@@ -35,6 +35,14 @@ function layout(parts) {
   return { html, text };
 }
 
+// What the free plan allows right now, in words, read from the live settings so the emails never go out of date.
+function freePlanText() {
+  let w = 3, c = 1;
+  try { const cfg = require('./_entitle').cfg(); w = cfg.freePlansWeekly; c = cfg.freeClasses; } catch (e) { /* defaults */ }
+  const plans = w ? w + ' full plan' + (w === 1 ? '' : 's') + ' a week' : 'unlimited plans';
+  const classes = c ? (c === 1 ? 'one class' : c + ' classes') : 'every class';
+  return { plans, classes, short: plans + ' for ' + classes, after: plans + ', ' + classes + ', and a footer on Word files' };
+}
 const fmtDate = (ms) => new Date(Number(ms)).toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric', timeZone: 'UTC' });
 
 function proEnding(left, expiresAt) {
@@ -45,7 +53,7 @@ function proEnding(left, expiresAt) {
       preheader: 'Pro ends on ' + fmtDate(expiresAt) + '. Add more time in a few taps.',
       title: 'Your Pro ends in ' + left + (left === 1 ? ' day' : ' days'),
       intro: 'Hello, your GuidEd Pro plan is almost over. Here is what happens next.',
-      facts: [['Pro ends', fmtDate(expiresAt)], ['After that', 'The free plan: 3 full plans a week, one class, and a footer on Word files']],
+      facts: [['Pro ends', fmtDate(expiresAt)], ['After that', 'The free plan: ' + freePlanText().after]],
       paragraphs: ['To keep every class, unlimited plans and clean Word files, add more time before it ends. New time is added on top of what you have left, and nothing renews by itself.'],
       button: { label: 'Extend Pro', url },
       closing: 'Thank you for planning with GuidEd.',
@@ -53,4 +61,19 @@ function proEnding(left, expiresAt) {
   };
 }
 
-module.exports = { layout, proEnding, fmtDate, SITE };
+function welcome() {
+  return {
+    subject: 'Welcome to GuidEd',
+    ...layout({
+      preheader: 'Your account is ready. Your first lesson plan is a minute away.',
+      title: 'Welcome to GuidEd',
+      intro: 'Your account is ready. GuidEd turns the NaCCA scheme of learning into a lesson plan you can teach from.',
+      facts: [['Your plan', 'Free: ' + freePlanText().short], ['Need more?', 'Pro gives you every class, unlimited plans and Word files without a footer']],
+      paragraphs: ['Choose your class and subject, pick the week, and tap Generate. You get a lesson plan table with the curriculum indicators, activities and assessment, and you can download it as a Word file.', 'Tip: add GuidEd to your phone\'s home screen so it opens like an app.'],
+      button: { label: 'Open GuidEd', url: SITE() + '/' },
+      closing: 'Questions? Just reply to this email and we will help.',
+    }),
+  };
+}
+
+module.exports = { layout, proEnding, welcome, fmtDate, SITE };
