@@ -15,9 +15,9 @@ const num = (name, dflt) => {
   return Number.isFinite(n) && n >= 0 ? n : dflt;
 };
 const cfg = () => ({
-  freePlansWeekly: num('FREE_PLANS_WEEKLY', 3),          // 0 = unlimited
-  freeClasses: num('FREE_CLASSES', 1),                    // 0 = every class
-  guestPreviewsDaily: num('GUEST_PREVIEWS_DAILY', 2),     // 0 = unlimited
+  freePlansWeekly: num('FREE_PLANS_WEEKLY', 10),          // 0 = unlimited
+  freeClasses: num('FREE_CLASSES', 3),                    // 0 = every class
+  guestPreviewsDaily: num('GUEST_PREVIEWS_DAILY', 3),     // 0 = unlimited
   proTokenDaily: num('PRO_TOKEN_QUOTA_DAILY', 600000),
   previewMaxTokens: Math.max(500, num('PREVIEW_MAX_TOKENS', 2200)),
   rewardMode: String(process.env.REWARDED_ADS || '').toLowerCase(),   // '' = off, 'gam' = Google Ad Manager rewarded video, 'test' = a clearly marked placeholder countdown for testing only (no real ad)

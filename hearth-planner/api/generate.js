@@ -3,7 +3,13 @@ const BASE_PROMPT = require('./_prompt');
 const LEVEL_PROMPTS = require('./_prompt_levels');
 const Levels = require('./_levels');
 // JHS uses the main prompt as it is. Other levels add their own profile at the end.
-const systemFor = (cls) => { const l = Levels.levelOfClass(cls); return l && LEVEL_PROMPTS[l.id] ? BASE_PROMPT + '\n\n' + LEVEL_PROMPTS[l.id] : BASE_PROMPT; };
+const systemFor = (cls, mode, resourceType) => {
+  const l = Levels.levelOfClass(cls);
+  let system = l && LEVEL_PROMPTS[l.id] ? BASE_PROMPT + '\n\n' + LEVEL_PROMPTS[l.id] : BASE_PROMPT;
+  if (mode === 'plan') system += '\n\n## Task mode override: lesson plan only\nReturn ONLY Lesson Metadata, Lesson 1, Lesson 2 and the Assessment Rubric. Do not include Study Notes, BECE Practice, worksheets, homework, slides or any other teaching resources. Keep the full lesson plan structure, curriculum alignment, learning objectives, lesson activities, assessment and resources column.';
+  if (mode === 'resources') system += '\n\n## Task mode override: teaching resource only\nReturn ONLY the requested teaching resource. Do not include lesson metadata, lesson-plan tables, lesson phases or an assessment rubric. Use the supplied class, subject, term, week and scheme information to keep the resource aligned to the topic. For worksheets and homework, include learner instructions and an answer key. For BECE practice, include questions and a marking guide. For teaching slides, provide a slide-by-slide outline with concise learner-facing content and teacher notes. For study notes, write clear, complete student notes with examples and key terms.';
+  return system;
+};
 const { sendJson, clientIp, accessOk, readJson, validate, firstMessage } = require('./_lib');
 const Providers = require('./_providers');
 const { activeProvider, ADAPTERS } = Providers;
@@ -52,6 +58,7 @@ module.exports = async (req, res) => {
   if (ent && ent.blocked) return sendJson(res, 403, { error: 'blocked', message: 'This account has been paused. Please contact us if you think this is a mistake.' });
   const guest = !!ent && ent.tier === 'guest';
   const firstTurn = v.thread.length === 0;
+  const planTurn = firstTurn && v.params.mode !== 'resources';   // a resource-only run (worksheet, notes...) is not a weekly plan: it never uses the free plan or class allowance
   if (guest && !firstTurn) {
     return sendJson(res, 402, { error: 'account', message: 'Create a free account to refine a plan, or to add study notes and BECE questions.' });
   }
@@ -67,7 +74,7 @@ module.exports = async (req, res) => {
   };
 
   // Signed-in teachers on the free tier: stop here when this week's plans (or classes) are used up.
-  if (ent && ent.tier === 'free' && firstTurn) {
+  if (ent && ent.tier === 'free' && planTurn) {
     let g = { ok: true };
     try { g = await Entitle.checkFree(ent, v.params.cls); } catch (e) { console.error('[generate] free check failed', e && e.message); }
     if (!g.ok) Entitle.event('free_limit_' + g.reason);
@@ -77,7 +84,7 @@ module.exports = async (req, res) => {
   // 1. A repeat of a recent request is served from the cache, at no token cost and with no quota used.
   //    "fresh" (the Regenerate button) skips the lookup and replaces the stored answer.
   const ck = Cache.keyFor({
-    ver: Cache.version(systemFor(v.params.cls), provider),
+    ver: Cache.version(systemFor(v.params.cls, v.params.mode, v.params.resourceType), provider),
     settingsText: makeFirst(Object.assign({}, v.params, { notes: '' })),
     notes: v.params.notes, thread: v.thread, subject,
   });
@@ -87,7 +94,7 @@ module.exports = async (req, res) => {
       res.statusCode = 200;
       sendHeaders(hit.how);
       res.end(hit.text);
-      if (ent && ent.tier === 'free' && firstTurn) await Entitle.countFree(ent, v.params.cls).catch(() => {});
+      if (ent && ent.tier === 'free' && planTurn) await Entitle.countFree(ent, v.params.cls).catch(() => {});
       else if (ent && ent.tier === 'pro' && firstTurn) Entitle.event('plan_pro');
       else if (guest) Entitle.event('guest_preview');
       return;
@@ -103,7 +110,8 @@ module.exports = async (req, res) => {
   }
 
   // 2. Not cached, so it will cost tokens. Stop here if today's allowance is used up.
-  const inputTokens = Quota.estimateTokens(systemFor(v.params.cls).length + messages.reduce((n, m) => n + m.content.length, 0));
+  const system = systemFor(v.params.cls, v.params.mode, v.params.resourceType);
+  const inputTokens = Quota.estimateTokens(system.length + messages.reduce((n, m) => n + m.content.length, 0));
   const outputCap = guest ? (Number(Entitle.cfg().previewMaxTokens) || 2200) : Providers.maxOutputTokens();
   let q;
   try {
@@ -120,7 +128,7 @@ module.exports = async (req, res) => {
   const ctrl = new AbortController();
   res.on('close', () => { if (!res.writableEnded) ctrl.abort(); });
 
-  const stream = ADAPTERS[provider]({ system: systemFor(v.params.cls), messages, signal: ctrl.signal, maxTokens: guest ? outputCap : undefined });
+  const stream = ADAPTERS[provider]({ system, messages, signal: ctrl.signal, maxTokens: guest ? outputCap : undefined });
   const it = stream[Symbol.asyncIterator]();
   let first;
   try {
@@ -166,7 +174,7 @@ module.exports = async (req, res) => {
   const complete = !failed && !ctrl.signal.aborted && (finish === 'stop' || (guest && wroteText));
   if (complete) tasks.push(Cache.store(ck, full, v.thread.length, used));
   if (guest && wroteText) { Entitle.event('guest_preview'); tasks.push(Entitle.countGuest(ent)); }                     // a taster that spent tokens
-  else if (ent && ent.tier === 'free' && firstTurn && !fresh && complete) tasks.push(Entitle.countFree(ent, v.params.cls));
+  else if (ent && ent.tier === 'free' && planTurn && !fresh && complete) tasks.push(Entitle.countFree(ent, v.params.cls));
   else if (ent && ent.tier === 'pro' && firstTurn && !fresh && complete) Entitle.event('plan_pro');
   await Promise.all(tasks).catch(() => {});
 };

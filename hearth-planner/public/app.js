@@ -230,7 +230,7 @@
   const state = {
     sessions: [],
     currentId: null,
-    params: { subject: SUBJECTS[0], cls: 'Basic 8', week: 1, hook: true, size: '31–45', light: false },
+    params: { subject: SUBJECTS[0], cls: 'Basic 8', week: 1, hook: true, size: '31–45', light: false, mode: 'full', resourceType: 'Study notes' },
     streaming: null,
     stick: true,
     bots: [],
@@ -308,6 +308,7 @@
   const lsSet = (k, v) => { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) { /* ignore */ } };
   let sbView = lsGet(VIEW_KEY, 'class') === 'recent' ? 'recent' : 'class';
   let closedFolders = new Set(lsGet(CLOSED_KEY, []));
+  let startPlanFor = () => {};                          // set once the menus exist: opens a new plan for a class
 
   function sessionRow(s, inFolder) {
     const st = statusOf(s);
@@ -345,8 +346,10 @@
         const body = h('ul', { class: 'f-body', id: 'fold-' + cls.replace(/\W+/g, '-') }, ...list.map((s) => sessionRow(s, true)));
         body.hidden = !open;
         nodes.push(h('li', { class: 'f-item' },
-          h('button', { type: 'button', class: 'f-head', 'data-folder': cls, 'aria-expanded': String(open), 'aria-controls': body.id },
-            icon('chevron'), h('span', { class: 'f-name', text: cls }), h('span', { class: 'f-count', text: String(list.length) })),
+          h('div', { class: 'f-row' },
+            h('button', { type: 'button', class: 'f-head', 'data-folder': cls, 'aria-expanded': String(open), 'aria-controls': body.id },
+              icon('chevron'), h('span', { class: 'f-name', text: cls }), h('span', { class: 'f-count', text: String(list.length) })),
+            h('button', { type: 'button', class: 'f-add', 'data-newfor': cls, 'aria-label': 'New plan for ' + cls, title: 'New plan for ' + cls }, icon('plus'))),
           body));
       });
       listEl.replaceChildren(...nodes);
@@ -401,6 +404,8 @@
 
   function newSession() {
     setComposer(false, true);
+    state.params.mode = 'full';
+    state.params.resourceType = 'Study notes';
     const cur = current();
     if (isFresh(cur) && !state.streaming) {
       promptEl.value = ''; autoGrow(); updateView();
@@ -436,6 +441,7 @@
             h('span', { class: 'tag', text: p.subject }), h('span', { class: 'tag', text: p.cls }), h('span', { class: 'tag', text: 'Week ' + p.week }),
             p.size ? h('span', { class: 'tag', text: p.size + ' learners' }) : null,
             p.light ? h('span', { class: 'tag', text: 'Low-resource' }) : null,
+            p.mode === 'resources' ? h('span', { class: 'tag', text: p.resourceType }) : p.mode === 'plan' ? h('span', { class: 'tag', text: 'Lesson plan only' }) : null,
             p.studyNotes === false ? h('span', { class: 'tag', text: notesOf(p.cls).tag }) : null,
             p.bece === false ? h('span', { class: 'tag', text: examOf(p.cls).tag }) : null),
           m.content ? h('div', { class: 'req-notes', text: m.content }) : null));
@@ -453,7 +459,7 @@
   }
 
   function makeBot(session) {
-    const baseTitle = planTitle(session.params || state.params);
+    const baseTitle = planTitle(session.params || state.params) + (session.params && session.params.mode === 'resources' ? ' – ' + session.params.resourceType : session.params && session.params.mode === 'plan' ? ' – Lesson plan' : '');
     let kind = 'plan', demoted = false, editBox = null, ta = null;
     const titleEl = h('span', { class: 'doc-title', text: baseTitle });
     const bodyEl = h('div', { class: 'doc-body md' });
@@ -483,7 +489,7 @@
     const tools = [btnEdit, btnReuse, btnRegen, btnShare, btnDocx, btnPdf];
 
     function fillExtras() {
-      if (demoted) { extrasEl.replaceChildren(); return; }
+      if (demoted || (session.params && session.params.mode === 'resources')) { extrasEl.replaceChildren(); return; }
       const planCls = () => (session.params && session.params.cls) || state.params.cls;
       const mk = (k, label, ic) => h('button', { type: 'button', class: 'extra-btn', 'data-ask': k, onclick: () => askFor(k, planCls()) }, icon(ic), h('span', { text: label }));
       extrasEl.replaceChildren(
@@ -559,7 +565,7 @@
       root, text: '', msg: null,
       get title() { return baseTitle + (kindTitle(kind, session.params && session.params.cls) || ''); },
       get kind() { return kind; },
-      setKind(k) { kind = KIND_TITLE[k] !== undefined ? k : 'plan'; titleEl.textContent = api.title; btnShare.hidden = kind !== 'plan'; },
+      setKind(k) { kind = KIND_TITLE[k] !== undefined ? k : 'plan'; titleEl.textContent = api.title; btnShare.hidden = kind !== 'plan' || !!(session.params && session.params.mode === 'resources'); },
       set(raw, final, msg) {
         api.text = raw;
         const pv = !!(msg && msg.preview);
@@ -626,13 +632,13 @@
   function paywallCard(session) {
     const btn = h('button', { type: 'button', class: 'pw-main', 'data-pw': '1' });
     const sub = h('span', { class: 'pw-sub', 'data-pw-sub': '1' });
-    const paint = () => { const guest = !signedIn(); btn.textContent = guest ? 'Create free account' : 'Write the full plan'; sub.textContent = guest ? 'Free. Takes about a minute.' : 'Uses one of your plans.'; };
+    const paint = () => { const guest = !signedIn(), resource = session.params && session.params.mode === 'resources'; btn.textContent = guest ? 'Create free account' : resource ? 'Generate full resource' : 'Write the full plan'; sub.textContent = guest ? 'Free. Takes about a minute.' : 'Uses one of your generations.'; };
     paint();
-    btn.addEventListener('click', () => { if (signedIn()) unlockFull(session); else openSignupSheet('Create a free account to unlock the full plan.'); });
+    btn.addEventListener('click', () => { if (signedIn()) unlockFull(session); else openSignupSheet(session.params && session.params.mode === 'resources' ? 'Create a free account to generate the full resource.' : 'Create a free account to unlock the full plan.'); });
     return h('div', { class: 'paywall' },
-      h('h3', { text: 'This is a preview of Lesson 1' }),
-      h('p', { text: 'The full plan is ready when you are:' }),
-      h('ul', null, ...['Lesson 2 and the complete weekly package', 'Study notes for every sub-topic', examOf(state.params.cls).section + ' questions with a marking guide', 'Word download, ready to print'].map((x) => h('li', { text: x }))),
+      h('h3', { text: session.params && session.params.mode === 'resources' ? 'This is a preview of your resource' : 'This is a preview of Lesson 1' }),
+      h('p', { text: session.params && session.params.mode === 'resources' ? 'Create an account to generate the complete resource and download it.' : 'The full plan is ready when you are:' }),
+      h('ul', null, ...(session.params && session.params.mode === 'resources' ? ['Complete learner-ready content', 'Examples and answer guide where relevant', 'Word download, ready to print'] : ['Lesson 2 and the complete weekly package', 'Study notes for every sub-topic', examOf(state.params.cls).section + ' questions with a marking guide', 'Word download, ready to print']).map((x) => h('li', { text: x }))),
       h('div', { class: 'pw-actions' }, btn, sub));
   }
   function openSignupSheet(msg) {
@@ -649,6 +655,7 @@
     state.sessions.unshift(fresh);
     promptEl.value = '';
     showSession(fresh.id);
+    setStudioCollapsed(true);
     submit();
   }
   if (window.GuidedPlans) {
@@ -775,6 +782,18 @@
       dlg.showModal();
     });
   }
+  async function makeFile(fmt, title, body) {
+    if (fmt === 'pdf') return makePdf(title, body, 'landscape');
+    await loadDocxLib();
+    const who = profile(), GP = window.GuidedPlans;
+    return window.SchoolPadiDocx.toFile(window.docx, title, body, { portrait: false, teacher: who.teacher, school: who.school, footer: GP ? GP.footerText() : '' });
+  }
+  async function downloadBody(body, title, fmt) {
+    if (!/\|/.test(body)) { toast('There are no lesson plan tables to download yet.'); return; }
+    toast('Preparing ' + (fmt === 'pdf' ? 'PDF' : 'Word file') + '…');
+    try { saveBlob(await makeFile(fmt, title, body), title, fmt === 'pdf' ? 'pdf' : 'docx'); toast('Downloaded ' + fileStem(title) + '.' + (fmt === 'pdf' ? 'pdf' : 'docx')); }
+    catch (e) { toast(navigator.onLine === false ? 'The PDF tools need a connection the first time. Try again when you are online.' : 'Could not make the file. Please try again.'); }
+  }
   async function shareBody(body, title, btn, fmt) {
     if (!/\|/.test(body)) { toast('There is no lesson plan table to share yet.'); return; }
     if (!window.SchoolPadiArtifact && !fmt) { fmt = await askShareFormat(); if (!fmt) return; }
@@ -783,13 +802,7 @@
     try {
       if (window.SchoolPadiArtifact) { const name = await window.SchoolPadiArtifact.save(title, body, 'landscape', profile()); toast('Saved ' + name); return; }
       const isPdf = fmt === 'pdf';
-      let blob;
-      if (isPdf) blob = await makePdf(title, body, 'landscape');
-      else {
-        await loadDocxLib();
-        const who = profile(), GP = window.GuidedPlans;
-        blob = await window.SchoolPadiDocx.toFile(window.docx, title, body, { portrait: false, teacher: who.teacher, school: who.school, footer: GP ? GP.footerText() : '' });
-      }
+      const blob = await makeFile(fmt, title, body);
       const ext = isPdf ? 'pdf' : 'docx', name = fileStem(title) + '.' + ext;
       const file = new File([blob], name, { type: isPdf ? 'application/pdf' : 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' });
       if (navigator.canShare && navigator.canShare({ files: [file] })) {
@@ -873,7 +886,7 @@
     const res = await fetch('/api/generate', {
       method: 'POST', signal,
       headers: Object.assign({ 'content-type': 'application/json', 'x-access-code': state.access || '' }, who),
-      body: JSON.stringify({ params: { subject: p.subject, cls: p.cls, week: p.week, term: p.term || termNow(), hook: p.hook !== false, light: p.light === true, studyNotes: p.studyNotes !== false, bece: p.bece !== false, size: p.size || '', notes: session.messages[0].content || '' }, thread: threadOf(session), fresh }),
+      body: JSON.stringify({ params: { subject: p.subject, cls: p.cls, week: p.week, term: p.term || termNow(), hook: p.hook !== false, light: p.light === true, studyNotes: p.studyNotes !== false, bece: p.bece !== false, size: p.size || '', mode: p.mode || 'full', resourceType: p.resourceType || 'Study notes', notes: session.messages[0].content || '' }, thread: threadOf(session), fresh }),
     });
     if (!res.ok) {
       let j = {};
@@ -959,6 +972,8 @@
       const p = Object.assign({}, state.params);
       delete p.also;
       p.term = termNow();
+      p.mode = p.mode || 'full';
+      p.resourceType = p.resourceType || 'Study notes';
       if (fromQueue !== true) {                     // "Also plan for": the other classes follow, one after another
         planQueue = [];
         const skipped = [];
@@ -971,7 +986,7 @@
         if (skipped.length) toast('Skipped ' + skipped.join(', ') + ': that week is an examination week.');
       }
       s.params = p;
-      s.title = planTitle(p);
+      s.title = planTitle(p) + (p.mode === 'resources' ? ' – ' + p.resourceType : p.mode === 'plan' ? ' – Lesson plan' : '');
       s.messages.push({ role: 'user', content: text });
     } else {                                        // follow-up
       if (!text) return;
@@ -1038,23 +1053,34 @@
     const t0 = performance.now();
     let text = '';
     let err = null;
-    let raf = 0;
+    let raf = 0, paintTimer = 0, lastPaint = 0;
     const paint = () => {
       raf = 0;
+      lastPaint = performance.now();
       const keep = messagesWrap.scrollTop, hold = !state.stick;
       bot.set(text, false);
       if (hold) messagesWrap.scrollTop = keep; else scrollBottom();      // a reader who scrolled up keeps their place
+    };
+    // Rendering the entire growing lesson on every animation frame becomes expensive
+    // for long two-lesson plans. Cap intermediate DOM paints at roughly 8 per second;
+    // the completed response is still rendered immediately below.
+    const schedulePaint = () => {
+      if (raf || paintTimer) return;
+      const wait = Math.max(0, 120 - (performance.now() - lastPaint));
+      if (wait) paintTimer = setTimeout(() => { paintTimer = 0; raf = requestAnimationFrame(paint); }, wait);
+      else raf = requestAnimationFrame(paint);
     };
 
     try {
       const source = state.config.demo ? demoStream(session, ctrl.signal) : apiStream(session, ctrl.signal);
       for await (const piece of source) {
         text += piece;
-        if (!raf) raf = requestAnimationFrame(paint);
+        schedulePaint();
       }
     } catch (e) {
       if (e.name !== 'AbortError') err = e;
     }
+    if (paintTimer) clearTimeout(paintTimer);
     if (raf) cancelAnimationFrame(raf);
     state.streaming = null; syncJump();
     const previewFlag = state.lastPreview === true; state.lastPreview = false;
@@ -1153,9 +1179,9 @@
     if (r && r.timer) clearTimeout(r.timer);
     if (stopped && state.streaming) stopStreaming();
     if (r && !stopped && r.done) {
-      termBarShow('All ' + r.done + ' plans are ready: ' + r.subject + ', ' + r.cls + ', Term ' + r.term + '.', [['Download term pack', () => termPack(r), true], ['Close', () => termBarShow('')]]);
+      termBarShow('All ' + r.done + ' plans are ready: ' + r.subject + ', ' + r.cls + ', Term ' + r.term + '.', termPackButtons(r));
     } else if (r && stopped && r.done) {
-      termBarShow(r.done + ' of ' + r.total + ' plans were written before you stopped.', [['Download term pack', () => termPack(r), true], ['Close', () => termBarShow('')]]);
+      termBarShow(r.done + ' of ' + r.total + ' plans were written before you stopped.', termPackButtons(r));
     } else termBarShow('');
   }
   function termPaused(reason) {
@@ -1165,10 +1191,15 @@
     termProgress();
   }
   function termResume() { if (!termRun) return; termRun.paused = ''; termProgress(); nextInQueue(); }
-  function termPack(r) {                               // one Word file with every plan's lesson tables and rubric
-    const body = r.ids.map((id) => state.sessions.find((x) => x.id === id)).filter((x) => x && x.messages[1])
+  /* One file with every written week of a term: the lesson tables and rubric of each plan, in week order. Works from the saved plans, so it also serves a term planned earlier. */
+  function termPackBody(r) {
+    const term = r.term;
+    return state.sessions.filter((x) => x.params && x.params.cls === r.cls && x.params.subject === r.subject && x.params.mode !== 'resources' && (x.params.term || term) === term && x.messages.length >= 2 && x.messages[1] && !x.messages[1].preview)
       .sort((a, b) => a.params.week - b.params.week).map((x) => planTables(splitElic(x.messages[1].content).body)).filter(Boolean).join('\n\n');
-    shareBody(body, r.subject + ' – ' + r.cls + ' – Term ' + r.term + ' lesson plans', null);
+  }
+  const termPackTitle = (r) => r.subject + ' – ' + r.cls + ' – Term ' + r.term + ' lesson plans';
+  function termPackButtons(r) {
+    return [['Download PDF', () => downloadBody(termPackBody(r), termPackTitle(r), 'pdf'), true], ['Word', () => downloadBody(termPackBody(r), termPackTitle(r), 'docx')], ['Share', () => shareBody(termPackBody(r), termPackTitle(r), null)], ['Close', () => termBarShow('')]];
   }
   function startTermRun() {
     const GP = window.GuidedPlans, tier = GP && GP.tier();
@@ -1178,7 +1209,11 @@
     const p = state.params, term = termNow();
     if (!(window.SchoolPadiSchemes && window.SchoolPadiSchemes.has(p.subject, p.cls, term))) { toast('Term planning needs a scheme of learning for ' + p.subject + ', ' + p.cls + ', Term ' + term + ', and none is loaded yet.'); return; }
     const weeks = termWeeks();
-    if (!weeks.length) { toast('Every week from Week ' + p.week + ' is already planned. Pick an earlier week to fill gaps.'); return; }
+    if (!weeks.length) {
+      const r = { cls: p.cls, subject: p.subject, term };
+      if (termPackBody(r)) { termBarShow('Every week from Week ' + p.week + ' is already planned. Get the whole term as one file:', termPackButtons(r)); setNav(false); return; }
+      toast('Every week from Week ' + p.week + ' is already planned. Pick an earlier week to fill gaps.'); return;
+    }
     const dlg = $('#termSheet');
     $('#tsText').textContent = p.subject + ' · ' + p.cls + ' · Term ' + term + '. GuidEd will write ' + (weeks.length === 1 ? 'Week ' + weeks[0] : 'Weeks ' + weeks[0] + ' to ' + weeks[weeks.length - 1] + ' (' + weeks.length + ' plans)') + ', one after another. Weeks you have already planned are skipped.';
     $('#tsTime').textContent = 'This takes about ' + Math.max(2, Math.round(weeks.length * 1.5)) + ' minutes. Keep this page open; GuidEd pauses by itself if it needs to wait and lets you resume.';
@@ -1238,6 +1273,133 @@
     }
   });
   composer.addEventListener('submit', (e) => { e.preventDefault(); if (!sendBtn.disabled || state.streaming) submit(); });
+
+  // Teaching Studio keeps all three tools in one workspace and reuses the selected curriculum context.
+  const studioRoot = $('.teaching-studio'), studioCollapseToggle = $('#studioCollapseToggle');
+  function setStudioCollapsed(collapsed) {
+    if (!studioRoot || !studioCollapseToggle) return;
+    studioRoot.classList.toggle('is-collapsed', !!collapsed);
+    studioCollapseToggle.setAttribute('aria-expanded', String(!collapsed));
+  }
+  if (studioCollapseToggle) studioCollapseToggle.addEventListener('click', () => {
+    setStudioCollapsed(!studioRoot.classList.contains('is-collapsed'));
+  });
+  const planAction = $('#planAction'), resourceAction = $('#resourceAction'), resourceTypeEl = $('#resourceType');
+  const mediaForm = $('#mediaSearchForm'), mediaQuery = $('#mediaQuery');
+  const mediaStatus = $('#mediaStatus'), mediaResults = $('#mediaResults');
+  const mediaIndicatorText = $('#mediaIndicatorText'), mediaIndicatorPicker = $('#mediaIndicatorPicker');
+  const mediaIndicatorPickerWrap = $('#mediaIndicatorPickerWrap'), mediaCurriculumMeta = $('#mediaCurriculumMeta');
+  let mediaType = 'image', mediaIndicator = '', mediaContext = null;
+  function startIndependentTool(mode, resourceType) {
+    if (state.streaming) { toast('Wait for the current generation to finish.'); return; }
+    const active = current();
+    const topic = promptEl.value.trim() || (active && active.messages[0] && active.messages[0].content) || '';
+    state.params.mode = mode;
+    state.params.resourceType = resourceType || 'Study notes';
+    const fresh = makeSession();
+    state.sessions.unshift(fresh);
+    promptEl.value = topic;
+    showSession(fresh.id);
+    try { submit(); } finally { state.params.mode = 'full'; state.params.resourceType = 'Study notes'; }   // the tool choice belongs to this run only; Send goes back to full plans
+  }
+  if (planAction) planAction.addEventListener('click', () => startIndependentTool('plan'));
+  if (resourceAction) resourceAction.addEventListener('click', () => startIndependentTool('resources', resourceTypeEl.value));
+
+  function setMediaType(type) {
+    if (type === 'video') { toast('Video search is coming soon.'); return; }   // remove once YOUTUBE_API_KEY is set and the Videos button is enabled
+    mediaType = type;
+    document.querySelectorAll('[data-media-type]').forEach((button) => button.setAttribute('aria-pressed', String(button.dataset.mediaType === type)));
+    mediaResults.replaceChildren();
+    mediaStatus.textContent = 'Search for ' + (type === 'video' ? 'educational videos' : 'images') + ' on your topic.';
+  }
+  async function searchMedia() {
+    const refinement = mediaQuery.value.trim();
+    const indicator = mediaIndicator.trim();
+    const focus = indicator || refinement;
+    if (focus.length < 2) { mediaStatus.textContent = 'No indicator is loaded for this selection. Enter the specific indicator or teaching topic above.'; mediaQuery.focus(); return; }
+    const query = [focus.split(/\s+/).slice(0, 14).join(' '), mediaContext && mediaContext.subject, mediaType === 'video' ? 'lesson' : 'diagram'].filter(Boolean).join(' ');   // short and specific: long indicator text finds nothing
+    mediaResults.replaceChildren();
+    mediaStatus.textContent = 'Searching…';
+    $('#mediaSearchBtn').disabled = true;
+    try {
+      const who = window.PadiSync && window.PadiSync.authHeader ? await window.PadiSync.authHeader() : {};
+      if (!who || !who.authorization && !who.Authorization) { mediaStatus.textContent = 'Create a free account or sign in to search for images and videos.'; openSignupSheet('Create a free account to search for images and videos.'); return; }
+      const response = await fetch('/api/media-search?q=' + encodeURIComponent(query) + '&type=' + mediaType, { headers: Object.assign({ Accept: 'application/json' }, who) });
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.message || 'Search failed.');
+      if (mediaType === 'video' && data.searchUrl && !data.results.length) {
+        mediaResults.append(h('a', { class: 'media-search-link', href: data.searchUrl, target: '_blank', rel: 'noopener noreferrer' }, 'Open educational video results on YouTube'));
+        mediaStatus.textContent = 'No video API key is configured, so you can browse the live YouTube results directly.';
+        return;
+      }
+      if (!data.results.length) {
+        mediaStatus.textContent = 'No results found. Try a shorter or different topic.';
+        return;
+      }
+      data.results.forEach((item) => {
+        const link = h('a', { class: 'media-result', href: item.url, target: '_blank', rel: 'noopener noreferrer' });
+        if (item.thumbnail && /^https:\/\//.test(item.thumbnail)) link.append(h('img', { src: item.thumbnail, alt: '', loading: 'lazy' }));
+        const info = h('span', { class: 'media-result-info' },
+          h('strong', { text: item.title }),
+          item.channel ? h('small', { text: item.channel }) : null,
+          item.author ? h('small', { text: 'By ' + item.author }) : null,
+          item.license ? h('small', { text: 'Licence: ' + item.license }) : null,
+          item.description ? h('small', { text: item.description.slice(0, 180) }) : null);
+        link.append(info);
+        mediaResults.append(link);
+      });
+      if (mediaType === 'video' && data.searchUrl) mediaResults.append(h('a', { class: 'media-search-link', href: data.searchUrl, target: '_blank', rel: 'noopener noreferrer' }, 'See more results on YouTube'));
+      mediaStatus.textContent = data.results.length + ' result' + (data.results.length === 1 ? '' : 's') + ' found. Check each source and licence before using it in class.';
+    } catch (error) {
+      mediaStatus.textContent = error.message || 'Could not search right now.';
+    } finally { $('#mediaSearchBtn').disabled = false; }
+  }
+  function loadMediaContext() {
+    const p = state.params, scheme = schemeFor(p);
+    mediaContext = { subject: p.subject, cls: p.cls, strand: scheme && scheme.strand || '', substrand: scheme && scheme.substrand || '', standard: scheme && scheme.standard || '' };
+    const indicators = scheme && Array.isArray(scheme.indicators) ? scheme.indicators.filter(Boolean) : [];
+    mediaIndicator = indicators[0] || '';
+    mediaIndicatorText.textContent = mediaIndicator || (scheme && scheme.focus) || 'No indicator is loaded for this selection.';
+    mediaIndicatorPicker.replaceChildren(...indicators.map((item, index) => h('option', { value: String(index), text: item })));
+    mediaIndicatorPickerWrap.hidden = indicators.length < 2;
+    mediaCurriculumMeta.textContent = [p.subject, p.cls, 'Term ' + (p.term || termNow()), 'Week ' + p.week, mediaContext.strand, mediaContext.substrand].filter(Boolean).join(' · ');
+    mediaQuery.value = '';
+    mediaQuery.placeholder = mediaIndicator ? 'Add a detail to refine the search…' : 'Enter a topic or indicator to search…';
+    mediaResults.replaceChildren();
+    setMediaType('image');
+  }
+  function setStudioTab(tab, focus) {
+    const allowed = ['plan', 'resources', 'media'];
+    if (!allowed.includes(tab)) tab = 'plan';
+    document.querySelectorAll('[data-studio-tab]').forEach((button) => {
+      const active = button.dataset.studioTab === tab;
+      button.setAttribute('aria-selected', String(active));
+      button.tabIndex = active ? 0 : -1;
+    });
+    document.querySelectorAll('[data-studio-panel]').forEach((panel) => { panel.hidden = panel.dataset.studioPanel !== tab; });
+    // Keep the media search, chosen indicator, and results intact when switching tabs.
+    if (focus) $('#studioTab' + (tab === 'plan' ? 'Plan' : tab === 'resources' ? 'Resources' : 'Media')).focus();
+  }
+  document.querySelectorAll('[data-studio-tab]').forEach((button) => {
+    button.addEventListener('click', () => setStudioTab(button.dataset.studioTab));
+    button.addEventListener('keydown', (event) => {
+      if (!['ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(event.key)) return;
+      event.preventDefault();
+      const tabs = [...document.querySelectorAll('[data-studio-tab]')];
+      const i = tabs.indexOf(button);
+      const next = event.key === 'Home' ? 0 : event.key === 'End' ? tabs.length - 1 : (i + (event.key === 'ArrowRight' ? 1 : -1) + tabs.length) % tabs.length;
+      setStudioTab(tabs[next].dataset.studioTab, true);
+    });
+  });
+  if (mediaForm) mediaForm.addEventListener('submit', (event) => { event.preventDefault(); searchMedia(); });
+  if (mediaIndicatorPicker) mediaIndicatorPicker.addEventListener('change', () => {
+    const scheme = schemeFor(state.params), indicators = scheme && Array.isArray(scheme.indicators) ? scheme.indicators : [];
+    mediaIndicator = indicators[Number(mediaIndicatorPicker.value)] || '';
+    mediaIndicatorText.textContent = mediaIndicator || 'No indicator selected.';
+    mediaResults.replaceChildren();
+    mediaStatus.textContent = 'Indicator updated. Search to find matching classroom media.';
+  });
+  document.querySelectorAll('[data-media-type]').forEach((button) => button.addEventListener('click', () => setMediaType(button.dataset.mediaType)));
 
   /* ───────── Dropdowns ───────── */
   const dropdowns = [];
@@ -1400,6 +1562,8 @@
   function termSet(v) { try { localStorage.setItem(termKey(), JSON.stringify({ v, auto: termAuto() })); } catch (e) { /* the calendar term still works */ } }
   const schemeStrip = $('#schemeStrip');
   const schemeFor = (p) => (window.SchoolPadiSchemes ? window.SchoolPadiSchemes.lookup(p.subject, p.cls, p.term || termNow(), p.week) : null);
+  // Initialize media context only after termNow and schemeFor are initialized.
+  loadMediaContext();
   function syncScheme() {
     const S = window.SchoolPadiSchemes;
     if (!S) { schemeStrip.hidden = true; return; }
@@ -1435,6 +1599,7 @@
           h('ul', null, ...e.indicators.map((x) => h('li', { text: x })))));
     }
     schemeStrip.hidden = false;
+    if ($('#studioTabMedia') && $('#studioTabMedia').getAttribute('aria-selected') === 'true') loadMediaContext();
   }
   function syncAlso() {
     const others = levelOf(state.params.cls).classes.filter((c) => c !== state.params.cls);
@@ -1480,6 +1645,8 @@
   brand.addEventListener('click', (e) => { e.preventDefault(); newSession(); });
 
   listEl.addEventListener('click', (e) => {
+    const add = e.target.closest('[data-newfor]');
+    if (add) { startPlanFor(add.dataset.newfor); return; }
     const fold = e.target.closest('[data-folder]');
     if (fold) {
       const cls = fold.dataset.folder;
@@ -1936,7 +2103,7 @@
     const saved = store.load();
     state.sessions = saved && Array.isArray(saved.sessions) ? saved.sessions.filter((s) => s && Array.isArray(s.messages)) : [];
     if (saved && saved.params && CLASSES.includes(saved.params.cls) && subjectsOf(saved.params.cls).includes(saved.params.subject) && WEEKS.includes(saved.params.week)) {
-      state.params = { subject: saved.params.subject, cls: saved.params.cls, week: saved.params.week, hook: saved.params.hook !== false, size: SIZES.includes(saved.params.size) ? saved.params.size : state.params.size, light: saved.params.light === true, studyNotes: saved.params.studyNotes !== false, bece: saved.params.bece !== false };
+      state.params = { subject: saved.params.subject, cls: saved.params.cls, week: saved.params.week, hook: saved.params.hook !== false, size: SIZES.includes(saved.params.size) ? saved.params.size : state.params.size, light: saved.params.light === true, studyNotes: saved.params.studyNotes !== false, bece: saved.params.bece !== false, mode: ['plan', 'resources', 'full'].includes(saved.params.mode) ? saved.params.mode : 'full', resourceType: ['Study notes', 'Learner worksheet', 'Homework pack', 'BECE practice', 'Teaching slides'].includes(saved.params.resourceType) ? saved.params.resourceType : 'Study notes' };
     }
     try { state.access = localStorage.getItem(ACCESS_KEY) || ''; accessInput.value = state.access; } catch (e) { /* ignore */ }
     if (window.GuidedProfile) {
@@ -1952,16 +2119,23 @@
       const all = subjectsOf(state.params.cls), mine = mySubjectsOf(state.params.cls), rest = all.filter((x) => !mine.includes(x));
       return mine.length && rest.length ? [{ header: 'My subjects' }, ...mine.map((x) => ({ id: x, label: x })), { header: 'Other subjects' }, ...rest.map((x) => ({ id: x, label: x }))] : all.map((x) => ({ id: x, label: x }));
     }, get: () => state.params.subject, set: (v) => { state.params.subject = v; continueWeek(); store.save(); syncPills(); }, label: (x) => x });
+    const chooseClass = (v) => {
+      state.params.cls = v;
+      if (!subjectsOf(v).includes(state.params.subject)) state.params.subject = mySubjectsOf(v)[0] || subjectsOf(v)[0];   // a subject that is not taught at this level falls back to the teacher's first one
+      continueWeek(); ddSubject.build(); syncPills(); store.save();
+    };
     makeDropdown($('#ddClass'), { name: 'Class', items: () => {
       const mine = window.GuidedProfile ? window.GuidedProfile.myClasses() : [];
       const rest = (l) => l.classes.filter((x) => !mine.includes(x));
       return (mine.length ? [{ header: 'My classes' }, ...mine.map((x) => ({ id: x, label: x }))] : [])
         .concat(GL.LEVELS.flatMap((l) => rest(l).length ? [{ header: mine.length ? 'Other ' + l.name : l.name }, ...rest(l).map((x) => ({ id: x, label: x }))] : []));
-    }, get: () => state.params.cls, set: (v) => {
-      state.params.cls = v;
-      if (!subjectsOf(v).includes(state.params.subject)) state.params.subject = mySubjectsOf(v)[0] || subjectsOf(v)[0];   // a subject that is not taught at this level falls back to the teacher's first one
-      continueWeek(); ddSubject.build(); syncPills(); store.save();
-    }, label: (x) => x });
+    }, get: () => state.params.cls, set: chooseClass, label: (x) => x });
+    startPlanFor = (cls) => {                           // the + on a class folder: a fresh plan with that class already chosen
+      newSession();
+      if (state.streaming) return;
+      chooseClass(cls);
+      if (!coarse) promptEl.focus();
+    };
     const ddTerm = makeDropdown($('#ddTerm'), { name: 'Term', items: () => [1, 2, 3].map((x) => ({ id: x, label: 'Term ' + x + (x === termAuto() ? ' (now)' : '') })), get: () => termNow(), set: (v) => { termSet(v); continueWeek(); syncPills(); }, label: (x) => 'Term ' + x });
     window.addEventListener('guided:account', () => { ddTerm.build(); syncScheme(); });
     makeDropdown($('#ddWeek'), { name: 'Week', items: () => WEEKS.map((x) => { const we = weekEnd(termNow(), x); return { id: x, label: 'Week ' + x, sub: we ? (we.afterClose ? 'date to be confirmed' : we.short + (x === calendarWeek() ? ' · this week' : '')) : '' }; }), get: () => state.params.week, set: (v) => { state.params.week = v; store.save(); syncScheme(); }, label: (x) => 'Week ' + x });

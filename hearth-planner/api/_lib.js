@@ -85,6 +85,8 @@ function validate(body) {
   const studyNotes = p.studyNotes !== false;     // study notes and BECE practice are on unless switched off
   const bece = p.bece !== false;
   const size = p.size === undefined || p.size === '' ? '' : String(p.size);
+  const mode = ['plan', 'resources', 'full'].includes(p.mode) ? p.mode : 'full';
+  const resourceType = ['Study notes', 'Learner worksheet', 'Homework pack', 'BECE practice', 'Teaching slides'].includes(p.resourceType) ? p.resourceType : 'Study notes';
   if (size && !SIZES.includes(size)) return { error: 'Please choose a class size from the list.' };
 
   if (!NAME_RE.test(subject)) return { error: 'Please choose a subject.' };
@@ -112,7 +114,7 @@ function validate(body) {
   if (thread.length && thread[thread.length - 1].role !== 'user') return { error: 'The last message must be a request.' };
 
   return {
-    params: { subject, cls, week, term, notes, hook, light, studyNotes, bece, size, scheme },
+    params: { subject, cls, week, term, notes, hook, light, studyNotes, bece, size, scheme, mode, resourceType },
     thread: thread.map((t) => ({ role: t.role, content: t.content })),
   };
 }
@@ -124,8 +126,13 @@ function levelLine(cls) {
 }
 
 function firstMessage(p) {
+  const task = p.mode === 'plan'
+    ? 'Generate ONLY the two-lesson weekly lesson plan. Do not generate study notes, worksheets, homework, BECE questions or other resources.'
+    : p.mode === 'resources'
+      ? 'Generate ONLY this teaching resource: ' + (p.resourceType || 'Study notes') + '. Do not generate a lesson plan.'
+      : 'Generate the 2-lesson weekly package.';
   const lines = [
-    'Generate the 2-lesson weekly package.',
+    task,
     'Subject: ' + p.subject,
     'Class: ' + p.cls,
     ...(levelLine(p.cls)),
@@ -133,8 +140,8 @@ function firstMessage(p) {
     'Week: ' + p.week,
     'Hook: ' + (p.hook === false ? 'off' : 'on'),
     'Resources: ' + (p.light ? 'light' : 'standard'),
-    'Study notes: ' + (p.studyNotes === false ? 'off' : 'on'),
-    'BECE practice: ' + (p.bece === false ? 'off' : 'on'),
+    'Study notes: ' + (p.mode === 'full' && p.studyNotes !== false ? 'on' : 'off'),
+    'BECE practice: ' + (p.mode === 'full' && p.bece !== false ? 'on' : 'off'),
   ];
   if (p.size) lines.push('Class size: ' + p.size + ' learners');
   Schemes.describe(p.scheme).forEach((l) => lines.push(l));
