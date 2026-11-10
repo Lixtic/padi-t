@@ -15,18 +15,26 @@
   } catch (e) { /* no splash */ }
 })();
 (function () {
-  // Size the app to the part of the screen you can actually see. Some phone browsers (in-app browsers opened from WhatsApp or
-  // Facebook, bars that slide away) report a height taller than the visible area, so the bottom was cut off and the page
-  // would not scroll until the keyboard shrank it. --app-h feeds .app in styles.css; without script the 100dvh fallback stays.
+  // Keep the app aligned to the visual viewport. On phones, opening the keyboard can
+  // pan the visual viewport as well as shrink it; treating offsetTop as extra height
+  // makes the app's flex layout use the wrong coordinate system and jumps the composer.
   var root = document.documentElement, raf = 0;
   function size() {
     raf = 0;
-    var vv = window.visualViewport, h = Math.min(window.innerHeight || 0, vv && vv.height ? vv.height + (vv.offsetTop || 0) : Infinity);
-    if (h > 200) root.style.setProperty('--app-h', Math.round(h) + 'px');
+    var vv = window.visualViewport;
+    var top = vv ? Math.max(0, vv.offsetTop || 0) : 0;
+    var height = vv && vv.height ? vv.height : (window.innerHeight || 0);
+    if (height > 200) {
+      root.style.setProperty('--app-top', Math.round(top) + 'px');
+      root.style.setProperty('--app-h', Math.round(height) + 'px');
+    }
   }
   function queue() { if (!raf) raf = requestAnimationFrame(size); }
   size();
   window.addEventListener('resize', queue);
   window.addEventListener('orientationchange', function () { setTimeout(size, 250); });
-  if (window.visualViewport) window.visualViewport.addEventListener('resize', queue);
+  if (window.visualViewport) {
+    window.visualViewport.addEventListener('resize', queue);
+    window.visualViewport.addEventListener('scroll', queue);
+  }
 })();
