@@ -117,4 +117,4 @@ async function* gemini({ system, messages, signal, maxTokens: cap }) {
 
 const ADAPTERS = { anthropic, openai, gemini };
 
-module.exports = { activeProvider, ADAPTERS };
+module.exports = { activeProvider, ADAPTERS, maxOutputTokens: maxTokens };
