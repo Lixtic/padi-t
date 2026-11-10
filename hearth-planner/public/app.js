@@ -467,6 +467,8 @@
     const btnRegen = h('button', { type: 'button', class: 'tool', disabled: true }, icon('refresh'), h('span', { text: 'Regenerate' }));
     const btnShare = h('button', { type: 'button', class: 'tool', disabled: true, 'data-act': 'share', title: 'Share only the lesson plan tables and the rubric' }, icon('share'), h('span', { text: 'Share' }));
     const btnDocx = h('button', { type: 'button', class: 'tool tool-main', disabled: true }, icon('download'), h('span', { text: 'Word (.docx)' }));
+    const btnPdf = h('button', { type: 'button', class: 'tool', disabled: true, title: 'Download as a PDF' }, icon('download'), h('span', { text: 'PDF' }));
+    if (window.SchoolPadiArtifact) btnPdf.hidden = true;
     const progress = h('span', { class: 'doc-progress', text: 'Writing…' });
     const root = h('div', { class: 'msg bot' },
       h('div', { class: 'avatar' }, icon('logo', 'logo')),
@@ -474,11 +476,11 @@
         h('div', { class: 'doc' },
           h('div', { class: 'doc-bar' },
             h('div', { class: 'doc-id' }, titleEl, progress),
-            h('div', { class: 'doc-tools' }, btnCopy, btnEdit, btnReuse, btnRegen, btnShare, btnDocx)),
+            h('div', { class: 'doc-tools' }, btnCopy, btnEdit, btnReuse, btnRegen, btnShare, btnDocx, btnPdf)),
           noteEl, bodyEl),
         chipsEl, extrasEl, metaEl));
 
-    const tools = [btnCopy, btnEdit, btnReuse, btnRegen, btnShare, btnDocx];
+    const tools = [btnCopy, btnEdit, btnReuse, btnRegen, btnShare, btnDocx, btnPdf];
 
     function fillExtras() {
       if (demoted) { extrasEl.replaceChildren(); return; }
@@ -614,6 +616,14 @@
       }
       exportDocx(api.text, api.title, btnDocx, kind);
     });
+    btnPdf.addEventListener('click', () => {
+      if (api.msg && api.msg.preview) {
+        if (signedIn()) toast('This is a preview of Lesson 1. Write the full plan to download it.');
+        else openSignupSheet('Create a free account to unlock the full plan and download it.');
+        return;
+      }
+      exportPdf(api.text, api.title, btnPdf, kind);
+    });
     return api;
   }
 
@@ -715,9 +725,27 @@
     });
     return docxLoading;
   }
-  function saveBlob(blob, title) {
+  let pdfLoading = null;
+  function loadScript(src) {
+    return new Promise((ok, no) => { const s = document.createElement('script'); s.src = src; s.onload = ok; s.onerror = () => no(new Error('Could not load ' + src)); document.head.append(s); });
+  }
+  function loadPdfLib() {                                  // about 1 MB, fetched the first time a PDF is made, then kept by the browser
+    if (window.pdfMake && window.pdfMake.vfs && window.SchoolPadiPdf) return Promise.resolve();
+    if (!pdfLoading) pdfLoading = loadScript('vendor/pdfmake.min.js').then(() => loadScript('vendor/pdfmake-fonts.js')).then(() => {
+      if (!(window.pdfMake && window.SchoolPadiPdf)) throw new Error('pdf missing');
+      if (!window.pdfMake.vfs && typeof vfs !== 'undefined') window.pdfMake.vfs = vfs;
+    }).catch((e) => { pdfLoading = null; throw e; });
+    return pdfLoading;
+  }
+  const fileStem = (title) => title.replace(/[^A-Za-z0-9._-]+/g, '_').replace(/^_+|_+$/g, '');
+  async function makePdf(title, body, layout) {
+    await loadPdfLib();
+    const who = profile(), GP = window.GuidedPlans;
+    return window.SchoolPadiPdf.toBlob(window.pdfMake, title, body, { portrait: layout === 'portrait', teacher: who.teacher, school: who.school, footer: GP ? GP.footerText() : '' });
+  }
+  function saveBlob(blob, title, ext) {
     const url = URL.createObjectURL(blob);
-    const a = h('a', { href: url, download: title.replace(/[^A-Za-z0-9._-]+/g, '_').replace(/^_+|_+$/g, '') + '.docx' });
+    const a = h('a', { href: url, download: fileStem(title) + '.' + (ext || 'docx') });
     document.body.append(a); a.click(); a.remove();
     setTimeout(() => URL.revokeObjectURL(url), 4000);
   }
@@ -740,27 +768,62 @@
     return out.join('\n').replace(/\n{3,}/g, '\n\n').trim();
   }
   function sharePlan(text, baseTitle, btn) { return shareBody(planTables(splitElic(text).body), baseTitle + ' – lesson plan', btn); }
-  async function shareBody(body, title, btn) {
+  /* Ask how to share: PDF opens anywhere (WhatsApp, email, print); Word can be edited. Resolves to 'pdf', 'docx' or '' when closed. */
+  function askShareFormat() {
+    const dlg = $('#shareSheet');
+    if (!dlg || !dlg.showModal) return Promise.resolve('docx');
+    return new Promise((done) => {
+      let pick = '';
+      const fin = () => { dlg.removeEventListener('close', fin); done(pick); };
+      dlg.addEventListener('close', fin);
+      dlg.querySelectorAll('[data-fmt]').forEach((b) => { b.onclick = () => { pick = b.dataset.fmt; dlg.close(); }; });
+      $('#shClose').onclick = () => dlg.close();
+      dlg.showModal();
+    });
+  }
+  async function shareBody(body, title, btn, fmt) {
     if (!/\|/.test(body)) { toast('There is no lesson plan table to share yet.'); return; }
+    if (!window.SchoolPadiArtifact && !fmt) { fmt = await askShareFormat(); if (!fmt) return; }
     const label = btn ? $('span', btn) : null, before = label ? label.textContent : '';
     if (btn) { btn.disabled = true; label.textContent = 'Preparing…'; }
     try {
       if (window.SchoolPadiArtifact) { const name = await window.SchoolPadiArtifact.save(title, body, 'landscape', profile()); toast('Saved ' + name); return; }
-      await loadDocxLib();
-      const who = profile(), GP = window.GuidedPlans;
-      const blob = await window.SchoolPadiDocx.toFile(window.docx, title, body, { portrait: false, teacher: who.teacher, school: who.school, footer: GP ? GP.footerText() : '' });
-      const name = title.replace(/[^A-Za-z0-9._-]+/g, '_').replace(/^_+|_+$/g, '') + '.docx';
-      const file = new File([blob], name, { type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' });
+      const isPdf = fmt === 'pdf';
+      let blob;
+      if (isPdf) blob = await makePdf(title, body, 'landscape');
+      else {
+        await loadDocxLib();
+        const who = profile(), GP = window.GuidedPlans;
+        blob = await window.SchoolPadiDocx.toFile(window.docx, title, body, { portrait: false, teacher: who.teacher, school: who.school, footer: GP ? GP.footerText() : '' });
+      }
+      const ext = isPdf ? 'pdf' : 'docx', name = fileStem(title) + '.' + ext;
+      const file = new File([blob], name, { type: isPdf ? 'application/pdf' : 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' });
       if (navigator.canShare && navigator.canShare({ files: [file] })) {
         try { await navigator.share({ files: [file], title, text: title + ' (made with GuidEd)' }); return; }
         catch (e) { if (e && e.name === 'AbortError') return; }          // closed the share sheet: nothing more to do; any other error falls through to a download
       }
-      saveBlob(blob, title);
+      saveBlob(blob, title, ext);
       toast('Saved ' + name + '. Attach it to a message to share it.');
     } catch (e) {
       toast(e.message || 'Could not prepare the file.');
     } finally {
       if (btn) { btn.disabled = false; label.textContent = before; }
+    }
+  }
+  async function exportPdf(text, title, btn, kind) {
+    const layout = kind === 'worksheet' || kind === 'homework' ? 'portrait' : 'landscape';
+    const GP = window.GuidedPlans;
+    if (GP && GP.tier() === 'guest') { openSignupSheet('Create a free account to download PDF files.'); return; }
+    const label = $('span', btn), before = label.textContent;
+    btn.disabled = true; label.textContent = 'Preparing…';
+    try {
+      const blob = await makePdf(title, splitElic(text).body, layout);
+      saveBlob(blob, title, 'pdf');
+      toast('Downloaded ' + title + '.pdf' + hintProfile());
+    } catch (e) {
+      toast(navigator.onLine === false ? 'The PDF tools need a connection the first time. Try again when you are online.' : 'Could not make the PDF. Please try again.');
+    } finally {
+      btn.disabled = false; label.textContent = before;
     }
   }
   async function exportDocx(text, title, btn, kind) {

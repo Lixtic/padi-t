@@ -64,7 +64,7 @@ This regenerates `api/_prompt.js`. Commit both files. The prompt tells the model
 ## Using it
 
 - **New Plan** returns to the start. The pills choose subject, class and week. The optional box takes a topic, class size or week-ending date.
-- **Word (.docx)**, **Copy** and **Regenerate** are on each plan.
+- **Word (.docx)**, **PDF**, **Copy**, **Share** and **Regenerate** are on each plan. PDF is built in the browser by `public/pdf-export.js` with pdfmake (`public/vendor/pdfmake*.js`, about 1 MB, loaded the first time a PDF is made). **Share** asks for PDF or Word.
 - After a plan, type a follow-up such as "make Lesson 2 shorter" or "add a revision quiz", or tap a suggestion chip. A chip like "Generate Week 4" starts a new plan.
 - History is stored in this browser only. Clearing site data removes it.
 
