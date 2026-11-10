@@ -1266,3 +1266,31 @@ main[data-view="chat"] .notice-bar { display: none; }
   .studio-media-panel .media-results { grid-template-columns:1fr; max-height:320px; }
   .studio-context { font-size:9px; }
 }
+
+
+/* Desktop chat stability: keep the transcript as the only scrolling region.
+   Long generated lesson tables must not push the composer or page off-screen. */
+@media (min-width: 561px) {
+  .main { overflow: hidden; }
+  .stage { width: 100%; min-width: 0; }
+  [data-view="chat"] .messages-wrap {
+    flex: 1 1 0;
+    min-width: 0;
+    min-height: 0;
+    overflow-x: hidden;
+    overflow-y: auto;
+    scrollbar-gutter: stable;
+  }
+  .messages {
+    box-sizing: border-box;
+    width: 100%;
+    min-width: 0;
+    padding-inline: clamp(12px, 2vw, 24px);
+  }
+  .msg, .msg .body, .doc { min-width: 0; }
+  .composer-zone {
+    box-sizing: border-box;
+    width: 100%;
+    padding-inline: clamp(12px, 2vw, 24px);
+  }
+}
