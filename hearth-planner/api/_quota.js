@@ -41,7 +41,9 @@ async function reserve(subject, tokens, opts) {
   const amount = Math.max(0, Math.ceil(Number(tokens) || 0));
   if (!limit && !cap) return { ok: true, reservation: null, remaining: Infinity, limit: 0 };
   const id = crypto.randomUUID();
-  const expires = Date.now() + 30 * 60 * 1000;
+  const now = Date.now();
+  const d = new Date(now);
+  const expires = Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate() + 1) + 10 * 60 * 1000;
 
   if (!db.configured()) {
     const user = mem.get(subject + '|' + day) || { tokens: 0, reserved: 0 };
@@ -165,7 +167,7 @@ async function rateLimitShared(key, limit, windowMs) {
        window_start = CASE WHEN rate_limits.window_start <= $2 - $3 THEN $2 ELSE rate_limits.window_start END,
        hits = CASE WHEN rate_limits.window_start <= $2 - $3 THEN 1 ELSE LEAST(rate_limits.hits + 1, $4) END
      RETURNING hits, window_start`,
-    [key, now, windowMs, limit + 1]
+    [hashedKey, now, windowMs, limit + 1]
   );
   const row = rows[0];
   const retryAfter = Math.max(1, Math.ceil((Number(row.window_start) + windowMs - now) / 1000));
