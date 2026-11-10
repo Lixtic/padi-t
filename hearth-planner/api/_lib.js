@@ -140,8 +140,8 @@ function firstMessage(p) {
     'Week: ' + p.week,
     'Hook: ' + (p.hook === false ? 'off' : 'on'),
     'Resources: ' + (p.light ? 'light' : 'standard'),
-    'Study notes: ' + (p.studyNotes === false ? 'off' : 'on'),
-    'BECE practice: ' + (p.bece === false ? 'off' : 'on'),
+    'Study notes: ' + (p.mode === 'full' && p.studyNotes !== false ? 'on' : 'off'),
+    'BECE practice: ' + (p.mode === 'full' && p.bece !== false ? 'on' : 'off'),
   ];
   if (p.size) lines.push('Class size: ' + p.size + ' learners');
   Schemes.describe(p.scheme).forEach((l) => lines.push(l));
