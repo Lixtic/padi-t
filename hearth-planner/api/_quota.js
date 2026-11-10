@@ -87,6 +87,9 @@ async function reserve(subject, tokens, opts) {
        user_used, global_used, user_reserved, global_reserved FROM totals`,
     [subject, day, id, amount, Date.now(), expires, limit, cap]
   );
+  if (Math.random() < 0.02) {
+    db.query('DELETE FROM quota_reservations WHERE expires_at < $1', [Date.now()]).catch(() => {});
+  }
   const row = rows[0] || {};
   if (Number(row.inserted) !== 2) {
     const siteBlocked = !!cap && Number(row.global_used || 0) + Number(row.global_reserved || 0) + amount > cap;
@@ -170,6 +173,9 @@ async function rateLimitShared(key, limit, windowMs) {
      RETURNING hits, window_start`,
     [hashedKey, now, windowMs, limit + 1]
   );
+  if (Math.random() < 0.02) {
+    db.query('DELETE FROM rate_limits WHERE window_start < $1', [now - 24 * 60 * 60 * 1000]).catch(() => {});
+  }
   const row = rows[0];
   const retryAfter = Math.max(1, Math.ceil((Number(row.window_start) + windowMs - now) / 1000));
   return { ok: Number(row.hits) <= limit, retryAfter };
