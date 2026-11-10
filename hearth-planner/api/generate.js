@@ -126,7 +126,9 @@ module.exports = async (req, res) => {
   try {
     first = await it.next();
   } catch (e) {
-    await Quota.release(q.reservation).catch((releaseError) => console.error('[generate] quota release failed', releaseError && releaseError.message));
+    // The provider call has started; conservatively count the prompt in case it was billed
+    // before the connection failed or the client stopped waiting for the first chunk.
+    await Quota.settle(q.reservation, inputTokens).catch((settleError) => console.error('[generate] quota settlement failed', settleError && settleError.message));
     return sendJson(res, e.status || 502, { error: e.code || 'upstream', message: e.message || 'The AI provider failed.' });
   }
 
