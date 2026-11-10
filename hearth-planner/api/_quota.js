@@ -1,5 +1,5 @@
 'use strict';
-// Daily token budgets with atomic reservations. Unsettled reservations expire after 30 minutes.
+// Daily token budgets with atomic reservations. Abandoned reservations remain held until shortly after UTC day reset.
 const crypto = require('crypto');
 const db = require('./_db');
 const num = (name, dflt) => {
@@ -15,7 +15,7 @@ const estimateTokens = (chars) => Math.ceil(Math.max(0, chars) / 4);
 const today = (now) => new Date(now || Date.now()).toISOString().slice(0, 10);
 const secondsToReset = (now) => {
   const d = new Date(now || Date.now());
-  return Math.max(1, Math.ceil((Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), d.getDate() + 1) - d.getTime()) / 1000));
+  return Math.max(1, Math.ceil((Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate() + 1) - d.getTime()) / 1000));
 };
 function subjectFor(me, ip) {
   if (me && me.uid) return 'u:' + crypto.createHash('sha256').update(String(me.uid)).digest('hex').slice(0, 24);
@@ -46,6 +46,16 @@ async function reserve(subject, tokens, opts) {
   const expires = Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate() + 1) + 10 * 60 * 1000;
 
   if (!db.configured()) {
+    for (const [rid, held] of reservations) {
+      if (held.expires <= now) {
+        for (const scope of [held.subject, GLOBAL]) {
+          const row = mem.get(scope + '|' + held.day);
+          if (row) row.reserved = Math.max(0, (row.reserved || 0) - held.amount);
+        }
+        reservations.delete(rid);
+      }
+    }
+    if (mem.size > 5000) for (const k of mem.keys()) if (!k.endsWith('|' + day)) mem.delete(k);
     const user = mem.get(subject + '|' + day) || { tokens: 0, reserved: 0 };
     const global = mem.get(GLOBAL + '|' + day) || { tokens: 0, reserved: 0 };
     if (cap && global.tokens + (global.reserved || 0) + amount > cap) return { ok: false, scope: 'site', limit: cap, remaining: 0, retryAfter: secondsToReset() };
@@ -54,7 +64,7 @@ async function reserve(subject, tokens, opts) {
     global.reserved = (global.reserved || 0) + amount;
     mem.set(subject + '|' + day, user);
     mem.set(GLOBAL + '|' + day, global);
-    reservations.set(id, { subject, day, amount });
+    reservations.set(id, { subject, day, amount, expires });
     return { ok: true, reservation: id, remaining: limit ? Math.max(0, limit - user.tokens - user.reserved) : Infinity, limit };
   }
 
