@@ -5,7 +5,28 @@
   var btn = document.getElementById('installBtn'), hint = document.getElementById('installHint');
   var standalone = (window.matchMedia && matchMedia('(display-mode: standalone)').matches) || navigator.standalone;
   if ('serviceWorker' in navigator && location.protocol !== 'file:') {
-    window.addEventListener('load', function () { navigator.serviceWorker.register('sw.js').catch(function () {}); });
+    var hadController = !!navigator.serviceWorker.controller, shown = false;
+    /* A new version has taken over: tell the person and let them reload when it suits them (never mid-plan). */
+    var showUpdate = function () {
+      if (shown) return; shown = true;
+      var bar = document.createElement('div');
+      bar.className = 'update-bar'; bar.setAttribute('role', 'status');
+      var msg = document.createElement('span'); msg.textContent = 'A new version of GuidEd is ready.';
+      var go = document.createElement('button'); go.type = 'button'; go.textContent = 'Update now';
+      go.addEventListener('click', function () { location.reload(); });
+      var later = document.createElement('button'); later.type = 'button'; later.className = 'update-later'; later.setAttribute('aria-label', 'Dismiss'); later.textContent = '\u00d7';
+      later.addEventListener('click', function () { bar.remove(); });
+      bar.append(msg, go, later); document.body.appendChild(bar);
+    };
+    navigator.serviceWorker.addEventListener('controllerchange', function () { if (hadController) showUpdate(); });
+    window.addEventListener('load', function () {
+      navigator.serviceWorker.register('sw.js').then(function (reg) {
+        /* Phones keep the app open for days: look for a new version when it comes back to the front, and hourly. */
+        var check = function () { try { reg.update(); } catch (e) {} };
+        document.addEventListener('visibilitychange', function () { if (document.visibilityState === 'visible') check(); });
+        setInterval(check, 60 * 60 * 1000);
+      }).catch(function () {});
+    });
   }
   if (standalone || !btn) return;
   var deferred = null;
