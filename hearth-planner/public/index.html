@@ -44,6 +44,7 @@
   <script src="plans.js" defer></script>
   <script src="feedback.js" defer></script>
   <script src="docx-export.js" defer></script>
+  <script src="pdf-export.js" defer></script>
   <script src="levels.js"></script>
   <script src="profile.js" defer></script>
   <script src="ads.js" defer></script>
@@ -298,6 +299,18 @@
     <button type="button" class="ps-cta" id="psCta" hidden></button>
     <p class="as-foot" id="psNote"></p>
     <button type="button" class="ps-help" id="psHelp" hidden>Need a refund or help with a payment?</button>
+  </section>
+</dialog>
+
+<dialog class="acct-sheet up-sheet share-sheet" id="shareSheet" aria-labelledby="shTitle">
+  <button type="button" class="icon-btn as-close" id="shClose" aria-label="Close"><svg class="ico"><use href="#i-x"/></svg></button>
+  <section>
+    <h2 id="shTitle">Share this plan</h2>
+    <p class="as-sub">Choose a file type.</p>
+    <div class="sh-opts">
+      <button type="button" class="sh-opt" data-fmt="pdf"><strong>PDF</strong><small>Opens on any phone. Best for WhatsApp, email and printing.</small></button>
+      <button type="button" class="sh-opt" data-fmt="docx"><strong>Word (.docx)</strong><small>Your colleague can edit it.</small></button>
+    </div>
   </section>
 </dialog>
 
