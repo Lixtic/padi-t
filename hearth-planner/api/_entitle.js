@@ -66,7 +66,16 @@ async function noteAccount(me) {
   try {
     await db.ensure();
     const r = await db.query('insert into accounts (user_id, email, first_seen) values ($1, $2, $3) on conflict (user_id) do update set email = case when accounts.email = \'\' then excluded.email else accounts.email end returning (xmax = 0) as fresh', [me.uid, me.email || '', Date.now()]);
-    if (r.length && r[0].fresh) await event('signup');
+    if (r.length && r[0].fresh) {
+      await event('signup');
+      // A short welcome email, once, the first time the account is seen. Never slows the app down or makes it fail.
+      if (me.email && process.env.SMTP_URL) {
+        try {
+          const mail = require('./_mail').welcome();
+          await Promise.race([require('./_auth').sendNotice(me.email, mail.subject, mail.text, mail.html), new Promise((ok) => setTimeout(ok, 4000))]);
+        } catch (e) { console.error('[entitle] welcome email failed', e && e.message); }
+      }
+    }
   } catch (e) { /* counting is best effort */ }
 }
 const adminEmails = () => String(process.env.ADMIN_EMAILS || '').split(',').map((x) => x.trim().toLowerCase()).filter(Boolean);
@@ -76,7 +85,7 @@ const isAdmin = (me) => !!(me && me.email && adminEmails().includes(String(me.em
 async function resolve(me, ip) {
   const subject = Quota.subjectFor(me, ip);
   if (!me || !me.uid) return { tier: 'guest', subject };
-  noteAccount(me);
+  await noteAccount(me);
   let expiresAt = 0;
   try { expiresAt = await expiry(me.uid); } catch (e) { console.error('[entitle] expiry lookup failed', e && e.message); }
   let blocked = false;
