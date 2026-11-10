@@ -590,9 +590,15 @@
         </div>
         <section class="teaching-studio" aria-label="Teaching Studio">
           <div class="studio-heading">
-            <div><strong>Teaching Studio</strong><small>Choose what you want to prepare for this lesson.</small></div>
+            <div class="studio-heading-main">
+              <button type="button" class="studio-collapse-toggle" id="studioCollapseToggle" aria-expanded="true" aria-controls="studioContent">
+                <strong>Teaching Studio</strong><svg class="ico studio-chevron" aria-hidden="true"><use href="#i-chevron"/></svg>
+              </button>
+              <small>Choose what you want to prepare for this lesson.</small>
+            </div>
             <span class="studio-context" id="studioContext">Curriculum aligned</span>
           </div>
+          <div class="studio-content" id="studioContent">
           <div class="studio-tabs" role="tablist" aria-label="Teaching tools">
             <button type="button" role="tab" id="studioTabPlan" data-studio-tab="plan" aria-selected="true" aria-controls="studioPanelPlan"><svg class="ico"><use href="#i-book"/></svg><span>Lesson plan</span></button>
             <button type="button" role="tab" id="studioTabResources" data-studio-tab="resources" aria-selected="false" aria-controls="studioPanelResources" tabindex="-1"><svg class="ico"><use href="#i-layers"/></svg><span>Resources</span></button>
@@ -632,6 +638,7 @@
             <div id="mediaStatus" class="as-sub" role="status" aria-live="polite">Choose Images or Videos, then search this indicator.</div>
             <div id="mediaResults" class="media-results"></div>
           </section>
+          </div>
         </section>
 
         <div class="scheme" id="schemeStrip" hidden></div>
