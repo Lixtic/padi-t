@@ -8,7 +8,7 @@ module.exports = async (req, res) => {
     res.setHeader('Allow', 'GET');
     return sendJson(res, 405, { error: 'method', message: 'Use GET.' });
   }
-  const query = String(req.query && req.query.q || '').replace(/[<>\u0000-\u001f]/g, ' ').replace(/\s+/g, ' ').trim().slice(0, 120);
+  const query = String(req.query && req.query.q || '').replace(/[<>\u0000-\u001f]/g, ' ').replace(/\s+/g, ' ').trim().slice(0, 320);
   const type = req.query && req.query.type === 'video' ? 'video' : 'image';
   if (query.length < 2) return sendJson(res, 400, { error: 'query', message: 'Enter a topic with at least two characters.' });
   const limit = rateLimit('media:' + clientIp(req), 30, 10 * 60 * 1000);
