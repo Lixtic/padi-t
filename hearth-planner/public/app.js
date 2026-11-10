@@ -1275,8 +1275,9 @@
   async function searchMedia() {
     const refinement = mediaQuery.value.trim();
     const indicator = mediaIndicator.trim();
-    const query = [mediaContext && mediaContext.subject, mediaContext && mediaContext.cls, mediaContext && mediaContext.strand, mediaContext && mediaContext.substrand, indicator, refinement && refinement !== indicator ? refinement : '', mediaType === 'video' ? 'educational teaching video demonstration' : 'educational teaching illustration'].filter(Boolean).join(' ');
-    if (query.length < 2) { mediaStatus.textContent = 'Enter a topic with at least two characters.'; return; }
+    const focus = indicator || refinement;
+    if (focus.length < 2) { mediaStatus.textContent = 'No indicator is loaded for this selection. Enter the specific indicator or teaching topic above.'; mediaQuery.focus(); return; }
+    const query = [focus, mediaContext && mediaContext.subject, mediaContext && mediaContext.cls, mediaContext && mediaContext.strand, mediaContext && mediaContext.substrand, refinement && refinement !== indicator ? refinement : '', mediaType === 'video' ? 'educational teaching video demonstration' : 'educational teaching illustration'].filter(Boolean).join(' ');
     mediaResults.replaceChildren();
     mediaStatus.textContent = 'Searching…';
     $('#mediaSearchBtn').disabled = true;
