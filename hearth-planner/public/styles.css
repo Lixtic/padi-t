@@ -1207,6 +1207,9 @@ main[data-view="chat"] .notice-bar { display: none; }
 @media (max-width:560px) {
   .tool-actions { display:grid; grid-template-columns:1fr 1fr; gap:7px; }
   .tool-actions { order:2; }
+  .tool-action-primary { grid-column:1 / -1; }
+  .resource-pick { grid-column:1; }
+  #resourceAction { grid-column:2; }
   [data-view="landing"] .composer-toggle { order:3; }
   [data-view="landing"] .scheme { order:4; }
   [data-view="landing"] .fineprint { order:5; }
