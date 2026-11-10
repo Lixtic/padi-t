@@ -1248,7 +1248,9 @@
   const planAction = $('#planAction'), resourceAction = $('#resourceAction'), resourceTypeEl = $('#resourceType');
   const mediaSheet = $('#mediaSheet'), mediaForm = $('#mediaSearchForm'), mediaQuery = $('#mediaQuery');
   const mediaStatus = $('#mediaStatus'), mediaResults = $('#mediaResults');
-  let mediaType = 'image';
+  const mediaIndicatorText = $('#mediaIndicatorText'), mediaIndicatorPicker = $('#mediaIndicatorPicker');
+  const mediaIndicatorPickerWrap = $('#mediaIndicatorPickerWrap'), mediaCurriculumMeta = $('#mediaCurriculumMeta');
+  let mediaType = 'image', mediaIndicator = '', mediaContext = null;
   function startIndependentTool(mode, resourceType) {
     if (state.streaming) { toast('Wait for the current generation to finish.'); return; }
     const active = current();
@@ -1271,7 +1273,9 @@
     mediaStatus.textContent = 'Search for ' + (type === 'video' ? 'educational videos' : 'images') + ' on your topic.';
   }
   async function searchMedia() {
-    const query = mediaQuery.value.trim();
+    const refinement = mediaQuery.value.trim();
+    const indicator = mediaIndicator.trim();
+    const query = [mediaContext && mediaContext.subject, mediaContext && mediaContext.cls, mediaContext && mediaContext.strand, mediaContext && mediaContext.substrand, indicator, refinement && refinement !== indicator ? refinement : '', mediaType === 'video' ? 'educational teaching video demonstration' : 'educational teaching illustration'].filter(Boolean).join(' ');
     if (query.length < 2) { mediaStatus.textContent = 'Enter a topic with at least two characters.'; return; }
     mediaResults.replaceChildren();
     mediaStatus.textContent = 'Searching…';
@@ -1308,15 +1312,28 @@
     } finally { $('#mediaSearchBtn').disabled = false; }
   }
   if (mediaAction) mediaAction.addEventListener('click', () => {
-    const active = current();
-    const topic = promptEl.value.trim() || (active && active.messages[0] && active.messages[0].content) || '';
-    mediaQuery.value = topic || (state.params.subject + ' ' + state.params.cls);
+    const p = state.params;
+    const scheme = schemeFor(p);
+    mediaContext = { subject: p.subject, cls: p.cls, strand: scheme && scheme.strand || '', substrand: scheme && scheme.substrand || '', standard: scheme && scheme.standard || '' };
+    const indicators = scheme && Array.isArray(scheme.indicators) ? scheme.indicators.filter(Boolean) : [];
+    mediaIndicator = indicators[0] || '';
+    mediaIndicatorText.textContent = mediaIndicator || (scheme && scheme.focus) || 'No indicator is loaded for this selection.';
+    mediaIndicatorPicker.replaceChildren(...indicators.map((item, index) => h('option', { value: String(index), text: item })));
+    mediaIndicatorPickerWrap.hidden = indicators.length < 2;
+    mediaCurriculumMeta.textContent = [p.subject, p.cls, 'Term ' + (p.term || termNow()), 'Week ' + p.week, mediaContext.strand, mediaContext.substrand].filter(Boolean).join(' · ');
+    mediaQuery.value = '';
+    mediaQuery.placeholder = mediaIndicator ? 'Optional: add a detail to narrow the search…' : 'Enter a topic or indicator to search…';
     mediaResults.replaceChildren();
     setMediaType('image');
     if (mediaSheet && mediaSheet.showModal) mediaSheet.showModal();
     mediaQuery.focus();
   });
   if (mediaForm) mediaForm.addEventListener('submit', (event) => { event.preventDefault(); searchMedia(); });
+  if (mediaIndicatorPicker) mediaIndicatorPicker.addEventListener('change', () => {
+    const scheme = schemeFor(state.params), indicators = scheme && Array.isArray(scheme.indicators) ? scheme.indicators : [];
+    mediaIndicator = indicators[Number(mediaIndicatorPicker.value)] || '';
+    mediaIndicatorText.textContent = mediaIndicator || 'No indicator selected.';
+  });
   if (mediaSheet) {
     $('#mediaClose').addEventListener('click', () => mediaSheet.close());
     mediaSheet.querySelectorAll('[data-media-type]').forEach((button) => button.addEventListener('click', () => setMediaType(button.dataset.mediaType)));
