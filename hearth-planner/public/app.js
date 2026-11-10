@@ -652,6 +652,7 @@
     state.sessions.unshift(fresh);
     promptEl.value = '';
     showSession(fresh.id);
+    setStudioCollapsed(true);
     submit();
   }
   if (window.GuidedPlans) {
@@ -1256,6 +1257,15 @@
   composer.addEventListener('submit', (e) => { e.preventDefault(); if (!sendBtn.disabled || state.streaming) submit(); });
 
   // Teaching Studio keeps all three tools in one workspace and reuses the selected curriculum context.
+  const studioRoot = $('.teaching-studio'), studioCollapseToggle = $('#studioCollapseToggle');
+  function setStudioCollapsed(collapsed) {
+    if (!studioRoot || !studioCollapseToggle) return;
+    studioRoot.classList.toggle('is-collapsed', !!collapsed);
+    studioCollapseToggle.setAttribute('aria-expanded', String(!collapsed));
+  }
+  if (studioCollapseToggle) studioCollapseToggle.addEventListener('click', () => {
+    setStudioCollapsed(!studioRoot.classList.contains('is-collapsed'));
+  });
   const planAction = $('#planAction'), resourceAction = $('#resourceAction'), resourceTypeEl = $('#resourceType');
   const mediaForm = $('#mediaSearchForm'), mediaQuery = $('#mediaQuery');
   const mediaStatus = $('#mediaStatus'), mediaResults = $('#mediaResults');
