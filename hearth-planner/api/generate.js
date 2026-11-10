@@ -120,7 +120,7 @@ module.exports = async (req, res) => {
   const ctrl = new AbortController();
   res.on('close', () => { if (!res.writableEnded) ctrl.abort(); });
 
-  const stream = ADAPTERS[provider]({ system: systemFor(v.params.cls), messages, signal: ctrl.signal, maxTokens: guest ? Entitle.cfg().previewMaxTokens : undefined });
+  const stream = ADAPTERS[provider]({ system: systemFor(v.params.cls), messages, signal: ctrl.signal, maxTokens: guest ? outputCap : undefined });
   const it = stream[Symbol.asyncIterator]();
   let first;
   try {
