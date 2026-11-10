@@ -46,7 +46,7 @@ async function reserve(subject, tokens, opts) {
   if (!db.configured()) {
     const user = mem.get(subject + '|' + day) || { tokens: 0, reserved: 0 };
     const global = mem.get(GLOBAL + '|' + day) || { tokens: 0, reserved: 0 };
-    if (cap && user.tokens + global.reserved + amount > cap) return { ok: false, scope: 'site', limit: cap, remaining: 0, retryAfter: secondsToReset() };
+    if (cap && global.tokens + (global.reserved || 0) + amount > cap) return { ok: false, scope: 'site', limit: cap, remaining: 0, retryAfter: secondsToReset() };
     if (limit && user.tokens + (user.reserved || 0) + amount > limit) return { ok: false, scope: 'user', limit, remaining: Math.max(0, limit - user.tokens - (user.reserved || 0)), retryAfter: secondsToReset() };
     user.reserved = (user.reserved || 0) + amount;
     global.reserved = (global.reserved || 0) + amount;
