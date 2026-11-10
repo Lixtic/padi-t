@@ -366,6 +366,7 @@
     if (st !== 'running' && state.config.demo) st = 'demo';
     statusDot.className = 'dot dot-' + (st === 'demo' ? 'idle' : st);
     statusText.textContent = STATUS[st];
+    document.body.dataset.status = st;
   }
 
   function updateView() {

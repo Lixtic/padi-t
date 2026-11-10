@@ -1324,3 +1324,12 @@ main[data-view="chat"] .notice-bar { display: none; }
 .update-bar { position: fixed; left: 50%; bottom: calc(16px + env(safe-area-inset-bottom)); transform: translateX(-50%); z-index: 200; display: flex; align-items: center; gap: 10px; max-width: calc(100vw - 32px); padding: 10px 12px 10px 16px; border-radius: 12px; background: #1B365D; color: #fff; font-size: .9rem; box-shadow: 0 8px 24px rgba(0,0,0,.25); }
 .update-bar button { border: 0; border-radius: 8px; padding: 6px 12px; font: inherit; font-weight: 600; cursor: pointer; background: #fff; color: #1B365D; }
 .update-bar .update-later { background: transparent; color: #fff; padding: 4px 8px; font-size: 1.2rem; line-height: 1; }
+
+/* Pro: a gold ring on the profile button replaces the separate PRO pill; the Online chip hides on phones while all is well */
+.acct-top[data-tier="pro"] { border-radius: 50%; box-shadow: 0 0 0 2px var(--bg), 0 0 0 4px var(--gold); background: linear-gradient(135deg, rgba(255,213,74,.22), transparent); }
+.acct-top[data-tier="pro"]::after { content: "\2605"; position: absolute; left: -3px; bottom: -3px; width: 15px; height: 15px; border-radius: 50%; display: grid; place-items: center; font-size: 9px; line-height: 1; color: #2B2000; background: linear-gradient(135deg, #FFD54A, var(--gold)); border: 1.5px solid var(--bg); }
+.topbar .plan-badge[data-tier="pro"] { display: none; }
+@media (max-width: 640px) {
+  .topbar .acct-top[data-tier="pro"] { margin: 0 4px; }
+  body[data-status="online"] .topbar #statusChip, body[data-status="idle"] .topbar #statusChip { display: none; }
+}

@@ -167,6 +167,8 @@
     if (!el.badge) return;
     var t = P.tier();
     el.badge.hidden = !t;
+    var top = document.getElementById('acctTop');
+    if (top) { top.dataset.tier = t || ''; top.title = t === 'pro' ? 'Pro account' : ''; }   // Pro shows as a gold ring on the profile button
     if (!t) return;
     el.badge.dataset.tier = t;
     el.badge.textContent = NAMES[t];
