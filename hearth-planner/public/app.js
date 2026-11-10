@@ -1268,7 +1268,7 @@
 
   function setMediaType(type) {
     mediaType = type;
-    mediaSheet.querySelectorAll('[data-media-type]').forEach((button) => button.setAttribute('aria-pressed', String(button.dataset.mediaType === type)));
+    document.querySelectorAll('[data-media-type]').forEach((button) => button.setAttribute('aria-pressed', String(button.dataset.mediaType === type)));
     mediaResults.replaceChildren();
     mediaStatus.textContent = 'Search for ' + (type === 'video' ? 'educational videos' : 'images') + ' on your topic.';
   }
