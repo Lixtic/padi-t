@@ -302,23 +302,55 @@
   const makeSession = () => ({ id: uid(), title: 'New plan', updatedAt: Date.now(), params: null, messages: [] });
   const isFresh = (s) => s && s.messages.length === 0;
 
+  /* Plans are grouped into one folder per class (Basic 1 to SHS 3). The folder view is the default; "Recent" is a flat list. */
+  const VIEW_KEY = 'guided.sb.view', CLOSED_KEY = 'guided.sb.closed';
+  const lsGet = (k, d) => { try { const v = JSON.parse(localStorage.getItem(k)); return v == null ? d : v; } catch (e) { return d; } };
+  const lsSet = (k, v) => { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) { /* ignore */ } };
+  let sbView = lsGet(VIEW_KEY, 'class') === 'recent' ? 'recent' : 'class';
+  let closedFolders = new Set(lsGet(CLOSED_KEY, []));
+
+  function sessionRow(s, inFolder) {
+    const st = statusOf(s);
+    const sub = s.params ? (inFolder ? [s.params.term ? 'Term ' + s.params.term : '', 'Week ' + s.params.week].filter(Boolean).join(' · ') : s.params.cls + ' · Week ' + s.params.week) + (s.copy ? ' · copy' : '') : '';
+    return h('li', { class: 's-row' },
+      h('button', { type: 'button', class: 's-item', 'data-id': s.id, 'aria-current': String(s.id === state.currentId) },
+        h('span', { class: 'dot dot-' + st, role: 'img', 'aria-label': STATUS[st], title: STATUS[st] }),
+        h('span', { class: 's-text' },
+          h('span', { class: 's-title', text: s.params ? s.params.subject : s.title }),
+          s.params ? h('span', { class: 's-sub', text: sub }) : null),
+        h('span', { class: 's-time', text: rel(s.updatedAt) })),
+      s.messages.length ? h('button', { type: 'button', class: 's-del', 'data-del': s.id, 'aria-label': 'Delete plan ' + s.title }, icon('trash')) : null);
+  }
+
   function renderSessions() {
     const q = searchInput.value.trim().toLowerCase();
     const items = state.sessions
       .filter((s) => s.messages.length || s.id === state.currentId)
       .sort((a, b) => b.updatedAt - a.updatedAt)
-      .filter((s) => !q || s.title.toLowerCase().includes(q));
-    listEl.replaceChildren(...items.map((s) => {
-      const st = statusOf(s);
-      return h('li', { class: 's-row' },
-        h('button', { type: 'button', class: 's-item', 'data-id': s.id, 'aria-current': String(s.id === state.currentId) },
-          h('span', { class: 'dot dot-' + st, role: 'img', 'aria-label': STATUS[st], title: STATUS[st] }),
-          h('span', { class: 's-text' },
-            h('span', { class: 's-title', text: s.params ? s.params.subject : s.title }),
-            s.params ? h('span', { class: 's-sub', text: s.params.cls + ' · Week ' + s.params.week + (s.copy ? ' · copy' : '') }) : null),
-          h('span', { class: 's-time', text: rel(s.updatedAt) })),
-        s.messages.length ? h('button', { type: 'button', class: 's-del', 'data-del': s.id, 'aria-label': 'Delete plan ' + s.title }, icon('trash')) : null);
-    }));
+      .filter((s) => !q || s.title.toLowerCase().includes(q) || (s.params && (s.params.cls + ' ' + s.params.subject).toLowerCase().includes(q)));
+    document.getElementById('viewClass').setAttribute('aria-pressed', String(sbView === 'class'));
+    document.getElementById('viewRecent').setAttribute('aria-pressed', String(sbView === 'recent'));
+    if (sbView === 'recent') {
+      listEl.replaceChildren(...items.map((s) => sessionRow(s, false)));
+    } else {
+      const loose = items.filter((s) => !s.params || !s.params.cls);
+      const by = new Map();
+      items.filter((s) => s.params && s.params.cls).forEach((s) => { if (!by.has(s.params.cls)) by.set(s.params.cls, []); by.get(s.params.cls).push(s); });
+      const order = CLASSES.filter((c) => by.has(c)).concat([...by.keys()].filter((c) => !CLASSES.includes(c)));
+      const nodes = loose.map((s) => sessionRow(s, false));
+      order.forEach((cls) => {
+        const list = by.get(cls);
+        const hasCurrent = list.some((s) => s.id === state.currentId);
+        const open = !!q || hasCurrent || !closedFolders.has(cls);
+        const body = h('ul', { class: 'f-body', id: 'fold-' + cls.replace(/\W+/g, '-') }, ...list.map((s) => sessionRow(s, true)));
+        body.hidden = !open;
+        nodes.push(h('li', { class: 'f-item' },
+          h('button', { type: 'button', class: 'f-head', 'data-folder': cls, 'aria-expanded': String(open), 'aria-controls': body.id },
+            icon('chevron'), h('span', { class: 'f-name', text: cls }), h('span', { class: 'f-count', text: String(list.length) })),
+          body));
+      });
+      listEl.replaceChildren(...nodes);
+    }
     emptyEl.hidden = items.length > 0 || !q;
   }
 
@@ -1369,6 +1401,12 @@
   brand.addEventListener('click', (e) => { e.preventDefault(); newSession(); });
 
   listEl.addEventListener('click', (e) => {
+    const fold = e.target.closest('[data-folder]');
+    if (fold) {
+      const cls = fold.dataset.folder;
+      if (closedFolders.has(cls)) closedFolders.delete(cls); else closedFolders.add(cls);
+      lsSet(CLOSED_KEY, [...closedFolders]); renderSessions(); return;
+    }
     const del = e.target.closest('[data-del]');
     if (del) { deleteSession(del.dataset.del); return; }
     const item = e.target.closest('.s-item');
@@ -1376,6 +1414,8 @@
     if (item.dataset.id !== state.currentId) showSession(item.dataset.id);
     if (isMobile()) setNav(false);
   });
+
+  [['viewClass', 'class'], ['viewRecent', 'recent']].forEach(([id, v]) => document.getElementById(id).addEventListener('click', () => { sbView = v; lsSet(VIEW_KEY, v); renderSessions(); }));
 
   searchToggle.addEventListener('click', () => {
     const show = searchWrap.hidden;

@@ -360,7 +360,13 @@
       <input id="searchInput" type="search" placeholder="Filter plans" autocomplete="off">
     </div>
 
-    <div class="sb-list-head"><span>Recent plans</span></div>
+    <div class="sb-list-head">
+      <span>My plans</span>
+      <div class="sb-seg" role="group" aria-label="How to list plans">
+        <button type="button" id="viewClass" aria-pressed="true">By class</button>
+        <button type="button" id="viewRecent" aria-pressed="false">Recent</button>
+      </div>
+    </div>
     <nav class="sb-list" aria-label="Plan history">
       <ul id="sessionList"></ul>
       <p class="sb-empty" id="sbEmpty" hidden>No matching plans</p>
@@ -395,18 +401,26 @@
         <span class="plan-cta" id="planRowCta"></span>
       </button>
 
-      <button type="button" class="foot-link" id="feedbackBtn">
-        <svg class="ico"><use href="#i-pencil"/></svg><span>Report a bug or suggest an idea</span>
-      </button>
-      <button type="button" class="foot-link" id="usageBtn" hidden>
-        <svg class="ico"><use href="#i-sliders"/></svg><span>Usage and payments</span>
-      </button>
-      <button type="button" class="foot-link" id="adminBtn" hidden>
-        <svg class="ico"><use href="#i-sliders"/></svg><span>Teachers and announcements</span>
-      </button>
-      <button type="button" class="foot-link" id="inboxBtn" hidden>
-        <svg class="ico"><use href="#i-layers"/></svg><span>Feedback inbox</span>
-      </button>
+      <div class="foot-group" aria-label="Your tools">
+        <button type="button" class="foot-link" id="profileBtn">
+          <svg class="ico"><use href="#i-user"/></svg><span>My teacher profile</span>
+        </button>
+        <button type="button" class="foot-link" id="feedbackBtn">
+          <svg class="ico"><use href="#i-pencil"/></svg><span>Help and feedback</span>
+        </button>
+      </div>
+      <div class="foot-group foot-admin" aria-label="Admin">
+        <p class="foot-label">Admin</p>
+        <button type="button" class="foot-link" id="usageBtn" hidden>
+          <svg class="ico"><use href="#i-sliders"/></svg><span>Usage and payments</span>
+        </button>
+        <button type="button" class="foot-link" id="adminBtn" hidden>
+          <svg class="ico"><use href="#i-user"/></svg><span>Teachers and announcements</span>
+        </button>
+        <button type="button" class="foot-link" id="inboxBtn" hidden>
+          <svg class="ico"><use href="#i-layers"/></svg><span>Feedback inbox</span>
+        </button>
+      </div>
 
       <button type="button" class="disc" id="setToggle" data-disc="setPanel" aria-expanded="false" aria-controls="setPanel">
         <svg class="ico"><use href="#i-sliders"/></svg><span>Settings</span><svg class="ico disc-chev"><use href="#i-chevron"/></svg>
@@ -422,9 +436,6 @@
           </button>
         </div>
 
-        <button type="button" class="set-action" id="profileBtn">
-          <svg class="ico"><use href="#i-pencil"/></svg><span>My teacher profile <small>classes, subjects, name</small></span>
-        </button>
 
         <button type="button" class="set-action set-install" id="installBtn" hidden>
           <svg class="ico"><use href="#i-download"/></svg><span>Install app</span>
