@@ -1349,7 +1349,6 @@
       setStudioTab(tabs[next].dataset.studioTab, true);
     });
   });
-  loadMediaContext();
   if (mediaForm) mediaForm.addEventListener('submit', (event) => { event.preventDefault(); searchMedia(); });
   if (mediaIndicatorPicker) mediaIndicatorPicker.addEventListener('change', () => {
     const scheme = schemeFor(state.params), indicators = scheme && Array.isArray(scheme.indicators) ? scheme.indicators : [];
@@ -1521,6 +1520,8 @@
   function termSet(v) { try { localStorage.setItem(termKey(), JSON.stringify({ v, auto: termAuto() })); } catch (e) { /* the calendar term still works */ } }
   const schemeStrip = $('#schemeStrip');
   const schemeFor = (p) => (window.SchoolPadiSchemes ? window.SchoolPadiSchemes.lookup(p.subject, p.cls, p.term || termNow(), p.week) : null);
+  // Initialize media context only after termNow and schemeFor are initialized.
+  loadMediaContext();
   function syncScheme() {
     const S = window.SchoolPadiSchemes;
     if (!S) { schemeStrip.hidden = true; return; }
