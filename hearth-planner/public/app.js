@@ -1306,6 +1306,7 @@
   if (resourceAction) resourceAction.addEventListener('click', () => startIndependentTool('resources', resourceTypeEl.value));
 
   function setMediaType(type) {
+    if (type === 'video') { toast('Video search is coming soon.'); return; }   // remove once YOUTUBE_API_KEY is set and the Videos button is enabled
     mediaType = type;
     document.querySelectorAll('[data-media-type]').forEach((button) => button.setAttribute('aria-pressed', String(button.dataset.mediaType === type)));
     mediaResults.replaceChildren();
