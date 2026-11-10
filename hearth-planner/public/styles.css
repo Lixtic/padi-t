@@ -1030,3 +1030,18 @@ main[data-view="chat"] .notice-bar { display: none; }
 .sh-opt:hover, .sh-opt:focus-visible { border-color: var(--accent); background: var(--sb-hover); }
 .sh-opt strong { font-size: 16px; }
 .sh-opt small { font-size: 13px; color: var(--muted); }
+
+/* Plan actions: edit tools in one row, downloads grouped on their own line */
+.tool-group { flex-basis: 100%; display: flex; align-items: center; gap: 10px; margin-top: 4px; }
+.tool-group-label { font-size: 12px; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); }
+.tool-pair { display: inline-flex; }
+.tool-pair .tool:first-child { border-radius: 9px 0 0 9px; }
+.tool-pair .tool + .tool { border-radius: 0 9px 9px 0; margin-left: -1px; }
+.tool-pair .tool:hover:not(:disabled) { position: relative; z-index: 1; }
+.tool-pair .tool[hidden] { display: none; }
+@media (max-width: 520px) {
+  .doc-tools { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+  .doc-tools > .tool { justify-content: center; }
+  .doc-tools > .tool[hidden] { display: none; }
+  .tool-group { grid-column: 1 / -1; }
+}

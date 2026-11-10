@@ -461,7 +461,6 @@
     const chipsEl = h('div', { class: 'chips' });
     const extrasEl = h('div', { class: 'extras' });
     const metaEl = h('div', { class: 'meta' });
-    const btnCopy = h('button', { type: 'button', class: 'tool', disabled: true }, icon('copy'), h('span', { text: 'Copy' }));
     const btnEdit = h('button', { type: 'button', class: 'tool', disabled: true, 'data-act': 'edit' }, icon('pencil'), h('span', { text: 'Edit' }));
     const btnReuse = h('button', { type: 'button', class: 'tool', disabled: true, 'data-act': 'reuse', title: 'Copy this plan into a new plan you can change freely' }, icon('layers'), h('span', { text: 'Reuse' }));
     const btnRegen = h('button', { type: 'button', class: 'tool', disabled: true }, icon('refresh'), h('span', { text: 'Regenerate' }));
@@ -476,11 +475,12 @@
         h('div', { class: 'doc' },
           h('div', { class: 'doc-bar' },
             h('div', { class: 'doc-id' }, titleEl, progress),
-            h('div', { class: 'doc-tools' }, btnCopy, btnEdit, btnReuse, btnRegen, btnShare, btnDocx, btnPdf)),
+            h('div', { class: 'doc-tools' }, btnEdit, btnReuse, btnRegen, btnShare,
+              h('div', { class: 'tool-group', role: 'group', 'aria-label': 'Download' }, h('span', { class: 'tool-group-label', text: 'Download' }), h('div', { class: 'tool-pair' }, btnDocx, btnPdf)))),
           noteEl, bodyEl),
         chipsEl, extrasEl, metaEl));
 
-    const tools = [btnCopy, btnEdit, btnReuse, btnRegen, btnShare, btnDocx, btnPdf];
+    const tools = [btnEdit, btnReuse, btnRegen, btnShare, btnDocx, btnPdf];
 
     function fillExtras() {
       if (demoted) { extrasEl.replaceChildren(); return; }
@@ -587,12 +587,6 @@
       },
       demote() { demoted = true; btnRegen.hidden = true; chipsEl.replaceChildren(); extrasEl.replaceChildren(); },
     };
-    btnCopy.addEventListener('click', () => {
-      const t = splitElic(api.text).body;
-      const done = () => toast('Copied as text');
-      if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(t).then(done, () => toast('Copy was blocked by the browser'));
-      else toast('Copy is not available in this browser');
-    });
     btnEdit.addEventListener('click', () => {
       if (editor) editor.cancel();
       else if (editBox) { closeEdit(); api.set(api.text, true, api.msg); }
