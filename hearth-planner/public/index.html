@@ -324,31 +324,7 @@
   </section>
 </dialog>
 
-<dialog class="acct-sheet media-sheet" id="mediaSheet" aria-labelledby="mediaTitle">
-  <button type="button" class="icon-btn as-close" id="mediaClose" aria-label="Close"><svg class="ico"><use href="#i-x"/></svg></button>
-  <section>
-    <h2 id="mediaTitle">Find teaching media</h2>
-    <p class="as-sub">Search for classroom-friendly images and videos related to your topic.</p>
-    <div class="media-curriculum" id="mediaCurriculum">
-      <span class="media-context-label">Selected curriculum indicator</span>
-      <p id="mediaIndicatorText">Choose a class, subject and week to load its indicator.</p>
-      <label id="mediaIndicatorPickerWrap" hidden>Indicator being taught
-        <select id="mediaIndicatorPicker"></select>
-      </label>
-      <small id="mediaCurriculumMeta"></small>
-    </div>
-    <form id="mediaSearchForm" class="media-search">
-      <input id="mediaQuery" type="search" maxlength="120" placeholder="Refine the indicator search…" aria-label="Refine media search">
-      <button type="submit" class="as-submit" id="mediaSearchBtn">Search</button>
-    </form>
-    <div class="media-tabs" role="group" aria-label="Media type">
-      <button type="button" data-media-type="image" aria-pressed="true">Images</button>
-      <button type="button" data-media-type="video" aria-pressed="false">Videos</button>
-    </div>
-    <div id="mediaStatus" class="as-sub" role="status" aria-live="polite"></div>
-    <div id="mediaResults" class="media-results"></div>
-  </section>
-</dialog>
+
 
 <dialog class="acct-sheet up-sheet" id="upSheet" aria-labelledby="upTitle">
   <button type="button" class="icon-btn as-close" id="upClose" aria-label="Close"><svg class="ico"><use href="#i-x"/></svg></button>
@@ -612,20 +588,51 @@
             <div class="also" id="alsoRow" role="group" aria-label="Also plan for other classes"></div>
           </div>
         </div>
-        <div class="tool-actions" aria-label="Teaching tools">
-          <button type="button" class="tool-action tool-action-primary" id="planAction">Create lesson plan</button>
-          <label class="resource-pick"><span class="sr-only">Resource type</span>
-            <select id="resourceType">
-              <option>Study notes</option>
-              <option>Learner worksheet</option>
-              <option>Homework pack</option>
-              <option>BECE practice</option>
-              <option>Teaching slides</option>
-            </select>
-          </label>
-          <button type="button" class="tool-action" id="resourceAction">Generate resource</button>
-          <button type="button" class="tool-action tool-action-media" id="mediaAction">Find videos &amp; images</button>
-        </div>
+        <section class="teaching-studio" aria-label="Teaching Studio">
+          <div class="studio-heading">
+            <div><strong>Teaching Studio</strong><small>Choose what you want to prepare for this lesson.</small></div>
+            <span class="studio-context" id="studioContext">Curriculum aligned</span>
+          </div>
+          <div class="studio-tabs" role="tablist" aria-label="Teaching tools">
+            <button type="button" role="tab" id="studioTabPlan" data-studio-tab="plan" aria-selected="true" aria-controls="studioPanelPlan"><svg class="ico"><use href="#i-book"/></svg><span>Lesson plan</span></button>
+            <button type="button" role="tab" id="studioTabResources" data-studio-tab="resources" aria-selected="false" aria-controls="studioPanelResources" tabindex="-1"><svg class="ico"><use href="#i-layers"/></svg><span>Resources</span></button>
+            <button type="button" role="tab" id="studioTabMedia" data-studio-tab="media" aria-selected="false" aria-controls="studioPanelMedia" tabindex="-1"><svg class="ico"><use href="#i-search"/></svg><span>Videos &amp; images</span></button>
+          </div>
+          <section class="studio-panel" id="studioPanelPlan" role="tabpanel" aria-labelledby="studioTabPlan" data-studio-panel="plan">
+            <div class="studio-panel-copy"><strong>Create a lesson plan</strong><small>Generate your two-lesson weekly plan without extra teaching materials.</small></div>
+            <button type="button" class="tool-action tool-action-primary" id="planAction">Create lesson plan</button>
+          </section>
+          <section class="studio-panel" id="studioPanelResources" role="tabpanel" aria-labelledby="studioTabResources" data-studio-panel="resources" hidden>
+            <div class="studio-panel-copy"><strong>Prepare a teaching resource</strong><small>Choose one resource to generate on its own.</small></div>
+            <div class="studio-resource-row">
+              <label class="resource-pick"><span class="sr-only">Resource type</span>
+                <select id="resourceType">
+                  <option>Study notes</option><option>Learner worksheet</option><option>Homework pack</option><option>BECE practice</option><option>Teaching slides</option>
+                </select>
+              </label>
+              <button type="button" class="tool-action tool-action-primary" id="resourceAction">Generate resource</button>
+            </div>
+          </section>
+          <section class="studio-panel studio-media-panel" id="studioPanelMedia" role="tabpanel" aria-labelledby="studioTabMedia" data-studio-panel="media" hidden>
+            <div class="studio-panel-copy"><strong>Find classroom media</strong><small>Search from the exact curriculum indicator selected below.</small></div>
+            <div class="media-curriculum" id="mediaCurriculum">
+              <span class="media-context-label">Selected curriculum indicator</span>
+              <p id="mediaIndicatorText">Choose a class, subject and week to load its indicator.</p>
+              <label id="mediaIndicatorPickerWrap" hidden>Indicator being taught<select id="mediaIndicatorPicker"></select></label>
+              <small id="mediaCurriculumMeta"></small>
+            </div>
+            <form id="mediaSearchForm" class="media-search">
+              <input id="mediaQuery" type="search" maxlength="120" placeholder="Add a detail to refine the search…" aria-label="Refine media search">
+              <button type="submit" class="as-submit" id="mediaSearchBtn">Search</button>
+            </form>
+            <div class="media-tabs" role="group" aria-label="Media type">
+              <button type="button" data-media-type="image" aria-pressed="true">Images</button>
+              <button type="button" data-media-type="video" aria-pressed="false">Videos</button>
+            </div>
+            <div id="mediaStatus" class="as-sub" role="status" aria-live="polite">Choose Images or Videos, then search this indicator.</div>
+            <div id="mediaResults" class="media-results"></div>
+          </section>
+        </section>
 
         <div class="scheme" id="schemeStrip" hidden></div>
         <p class="fineprint" id="fineprint">Always review a generated plan against the NaCCA curriculum before teaching.</p>
