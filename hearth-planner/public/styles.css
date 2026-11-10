@@ -1178,3 +1178,37 @@ main[data-view="chat"] .notice-bar { display: none; }
   .s-del { opacity: 1; }
   .send:active, .pill:active, .opt-toggle:active { transform: scale(.985); }
 }
+
+
+/* ───────── Independent teacher tools ───────── */
+.tool-actions { display:flex; align-items:center; flex-wrap:wrap; gap:8px; padding:0 2px; }
+.tool-action, .resource-pick select {
+  min-height:40px; border:1px solid var(--card-line); border-radius:12px;
+  padding:0 12px; background:var(--card); color:var(--ink); font:inherit;
+  font-size:13px; font-weight:650; cursor:pointer;
+}
+.tool-action-primary { background:var(--accent); border-color:var(--accent); color:#fff; }
+.tool-action-media { border-style:dashed; }
+.resource-pick select { max-width:170px; }
+.media-sheet { width:min(680px, calc(100vw - 28px)); max-height:min(88dvh, 820px); overflow:auto; }
+.media-search { display:flex; gap:8px; margin:16px 0 12px; }
+.media-search input { min-width:0; flex:1; border:1px solid var(--card-line); border-radius:12px; padding:12px; background:var(--card); color:var(--ink); font:inherit; font-size:16px; }
+.media-search .as-submit { width:auto; margin:0; padding:0 18px; }
+.media-tabs { display:flex; gap:8px; margin:10px 0; }
+.media-tabs button { min-height:38px; padding:0 16px; border:1px solid var(--card-line); border-radius:999px; background:var(--card); color:var(--ink); }
+.media-tabs button[aria-pressed="true"] { background:var(--accent-soft); border-color:var(--accent); font-weight:700; }
+.media-results { display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:10px; margin-top:12px; }
+.media-result { display:flex; gap:10px; min-width:0; padding:10px; border:1px solid var(--card-line); border-radius:13px; color:var(--ink); text-decoration:none; background:var(--card); }
+.media-result img { width:104px; height:82px; flex:none; object-fit:cover; border-radius:8px; background:var(--line); }
+.media-result-info { display:flex; flex-direction:column; gap:4px; min-width:0; }
+.media-result-info strong { font-size:13px; line-height:1.35; }
+.media-result-info small { color:var(--muted); font-size:11px; line-height:1.35; }
+.media-search-link { display:inline-flex; padding:12px 14px; border-radius:12px; background:var(--accent-soft); color:var(--ink); font-weight:700; text-decoration:none; }
+@media (max-width:560px) {
+  .tool-actions { display:grid; grid-template-columns:1fr 1fr; gap:7px; }
+  .tool-action, .resource-pick select { width:100%; min-width:0; min-height:44px; padding:0 9px; font-size:12px; }
+  .resource-pick { min-width:0; }
+  .tool-action-media { grid-column:1 / -1; }
+  .media-sheet { width:calc(100vw - 18px); max-height:calc(94dvh - env(safe-area-inset-top)); padding:22px 14px max(18px,env(safe-area-inset-bottom)); }
+  .media-results { grid-template-columns:1fr; }
+}
