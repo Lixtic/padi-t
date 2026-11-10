@@ -324,6 +324,24 @@
   </section>
 </dialog>
 
+<dialog class="acct-sheet media-sheet" id="mediaSheet" aria-labelledby="mediaTitle">
+  <button type="button" class="icon-btn as-close" id="mediaClose" aria-label="Close"><svg class="ico"><use href="#i-x"/></svg></button>
+  <section>
+    <h2 id="mediaTitle">Find teaching media</h2>
+    <p class="as-sub">Search for classroom-friendly images and videos related to your topic.</p>
+    <form id="mediaSearchForm" class="media-search">
+      <input id="mediaQuery" type="search" maxlength="120" placeholder="Enter a teaching topic…" aria-label="Teaching topic" required>
+      <button type="submit" class="as-submit" id="mediaSearchBtn">Search</button>
+    </form>
+    <div class="media-tabs" role="group" aria-label="Media type">
+      <button type="button" data-media-type="image" aria-pressed="true">Images</button>
+      <button type="button" data-media-type="video" aria-pressed="false">Videos</button>
+    </div>
+    <div id="mediaStatus" class="as-sub" role="status" aria-live="polite"></div>
+    <div id="mediaResults" class="media-results"></div>
+  </section>
+</dialog>
+
 <dialog class="acct-sheet up-sheet" id="upSheet" aria-labelledby="upTitle">
   <button type="button" class="icon-btn as-close" id="upClose" aria-label="Close"><svg class="ico"><use href="#i-x"/></svg></button>
   <section>
@@ -525,6 +543,21 @@
             </button>
           </div>
         </form>
+
+        <div class="tool-actions" aria-label="Teaching tools">
+          <button type="button" class="tool-action tool-action-primary" id="planAction">Create lesson plan</button>
+          <label class="resource-pick"><span class="sr-only">Resource type</span>
+            <select id="resourceType">
+              <option>Study notes</option>
+              <option>Learner worksheet</option>
+              <option>Homework pack</option>
+              <option>BECE practice</option>
+              <option>Teaching slides</option>
+            </select>
+          </label>
+          <button type="button" class="tool-action" id="resourceAction">Generate resource</button>
+          <button type="button" class="tool-action tool-action-media" id="mediaAction">Find videos &amp; images</button>
+        </div>
 
         <div class="context-pills" id="pills">
           <div class="pill-main">
