@@ -5,7 +5,8 @@ const Levels = require('./_levels');
 // JHS uses the main prompt as it is. Other levels add their own profile at the end.
 const systemFor = (cls) => { const l = Levels.levelOfClass(cls); return l && LEVEL_PROMPTS[l.id] ? BASE_PROMPT + '\n\n' + LEVEL_PROMPTS[l.id] : BASE_PROMPT; };
 const { sendJson, clientIp, accessOk, readJson, validate, firstMessage } = require('./_lib');
-const { activeProvider, ADAPTERS } = require('./_providers');
+const Providers = require('./_providers');
+const { activeProvider, ADAPTERS } = Providers;
 const Cache = require('./_cache');
 const Quota = require('./_quota');
 const A = require('./_auth');
