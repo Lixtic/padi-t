@@ -108,7 +108,7 @@ a { color: inherit; }
 .logo { width: 28px; height: 28px; flex: none; color: var(--accent); }
 
 /* ───────── Layout ───────── */
-.app { display: flex; height: 100vh; height: 100dvh; height: var(--app-h, 100dvh); overflow: hidden; }
+.app { position: fixed; inset-inline: 0; top: var(--app-top, 0px); display: flex; height: var(--app-h, 100dvh); overflow: hidden; }
 
 .sidebar {
   width: var(--sb-w); flex: none;
@@ -1049,3 +1049,271 @@ main[data-view="chat"] .notice-bar { display: none; }
 .f-add { flex: none; display: grid; place-items: center; width: 30px; height: 30px; margin-left: 2px; border-radius: 9px; color: var(--muted); }
 .f-add:hover, .f-add:focus-visible { background: var(--sb-hover); color: var(--accent); }
 .f-add .ico { width: 16px; height: 16px; }
+
+
+
+/* ───────── Mobile-first workspace refinement ─────────
+   Keep the existing GuidEd identity and app behaviour.
+   These overrides make the planning flow easier to use one-handed. */
+@media (max-width: 560px) {
+  html, body { min-height: 100%; }
+  body { overscroll-behavior: none; }
+
+  .main { min-height: 0; }
+  .topbar {
+    position: relative;
+    z-index: 10;
+    height: 56px;
+    min-height: 56px;
+    padding: max(4px, env(safe-area-inset-top)) 10px 4px;
+    gap: 6px;
+    background: var(--bg);
+    border-bottom: 1px solid color-mix(in srgb, var(--line) 65%, transparent);
+  }
+  .tb-title { font-size: 14px; }
+  .topbar .chip { padding: 4px 8px; font-size: 11.5px; gap: 6px; }
+  .topbar .chip .dot { width: 7px; height: 7px; }
+  .topbar .icon-btn { width: 44px; height: 44px; }
+  .topbar .plan-badge { min-height: 30px; }
+
+  .stage {
+    gap: 0;
+    padding: 0 16px;
+  }
+  [data-view="landing"] .grow { flex-basis: 4px; }
+  [data-view="landing"] .hero {
+    text-align: left;
+    margin: 10px 0 18px;
+    padding: 0 2px;
+  }
+  .hero-mark { width: 30px; height: 30px; margin: 0 0 10px; }
+  .hero h1 { max-width: 14ch; font-size: clamp(27px, 7.5vw, 32px); line-height: 1.12; letter-spacing: -.025em; }
+  .hero p { max-width: 38ch; margin-top: 9px; font-size: 14px; line-height: 1.55; }
+
+  /* Put the class/subject/week choices before the optional prompt. */
+  [data-view="landing"] .composer-zone {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 0 0 max(14px, env(safe-area-inset-bottom));
+  }
+  [data-view="landing"] .context-pills { order: 0; margin: 0; gap: 8px; }
+  [data-view="landing"] .composer { order: 1; }
+  [data-view="landing"] .composer-toggle { order: 2; }
+  [data-view="landing"] .scheme { order: 3; margin-top: 0; }
+  [data-view="landing"] .fineprint { order: 4; margin: 0 2px; font-size: 11.5px; }
+
+  .pill-main { gap: 7px; }
+  .pill-main .dd .pill {
+    min-height: 46px;
+    height: auto;
+    padding: 0 12px;
+    border-radius: 13px;
+    justify-content: flex-start;
+    font-size: 14px;
+    box-shadow: 0 1px 2px rgba(27, 54, 93, .04);
+  }
+  .pill-main .dd .pill .chev { margin-left: auto; }
+  .opt-toggle {
+    min-height: 46px;
+    padding: 0 10px;
+    border: 1px solid var(--card-line);
+    border-radius: 13px;
+    background: var(--card);
+  }
+  .opt-panel { padding: 4px 12px; }
+  .opt-panel .dd .pill { min-height: 52px; }
+  .opt-row { min-height: 58px; }
+
+  [data-view="landing"] .composer {
+    padding: 12px;
+    border-radius: 17px;
+    box-shadow: 0 2px 10px rgba(27, 54, 93, .06);
+  }
+  [data-view="landing"] .composer textarea {
+    min-height: 42px;
+    max-height: 120px;
+    padding: 2px 2px 6px;
+    font-size: 16px;
+  }
+  [data-view="landing"] .composer-row { margin-top: 6px; }
+  [data-view="landing"] .send { width: 44px; height: 44px; }
+  [data-view="landing"] .hint { font-size: 11.5px; }
+
+  /* Give generated plans and the editor more usable width. */
+  [data-view="chat"] .stage { padding-left: 10px; padding-right: 10px; }
+  [data-view="chat"] .messages-wrap { padding-bottom: 4px; }
+  [data-view="chat"] .messages { padding: 8px 2px 18px; }
+  [data-view="chat"] .composer-zone {
+    padding: 6px 0 max(10px, env(safe-area-inset-bottom));
+  }
+  [data-view="chat"] .composer { border-radius: 17px; }
+  .doc-body { padding: 4px 10px 18px; overflow-wrap: anywhere; }
+  .doc-bar { gap: 6px; padding: 8px 10px; }
+  .doc-bar .tool { min-height: 42px; }
+  .edit-box { padding: 12px 10px 16px; }
+  .doc-edit { min-height: 48vh; max-height: 62vh; font-size: 13px; }
+
+  /* Sheets respect notches, home indicators and the on-screen keyboard. */
+  .acct-sheet {
+    max-height: calc(94dvh - env(safe-area-inset-top));
+    padding-left: 16px;
+    padding-right: 16px;
+    padding-bottom: max(22px, env(safe-area-inset-bottom));
+  }
+  .acct-sheet .as-field input,
+  .acct-sheet textarea,
+  .acct-sheet select { font-size: 16px; }
+  .sh-opt { min-height: 76px; justify-content: center; }
+}
+
+@media (max-width: 380px) {
+  .stage { padding-left: 12px; padding-right: 12px; }
+  .topbar .chip { max-width: 82px; overflow: hidden; }
+  .topbar .chip #statusText { overflow: hidden; text-overflow: ellipsis; }
+  .hero h1 { font-size: 26px; }
+  .pill-main { gap: 6px; }
+  .pill-main .dd .pill { padding: 0 9px; font-size: 13px; }
+  .doc-tools { grid-template-columns: 1fr 1fr; }
+}
+
+/* Avoid hover-only affordances on touch screens. */
+@media (hover: none) and (max-width: 560px) {
+  .btn, .foot-link, .menu-item, .opt-row, .tool, .eb-btn { -webkit-tap-highlight-color: transparent; }
+  .s-del { opacity: 1; }
+  .send:active, .pill:active, .opt-toggle:active { transform: scale(.985); }
+}
+
+
+/* ───────── Independent teacher tools ───────── */
+.tool-actions { display:flex; align-items:center; flex-wrap:wrap; gap:8px; padding:0 2px; }
+.tool-action, .resource-pick select {
+  min-height:40px; border:1px solid var(--card-line); border-radius:12px;
+  padding:0 12px; background:var(--card); color:var(--ink); font:inherit;
+  font-size:13px; font-weight:650; cursor:pointer;
+}
+.tool-action-primary { background:var(--accent); border-color:var(--accent); color:#fff; }
+.tool-action-media { border-style:dashed; }
+.resource-pick select { max-width:170px; }
+.media-sheet { width:min(680px, calc(100vw - 28px)); max-height:min(88dvh, 820px); overflow:auto; }
+.media-search { display:flex; gap:8px; margin:16px 0 12px; }
+.media-search input { min-width:0; flex:1; border:1px solid var(--card-line); border-radius:12px; padding:12px; background:var(--card); color:var(--ink); font:inherit; font-size:16px; }
+.media-search .as-submit { width:auto; margin:0; padding:0 18px; }
+.media-tabs { display:flex; gap:8px; margin:10px 0; }
+.media-tabs button { min-height:38px; padding:0 16px; border:1px solid var(--card-line); border-radius:999px; background:var(--card); color:var(--ink); }
+.media-tabs button[aria-pressed="true"] { background:var(--accent-soft); border-color:var(--accent); font-weight:700; }
+.media-results { display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:10px; margin-top:12px; }
+.media-result { display:flex; gap:10px; min-width:0; padding:10px; border:1px solid var(--card-line); border-radius:13px; color:var(--ink); text-decoration:none; background:var(--card); }
+.media-result img { width:104px; height:82px; flex:none; object-fit:cover; border-radius:8px; background:var(--line); }
+.media-result-info { display:flex; flex-direction:column; gap:4px; min-width:0; }
+.media-result-info strong { font-size:13px; line-height:1.35; }
+.media-result-info small { color:var(--muted); font-size:11px; line-height:1.35; }
+.media-search-link { display:inline-flex; padding:12px 14px; border-radius:12px; background:var(--accent-soft); color:var(--ink); font-weight:700; text-decoration:none; }
+@media (max-width:560px) {
+  .tool-actions { display:grid; grid-template-columns:1fr 1fr; gap:7px; }
+  .tool-actions { order:2; }
+  .tool-action-primary { grid-column:1 / -1; }
+  .resource-pick { grid-column:1; }
+  #resourceAction { grid-column:2; }
+  [data-view="landing"] .composer-toggle { order:3; }
+  [data-view="landing"] .scheme { order:4; }
+  [data-view="landing"] .fineprint { order:5; }
+  .tool-action, .resource-pick select { width:100%; min-width:0; min-height:44px; padding:0 9px; font-size:12px; }
+  .resource-pick { min-width:0; }
+  .tool-action-media { grid-column:1 / -1; }
+  .media-sheet { width:calc(100vw - 18px); max-height:calc(94dvh - env(safe-area-inset-top)); padding:22px 14px max(18px,env(safe-area-inset-bottom)); }
+  .media-results { grid-template-columns:1fr; }
+}
+
+
+/* Curriculum indicator context in media discovery */
+.media-curriculum { margin:14px 0 10px; padding:13px 14px; border:1px solid var(--card-line); border-radius:13px; background:var(--accent-soft); }
+.media-context-label { display:block; margin-bottom:6px; color:var(--muted); font-size:11px; font-weight:750; text-transform:uppercase; letter-spacing:.05em; }
+#mediaIndicatorText { margin:0; color:var(--ink); font-size:14px; line-height:1.5; font-weight:650; }
+#mediaIndicatorPickerWrap { display:block; margin-top:10px; color:var(--muted); font-size:12px; font-weight:650; }
+#mediaIndicatorPicker { display:block; width:100%; margin-top:5px; min-height:40px; padding:8px; border:1px solid var(--card-line); border-radius:9px; background:var(--card); color:var(--ink); font:inherit; }
+#mediaCurriculumMeta { display:block; margin-top:7px; color:var(--muted); font-size:11px; line-height:1.4; }
+
+
+/* Teaching Studio: one workspace, three clear tasks. */
+.teaching-studio { margin-top:12px; padding:12px; border:1px solid var(--card-line); border-radius:16px; background:var(--card); }
+.studio-heading { display:flex; align-items:center; justify-content:space-between; gap:12px; margin:0 2px 10px; }
+.studio-heading > div, .studio-panel-copy { display:flex; flex-direction:column; gap:2px; min-width:0; }
+.studio-heading strong { font-size:14px; }
+.studio-heading small, .studio-panel-copy small { color:var(--muted); font-size:12px; line-height:1.4; }
+.studio-context { flex:none; color:var(--accent); font-size:10px; font-weight:750; letter-spacing:.04em; text-transform:uppercase; }
+.studio-tabs { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:5px; padding:4px; border-radius:12px; background:var(--bg); }
+.studio-tabs button { display:flex; align-items:center; justify-content:center; gap:7px; min-width:0; min-height:42px; padding:7px 8px; border:1px solid transparent; border-radius:9px; color:var(--muted); font-size:12px; font-weight:650; }
+.studio-tabs button .ico { width:16px; height:16px; }
+.studio-tabs button[aria-selected="true"] { color:var(--text); background:var(--card); border-color:var(--card-line); box-shadow:0 1px 2px rgba(0,0,0,.05); }
+.studio-panel { padding:12px 2px 2px; }
+.studio-panel:not([hidden]) { animation:studio-in .16s ease-out; }
+@keyframes studio-in { from { opacity:.65; transform:translateY(3px); } to { opacity:1; transform:none; } }
+.studio-panel:not(.studio-media-panel) { display:flex; align-items:center; justify-content:space-between; gap:14px; }
+.studio-panel-copy strong { font-size:13px; }
+.studio-panel .tool-action { flex:none; min-height:42px; }
+.studio-resource-row { display:flex; align-items:center; gap:8px; }
+.studio-resource-row select { min-height:42px; max-width:190px; }
+.studio-media-panel .media-curriculum { margin-top:10px; }
+.studio-media-panel .media-results { max-height:360px; overflow:auto; padding:1px; }
+.studio-media-panel .media-result { min-height:96px; }
+@media(max-width:560px) {
+  .teaching-studio { padding:10px; margin-top:10px; }
+  .studio-heading { align-items:flex-start; }
+  .studio-tabs button { flex-direction:column; gap:3px; min-height:54px; font-size:10.5px; line-height:1.2; }
+  .studio-tabs button .ico { width:18px; height:18px; }
+  .studio-panel:not([hidden]):not(.studio-media-panel) { align-items:stretch; flex-direction:column; gap:10px; }
+  .studio-panel .tool-action { width:100%; min-height:46px; }
+  .studio-resource-row { display:grid; grid-template-columns:minmax(0,1fr); }
+  .studio-resource-row select { width:100%; max-width:none; min-height:46px; }
+  .studio-media-panel .media-search { flex-direction:column; }
+  .studio-media-panel .media-search .as-submit { width:100%; min-height:44px; }
+  .studio-media-panel .media-results { grid-template-columns:1fr; max-height:320px; }
+  .studio-context { font-size:9px; }
+}
+
+
+/* Desktop chat stability: keep the transcript as the only scrolling region.
+   Long generated lesson tables must not push the composer or page off-screen. */
+@media (min-width: 561px) {
+  .main { overflow: hidden; }
+  .stage { width: 100%; min-width: 0; }
+  [data-view="chat"] .messages-wrap {
+    flex: 1 1 0;
+    min-width: 0;
+    min-height: 0;
+    overflow-x: hidden;
+    overflow-y: auto;
+    scrollbar-gutter: stable;
+  }
+  .messages {
+    box-sizing: border-box;
+    width: 100%;
+    min-width: 0;
+    padding-inline: clamp(12px, 2vw, 24px);
+  }
+  .msg, .msg .body, .doc { min-width: 0; }
+  .composer-zone {
+    box-sizing: border-box;
+    width: 100%;
+    padding-inline: clamp(12px, 2vw, 24px);
+  }
+}
+
+
+/* Teaching Studio can tuck away once the teacher starts preparing a lesson. */
+.studio-heading-main { display:flex; flex-direction:column; gap:3px; min-width:0; }
+.studio-collapse-toggle {
+  display:inline-flex; align-items:center; gap:7px; width:max-content;
+  padding:0; border:0; background:transparent; color:var(--text); text-align:left;
+}
+.studio-collapse-toggle strong { font-size:14px; }
+.studio-collapse-toggle .studio-chevron {
+  width:16px; height:16px; color:var(--muted); transition:transform .18s ease;
+}
+.teaching-studio.is-collapsed .studio-content { display:none; }
+.teaching-studio.is-collapsed .studio-heading { margin-bottom:0; }
+.teaching-studio.is-collapsed .studio-collapse-toggle .studio-chevron { transform:rotate(-90deg); }
+@media(prefers-reduced-motion:reduce) {
+  .studio-collapse-toggle .studio-chevron { transition:none; }
+}

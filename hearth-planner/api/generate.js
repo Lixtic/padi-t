@@ -3,9 +3,16 @@ const BASE_PROMPT = require('./_prompt');
 const LEVEL_PROMPTS = require('./_prompt_levels');
 const Levels = require('./_levels');
 // JHS uses the main prompt as it is. Other levels add their own profile at the end.
-const systemFor = (cls) => { const l = Levels.levelOfClass(cls); return l && LEVEL_PROMPTS[l.id] ? BASE_PROMPT + '\n\n' + LEVEL_PROMPTS[l.id] : BASE_PROMPT; };
-const { sendJson, clientIp, rateLimit, accessOk, readJson, validate, firstMessage } = require('./_lib');
-const { activeProvider, ADAPTERS } = require('./_providers');
+const systemFor = (cls, mode, resourceType) => {
+  const l = Levels.levelOfClass(cls);
+  let system = l && LEVEL_PROMPTS[l.id] ? BASE_PROMPT + '\n\n' + LEVEL_PROMPTS[l.id] : BASE_PROMPT;
+  if (mode === 'plan') system += '\n\n## Task mode override: lesson plan only\nReturn ONLY Lesson Metadata, Lesson 1, Lesson 2 and the Assessment Rubric. Do not include Study Notes, BECE Practice, worksheets, homework, slides or any other teaching resources. Keep the full lesson plan structure, curriculum alignment, learning objectives, lesson activities, assessment and resources column.';
+  if (mode === 'resources') system += '\n\n## Task mode override: teaching resource only\nReturn ONLY the requested teaching resource. Do not include lesson metadata, lesson-plan tables, lesson phases or an assessment rubric. Use the supplied class, subject, term, week and scheme information to keep the resource aligned to the topic. For worksheets and homework, include learner instructions and an answer key. For BECE practice, include questions and a marking guide. For teaching slides, provide a slide-by-slide outline with concise learner-facing content and teacher notes. For study notes, write clear, complete student notes with examples and key terms.';
+  return system;
+};
+const { sendJson, clientIp, accessOk, readJson, validate, firstMessage } = require('./_lib');
+const Providers = require('./_providers');
+const { activeProvider, ADAPTERS } = Providers;
 const Cache = require('./_cache');
 const Quota = require('./_quota');
 const A = require('./_auth');
@@ -26,7 +33,12 @@ module.exports = async (req, res) => {
   if (!accessOk(req)) return sendJson(res, 401, { error: 'access', message: 'Enter the access code to continue.' });
 
   const limit = parseInt(process.env.RATE_LIMIT || '', 10) || 8;
-  const rl = rateLimit('gen:' + clientIp(req), limit, 10 * 60 * 1000);
+  let rl;
+  try { rl = await Quota.rateLimitShared('gen:' + clientIp(req), limit, 10 * 60 * 1000); }
+  catch (e) {
+    console.error('[generate] shared rate limiter failed', e && e.message);
+    return sendJson(res, 503, { error: 'protection_unavailable', message: 'Generation protection is temporarily unavailable. Please try again shortly.' });
+  }
   if (!rl.ok) {
     return sendJson(res, 429, { error: 'rate', message: 'Too many requests. Try again in ' + Math.ceil(rl.retryAfter / 60) + ' minute(s).' }, { 'Retry-After': String(rl.retryAfter) });
   }
@@ -71,7 +83,7 @@ module.exports = async (req, res) => {
   // 1. A repeat of a recent request is served from the cache, at no token cost and with no quota used.
   //    "fresh" (the Regenerate button) skips the lookup and replaces the stored answer.
   const ck = Cache.keyFor({
-    ver: Cache.version(systemFor(v.params.cls), provider),
+    ver: Cache.version(systemFor(v.params.cls, v.params.mode, v.params.resourceType), provider),
     settingsText: makeFirst(Object.assign({}, v.params, { notes: '' })),
     notes: v.params.notes, thread: v.thread, subject,
   });
@@ -97,8 +109,17 @@ module.exports = async (req, res) => {
   }
 
   // 2. Not cached, so it will cost tokens. Stop here if today's allowance is used up.
-  const inputTokens = Quota.estimateTokens(systemFor(v.params.cls).length + messages.reduce((n, m) => n + m.content.length, 0));
-  const q = await Quota.check(subject, inputTokens, ent && ent.tier === 'pro' && Entitle.cfg().proTokenDaily ? { limit: Entitle.cfg().proTokenDaily } : undefined);
+  const system = systemFor(v.params.cls, v.params.mode, v.params.resourceType);
+  const inputTokens = Quota.estimateTokens(system.length + messages.reduce((n, m) => n + m.content.length, 0));
+  const outputCap = guest ? (Number(Entitle.cfg().previewMaxTokens) || 2200) : Providers.maxOutputTokens();
+  let q;
+  try {
+    q = await Quota.reserve(subject, inputTokens + outputCap,
+      ent && ent.tier === 'pro' && Entitle.cfg().proTokenDaily ? { limit: Entitle.cfg().proTokenDaily } : undefined);
+  } catch (e) {
+    console.error('[generate] quota reservation failed', e && e.message);
+    return sendJson(res, 503, { error: 'protection_unavailable', message: 'The usage protection service is temporarily unavailable. Please try again shortly.' });
+  }
   if (!q.ok) {
     return sendJson(res, 429, { error: 'quota', message: Quota.message(q) }, { 'Retry-After': String(q.retryAfter) });
   }
@@ -106,12 +127,15 @@ module.exports = async (req, res) => {
   const ctrl = new AbortController();
   res.on('close', () => { if (!res.writableEnded) ctrl.abort(); });
 
-  const stream = ADAPTERS[provider]({ system: systemFor(v.params.cls), messages, signal: ctrl.signal, maxTokens: guest ? Entitle.cfg().previewMaxTokens : undefined });
+  const stream = ADAPTERS[provider]({ system, messages, signal: ctrl.signal, maxTokens: guest ? outputCap : undefined });
   const it = stream[Symbol.asyncIterator]();
   let first;
   try {
     first = await it.next();
   } catch (e) {
+    // The provider call has started; conservatively count the prompt in case it was billed
+    // before the connection failed or the client stopped waiting for the first chunk.
+    await Quota.settle(q.reservation, inputTokens).catch((settleError) => console.error('[generate] quota settlement failed', settleError && settleError.message));
     return sendJson(res, e.status || 502, { error: e.code || 'upstream', message: e.message || 'The AI provider failed.' });
   }
 
@@ -145,7 +169,7 @@ module.exports = async (req, res) => {
 
   // 3. Count the tokens used (even if the teacher pressed Stop, they were spent) and keep a complete answer for next time.
   const used = inputTokens + Quota.estimateTokens(outChars);
-  const tasks = [Quota.record(subject, used)];
+  const tasks = [Quota.settle(q.reservation, used)];
   const complete = !failed && !ctrl.signal.aborted && (finish === 'stop' || (guest && wroteText));
   if (complete) tasks.push(Cache.store(ck, full, v.thread.length, used));
   if (guest && wroteText) { Entitle.event('guest_preview'); tasks.push(Entitle.countGuest(ent)); }                     // a taster that spent tokens
