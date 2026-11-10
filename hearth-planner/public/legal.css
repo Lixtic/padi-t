@@ -20,3 +20,10 @@ li { margin: 5px 0; }
 a { color: var(--accent); }
 .card { background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 4px 18px 14px; margin-top: 18px; }
 .lg-foot { margin-top: 36px; padding-top: 16px; border-top: 1px solid var(--line); font-size: 13.5px; color: var(--muted); display: flex; gap: 16px; flex-wrap: wrap; }
+
+.shots { display: grid; grid-template-columns: 1fr; gap: 16px; margin: 14px 0 6px; }
+.shots figure { margin: 0; }
+.shots a { display: block; border: 1px solid var(--line); border-radius: 12px; overflow: hidden; background: #fff; box-shadow: 0 6px 20px rgba(0, 0, 0, .10); }
+.shots img { display: block; width: 100%; height: auto; }
+.shots figcaption { margin-top: 8px; font-size: 13.5px; color: var(--muted); text-align: center; }
+@media (min-width: 900px) { .shots { grid-template-columns: 1fr 1fr; } .lg:has(.shots) { max-width: 980px; } }
