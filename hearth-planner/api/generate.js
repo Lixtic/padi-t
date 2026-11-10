@@ -4,7 +4,7 @@ const LEVEL_PROMPTS = require('./_prompt_levels');
 const Levels = require('./_levels');
 // JHS uses the main prompt as it is. Other levels add their own profile at the end.
 const systemFor = (cls) => { const l = Levels.levelOfClass(cls); return l && LEVEL_PROMPTS[l.id] ? BASE_PROMPT + '\n\n' + LEVEL_PROMPTS[l.id] : BASE_PROMPT; };
-const { sendJson, clientIp, rateLimit, accessOk, readJson, validate, firstMessage } = require('./_lib');
+const { sendJson, clientIp, accessOk, readJson, validate, firstMessage } = require('./_lib');
 const { activeProvider, ADAPTERS } = require('./_providers');
 const Cache = require('./_cache');
 const Quota = require('./_quota');
@@ -26,7 +26,12 @@ module.exports = async (req, res) => {
   if (!accessOk(req)) return sendJson(res, 401, { error: 'access', message: 'Enter the access code to continue.' });
 
   const limit = parseInt(process.env.RATE_LIMIT || '', 10) || 8;
-  const rl = rateLimit('gen:' + clientIp(req), limit, 10 * 60 * 1000);
+  let rl;
+  try { rl = await Quota.rateLimitShared('gen:' + clientIp(req), limit, 10 * 60 * 1000); }
+  catch (e) {
+    console.error('[generate] shared rate limiter failed', e && e.message);
+    return sendJson(res, 503, { error: 'protection_unavailable', message: 'Generation protection is temporarily unavailable. Please try again shortly.' });
+  }
   if (!rl.ok) {
     return sendJson(res, 429, { error: 'rate', message: 'Too many requests. Try again in ' + Math.ceil(rl.retryAfter / 60) + ' minute(s).' }, { 'Retry-After': String(rl.retryAfter) });
   }
@@ -98,7 +103,15 @@ module.exports = async (req, res) => {
 
   // 2. Not cached, so it will cost tokens. Stop here if today's allowance is used up.
   const inputTokens = Quota.estimateTokens(systemFor(v.params.cls).length + messages.reduce((n, m) => n + m.content.length, 0));
-  const q = await Quota.check(subject, inputTokens, ent && ent.tier === 'pro' && Entitle.cfg().proTokenDaily ? { limit: Entitle.cfg().proTokenDaily } : undefined);
+  const outputCap = guest ? (Number(Entitle.cfg().previewMaxTokens) || 2200) : Providers.maxOutputTokens();
+  let q;
+  try {
+    q = await Quota.reserve(subject, inputTokens + outputCap,
+      ent && ent.tier === 'pro' && Entitle.cfg().proTokenDaily ? { limit: Entitle.cfg().proTokenDaily } : undefined);
+  } catch (e) {
+    console.error('[generate] quota reservation failed', e && e.message);
+    return sendJson(res, 503, { error: 'protection_unavailable', message: 'The usage protection service is temporarily unavailable. Please try again shortly.' });
+  }
   if (!q.ok) {
     return sendJson(res, 429, { error: 'quota', message: Quota.message(q) }, { 'Retry-After': String(q.retryAfter) });
   }
@@ -112,6 +125,7 @@ module.exports = async (req, res) => {
   try {
     first = await it.next();
   } catch (e) {
+    await Quota.release(q.reservation).catch((releaseError) => console.error('[generate] quota release failed', releaseError && releaseError.message));
     return sendJson(res, e.status || 502, { error: e.code || 'upstream', message: e.message || 'The AI provider failed.' });
   }
 
@@ -145,7 +159,7 @@ module.exports = async (req, res) => {
 
   // 3. Count the tokens used (even if the teacher pressed Stop, they were spent) and keep a complete answer for next time.
   const used = inputTokens + Quota.estimateTokens(outChars);
-  const tasks = [Quota.record(subject, used)];
+  const tasks = [Quota.settle(q.reservation, used)];
   const complete = !failed && !ctrl.signal.aborted && (finish === 'stop' || (guest && wroteText));
   if (complete) tasks.push(Cache.store(ck, full, v.thread.length, used));
   if (guest && wroteText) { Entitle.event('guest_preview'); tasks.push(Entitle.countGuest(ent)); }                     // a taster that spent tokens
