@@ -1554,6 +1554,7 @@
           h('ul', null, ...e.indicators.map((x) => h('li', { text: x })))));
     }
     schemeStrip.hidden = false;
+    if ($('#studioTabMedia') && $('#studioTabMedia').getAttribute('aria-selected') === 'true') loadMediaContext();
   }
   function syncAlso() {
     const others = levelOf(state.params.cls).classes.filter((c) => c !== state.params.cls);
