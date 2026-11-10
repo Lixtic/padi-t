@@ -1335,7 +1335,7 @@
       button.tabIndex = active ? 0 : -1;
     });
     document.querySelectorAll('[data-studio-panel]').forEach((panel) => { panel.hidden = panel.dataset.studioPanel !== tab; });
-    if (tab === 'media') loadMediaContext();
+    // Keep the media search, chosen indicator, and results intact when switching tabs.
     if (focus) $('#studioTab' + (tab === 'plan' ? 'Plan' : tab === 'resources' ? 'Resources' : 'Media')).focus();
   }
   document.querySelectorAll('[data-studio-tab]').forEach((button) => {
@@ -1355,6 +1355,8 @@
     const scheme = schemeFor(state.params), indicators = scheme && Array.isArray(scheme.indicators) ? scheme.indicators : [];
     mediaIndicator = indicators[Number(mediaIndicatorPicker.value)] || '';
     mediaIndicatorText.textContent = mediaIndicator || 'No indicator selected.';
+    mediaResults.replaceChildren();
+    mediaStatus.textContent = 'Indicator updated. Search to find matching classroom media.';
   });
   document.querySelectorAll('[data-media-type]').forEach((button) => button.addEventListener('click', () => setMediaType(button.dataset.mediaType)));
 
