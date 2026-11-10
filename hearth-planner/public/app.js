@@ -1043,23 +1043,34 @@
     const t0 = performance.now();
     let text = '';
     let err = null;
-    let raf = 0;
+    let raf = 0, paintTimer = 0, lastPaint = 0;
     const paint = () => {
       raf = 0;
+      lastPaint = performance.now();
       const keep = messagesWrap.scrollTop, hold = !state.stick;
       bot.set(text, false);
       if (hold) messagesWrap.scrollTop = keep; else scrollBottom();      // a reader who scrolled up keeps their place
+    };
+    // Rendering the entire growing lesson on every animation frame becomes expensive
+    // for long two-lesson plans. Cap intermediate DOM paints at roughly 8 per second;
+    // the completed response is still rendered immediately below.
+    const schedulePaint = () => {
+      if (raf || paintTimer) return;
+      const wait = Math.max(0, 120 - (performance.now() - lastPaint));
+      if (wait) paintTimer = setTimeout(() => { paintTimer = 0; raf = requestAnimationFrame(paint); }, wait);
+      else raf = requestAnimationFrame(paint);
     };
 
     try {
       const source = state.config.demo ? demoStream(session, ctrl.signal) : apiStream(session, ctrl.signal);
       for await (const piece of source) {
         text += piece;
-        if (!raf) raf = requestAnimationFrame(paint);
+        schedulePaint();
       }
     } catch (e) {
       if (e.name !== 'AbortError') err = e;
     }
+    if (paintTimer) clearTimeout(paintTimer);
     if (raf) cancelAnimationFrame(raf);
     state.streaming = null; syncJump();
     const previewFlag = state.lastPreview === true; state.lastPreview = false;
