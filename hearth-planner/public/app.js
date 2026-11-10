@@ -230,7 +230,7 @@
   const state = {
     sessions: [],
     currentId: null,
-    params: { subject: SUBJECTS[0], cls: 'Basic 8', week: 1, hook: true, size: '31–45', light: false },
+    params: { subject: SUBJECTS[0], cls: 'Basic 8', week: 1, hook: true, size: '31–45', light: false, mode: 'plan', resourceType: 'Study notes' },
     streaming: null,
     stick: true,
     bots: [],
@@ -873,7 +873,7 @@
     const res = await fetch('/api/generate', {
       method: 'POST', signal,
       headers: Object.assign({ 'content-type': 'application/json', 'x-access-code': state.access || '' }, who),
-      body: JSON.stringify({ params: { subject: p.subject, cls: p.cls, week: p.week, term: p.term || termNow(), hook: p.hook !== false, light: p.light === true, studyNotes: p.studyNotes !== false, bece: p.bece !== false, size: p.size || '', notes: session.messages[0].content || '' }, thread: threadOf(session), fresh }),
+      body: JSON.stringify({ params: { subject: p.subject, cls: p.cls, week: p.week, term: p.term || termNow(), hook: p.hook !== false, light: p.light === true, studyNotes: p.studyNotes !== false, bece: p.bece !== false, size: p.size || '', mode: p.mode || 'full', resourceType: p.resourceType || 'Study notes', notes: session.messages[0].content || '' }, thread: threadOf(session), fresh }),
     });
     if (!res.ok) {
       let j = {};
@@ -959,6 +959,8 @@
       const p = Object.assign({}, state.params);
       delete p.also;
       p.term = termNow();
+      p.mode = p.mode || 'plan';
+      p.resourceType = p.resourceType || 'Study notes';
       if (fromQueue !== true) {                     // "Also plan for": the other classes follow, one after another
         planQueue = [];
         const skipped = [];
@@ -971,7 +973,7 @@
         if (skipped.length) toast('Skipped ' + skipped.join(', ') + ': that week is an examination week.');
       }
       s.params = p;
-      s.title = planTitle(p);
+      s.title = planTitle(p) + (p.mode === 'resources' ? ' – ' + p.resourceType : p.mode === 'plan' ? ' – Lesson plan' : '');
       s.messages.push({ role: 'user', content: text });
     } else {                                        // follow-up
       if (!text) return;
@@ -1238,6 +1240,82 @@
     }
   });
   composer.addEventListener('submit', (e) => { e.preventDefault(); if (!sendBtn.disabled || state.streaming) submit(); });
+
+  // Each tool starts a separate conversation, while reusing the selected curriculum context.
+  const planAction = $('#planAction'), resourceAction = $('#resourceAction'), resourceTypeEl = $('#resourceType');
+  const mediaSheet = $('#mediaSheet'), mediaForm = $('#mediaSearchForm'), mediaQuery = $('#mediaQuery');
+  const mediaStatus = $('#mediaStatus'), mediaResults = $('#mediaResults');
+  let mediaType = 'image';
+  function startIndependentTool(mode, resourceType) {
+    if (state.streaming) { toast('Wait for the current generation to finish.'); return; }
+    state.params.mode = mode;
+    state.params.resourceType = resourceType || 'Study notes';
+    const fresh = makeSession();
+    state.sessions.unshift(fresh);
+    promptEl.value = '';
+    showSession(fresh.id);
+    submit();
+  }
+  if (planAction) planAction.addEventListener('click', () => startIndependentTool('plan'));
+  if (resourceAction) resourceAction.addEventListener('click', () => startIndependentTool('resources', resourceTypeEl.value));
+
+  function setMediaType(type) {
+    mediaType = type;
+    mediaSheet.querySelectorAll('[data-media-type]').forEach((button) => button.setAttribute('aria-pressed', String(button.dataset.mediaType === type)));
+    mediaResults.replaceChildren();
+    mediaStatus.textContent = 'Search for ' + (type === 'video' ? 'educational videos' : 'images') + ' on your topic.';
+  }
+  async function searchMedia() {
+    const query = mediaQuery.value.trim();
+    if (query.length < 2) { mediaStatus.textContent = 'Enter a topic with at least two characters.'; return; }
+    mediaResults.replaceChildren();
+    mediaStatus.textContent = 'Searching…';
+    $('#mediaSearchBtn').disabled = true;
+    try {
+      const response = await fetch('/api/media-search?q=' + encodeURIComponent(query) + '&type=' + mediaType, { headers: { Accept: 'application/json' } });
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.message || 'Search failed.');
+      if (mediaType === 'video' && data.searchUrl && !data.results.length) {
+        mediaResults.append(h('a', { class: 'media-search-link', href: data.searchUrl, target: '_blank', rel: 'noopener noreferrer' }, 'Open educational video results on YouTube'));
+        mediaStatus.textContent = 'No video API key is configured, so you can browse the live YouTube results directly.';
+        return;
+      }
+      if (!data.results.length) {
+        mediaStatus.textContent = 'No results found. Try a shorter or different topic.';
+        return;
+      }
+      data.results.forEach((item) => {
+        const link = h('a', { class: 'media-result', href: item.url, target: '_blank', rel: 'noopener noreferrer' });
+        if (item.thumbnail && /^https:\/\//.test(item.thumbnail)) link.append(h('img', { src: item.thumbnail, alt: '', loading: 'lazy' }));
+        const info = h('span', { class: 'media-result-info' },
+          h('strong', { text: item.title }),
+          item.channel ? h('small', { text: item.channel }) : null,
+          item.author ? h('small', { text: 'By ' + item.author }) : null,
+          item.license ? h('small', { text: 'Licence: ' + item.license }) : null,
+          item.description ? h('small', { text: item.description.slice(0, 180) }) : null);
+        link.append(info);
+        mediaResults.append(link);
+      });
+      if (mediaType === 'video' && data.searchUrl) mediaResults.append(h('a', { class: 'media-search-link', href: data.searchUrl, target: '_blank', rel: 'noopener noreferrer' }, 'See more results on YouTube'));
+      mediaStatus.textContent = data.results.length + ' result' + (data.results.length === 1 ? '' : 's') + ' found. Check each source and licence before using it in class.';
+    } catch (error) {
+      mediaStatus.textContent = error.message || 'Could not search right now.';
+    } finally { $('#mediaSearchBtn').disabled = false; }
+  }
+  if (mediaAction) mediaAction.addEventListener('click', () => {
+    const active = current();
+    const topic = promptEl.value.trim() || (active && active.messages[0] && active.messages[0].content) || '';
+    mediaQuery.value = topic || (state.params.subject + ' ' + state.params.cls);
+    mediaResults.replaceChildren();
+    setMediaType('image');
+    if (mediaSheet && mediaSheet.showModal) mediaSheet.showModal();
+    mediaQuery.focus();
+  });
+  if (mediaForm) mediaForm.addEventListener('submit', (event) => { event.preventDefault(); searchMedia(); });
+  if (mediaSheet) {
+    $('#mediaClose').addEventListener('click', () => mediaSheet.close());
+    mediaSheet.querySelectorAll('[data-media-type]').forEach((button) => button.addEventListener('click', () => setMediaType(button.dataset.mediaType)));
+  }
 
   /* ───────── Dropdowns ───────── */
   const dropdowns = [];
@@ -1936,7 +2014,7 @@
     const saved = store.load();
     state.sessions = saved && Array.isArray(saved.sessions) ? saved.sessions.filter((s) => s && Array.isArray(s.messages)) : [];
     if (saved && saved.params && CLASSES.includes(saved.params.cls) && subjectsOf(saved.params.cls).includes(saved.params.subject) && WEEKS.includes(saved.params.week)) {
-      state.params = { subject: saved.params.subject, cls: saved.params.cls, week: saved.params.week, hook: saved.params.hook !== false, size: SIZES.includes(saved.params.size) ? saved.params.size : state.params.size, light: saved.params.light === true, studyNotes: saved.params.studyNotes !== false, bece: saved.params.bece !== false };
+      state.params = { subject: saved.params.subject, cls: saved.params.cls, week: saved.params.week, hook: saved.params.hook !== false, size: SIZES.includes(saved.params.size) ? saved.params.size : state.params.size, light: saved.params.light === true, studyNotes: saved.params.studyNotes !== false, bece: saved.params.bece !== false, mode: ['plan', 'resources', 'full'].includes(saved.params.mode) ? saved.params.mode : 'plan', resourceType: ['Study notes', 'Learner worksheet', 'Homework pack', 'BECE practice', 'Teaching slides'].includes(saved.params.resourceType) ? saved.params.resourceType : 'Study notes' };
     }
     try { state.access = localStorage.getItem(ACCESS_KEY) || ''; accessInput.value = state.access; } catch (e) { /* ignore */ }
     if (window.GuidedProfile) {
