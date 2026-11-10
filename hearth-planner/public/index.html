@@ -378,6 +378,15 @@
         <input id="accessInput" type="password" autocomplete="off" placeholder="Enter code" maxlength="80">
       </div>
 
+      <button type="button" class="plan-row" id="planRow" hidden>
+        <span class="plan-text"><strong id="planRowTitle"></strong><small id="planRowSub"></small></span>
+        <span class="plan-cta" id="planRowCta"></span>
+      </button>
+
+      <button type="button" class="disc" id="setToggle" data-disc="setPanel" aria-expanded="false" aria-controls="setPanel">
+        <svg class="ico"><use href="#i-sliders"/></svg><span>Settings</span><svg class="ico disc-chev"><use href="#i-chevron"/></svg>
+      </button>
+      <div class="set-panel" id="setPanel" hidden>
       <div class="acct-card" id="accountRow" hidden>
         <div id="acctOut">
           <button type="button" class="acct-open" id="acctOpen">
@@ -395,11 +404,6 @@
         </div>
         <p class="acct-msg" id="acctMsg" role="status" aria-live="polite"></p>
       </div>
-
-      <button type="button" class="plan-row" id="planRow" hidden>
-        <span class="plan-text"><strong id="planRowTitle"></strong><small id="planRowSub"></small></span>
-        <span class="plan-cta" id="planRowCta"></span>
-      </button>
 
       <div class="foot-group" aria-label="Your tools">
         <button type="button" class="foot-link" id="profileBtn">
@@ -422,10 +426,6 @@
         </button>
       </div>
 
-      <button type="button" class="disc" id="setToggle" data-disc="setPanel" aria-expanded="false" aria-controls="setPanel">
-        <svg class="ico"><use href="#i-sliders"/></svg><span>Settings</span><svg class="ico disc-chev"><use href="#i-chevron"/></svg>
-      </button>
-      <div class="set-panel" id="setPanel" hidden>
         <div class="set-row">
           <span class="theme-label" id="themeLabel">Dark mode</span>
           <button type="button" class="switch" id="themeToggle" role="switch" aria-checked="false" aria-labelledby="themeLabel">
