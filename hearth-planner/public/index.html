@@ -329,8 +329,16 @@
   <section>
     <h2 id="mediaTitle">Find teaching media</h2>
     <p class="as-sub">Search for classroom-friendly images and videos related to your topic.</p>
+    <div class="media-curriculum" id="mediaCurriculum">
+      <span class="media-context-label">Selected curriculum indicator</span>
+      <p id="mediaIndicatorText">Choose a class, subject and week to load its indicator.</p>
+      <label id="mediaIndicatorPickerWrap" hidden>Indicator being taught
+        <select id="mediaIndicatorPicker"></select>
+      </label>
+      <small id="mediaCurriculumMeta"></small>
+    </div>
     <form id="mediaSearchForm" class="media-search">
-      <input id="mediaQuery" type="search" maxlength="120" placeholder="Enter a teaching topic…" aria-label="Teaching topic" required>
+      <input id="mediaQuery" type="search" maxlength="120" placeholder="Refine the indicator search…" aria-label="Refine media search" required>
       <button type="submit" class="as-submit" id="mediaSearchBtn">Search</button>
     </form>
     <div class="media-tabs" role="group" aria-label="Media type">
