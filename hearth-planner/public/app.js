@@ -1244,9 +1244,9 @@
   });
   composer.addEventListener('submit', (e) => { e.preventDefault(); if (!sendBtn.disabled || state.streaming) submit(); });
 
-  // Each tool starts a separate conversation, while reusing the selected curriculum context.
+  // Teaching Studio keeps all three tools in one workspace and reuses the selected curriculum context.
   const planAction = $('#planAction'), resourceAction = $('#resourceAction'), resourceTypeEl = $('#resourceType');
-  const mediaSheet = $('#mediaSheet'), mediaForm = $('#mediaSearchForm'), mediaQuery = $('#mediaQuery');
+  const mediaForm = $('#mediaSearchForm'), mediaQuery = $('#mediaQuery');
   const mediaStatus = $('#mediaStatus'), mediaResults = $('#mediaResults');
   const mediaIndicatorText = $('#mediaIndicatorText'), mediaIndicatorPicker = $('#mediaIndicatorPicker');
   const mediaIndicatorPickerWrap = $('#mediaIndicatorPickerWrap'), mediaCurriculumMeta = $('#mediaCurriculumMeta');
@@ -1312,9 +1312,8 @@
       mediaStatus.textContent = error.message || 'Could not search right now.';
     } finally { $('#mediaSearchBtn').disabled = false; }
   }
-  if (mediaAction) mediaAction.addEventListener('click', () => {
-    const p = state.params;
-    const scheme = schemeFor(p);
+  function loadMediaContext() {
+    const p = state.params, scheme = schemeFor(p);
     mediaContext = { subject: p.subject, cls: p.cls, strand: scheme && scheme.strand || '', substrand: scheme && scheme.substrand || '', standard: scheme && scheme.standard || '' };
     const indicators = scheme && Array.isArray(scheme.indicators) ? scheme.indicators.filter(Boolean) : [];
     mediaIndicator = indicators[0] || '';
@@ -1323,22 +1322,41 @@
     mediaIndicatorPickerWrap.hidden = indicators.length < 2;
     mediaCurriculumMeta.textContent = [p.subject, p.cls, 'Term ' + (p.term || termNow()), 'Week ' + p.week, mediaContext.strand, mediaContext.substrand].filter(Boolean).join(' · ');
     mediaQuery.value = '';
-    mediaQuery.placeholder = mediaIndicator ? 'Optional: add a detail to narrow the search…' : 'Enter a topic or indicator to search…';
+    mediaQuery.placeholder = mediaIndicator ? 'Add a detail to refine the search…' : 'Enter a topic or indicator to search…';
     mediaResults.replaceChildren();
     setMediaType('image');
-    if (mediaSheet && mediaSheet.showModal) mediaSheet.showModal();
-    mediaQuery.focus();
+  }
+  function setStudioTab(tab, focus) {
+    const allowed = ['plan', 'resources', 'media'];
+    if (!allowed.includes(tab)) tab = 'plan';
+    document.querySelectorAll('[data-studio-tab]').forEach((button) => {
+      const active = button.dataset.studioTab === tab;
+      button.setAttribute('aria-selected', String(active));
+      button.tabIndex = active ? 0 : -1;
+    });
+    document.querySelectorAll('[data-studio-panel]').forEach((panel) => { panel.hidden = panel.dataset.studioPanel !== tab; });
+    if (tab === 'media') loadMediaContext();
+    if (focus) $('#studioTab' + (tab === 'plan' ? 'Plan' : tab === 'resources' ? 'Resources' : 'Media')).focus();
+  }
+  document.querySelectorAll('[data-studio-tab]').forEach((button) => {
+    button.addEventListener('click', () => setStudioTab(button.dataset.studioTab));
+    button.addEventListener('keydown', (event) => {
+      if (!['ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(event.key)) return;
+      event.preventDefault();
+      const tabs = [...document.querySelectorAll('[data-studio-tab]')];
+      const i = tabs.indexOf(button);
+      const next = event.key === 'Home' ? 0 : event.key === 'End' ? tabs.length - 1 : (i + (event.key === 'ArrowRight' ? 1 : -1) + tabs.length) % tabs.length;
+      setStudioTab(tabs[next].dataset.studioTab, true);
+    });
   });
+  loadMediaContext();
   if (mediaForm) mediaForm.addEventListener('submit', (event) => { event.preventDefault(); searchMedia(); });
   if (mediaIndicatorPicker) mediaIndicatorPicker.addEventListener('change', () => {
     const scheme = schemeFor(state.params), indicators = scheme && Array.isArray(scheme.indicators) ? scheme.indicators : [];
     mediaIndicator = indicators[Number(mediaIndicatorPicker.value)] || '';
     mediaIndicatorText.textContent = mediaIndicator || 'No indicator selected.';
   });
-  if (mediaSheet) {
-    $('#mediaClose').addEventListener('click', () => mediaSheet.close());
-    mediaSheet.querySelectorAll('[data-media-type]').forEach((button) => button.addEventListener('click', () => setMediaType(button.dataset.mediaType)));
-  }
+  document.querySelectorAll('[data-media-type]').forEach((button) => button.addEventListener('click', () => setMediaType(button.dataset.mediaType)));
 
   /* ───────── Dropdowns ───────── */
   const dropdowns = [];
