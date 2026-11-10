@@ -1219,3 +1219,12 @@ main[data-view="chat"] .notice-bar { display: none; }
   .media-sheet { width:calc(100vw - 18px); max-height:calc(94dvh - env(safe-area-inset-top)); padding:22px 14px max(18px,env(safe-area-inset-bottom)); }
   .media-results { grid-template-columns:1fr; }
 }
+
+
+/* Curriculum indicator context in media discovery */
+.media-curriculum { margin:14px 0 10px; padding:13px 14px; border:1px solid var(--card-line); border-radius:13px; background:var(--accent-soft); }
+.media-context-label { display:block; margin-bottom:6px; color:var(--muted); font-size:11px; font-weight:750; text-transform:uppercase; letter-spacing:.05em; }
+#mediaIndicatorText { margin:0; color:var(--ink); font-size:14px; line-height:1.5; font-weight:650; }
+#mediaIndicatorPickerWrap { display:block; margin-top:10px; color:var(--muted); font-size:12px; font-weight:650; }
+#mediaIndicatorPicker { display:block; width:100%; margin-top:5px; min-height:40px; padding:8px; border:1px solid var(--card-line); border-radius:9px; background:var(--card); color:var(--ink); font:inherit; }
+#mediaCurriculumMeta { display:block; margin-top:7px; color:var(--muted); font-size:11px; line-height:1.4; }
