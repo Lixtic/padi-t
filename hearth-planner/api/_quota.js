@@ -84,11 +84,11 @@ async function reserve(subject, tokens, opts) {
      ),
      inserted AS (
        INSERT INTO quota_reservations (id, subject, day, tokens, expires_at, status)
-       SELECT $3 || ':u', $1, $2, $4, $6, 'active' FROM totals
+       SELECT $3 || ':u', $1, $2, $4::bigint, $6::bigint, 'active' FROM totals
        WHERE ($7::bigint = 0 OR user_used + user_reserved + $4 <= $7)
          AND ($8::bigint = 0 OR global_used + global_reserved + $4 <= $8)
        UNION ALL
-       SELECT $3 || ':g', 'global', $2, $4, $6, 'active' FROM totals
+       SELECT $3 || ':g', 'global', $2, $4::bigint, $6::bigint, 'active' FROM totals
        WHERE ($7::bigint = 0 OR user_used + user_reserved + $4 <= $7)
          AND ($8::bigint = 0 OR global_used + global_reserved + $4 <= $8)
        RETURNING id
