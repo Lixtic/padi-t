@@ -308,6 +308,7 @@
   const lsSet = (k, v) => { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) { /* ignore */ } };
   let sbView = lsGet(VIEW_KEY, 'class') === 'recent' ? 'recent' : 'class';
   let closedFolders = new Set(lsGet(CLOSED_KEY, []));
+  let startPlanFor = () => {};                          // set once the menus exist: opens a new plan for a class
 
   function sessionRow(s, inFolder) {
     const st = statusOf(s);
@@ -345,8 +346,10 @@
         const body = h('ul', { class: 'f-body', id: 'fold-' + cls.replace(/\W+/g, '-') }, ...list.map((s) => sessionRow(s, true)));
         body.hidden = !open;
         nodes.push(h('li', { class: 'f-item' },
-          h('button', { type: 'button', class: 'f-head', 'data-folder': cls, 'aria-expanded': String(open), 'aria-controls': body.id },
-            icon('chevron'), h('span', { class: 'f-name', text: cls }), h('span', { class: 'f-count', text: String(list.length) })),
+          h('div', { class: 'f-row' },
+            h('button', { type: 'button', class: 'f-head', 'data-folder': cls, 'aria-expanded': String(open), 'aria-controls': body.id },
+              icon('chevron'), h('span', { class: 'f-name', text: cls }), h('span', { class: 'f-count', text: String(list.length) })),
+            h('button', { type: 'button', class: 'f-add', 'data-newfor': cls, 'aria-label': 'New plan for ' + cls, title: 'New plan for ' + cls }, icon('plus'))),
           body));
       });
       listEl.replaceChildren(...nodes);
@@ -775,6 +778,18 @@
       dlg.showModal();
     });
   }
+  async function makeFile(fmt, title, body) {
+    if (fmt === 'pdf') return makePdf(title, body, 'landscape');
+    await loadDocxLib();
+    const who = profile(), GP = window.GuidedPlans;
+    return window.SchoolPadiDocx.toFile(window.docx, title, body, { portrait: false, teacher: who.teacher, school: who.school, footer: GP ? GP.footerText() : '' });
+  }
+  async function downloadBody(body, title, fmt) {
+    if (!/\|/.test(body)) { toast('There are no lesson plan tables to download yet.'); return; }
+    toast('Preparing ' + (fmt === 'pdf' ? 'PDF' : 'Word file') + '…');
+    try { saveBlob(await makeFile(fmt, title, body), title, fmt === 'pdf' ? 'pdf' : 'docx'); toast('Downloaded ' + fileStem(title) + '.' + (fmt === 'pdf' ? 'pdf' : 'docx')); }
+    catch (e) { toast(navigator.onLine === false ? 'The PDF tools need a connection the first time. Try again when you are online.' : 'Could not make the file. Please try again.'); }
+  }
   async function shareBody(body, title, btn, fmt) {
     if (!/\|/.test(body)) { toast('There is no lesson plan table to share yet.'); return; }
     if (!window.SchoolPadiArtifact && !fmt) { fmt = await askShareFormat(); if (!fmt) return; }
@@ -783,13 +798,7 @@
     try {
       if (window.SchoolPadiArtifact) { const name = await window.SchoolPadiArtifact.save(title, body, 'landscape', profile()); toast('Saved ' + name); return; }
       const isPdf = fmt === 'pdf';
-      let blob;
-      if (isPdf) blob = await makePdf(title, body, 'landscape');
-      else {
-        await loadDocxLib();
-        const who = profile(), GP = window.GuidedPlans;
-        blob = await window.SchoolPadiDocx.toFile(window.docx, title, body, { portrait: false, teacher: who.teacher, school: who.school, footer: GP ? GP.footerText() : '' });
-      }
+      const blob = await makeFile(fmt, title, body);
       const ext = isPdf ? 'pdf' : 'docx', name = fileStem(title) + '.' + ext;
       const file = new File([blob], name, { type: isPdf ? 'application/pdf' : 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' });
       if (navigator.canShare && navigator.canShare({ files: [file] })) {
@@ -1153,9 +1162,9 @@
     if (r && r.timer) clearTimeout(r.timer);
     if (stopped && state.streaming) stopStreaming();
     if (r && !stopped && r.done) {
-      termBarShow('All ' + r.done + ' plans are ready: ' + r.subject + ', ' + r.cls + ', Term ' + r.term + '.', [['Download term pack', () => termPack(r), true], ['Close', () => termBarShow('')]]);
+      termBarShow('All ' + r.done + ' plans are ready: ' + r.subject + ', ' + r.cls + ', Term ' + r.term + '.', termPackButtons(r));
     } else if (r && stopped && r.done) {
-      termBarShow(r.done + ' of ' + r.total + ' plans were written before you stopped.', [['Download term pack', () => termPack(r), true], ['Close', () => termBarShow('')]]);
+      termBarShow(r.done + ' of ' + r.total + ' plans were written before you stopped.', termPackButtons(r));
     } else termBarShow('');
   }
   function termPaused(reason) {
@@ -1165,10 +1174,15 @@
     termProgress();
   }
   function termResume() { if (!termRun) return; termRun.paused = ''; termProgress(); nextInQueue(); }
-  function termPack(r) {                               // one Word file with every plan's lesson tables and rubric
-    const body = r.ids.map((id) => state.sessions.find((x) => x.id === id)).filter((x) => x && x.messages[1])
+  /* One file with every written week of a term: the lesson tables and rubric of each plan, in week order. Works from the saved plans, so it also serves a term planned earlier. */
+  function termPackBody(r) {
+    const term = r.term;
+    return state.sessions.filter((x) => x.params && x.params.cls === r.cls && x.params.subject === r.subject && (x.params.term || term) === term && x.messages.length >= 2 && x.messages[1] && !x.messages[1].preview)
       .sort((a, b) => a.params.week - b.params.week).map((x) => planTables(splitElic(x.messages[1].content).body)).filter(Boolean).join('\n\n');
-    shareBody(body, r.subject + ' – ' + r.cls + ' – Term ' + r.term + ' lesson plans', null);
+  }
+  const termPackTitle = (r) => r.subject + ' – ' + r.cls + ' – Term ' + r.term + ' lesson plans';
+  function termPackButtons(r) {
+    return [['Download PDF', () => downloadBody(termPackBody(r), termPackTitle(r), 'pdf'), true], ['Word', () => downloadBody(termPackBody(r), termPackTitle(r), 'docx')], ['Share', () => shareBody(termPackBody(r), termPackTitle(r), null)], ['Close', () => termBarShow('')]];
   }
   function startTermRun() {
     const GP = window.GuidedPlans, tier = GP && GP.tier();
@@ -1178,7 +1192,11 @@
     const p = state.params, term = termNow();
     if (!(window.SchoolPadiSchemes && window.SchoolPadiSchemes.has(p.subject, p.cls, term))) { toast('Term planning needs a scheme of learning for ' + p.subject + ', ' + p.cls + ', Term ' + term + ', and none is loaded yet.'); return; }
     const weeks = termWeeks();
-    if (!weeks.length) { toast('Every week from Week ' + p.week + ' is already planned. Pick an earlier week to fill gaps.'); return; }
+    if (!weeks.length) {
+      const r = { cls: p.cls, subject: p.subject, term };
+      if (termPackBody(r)) { termBarShow('Every week from Week ' + p.week + ' is already planned. Get the whole term as one file:', termPackButtons(r)); setNav(false); return; }
+      toast('Every week from Week ' + p.week + ' is already planned. Pick an earlier week to fill gaps.'); return;
+    }
     const dlg = $('#termSheet');
     $('#tsText').textContent = p.subject + ' · ' + p.cls + ' · Term ' + term + '. GuidEd will write ' + (weeks.length === 1 ? 'Week ' + weeks[0] : 'Weeks ' + weeks[0] + ' to ' + weeks[weeks.length - 1] + ' (' + weeks.length + ' plans)') + ', one after another. Weeks you have already planned are skipped.';
     $('#tsTime').textContent = 'This takes about ' + Math.max(2, Math.round(weeks.length * 1.5)) + ' minutes. Keep this page open; GuidEd pauses by itself if it needs to wait and lets you resume.';
@@ -1480,6 +1498,8 @@
   brand.addEventListener('click', (e) => { e.preventDefault(); newSession(); });
 
   listEl.addEventListener('click', (e) => {
+    const add = e.target.closest('[data-newfor]');
+    if (add) { startPlanFor(add.dataset.newfor); return; }
     const fold = e.target.closest('[data-folder]');
     if (fold) {
       const cls = fold.dataset.folder;
@@ -1952,16 +1972,23 @@
       const all = subjectsOf(state.params.cls), mine = mySubjectsOf(state.params.cls), rest = all.filter((x) => !mine.includes(x));
       return mine.length && rest.length ? [{ header: 'My subjects' }, ...mine.map((x) => ({ id: x, label: x })), { header: 'Other subjects' }, ...rest.map((x) => ({ id: x, label: x }))] : all.map((x) => ({ id: x, label: x }));
     }, get: () => state.params.subject, set: (v) => { state.params.subject = v; continueWeek(); store.save(); syncPills(); }, label: (x) => x });
+    const chooseClass = (v) => {
+      state.params.cls = v;
+      if (!subjectsOf(v).includes(state.params.subject)) state.params.subject = mySubjectsOf(v)[0] || subjectsOf(v)[0];   // a subject that is not taught at this level falls back to the teacher's first one
+      continueWeek(); ddSubject.build(); syncPills(); store.save();
+    };
     makeDropdown($('#ddClass'), { name: 'Class', items: () => {
       const mine = window.GuidedProfile ? window.GuidedProfile.myClasses() : [];
       const rest = (l) => l.classes.filter((x) => !mine.includes(x));
       return (mine.length ? [{ header: 'My classes' }, ...mine.map((x) => ({ id: x, label: x }))] : [])
         .concat(GL.LEVELS.flatMap((l) => rest(l).length ? [{ header: mine.length ? 'Other ' + l.name : l.name }, ...rest(l).map((x) => ({ id: x, label: x }))] : []));
-    }, get: () => state.params.cls, set: (v) => {
-      state.params.cls = v;
-      if (!subjectsOf(v).includes(state.params.subject)) state.params.subject = mySubjectsOf(v)[0] || subjectsOf(v)[0];   // a subject that is not taught at this level falls back to the teacher's first one
-      continueWeek(); ddSubject.build(); syncPills(); store.save();
-    }, label: (x) => x });
+    }, get: () => state.params.cls, set: chooseClass, label: (x) => x });
+    startPlanFor = (cls) => {                           // the + on a class folder: a fresh plan with that class already chosen
+      newSession();
+      if (state.streaming) return;
+      chooseClass(cls);
+      if (!coarse) promptEl.focus();
+    };
     const ddTerm = makeDropdown($('#ddTerm'), { name: 'Term', items: () => [1, 2, 3].map((x) => ({ id: x, label: 'Term ' + x + (x === termAuto() ? ' (now)' : '') })), get: () => termNow(), set: (v) => { termSet(v); continueWeek(); syncPills(); }, label: (x) => 'Term ' + x });
     window.addEventListener('guided:account', () => { ddTerm.build(); syncScheme(); });
     makeDropdown($('#ddWeek'), { name: 'Week', items: () => WEEKS.map((x) => { const we = weekEnd(termNow(), x); return { id: x, label: 'Week ' + x, sub: we ? (we.afterClose ? 'date to be confirmed' : we.short + (x === calendarWeek() ? ' · this week' : '')) : '' }; }), get: () => state.params.week, set: (v) => { state.params.week = v; store.save(); syncScheme(); }, label: (x) => 'Week ' + x });
