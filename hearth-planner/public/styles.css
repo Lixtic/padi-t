@@ -108,7 +108,7 @@ a { color: inherit; }
 .logo { width: 28px; height: 28px; flex: none; color: var(--accent); }
 
 /* ───────── Layout ───────── */
-.app { display: flex; height: 100vh; height: 100dvh; height: var(--app-h, 100dvh); overflow: hidden; }
+.app { position: fixed; inset-inline: 0; top: var(--app-top, 0px); display: flex; height: var(--app-h, 100dvh); overflow: hidden; }
 
 .sidebar {
   width: var(--sb-w); flex: none;
