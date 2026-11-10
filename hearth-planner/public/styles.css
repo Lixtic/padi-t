@@ -108,7 +108,7 @@ a { color: inherit; }
 .logo { width: 28px; height: 28px; flex: none; color: var(--accent); }
 
 /* ───────── Layout ───────── */
-.app { display: flex; height: 100vh; height: 100dvh; height: var(--app-h, 100dvh); overflow: hidden; }
+.app { position: fixed; inset-inline: 0; top: var(--app-top, 0px); display: flex; height: var(--app-h, 100dvh); overflow: hidden; }
 
 .sidebar {
   width: var(--sb-w); flex: none;
@@ -1044,4 +1044,137 @@ main[data-view="chat"] .notice-bar { display: none; }
   .doc-tools > .tool { justify-content: center; }
   .doc-tools > .tool[hidden] { display: none; }
   .tool-group { grid-column: 1 / -1; }
+}
+
+
+/* ───────── Mobile-first workspace refinement ─────────
+   Keep the existing GuidEd identity and app behaviour.
+   These overrides make the planning flow easier to use one-handed. */
+@media (max-width: 560px) {
+  html, body { min-height: 100%; }
+  body { overscroll-behavior: none; }
+
+  .main { min-height: 0; }
+  .topbar {
+    position: relative;
+    z-index: 10;
+    height: 56px;
+    min-height: 56px;
+    padding: max(4px, env(safe-area-inset-top)) 10px 4px;
+    gap: 6px;
+    background: var(--bg);
+    border-bottom: 1px solid color-mix(in srgb, var(--line) 65%, transparent);
+  }
+  .tb-title { font-size: 14px; }
+  .topbar .chip { padding: 4px 8px; font-size: 11.5px; gap: 6px; }
+  .topbar .chip .dot { width: 7px; height: 7px; }
+  .topbar .icon-btn { width: 44px; height: 44px; }
+  .topbar .plan-badge { min-height: 30px; }
+
+  .stage {
+    gap: 0;
+    padding: 0 16px;
+  }
+  [data-view="landing"] .grow { flex-basis: 4px; }
+  [data-view="landing"] .hero {
+    text-align: left;
+    margin: 10px 0 18px;
+    padding: 0 2px;
+  }
+  .hero-mark { width: 30px; height: 30px; margin: 0 0 10px; }
+  .hero h1 { max-width: 14ch; font-size: clamp(27px, 7.5vw, 32px); line-height: 1.12; letter-spacing: -.025em; }
+  .hero p { max-width: 38ch; margin-top: 9px; font-size: 14px; line-height: 1.55; }
+
+  /* Put the class/subject/week choices before the optional prompt. */
+  [data-view="landing"] .composer-zone {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 0 0 max(14px, env(safe-area-inset-bottom));
+  }
+  [data-view="landing"] .context-pills { order: 0; margin: 0; gap: 8px; }
+  [data-view="landing"] .composer { order: 1; }
+  [data-view="landing"] .composer-toggle { order: 2; }
+  [data-view="landing"] .scheme { order: 3; margin-top: 0; }
+  [data-view="landing"] .fineprint { order: 4; margin: 0 2px; font-size: 11.5px; }
+
+  .pill-main { gap: 7px; }
+  .pill-main .dd .pill {
+    min-height: 46px;
+    height: auto;
+    padding: 0 12px;
+    border-radius: 13px;
+    justify-content: flex-start;
+    font-size: 14px;
+    box-shadow: 0 1px 2px rgba(27, 54, 93, .04);
+  }
+  .pill-main .dd .pill .chev { margin-left: auto; }
+  .opt-toggle {
+    min-height: 46px;
+    padding: 0 10px;
+    border: 1px solid var(--card-line);
+    border-radius: 13px;
+    background: var(--card);
+  }
+  .opt-panel { padding: 4px 12px; }
+  .opt-panel .dd .pill { min-height: 52px; }
+  .opt-row { min-height: 58px; }
+
+  [data-view="landing"] .composer {
+    padding: 12px;
+    border-radius: 17px;
+    box-shadow: 0 2px 10px rgba(27, 54, 93, .06);
+  }
+  [data-view="landing"] .composer textarea {
+    min-height: 42px;
+    max-height: 120px;
+    padding: 2px 2px 6px;
+    font-size: 16px;
+  }
+  [data-view="landing"] .composer-row { margin-top: 6px; }
+  [data-view="landing"] .send { width: 44px; height: 44px; }
+  [data-view="landing"] .hint { font-size: 11.5px; }
+
+  /* Give generated plans and the editor more usable width. */
+  [data-view="chat"] .stage { padding-left: 10px; padding-right: 10px; }
+  [data-view="chat"] .messages-wrap { padding-bottom: 4px; }
+  [data-view="chat"] .messages { padding: 8px 2px 18px; }
+  [data-view="chat"] .composer-zone {
+    padding: 6px 0 max(10px, env(safe-area-inset-bottom));
+  }
+  [data-view="chat"] .composer { border-radius: 17px; }
+  .doc-body { padding: 4px 10px 18px; overflow-wrap: anywhere; }
+  .doc-bar { gap: 6px; padding: 8px 10px; }
+  .doc-bar .tool { min-height: 42px; }
+  .edit-box { padding: 12px 10px 16px; }
+  .doc-edit { min-height: 48vh; max-height: 62vh; font-size: 13px; }
+
+  /* Sheets respect notches, home indicators and the on-screen keyboard. */
+  .acct-sheet {
+    max-height: calc(94dvh - env(safe-area-inset-top));
+    padding-left: 16px;
+    padding-right: 16px;
+    padding-bottom: max(22px, env(safe-area-inset-bottom));
+  }
+  .acct-sheet .as-field input,
+  .acct-sheet textarea,
+  .acct-sheet select { font-size: 16px; }
+  .sh-opt { min-height: 76px; justify-content: center; }
+}
+
+@media (max-width: 380px) {
+  .stage { padding-left: 12px; padding-right: 12px; }
+  .topbar .chip { max-width: 82px; overflow: hidden; }
+  .topbar .chip #statusText { overflow: hidden; text-overflow: ellipsis; }
+  .hero h1 { font-size: 26px; }
+  .pill-main { gap: 6px; }
+  .pill-main .dd .pill { padding: 0 9px; font-size: 13px; }
+  .doc-tools { grid-template-columns: 1fr 1fr; }
+}
+
+/* Avoid hover-only affordances on touch screens. */
+@media (hover: none) and (max-width: 560px) {
+  .btn, .foot-link, .menu-item, .opt-row, .tool, .eb-btn { -webkit-tap-highlight-color: transparent; }
+  .s-del { opacity: 1; }
+  .send:active, .pill:active, .opt-toggle:active { transform: scale(.985); }
 }
