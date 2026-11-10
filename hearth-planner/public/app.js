@@ -401,6 +401,8 @@
 
   function newSession() {
     setComposer(false, true);
+    state.params.mode = 'plan';
+    state.params.resourceType = 'Study notes';
     const cur = current();
     if (isFresh(cur) && !state.streaming) {
       promptEl.value = ''; autoGrow(); updateView();
@@ -484,7 +486,7 @@
     const tools = [btnEdit, btnReuse, btnRegen, btnShare, btnDocx, btnPdf];
 
     function fillExtras() {
-      if (demoted) { extrasEl.replaceChildren(); return; }
+      if (demoted || (session.params && session.params.mode === 'resources')) { extrasEl.replaceChildren(); return; }
       const planCls = () => (session.params && session.params.cls) || state.params.cls;
       const mk = (k, label, ic) => h('button', { type: 'button', class: 'extra-btn', 'data-ask': k, onclick: () => askFor(k, planCls()) }, icon(ic), h('span', { text: label }));
       extrasEl.replaceChildren(
@@ -1249,11 +1251,13 @@
   let mediaType = 'image';
   function startIndependentTool(mode, resourceType) {
     if (state.streaming) { toast('Wait for the current generation to finish.'); return; }
+    const active = current();
+    const topic = promptEl.value.trim() || (active && active.messages[0] && active.messages[0].content) || '';
     state.params.mode = mode;
     state.params.resourceType = resourceType || 'Study notes';
     const fresh = makeSession();
     state.sessions.unshift(fresh);
-    promptEl.value = '';
+    promptEl.value = topic;
     showSession(fresh.id);
     submit();
   }
