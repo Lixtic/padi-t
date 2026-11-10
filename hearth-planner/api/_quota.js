@@ -161,6 +161,7 @@ async function rateLimitShared(key, limit, windowMs) {
     return { ok: true };
   }
   await db.ensure();
+  const hashedKey = 'rl:' + crypto.createHash('sha256').update(String(key)).digest('hex');
   const rows = await db.query(
     `INSERT INTO rate_limits (key, window_start, hits) VALUES ($1, $2, 1)
      ON CONFLICT (key) DO UPDATE SET
