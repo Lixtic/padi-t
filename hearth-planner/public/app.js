@@ -681,9 +681,25 @@
     toast('Copied to a new plan. Change anything you like.');
   }
 
+  /* Auto-follow while a plan is writing, but never fight the reader: the moment they scroll up (wheel, touch, keys or the
+     scroll bar) following stops, their place is held while new text arrives, and a "Jump to latest" button appears. */
+  let touching = false;
+  const jumpBtn = $('#jumpLatest');
   function nearBottom() { return messagesWrap.scrollHeight - messagesWrap.scrollTop - messagesWrap.clientHeight < 140; }
-  function scrollBottom(force) { if (force || state.stick) messagesWrap.scrollTop = messagesWrap.scrollHeight; }
-  messagesWrap.addEventListener('scroll', () => { state.stick = nearBottom(); }, { passive: true });
+  function scrollBottom(force) {
+    if (!force && (!state.stick || touching)) return;
+    messagesWrap.scrollTop = messagesWrap.scrollHeight;
+  }
+  function syncJump() { if (jumpBtn) jumpBtn.hidden = !(state.streaming && !state.stick); }
+  const letGo = () => { state.stick = false; syncJump(); };
+  messagesWrap.addEventListener('wheel', (e) => { if (e.deltaY < 0) letGo(); }, { passive: true });
+  messagesWrap.addEventListener('touchstart', () => { touching = true; }, { passive: true });
+  messagesWrap.addEventListener('touchmove', () => { if (!nearBottom()) letGo(); }, { passive: true });
+  messagesWrap.addEventListener('touchend', () => { touching = false; state.stick = nearBottom(); syncJump(); }, { passive: true });
+  messagesWrap.addEventListener('touchcancel', () => { touching = false; }, { passive: true });
+  messagesWrap.addEventListener('keydown', (e) => { if (['ArrowUp', 'PageUp', 'Home'].includes(e.key)) letGo(); });
+  messagesWrap.addEventListener('scroll', () => { if (nearBottom()) state.stick = true; else if (touching) state.stick = false; syncJump(); }, { passive: true });
+  if (jumpBtn) jumpBtn.addEventListener('click', () => { state.stick = true; scrollBottom(true); syncJump(); });
 
   /* ───────── Export ───────── */
   const hintProfile = () => { const p = profile(); return p.teacher || p.school ? '' : '. Tip: add your name and school in the menu to print them on every file.'; };
@@ -959,13 +975,19 @@
     state.bots.forEach((b) => b.demote());
     state.bots.push(bot);
     state.streaming = { sessionId: session.id, ctrl };
+    state.stick = true; syncJump();
     updateSend(); renderSessions(); updateTopbar(); scrollBottom(true);
 
     const t0 = performance.now();
     let text = '';
     let err = null;
     let raf = 0;
-    const paint = () => { raf = 0; bot.set(text, false); scrollBottom(); };
+    const paint = () => {
+      raf = 0;
+      const keep = messagesWrap.scrollTop, hold = !state.stick;
+      bot.set(text, false);
+      if (hold) messagesWrap.scrollTop = keep; else scrollBottom();      // a reader who scrolled up keeps their place
+    };
 
     try {
       const source = state.config.demo ? demoStream(session, ctrl.signal) : apiStream(session, ctrl.signal);
@@ -977,7 +999,7 @@
       if (e.name !== 'AbortError') err = e;
     }
     if (raf) cancelAnimationFrame(raf);
-    state.streaming = null;
+    state.streaming = null; syncJump();
     const previewFlag = state.lastPreview === true; state.lastPreview = false;
 
     // The server is not set up with a key: fall back to the sample and carry on.

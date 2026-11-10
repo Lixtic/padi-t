@@ -31,7 +31,8 @@
   <link rel="apple-touch-startup-image" href="splash/ios-375x667.png" media="(device-width: 375px) and (device-height: 667px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)">
   <link rel="apple-touch-startup-image" href="splash/ios-810x1080.png" media="(device-width: 810px) and (device-height: 1080px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)">
   <link rel="apple-touch-startup-image" href="splash/ios-834x1194.png" media="(device-width: 834px) and (device-height: 1194px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)">
-  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link rel="icon" href="/favicon.ico" sizes="48x48">
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
   <link rel="icon" href="icons/icon-192.png" sizes="192x192" type="image/png">
   <!-- Sets the saved theme before first paint (no flash). -->
   <script src="theme-init.js"></script>
@@ -481,7 +482,7 @@
         <h1>Which week are we planning?</h1>
         <p>Choose a subject, class and week. GuidEd writes two 60-minute lessons, study notes and BECE practice, ready for Word.</p>
       </div>
-      <aside class="ad-slot" id="adSlot" aria-label="Advertisement" hidden>
+      <aside class="ad-slot" id="adSlot" aria-label="Advertisement" data-nosnippet hidden>
         <small>Advertisement</small>
         <ins class="adsbygoogle" data-ad-format="auto" data-full-width-responsive="false"></ins>
         <button type="button" class="ad-remove" id="adUpgrade">Remove ads with Pro</button>
@@ -489,6 +490,7 @@
 
       <div class="messages-wrap" id="messagesWrap">
         <div class="messages" id="messages" role="log" aria-live="off"></div>
+        <button type="button" class="jump-latest" id="jumpLatest" hidden>Jump to latest ↓</button>
       </div>
 
       <div class="composer-zone">
