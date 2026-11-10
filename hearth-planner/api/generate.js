@@ -58,6 +58,7 @@ module.exports = async (req, res) => {
   if (ent && ent.blocked) return sendJson(res, 403, { error: 'blocked', message: 'This account has been paused. Please contact us if you think this is a mistake.' });
   const guest = !!ent && ent.tier === 'guest';
   const firstTurn = v.thread.length === 0;
+  const planTurn = firstTurn && v.params.mode !== 'resources';   // a resource-only run (worksheet, notes...) is not a weekly plan: it never uses the free plan or class allowance
   if (guest && !firstTurn) {
     return sendJson(res, 402, { error: 'account', message: 'Create a free account to refine a plan, or to add study notes and BECE questions.' });
   }
@@ -73,7 +74,7 @@ module.exports = async (req, res) => {
   };
 
   // Signed-in teachers on the free tier: stop here when this week's plans (or classes) are used up.
-  if (ent && ent.tier === 'free' && firstTurn) {
+  if (ent && ent.tier === 'free' && planTurn) {
     let g = { ok: true };
     try { g = await Entitle.checkFree(ent, v.params.cls); } catch (e) { console.error('[generate] free check failed', e && e.message); }
     if (!g.ok) Entitle.event('free_limit_' + g.reason);
@@ -93,7 +94,7 @@ module.exports = async (req, res) => {
       res.statusCode = 200;
       sendHeaders(hit.how);
       res.end(hit.text);
-      if (ent && ent.tier === 'free' && firstTurn) await Entitle.countFree(ent, v.params.cls).catch(() => {});
+      if (ent && ent.tier === 'free' && planTurn) await Entitle.countFree(ent, v.params.cls).catch(() => {});
       else if (ent && ent.tier === 'pro' && firstTurn) Entitle.event('plan_pro');
       else if (guest) Entitle.event('guest_preview');
       return;
@@ -173,7 +174,7 @@ module.exports = async (req, res) => {
   const complete = !failed && !ctrl.signal.aborted && (finish === 'stop' || (guest && wroteText));
   if (complete) tasks.push(Cache.store(ck, full, v.thread.length, used));
   if (guest && wroteText) { Entitle.event('guest_preview'); tasks.push(Entitle.countGuest(ent)); }                     // a taster that spent tokens
-  else if (ent && ent.tier === 'free' && firstTurn && !fresh && complete) tasks.push(Entitle.countFree(ent, v.params.cls));
+  else if (ent && ent.tier === 'free' && planTurn && !fresh && complete) tasks.push(Entitle.countFree(ent, v.params.cls));
   else if (ent && ent.tier === 'pro' && firstTurn && !fresh && complete) Entitle.event('plan_pro');
   await Promise.all(tasks).catch(() => {});
 };

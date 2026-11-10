@@ -230,7 +230,7 @@
   const state = {
     sessions: [],
     currentId: null,
-    params: { subject: SUBJECTS[0], cls: 'Basic 8', week: 1, hook: true, size: '31–45', light: false, mode: 'plan', resourceType: 'Study notes' },
+    params: { subject: SUBJECTS[0], cls: 'Basic 8', week: 1, hook: true, size: '31–45', light: false, mode: 'full', resourceType: 'Study notes' },
     streaming: null,
     stick: true,
     bots: [],
@@ -404,7 +404,7 @@
 
   function newSession() {
     setComposer(false, true);
-    state.params.mode = 'plan';
+    state.params.mode = 'full';
     state.params.resourceType = 'Study notes';
     const cur = current();
     if (isFresh(cur) && !state.streaming) {
@@ -972,7 +972,7 @@
       const p = Object.assign({}, state.params);
       delete p.also;
       p.term = termNow();
-      p.mode = p.mode || 'plan';
+      p.mode = p.mode || 'full';
       p.resourceType = p.resourceType || 'Study notes';
       if (fromQueue !== true) {                     // "Also plan for": the other classes follow, one after another
         planQueue = [];
@@ -1194,7 +1194,7 @@
   /* One file with every written week of a term: the lesson tables and rubric of each plan, in week order. Works from the saved plans, so it also serves a term planned earlier. */
   function termPackBody(r) {
     const term = r.term;
-    return state.sessions.filter((x) => x.params && x.params.cls === r.cls && x.params.subject === r.subject && (x.params.term || term) === term && x.messages.length >= 2 && x.messages[1] && !x.messages[1].preview)
+    return state.sessions.filter((x) => x.params && x.params.cls === r.cls && x.params.subject === r.subject && x.params.mode !== 'resources' && (x.params.term || term) === term && x.messages.length >= 2 && x.messages[1] && !x.messages[1].preview)
       .sort((a, b) => a.params.week - b.params.week).map((x) => planTables(splitElic(x.messages[1].content).body)).filter(Boolean).join('\n\n');
   }
   const termPackTitle = (r) => r.subject + ' – ' + r.cls + ' – Term ' + r.term + ' lesson plans';
@@ -1300,7 +1300,7 @@
     state.sessions.unshift(fresh);
     promptEl.value = topic;
     showSession(fresh.id);
-    submit();
+    try { submit(); } finally { state.params.mode = 'full'; state.params.resourceType = 'Study notes'; }   // the tool choice belongs to this run only; Send goes back to full plans
   }
   if (planAction) planAction.addEventListener('click', () => startIndependentTool('plan'));
   if (resourceAction) resourceAction.addEventListener('click', () => startIndependentTool('resources', resourceTypeEl.value));
@@ -1316,12 +1316,14 @@
     const indicator = mediaIndicator.trim();
     const focus = indicator || refinement;
     if (focus.length < 2) { mediaStatus.textContent = 'No indicator is loaded for this selection. Enter the specific indicator or teaching topic above.'; mediaQuery.focus(); return; }
-    const query = [focus, mediaContext && mediaContext.subject, mediaContext && mediaContext.cls, mediaContext && mediaContext.strand, mediaContext && mediaContext.substrand, refinement && refinement !== indicator ? refinement : '', mediaType === 'video' ? 'educational teaching video demonstration' : 'educational teaching illustration'].filter(Boolean).join(' ');
+    const query = [focus.split(/\s+/).slice(0, 14).join(' '), mediaContext && mediaContext.subject, mediaType === 'video' ? 'lesson' : 'diagram'].filter(Boolean).join(' ');   // short and specific: long indicator text finds nothing
     mediaResults.replaceChildren();
     mediaStatus.textContent = 'Searching…';
     $('#mediaSearchBtn').disabled = true;
     try {
-      const response = await fetch('/api/media-search?q=' + encodeURIComponent(query) + '&type=' + mediaType, { headers: { Accept: 'application/json' } });
+      const who = window.PadiSync && window.PadiSync.authHeader ? await window.PadiSync.authHeader() : {};
+      if (!who || !who.authorization && !who.Authorization) { mediaStatus.textContent = 'Create a free account or sign in to search for images and videos.'; openSignupSheet('Create a free account to search for images and videos.'); return; }
+      const response = await fetch('/api/media-search?q=' + encodeURIComponent(query) + '&type=' + mediaType, { headers: Object.assign({ Accept: 'application/json' }, who) });
       const data = await response.json();
       if (!response.ok) throw new Error(data.message || 'Search failed.');
       if (mediaType === 'video' && data.searchUrl && !data.results.length) {
@@ -2100,7 +2102,7 @@
     const saved = store.load();
     state.sessions = saved && Array.isArray(saved.sessions) ? saved.sessions.filter((s) => s && Array.isArray(s.messages)) : [];
     if (saved && saved.params && CLASSES.includes(saved.params.cls) && subjectsOf(saved.params.cls).includes(saved.params.subject) && WEEKS.includes(saved.params.week)) {
-      state.params = { subject: saved.params.subject, cls: saved.params.cls, week: saved.params.week, hook: saved.params.hook !== false, size: SIZES.includes(saved.params.size) ? saved.params.size : state.params.size, light: saved.params.light === true, studyNotes: saved.params.studyNotes !== false, bece: saved.params.bece !== false, mode: ['plan', 'resources', 'full'].includes(saved.params.mode) ? saved.params.mode : 'plan', resourceType: ['Study notes', 'Learner worksheet', 'Homework pack', 'BECE practice', 'Teaching slides'].includes(saved.params.resourceType) ? saved.params.resourceType : 'Study notes' };
+      state.params = { subject: saved.params.subject, cls: saved.params.cls, week: saved.params.week, hook: saved.params.hook !== false, size: SIZES.includes(saved.params.size) ? saved.params.size : state.params.size, light: saved.params.light === true, studyNotes: saved.params.studyNotes !== false, bece: saved.params.bece !== false, mode: ['plan', 'resources', 'full'].includes(saved.params.mode) ? saved.params.mode : 'full', resourceType: ['Study notes', 'Learner worksheet', 'Homework pack', 'BECE practice', 'Teaching slides'].includes(saved.params.resourceType) ? saved.params.resourceType : 'Study notes' };
     }
     try { state.access = localStorage.getItem(ACCESS_KEY) || ''; accessInput.value = state.access; } catch (e) { /* ignore */ }
     if (window.GuidedProfile) {
