@@ -1347,6 +1347,8 @@
   }
   async function refreshStudyCurriculum() {
     if (!studyNotesCurriculum || resourceTypeEl.value !== 'Study notes') {
+      studyCurriculumRequest++;
+      studyCurriculumLoading = false;
       if (studyNotesCurriculum) studyNotesCurriculum.hidden = true;
       return;
     }
@@ -1645,6 +1647,7 @@
   // Initialize media context only after termNow and schemeFor are initialized.
   loadMediaContext();
   function syncScheme() {
+    refreshStudyCurriculum();
     const S = window.SchoolPadiSchemes;
     if (!S) { schemeStrip.hidden = true; return; }
     const p = state.params;
@@ -1679,7 +1682,6 @@
           h('ul', null, ...e.indicators.map((x) => h('li', { text: x })))));
     }
     schemeStrip.hidden = false;
-    refreshStudyCurriculum();
     if ($('#studioTabMedia') && $('#studioTabMedia').getAttribute('aria-selected') === 'true') loadMediaContext();
   }
   function syncAlso() {
