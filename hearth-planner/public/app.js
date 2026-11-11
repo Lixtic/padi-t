@@ -369,10 +369,16 @@
     document.body.dataset.status = st;
   }
 
+  let lastChatView = null;
   function updateView() {
     const s = current();
     const chat = !!(s && s.messages.length);
     main.dataset.view = chat ? 'chat' : 'landing';
+    if (chat !== lastChatView) {   // the Studio is the landing screen; beside a plan it folds to a header the reader can reopen
+      lastChatView = chat;
+      const st = document.querySelector('.teaching-studio'), tg = document.querySelector('#studioCollapseToggle');
+      if (st && tg) { st.classList.toggle('is-collapsed', chat); tg.setAttribute('aria-expanded', String(!chat)); }
+    }
     if (window.GuidedAds) window.GuidedAds.sync(!chat && !state.streaming && !termRun);
     demoBanner.hidden = !state.config.demo;
     promptEl.placeholder = chat ? 'Ask for a change…' : 'Optional: topic or strand, class size, week-ending date…';
@@ -1265,6 +1271,10 @@
     composerToggle.setAttribute('aria-expanded', String(!collapsed));
     $('span', composerToggle).textContent = collapsed ? 'Ask for a change' : 'Collapse';
     autoCollapsed = !!(collapsed && auto);
+    if (collapsed && auto) {   // once a plan is on screen, fold the Studio too so the plan keeps the room
+      const st = document.querySelector('.teaching-studio'), tg = document.querySelector('#studioCollapseToggle');
+      if (st && tg) { st.classList.add('is-collapsed'); tg.setAttribute('aria-expanded', 'false'); }
+    }
     if (!collapsed && !auto && !coarse) promptEl.focus();
   }
   composerToggle.addEventListener('click', () => setComposer(!zone.classList.contains('is-collapsed'), false));

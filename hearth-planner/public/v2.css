@@ -1,0 +1,89 @@
+/* GuidEd v2.0 · the Teaching Studio look: soft blue-white pages, white rounded cards, royal-blue selection, black pill buttons.
+   Loaded after styles.css, so it only has to override variables and a few components. */
+
+:root[data-theme="light"] {
+  --bg: #F3F6FC; --sb: #EAF0FB; --sb-hover: #DFE8F8; --sb-active: #D3DFF5;
+  --line: #E1E7F3; --text: #16213F; --muted: #667391;
+  --card: #FFFFFF; --card-line: #E1E7F3;
+  --shadow: 0 1px 2px rgba(22, 33, 63, .05), 0 12px 32px rgba(22, 33, 63, .08);
+  --accent: #1B45A8; --accent-h: #143484; --on-accent: #FFFFFF;
+  --user-bubble: #E4ECFB; --code-bg: #EEF2FA; --ok: #1B7F5C; --add: #1B7F5C; --add-bg: rgba(27, 127, 92, .12);
+  --tbl-head: #1B365D; --tbl-line: #D5DDEE; --label: #E8EEFB;
+  --v2-ink: #0E1424; --v2-soft: #EAF0FD; --v2-cyan: #00A6D6; --v2-radius: 24px;
+}
+:root[data-theme="dark"] {
+  --bg: #0F1424; --sb: #151B30; --sb-hover: #1C2440; --sb-active: #243050;
+  --line: #28314E; --text: #EDF1FB; --muted: #98A4C2;
+  --card: #171E36; --card-line: #28314E;
+  --shadow: 0 1px 2px rgba(0, 0, 0, .4), 0 12px 32px rgba(0, 0, 0, .4);
+  --accent: #6C93F0; --accent-h: #8CA9F5; --on-accent: #0B1226;
+  --user-bubble: #1E2745; --code-bg: #121830; --ok: #4CC79A; --add: #4CC79A; --add-bg: rgba(76, 199, 154, .14);
+  --tbl-head: #2A4A7A; --tbl-line: #2E3858; --label: rgba(108, 147, 240, .14);
+  --v2-ink: #F3F6FF; --v2-soft: #1B2547; --v2-cyan: #3CC8F0; --v2-radius: 24px;
+}
+
+/* ───────── Studio card ───────── */
+.teaching-studio { margin-top: 14px; padding: 18px 16px 16px; border-radius: var(--v2-radius); border: 1px solid var(--card-line); background: var(--card); box-shadow: var(--shadow); }
+.studio-heading { margin: 0 2px 14px; align-items: flex-start; }
+.studio-collapse-toggle strong { font-size: 1.25rem; letter-spacing: -.01em; }
+.studio-heading small { font-size: .85rem; }
+.studio-context { padding: 5px 10px; border-radius: 999px; background: var(--v2-soft); color: var(--accent); }
+
+/* three big action cards */
+.studio-tabs { gap: 8px; padding: 0; background: none; border-radius: 0; }
+.studio-tabs button { flex-direction: column; align-items: flex-start; justify-content: flex-start; gap: 10px; min-height: 96px; padding: 12px 12px 10px; border-radius: 18px; border: 1px solid var(--card-line); background: var(--card); color: var(--text); text-align: left; box-shadow: none; transition: background .15s, color .15s, transform .15s; }
+.studio-tabs button .ico { width: 24px; height: 24px; color: var(--accent); }
+.studio-tabs button > span { display: grid; gap: 1px; font-weight: 700; font-size: .92rem; line-height: 1.2; }
+.studio-tabs button > span small { font-weight: 500; font-size: .72rem; color: var(--muted); }
+.studio-tabs button[aria-selected="true"] { background: var(--accent); border-color: var(--accent); color: var(--on-accent); box-shadow: 0 10px 22px rgba(27, 69, 168, .28); }
+.studio-tabs button[aria-selected="true"] .ico, .studio-tabs button[aria-selected="true"] > span small { color: var(--on-accent); opacity: .92; }
+.studio-tabs button:active { transform: scale(.98); }
+
+/* panels */
+.studio-panel { padding: 16px 2px 2px; }
+.studio-panel:not(.studio-media-panel) { flex-direction: column; align-items: stretch; gap: 14px; }
+.studio-panel-copy strong { font-size: 1.05rem; }
+.studio-panel .tool-action, .tool-action-primary { min-height: 52px; border-radius: 999px; background: var(--v2-ink); color: var(--card); border: 0; font-weight: 700; letter-spacing: .01em; }
+:root[data-theme="dark"] .studio-panel .tool-action, :root[data-theme="dark"] .tool-action-primary { background: var(--accent); color: var(--on-accent); }
+.studio-panel .tool-action { width: 100%; }
+
+/* resource cards (built by v2.js; the original select stays for the app code) */
+.res-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+.res-card { display: grid; gap: 4px; align-content: start; min-height: 128px; padding: 14px; border-radius: 18px; border: 1px solid var(--card-line); background: var(--card); text-align: left; transition: border-color .15s, box-shadow .15s, transform .15s; }
+.res-card:hover { border-color: var(--accent); box-shadow: var(--shadow); }
+.res-card:active { transform: scale(.98); }
+.res-card .ico { width: 26px; height: 26px; color: var(--accent); margin-bottom: 4px; }
+.res-card strong { font-size: .98rem; line-height: 1.2; }
+.res-card small { color: var(--muted); font-size: .78rem; line-height: 1.35; }
+.res-card em { margin-top: 6px; font-style: normal; font-weight: 700; font-size: .85rem; color: var(--accent); }
+.res-card em::after { content: " \2192"; }
+.studio-resource-row.is-enhanced { display: none; }
+
+/* inputs: pills */
+select, input[type="search"], input[type="text"] { border-radius: 999px; }
+.media-curriculum { border-radius: 18px; background: var(--v2-soft); border: 0; }
+.media-tabs button { border-radius: 999px; }
+.media-tabs button[aria-pressed="true"] { background: var(--accent); color: var(--on-accent); }
+
+/* bottom tab bar on phones */
+.v2-tabbar { display: none; }
+@media (max-width: 760px) {
+  body.has-tabbar .app { height: calc(var(--app-h, 100dvh) - 64px - env(safe-area-inset-bottom)); }
+  .v2-tabbar { display: grid; grid-template-columns: repeat(4, 1fr); position: fixed; left: 0; right: 0; bottom: 0; z-index: 40; padding: 6px 8px calc(6px + env(safe-area-inset-bottom)); background: var(--card); border-top: 1px solid var(--card-line); box-shadow: 0 -6px 20px rgba(22, 33, 63, .06); }
+  .app.nav-open ~ .v2-tabbar { display: none; }   /* the menu drawer covers the whole screen */
+  .v2-tabbar button { display: grid; justify-items: center; gap: 2px; min-height: 52px; padding: 6px 4px; border-radius: 14px; color: var(--muted); font-size: .7rem; font-weight: 600; }
+  .v2-tabbar button .ico { width: 22px; height: 22px; }
+  .v2-tabbar button[aria-current="page"] { background: var(--v2-soft); color: var(--accent); }
+}
+
+/* teaching slides follow the new accent */
+.deck-bar > span, .deck-next { background: var(--accent); }
+.deck-next { border-color: var(--accent); color: var(--on-accent); }
+.sl-title, .sl-extra strong { color: var(--accent); }
+.sl-extra { background: var(--v2-soft); border-left-color: var(--accent); }
+.sl-card.is-title { background: linear-gradient(145deg, #1B45A8, #0E1F55); }
+.sl-card.is-title .sl-title, .sl-card.is-title .sl-extra strong { color: #fff; }
+.deck-dot.on { background: var(--accent); }
+
+/* with a plan on screen the Studio never takes more than part of the screen */
+.composer-zone.is-collapsed .studio-content { max-height: 42dvh; overflow-y: auto; overscroll-behavior: contain; }
