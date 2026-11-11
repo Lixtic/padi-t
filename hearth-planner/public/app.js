@@ -337,9 +337,15 @@
   const VIEW_KEY = 'guided.sb.view', CLOSED_KEY = 'guided.sb.closed';
   const lsGet = (k, d) => { try { const v = JSON.parse(localStorage.getItem(k)); return v == null ? d : v; } catch (e) { return d; } };
   const lsSet = (k, v) => { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) { /* ignore */ } };
-  let sbView = lsGet(VIEW_KEY, 'class') === 'recent' ? 'recent' : 'class';
+  const SB_VIEWS = ['type', 'class', 'recent'];
+  let sbView = SB_VIEWS.includes(lsGet(VIEW_KEY, 'type')) ? lsGet(VIEW_KEY, 'type') : 'type';
   let closedFolders = new Set(lsGet(CLOSED_KEY, []));
   let startPlanFor = () => {};                          // set once the menus exist: opens a new plan for a class
+
+  /* One group per kind of document: full plans, lesson plans only, then each resource type. */
+  const TYPE_ORDER = ['plan', 'Study notes', 'Learner worksheet', 'Homework pack', 'BECE practice', 'Teaching slides'];
+  const TYPE_LABEL = { plan: 'Lesson plans', 'Study notes': 'Study notes', 'Learner worksheet': 'Worksheets', 'Homework pack': 'Homework packs', 'BECE practice': 'BECE practice', 'Teaching slides': 'Teaching slides' };
+  const typeOf = (s) => (s.params && s.params.mode === 'resources' && TYPE_ORDER.includes(s.params.resourceType)) ? s.params.resourceType : 'plan';
 
   function sessionRow(s, inFolder) {
     const st = statusOf(s);
@@ -360,10 +366,28 @@
       .filter((s) => s.messages.length || s.id === state.currentId)
       .sort((a, b) => b.updatedAt - a.updatedAt)
       .filter((s) => !q || s.title.toLowerCase().includes(q) || (s.params && (s.params.cls + ' ' + s.params.subject).toLowerCase().includes(q)));
+    document.getElementById('viewType').setAttribute('aria-pressed', String(sbView === 'type'));
     document.getElementById('viewClass').setAttribute('aria-pressed', String(sbView === 'class'));
     document.getElementById('viewRecent').setAttribute('aria-pressed', String(sbView === 'recent'));
     if (sbView === 'recent') {
       listEl.replaceChildren(...items.map((s) => sessionRow(s, false)));
+    } else if (sbView === 'type') {
+      const by = new Map(TYPE_ORDER.map((t) => [t, []]));
+      const loose = items.filter((s) => !s.params);
+      items.filter((s) => s.params).forEach((s) => by.get(typeOf(s)).push(s));
+      const nodes = loose.map((s) => sessionRow(s, false));
+      TYPE_ORDER.filter((t) => by.get(t).length).forEach((t) => {
+        const list = by.get(t), key = 'type:' + t;
+        const open = !!q || list.some((s) => s.id === state.currentId) || !closedFolders.has(key);
+        const body = h('ul', { class: 'f-body', id: 'fold-' + t.replace(/\W+/g, '-') }, ...list.map((s) => sessionRow(s, false)));
+        body.hidden = !open;
+        nodes.push(h('li', { class: 'f-item' },
+          h('div', { class: 'f-row' },
+            h('button', { type: 'button', class: 'f-head', 'data-folder': key, 'aria-expanded': String(open), 'aria-controls': body.id },
+              icon('chevron'), h('span', { class: 'f-name', text: TYPE_LABEL[t] }), h('span', { class: 'f-count', text: String(list.length) }))),
+          body));
+      });
+      listEl.replaceChildren(...nodes);
     } else {
       const loose = items.filter((s) => !s.params || !s.params.cls);
       const by = new Map();
@@ -391,6 +415,7 @@
   function updateTopbar() {
     const s = current();
     if (!s) return;
+    if (document.body.classList.contains('on-settings')) { topTitle.textContent = 'Settings'; return; }
     topTitle.textContent = s.messages.length ? s.title : 'New plan';
     document.title = (s.messages.length ? s.title + ' · ' : '') + 'GuidEd';
     let st = statusOf(s);
@@ -1862,7 +1887,7 @@
     if (isMobile()) setNav(false);
   });
 
-  [['viewClass', 'class'], ['viewRecent', 'recent']].forEach(([id, v]) => document.getElementById(id).addEventListener('click', () => { sbView = v; lsSet(VIEW_KEY, v); renderSessions(); }));
+  [['viewType', 'type'], ['viewClass', 'class'], ['viewRecent', 'recent']].forEach(([id, v]) => document.getElementById(id).addEventListener('click', () => { sbView = v; lsSet(VIEW_KEY, v); renderSessions(); }));
 
   searchToggle.addEventListener('click', () => {
     const show = searchWrap.hidden;
@@ -2367,6 +2392,27 @@
     btn.addEventListener('click', () => set(panel.hidden, true));
     try { if (localStorage.getItem(key) === '1') set(true, false); } catch (e) { /* ignore */ }
   });
+
+  /* Settings is its own page inside the main area; the sidebar keeps one link to it. */
+  const settingsPage = $('#settingsPage'), settingsLink = $('#settingsLink');
+  function showSettings(on) {
+    if (!settingsPage || settingsPage.hidden === !on) return;
+    settingsPage.hidden = !on;
+    document.body.classList.toggle('on-settings', on);
+    settingsLink.setAttribute('aria-current', on ? 'page' : 'false');
+    if (on) { if (isMobile()) setNav(false); settingsPage.scrollTop = 0; topTitle.textContent = 'Settings'; document.title = 'Settings · GuidEd'; }
+    else updateTopbar();
+  }
+  if (settingsPage && settingsLink) {
+    settingsLink.addEventListener('click', () => showSettings(true));
+    $('#settingsBack').addEventListener('click', () => showSettings(false));
+    // Anything that goes back to planning leaves the settings page first.
+    document.addEventListener('click', (e) => {
+      if (settingsPage.hidden) return;
+      if (e.target.closest('#newSession, #brand, .sb-list, .v2-tabbar, .f-add, #menuBtn') && !e.target.closest('#menuBtn')) showSettings(false);
+    }, true);
+    document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && !settingsPage.hidden && !document.querySelector('dialog[open]')) showSettings(false); });
+  }
 
   // Clears the app's cached files (not the saved plans) and reloads, so a stuck or outdated copy is replaced.
   const clearBtn = $('#clearCacheBtn');
