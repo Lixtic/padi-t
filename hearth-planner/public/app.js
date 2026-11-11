@@ -1094,7 +1094,7 @@
     if (p.mode !== 'resources' || !/^study notes$/i.test(p.resourceType || '') || state.config.demo || msg.preview || msg.stopped || !signedIn()) return;
     const body = String(msg.content || '');
     const ignored = /^(study notes?|introduction|learning objectives?|objectives?|key terms?|summary|conclusion|assessment|class exercise|homework|references|further reading)$/i;
-    const concepts = [...body.matchAll(/^#{1,3}\\s+(.+)$/gm)].map((m) => m[1].replace(/[*_`]/g, '').trim()).filter((heading) => heading.length >= 4 && heading.length <= 90 && !ignored.test(heading)).slice(0, 3);
+    const concepts = [...body.matchAll(/^#{1,3}\s+(.+)$/gm)].map((m) => m[1].replace(/[*_`]/g, '').trim()).filter((heading) => heading.length >= 4 && heading.length <= 90 && !ignored.test(heading)).slice(0, 3);
     if (!concepts.length) return;
     bot.note('Finding relevant classroom illustrations…');
     try {
@@ -1105,20 +1105,20 @@
         const response = await fetch('/api/media-search?q=' + encodeURIComponent(query) + '&type=image', { headers: Object.assign({ Accept: 'application/json' }, who) });
         if (!response.ok) return null;
         const data = await response.json();
-        const item = (data.results || []).find((entry) => entry && /^https:\\/\\//i.test(entry.thumbnail || '') && /^https:\\/\\//i.test(entry.url || ''));
+        const item = (data.results || []).find((entry) => entry && /^https:\/\//i.test(entry.thumbnail || '') && /^https:\/\//i.test(entry.url || ''));
         return item ? { concept, item } : null;
       }));
       const found = results.filter(Boolean);
       if (!found.length) { bot.note('Notes are ready. No suitable illustrations were found for these concepts.'); return; }
       let enriched = body;
       found.forEach(({ concept, item }) => {
-        const headingLine = body.split('\\n').find((line) => /^#{1,3}\\s+/.test(line) && line.replace(/^#{1,3}\\s+/, '').replace(/[*_`]/g, '').trim() === concept);
+        const headingLine = body.split('\n').find((line) => /^#{1,3}\s+/.test(line) && line.replace(/^#{1,3}\s+/, '').replace(/[*_`]/g, '').trim() === concept);
         if (!headingLine) return;
-        const alt = String(item.title || concept).replace(/[\\[\\]]/g, '').slice(0, 100);
-        const imageUrl = String(item.thumbnail).replace(/\\)/g, '%29');
-        const sourceTitle = String(item.title || concept).replace(/[\\[\\]]/g, '');
+        const alt = String(item.title || concept).replace(/[\[\]]/g, '').slice(0, 100);
+        const imageUrl = String(item.thumbnail).replace(/\)/g, '%29');
+        const sourceTitle = String(item.title || concept).replace(/[\[\]]/g, '');
         const caption = '*Image source: [' + sourceTitle + '](' + String(item.url) + ') · Licence: ' + String(item.license || 'See source page') + (item.author ? ' · Author: ' + String(item.author) : '') + '.*';
-        enriched = enriched.replace(headingLine, headingLine + '\\n\\n![' + alt + '](' + imageUrl + ')\\n\\n' + caption);
+        enriched = enriched.replace(headingLine, headingLine + '\n\n![' + alt + '](' + imageUrl + ')\n\n' + caption);
       });
       if (enriched === body) { bot.note('Notes are ready. Illustrations could not be placed beside the matching sections.'); return; }
       msg.content = enriched;
