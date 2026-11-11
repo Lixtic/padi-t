@@ -1296,7 +1296,7 @@
   const planAction = $('#planAction'), resourceAction = $('#resourceAction'), resourceTypeEl = $('#resourceType');
   const studyNotesCurriculum = $('#studyNotesCurriculum'), studyIndicatorMeta = $('#studyIndicatorMeta');
   const studyIndicatorOptions = $('#studyIndicatorOptions'), studyCurriculumSource = $('#studyCurriculumSource');
-  let studyCurriculumRequest = 0, studyCurriculumKey = '';
+  let studyCurriculumRequest = 0, studyCurriculumKey = '', studyCurriculumLoading = false;
   const mediaForm = $('#mediaSearchForm'), mediaQuery = $('#mediaQuery');
   const mediaStatus = $('#mediaStatus'), mediaResults = $('#mediaResults');
   const mediaIndicatorText = $('#mediaIndicatorText'), mediaIndicatorPicker = $('#mediaIndicatorPicker');
@@ -1309,6 +1309,7 @@
     state.params.mode = mode;
     state.params.resourceType = resourceType || 'Study notes';
     if (mode === 'resources' && state.params.resourceType === 'Study notes') {
+      if (studyCurriculumLoading) { toast('Wait for the curriculum indicators to finish loading.'); state.params.mode = 'full'; return; }
       const checked = [...studyIndicatorOptions.querySelectorAll('input[type="checkbox"]:checked')].map((x) => x.value);
       if (checked.length) state.params.indicatorCodes = checked;
       else if (studyIndicatorOptions.childElementCount) { toast('Select at least one curriculum indicator for the study notes.'); state.params.mode = 'full'; return; }
@@ -1352,6 +1353,7 @@
     const p = state.params, term = p.term || termNow();
     const key = [p.subject, p.cls, term, p.week].join('|');
     const requestId = ++studyCurriculumRequest;
+    studyCurriculumLoading = true;
     studyNotesCurriculum.hidden = false;
     studyCurriculumSource.textContent = 'Loading curriculum indicators…';
     studyIndicatorMeta.textContent = '';
@@ -1362,6 +1364,7 @@
       if (requestId !== studyCurriculumRequest) return;
       if (!response.ok) throw new Error(data.message || 'No curriculum indicators are available for this selection.');
       if (data.type !== 'teach') {
+        studyCurriculumLoading = false;
         studyIndicatorOptions.replaceChildren();
         studyIndicatorMeta.textContent = data.type === 'revision' ? 'Revision week — no new indicators are assigned.' : 'Examination week — no new indicators are assigned.';
         studyCurriculumSource.textContent = 'Choose a teaching week to select specific indicators.';
@@ -1370,9 +1373,11 @@
         return;
       }
       renderStudyIndicators(data, key);
+      studyCurriculumLoading = false;
       if (!data.indicators || !data.indicators.length) studyCurriculumSource.textContent = 'No coded indicators are loaded for this week. You can still generate general study notes from the scheme topic.';
     } catch (error) {
       if (requestId !== studyCurriculumRequest) return;
+      studyCurriculumLoading = false;
       studyIndicatorOptions.replaceChildren();
       studyIndicatorMeta.textContent = '';
       studyCurriculumSource.textContent = error.message || 'Could not load curriculum indicators.';
