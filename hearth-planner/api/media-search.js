@@ -149,7 +149,7 @@ module.exports = async (req, res) => {
     const limit = await Quota.rateLimitShared('media:' + Quota.subjectFor(me, clientIp(req)), 20, 10 * 60 * 1000);
     if (!limit.ok) return sendJson(res, 429, { error: 'rate', message: 'Please wait a few minutes before searching again.' }, { 'Retry-After': String(limit.retryAfter) });
   } catch (e) { return sendJson(res, 503, { error: 'protection_unavailable', message: 'Search is temporarily unavailable. Please try again shortly.' }); }
-  const key = type + ':' + query;
+  const key = (type === 'image' ? 'image-relevance-v2:' : 'video:') + query;
   const hit = cached(key);
   if (hit) return sendJson(res, 200, hit);
   const searchUrl = 'https://www.youtube.com/results?search_query=' + encodeURIComponent(query + ' educational');
@@ -200,6 +200,7 @@ module.exports = async (req, res) => {
     }
     const out = { type, query, results: [], provider: 'none', providersTried: providers.map((p) => p[0]), message: 'No sufficiently relevant images were found. Try a more specific concept.' };
     if (errors.length) out.providerWarnings = errors;
+    remember(key, out);
     return sendJson(res, 200, out);
   } catch (error) {
     return sendJson(res, 502, { error: 'search_failed', message: error.message || 'Media search failed.' });
