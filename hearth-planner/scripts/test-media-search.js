@@ -15,5 +15,4 @@ const ranked = Search.rankAndFilter([
 ], 'input devices computer');
 assert.equal(ranked.length, 1);
 assert.equal(ranked[0].title, 'Input devices');
-process.stdout.write('Educational image relevance tests passed.
-');
+process.stdout.write('Educational image relevance tests passed.');
