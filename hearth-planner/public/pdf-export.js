@@ -89,7 +89,9 @@
 
     function widths(rows, hasHeader, meta) {
       var cols = rows[0].length, first = hasHeader ? rows[0][0] : '', w = [], c;
-      if (meta) w = cols === 2 ? [28, 72] : rows[0].map(function () { return 1; });
+      var signArea = hasHeader && cols === 3 && /^\**\s*class teacher/i.test(first);
+      if (signArea) w = [36, 36, 28];   // signature and stamp area
+      else if (meta) w = cols === 2 ? [28, 72] : rows[0].map(function () { return 1; });
       else if (hasHeader && cols === 3 && PHASE_HEADER.test(first)) w = [15, 68, 17];
       else if (hasHeader && cols === 4 && PHASE_HEADER.test(first)) w = [13, 36, 36, 15];
       else {
@@ -120,6 +122,7 @@
     };
     function cell(value, o) {
       var c = { stack: paragraphs(value, o) };
+      if (o.minH) c.stack.push({ text: ' ', fontSize: 1, margin: [0, 0, 0, o.minH] });   // room to sign and stamp
       if (o.fill) c.fillColor = o.fill;
       return c;
     }
@@ -173,13 +176,13 @@
           body.push(G ? grid(cells, inLesson ? [1, 3, 1] : [2, 1, 2]) : cells);
           return;
         }
-        var isHead = hasHeader && r === 0;
+        var isHead = hasHeader && r === 0, sign = hasHeader && cols === 3 && /^\**\s*class teacher/i.test(rows[0][0]);
         body.push(row.map(function (value, c) {
           if (isHead) return cell(value, { size: 8.5, bold: true, color: '#FFFFFF', align: 'center', after: 0, fill: GREEN });
           var isLabel = false;
           if (meta) { var mc = metaCell(value); value = mc.text; isLabel = mc.label; }
           else if (labelFirst && c === 0) isLabel = true;
-          return cell(value, { size: 8.5, bold: isLabel, after: 1, fill: isLabel ? LABEL : null });
+          return cell(value, { size: 8.5, bold: isLabel, after: 1, fill: isLabel ? LABEL : null, minH: sign ? 34 : 0 });
         }));
       });
       if (!joined) { out.push(tableNode(body, w, hasHeader ? 1 : 0, big, false)); return out; }
@@ -239,7 +242,9 @@
         ht = ht.replace(/^[*_\s]+|[*_\s]+$/g, '');
         var newPlan = META_HEADING.test(ht) && level === 1 && metaSeen;
         if (META_HEADING.test(ht) && level === 1) metaSeen = true;
-        children.push(heading(ht, level, wrote && (NEW_PAGE.test(ht) || newPlan)));
+        // The Lesson Metadata heading stays hidden: the table is self-explanatory. A new plan in the same file still starts on a new page.
+        if (META_HEADING.test(ht) && level === 1) { if (newPlan) children.push({ text: ' ', fontSize: 1, pageBreak: 'before' }); }
+        else children.push(heading(ht, level, wrote && NEW_PAGE.test(ht)));
         lastHeading = ht; wrote = true;
         continue;
       }
