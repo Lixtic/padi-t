@@ -71,8 +71,6 @@ select, input[type="search"], input[type="text"] { border-radius: 999px; }
   body.has-tabbar .app { height: calc(var(--app-h, 100dvh) - 64px - env(safe-area-inset-bottom)); }
   .v2-tabbar { display: grid; grid-template-columns: repeat(4, 1fr); position: fixed; left: 0; right: 0; bottom: 0; z-index: 40; padding: 6px 8px calc(6px + env(safe-area-inset-bottom)); background: var(--card); border-top: 1px solid var(--card-line); box-shadow: 0 -6px 20px rgba(22, 33, 63, .06); }
   .app.nav-open ~ .v2-tabbar { display: none; }
-  body:has(.dd .menu:not([hidden])) .v2-tabbar { display: none; }   /* an open menu sheet uses the bottom edge */
-  .dd .menu { width: auto; min-width: 0 !important; box-sizing: border-box; }   /* the menu drawer covers the whole screen */
   .v2-tabbar button { display: grid; justify-items: center; gap: 2px; min-height: 52px; padding: 6px 4px; border-radius: 14px; color: var(--muted); font-size: .7rem; font-weight: 600; }
   .v2-tabbar button .ico { width: 22px; height: 22px; }
   .v2-tabbar button[aria-current="page"] { background: var(--v2-soft); color: var(--accent); }
