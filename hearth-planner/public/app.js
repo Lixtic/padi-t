@@ -121,6 +121,7 @@
 
   function inline(s) {
     return esc(s)
+      .replace(/\[([^\]]+)\]\((https:\/\/[^)\s]+)\)/g, '<a href="$2" target="_blank" rel="noopener noreferrer">$1</a>')
       .replace(/`([^`]+)`/g, '<code>$1</code>')
       .replace(/\*\*([^*]+?)\*\*/g, '<strong>$1</strong>')
       .replace(/(^|[^*\w])\*([^*\s][^*]*?)\*(?![*\w])/g, '$1<em>$2</em>');
@@ -204,6 +205,11 @@
         continue;
       }
       if (/^\s*(-{3,}|\*{3,}|_{3,})\s*$/.test(line)) { flushP(); flushL(); html += '<hr>'; continue; }
+      if ((m = line.match(/^!\[([^\]]*)\]\((https:\/\/[^)\s]+)\)$/))) {
+        flushP(); flushL();
+        html += '<figure class="study-illustration"><img src="' + esc(m[2]) + '" alt="' + esc(m[1]) + '" loading="lazy"><figcaption>' + esc(m[1]) + '</figcaption></figure>';
+        continue;
+      }
       if ((m = line.match(/^(#{1,6})\s+(.*?)\s*#*$/))) {
         flushP(); flushL();
         const lvl = Math.min(m[1].length, 3);
@@ -1108,6 +1114,48 @@
     submit();
   }
 
+  async function addStudyIllustrations(session, msg, bot) {
+    const p = session && session.params || {};
+    if (p.mode !== 'resources' || !/^study notes$/i.test(p.resourceType || '') || state.config.demo || msg.preview || msg.stopped || !signedIn()) return;
+    const body = String(msg.content || '');
+    const ignored = /^(study notes?|introduction|learning objectives?|objectives?|key terms?|summary|conclusion|assessment|class exercise|homework|references|further reading)$/i;
+    const concepts = [...body.matchAll(/^#{1,3}\s+(.+)$/gm)].map((m) => m[1].replace(/[*_`]/g, '').trim()).filter((heading) => heading.length >= 4 && heading.length <= 90 && !ignored.test(heading)).slice(0, 3);
+    if (!concepts.length) return;
+    bot.note('Finding relevant classroom illustrations…');
+    let timeout;
+    try {
+      const who = window.PadiSync && window.PadiSync.authHeader ? await window.PadiSync.authHeader() : {};
+      if (!who || !(who.authorization || who.Authorization)) { bot.note('Notes are ready. Sign in to add classroom illustrations.'); return; }
+      const controller = new AbortController();
+      timeout = setTimeout(() => controller.abort(), 12000);
+      const results = await Promise.all(concepts.map(async (concept) => {
+        const query = [concept, p.subject].filter(Boolean).join(' ').slice(0, 180);
+        const response = await fetch('/api/media-search?q=' + encodeURIComponent(query) + '&type=image', { headers: Object.assign({ Accept: 'application/json' }, who), signal: controller.signal });
+        if (!response.ok) return null;
+        const data = await response.json();
+        const item = (data.results || []).find((entry) => entry && /^https:\/\//i.test(entry.thumbnail || '') && /^https:\/\//i.test(entry.url || ''));
+        return item ? { concept, item } : null;
+      }));
+      clearTimeout(timeout); timeout = null;
+      const found = results.filter(Boolean);
+      if (!found.length) { bot.note('Notes are ready. No suitable illustrations were found for these concepts.'); return; }
+      let enriched = body;
+      found.forEach(({ concept, item }) => {
+        const headingLine = body.split('\n').find((line) => /^#{1,3}\s+/.test(line) && line.replace(/^#{1,3}\s+/, '').replace(/[*_`]/g, '').trim() === concept);
+        if (!headingLine) return;
+        const alt = String(item.title || concept).replace(/[\[\]]/g, '').slice(0, 100);
+        const imageUrl = String(item.thumbnail).replace(/\)/g, '%29');
+        const sourceTitle = String(item.title || concept).replace(/[\[\]]/g, '');
+        const caption = '*Image source: [' + sourceTitle + '](' + String(item.url) + ') · Licence: ' + String(item.license || 'See source page') + (item.author ? ' · Author: ' + String(item.author) : '') + '.*';
+        enriched = enriched.replace(headingLine, headingLine + '\n\n![' + alt + '](' + imageUrl + ')\n\n' + caption);
+      });
+      if (enriched === body) { bot.note('Notes are ready. Illustrations could not be placed beside the matching sections.'); return; }
+      msg.content = enriched;
+      bot.set(enriched, true, msg);
+      bot.note('Added ' + found.length + ' curriculum-related illustration' + (found.length === 1 ? '' : 's') + '. Check each source and licence.');
+      session.updatedAt = Date.now(); store.save();
+    } catch (error) { if (timeout) clearTimeout(timeout); bot.note('Notes are ready. Illustration search was unavailable, so no images were added.'); }
+  }
   async function runGenerate(session) {
     const ctrl = new AbortController();
     const bot = makeBot(session);
@@ -1214,6 +1262,7 @@
       if (same && state.params.week === sp.week && !planQueue.length) { continueWeek(true); syncPills(); }   // the week pill moves on to the next one
     }
     bot.set(text, true, msg);
+    if (!aborted && !warning) addStudyIllustrations(session, msg, bot);
     updateSend(); renderSessions(); updateTopbar(); updateView(); store.save();
     scrollBottom();
     if (window.GuidedPlans && !state.config.demo) window.GuidedPlans.load();       // refresh "plans left"
@@ -1362,7 +1411,7 @@
   const planAction = $('#planAction'), resourceAction = $('#resourceAction'), resourceTypeEl = $('#resourceType');
   const studyNotesCurriculum = $('#studyNotesCurriculum'), studyIndicatorMeta = $('#studyIndicatorMeta');
   const studyIndicatorOptions = $('#studyIndicatorOptions'), studyCurriculumSource = $('#studyCurriculumSource');
-  let studyCurriculumRequest = 0, studyCurriculumKey = '';
+  let studyCurriculumRequest = 0, studyCurriculumKey = '', studyCurriculumPendingKey = '', studyCurriculumLoading = false;
   const mediaForm = $('#mediaSearchForm'), mediaQuery = $('#mediaQuery');
   const mediaStatus = $('#mediaStatus'), mediaResults = $('#mediaResults');
   const mediaIndicatorText = $('#mediaIndicatorText'), mediaIndicatorPicker = $('#mediaIndicatorPicker');
@@ -1375,6 +1424,9 @@
     state.params.mode = mode;
     state.params.resourceType = resourceType || 'Study notes';
     if (mode === 'resources' && state.params.resourceType === 'Study notes') {
+      // Indicator checkboxes are a convenience for narrowing the request, not a prerequisite.
+      // The API resolves the authoritative scheme context during generation, so never block
+      // Study Notes merely because the optional UI indicator request is still loading.
       const checked = [...studyIndicatorOptions.querySelectorAll('input[type="checkbox"]:checked')].map((x) => x.value);
       if (checked.length) state.params.indicatorCodes = checked;
       else if (studyIndicatorOptions.childElementCount) { toast('Select at least one curriculum indicator for the study notes.'); state.params.mode = 'full'; return; }
@@ -1412,18 +1464,28 @@
   }
   async function refreshStudyCurriculum() {
     if (!studyNotesCurriculum || resourceTypeEl.value !== 'Study notes') {
+      studyCurriculumRequest++;
+      studyCurriculumPendingKey = '';
+      studyCurriculumLoading = false;
       if (studyNotesCurriculum) studyNotesCurriculum.hidden = true;
       return;
     }
     const p = state.params, term = p.term || termNow();
     const key = [p.subject, p.cls, term, p.week].join('|');
+    if (studyCurriculumLoading && studyCurriculumPendingKey === key) return;
     const requestId = ++studyCurriculumRequest;
+    const controller = new AbortController();
+    studyCurriculumPendingKey = key;
+    studyCurriculumLoading = true;
     studyNotesCurriculum.hidden = false;
     studyCurriculumSource.textContent = 'Loading curriculum indicators…';
     studyIndicatorMeta.textContent = '';
+    const timeout = setTimeout(() => controller.abort(), 12000);
     try {
       const query = new URLSearchParams({ subject: p.subject, cls: p.cls, term: String(term), week: String(p.week) });
-      const response = await fetch('/api/curriculum?' + query.toString(), { headers: { accept: 'application/json' } });
+      const response = await fetch('/api/curriculum?' + query.toString(), {
+        headers: { accept: 'application/json' }, signal: controller.signal
+      });
       const data = await response.json();
       if (requestId !== studyCurriculumRequest) return;
       if (!response.ok) throw new Error(data.message || 'No curriculum indicators are available for this selection.');
@@ -1441,24 +1503,33 @@
       if (requestId !== studyCurriculumRequest) return;
       studyIndicatorOptions.replaceChildren();
       studyIndicatorMeta.textContent = '';
-      studyCurriculumSource.textContent = error.message || 'Could not load curriculum indicators.';
+      studyCurriculumSource.textContent = error.name === 'AbortError'
+        ? 'Curriculum loading took too long. You can still generate general study notes; try changing the week to reload indicators.'
+        : (error.message || 'Could not load curriculum indicators. You can still generate general study notes.');
+    } finally {
+      clearTimeout(timeout);
+      if (requestId === studyCurriculumRequest) {
+        studyCurriculumLoading = false;
+        studyCurriculumPendingKey = '';
+      }
     }
   }
   if (resourceTypeEl) resourceTypeEl.addEventListener('change', refreshStudyCurriculum);
 
   function setMediaType(type) {
-    if (type === 'video') { toast('Video search is coming soon.'); return; }   // remove once YOUTUBE_API_KEY is set and the Videos button is enabled
-    mediaType = type;
+    mediaType = type === 'video' ? 'video' : 'image';
     document.querySelectorAll('[data-media-type]').forEach((button) => button.setAttribute('aria-pressed', String(button.dataset.mediaType === type)));
     mediaResults.replaceChildren();
-    mediaStatus.textContent = 'Search for ' + (type === 'video' ? 'educational videos' : 'images') + ' on your topic.';
+    mediaQuery.placeholder = type === 'video' ? 'Optional focus, e.g. keyboard input devices…' : 'Optional focus, e.g. labelled computer parts…';
+    mediaStatus.textContent = 'Search using the selected curriculum indicator' + (type === 'video' ? ' to find educational videos.' : ' to find classroom images.');
   }
   async function searchMedia() {
     const refinement = mediaQuery.value.trim();
     const indicator = mediaIndicator.trim();
-    const focus = indicator || refinement;
-    if (focus.length < 2) { mediaStatus.textContent = 'No indicator is loaded for this selection. Enter the specific indicator or teaching topic above.'; mediaQuery.focus(); return; }
-    const query = [focus.split(/\s+/).slice(0, 14).join(' '), mediaContext && mediaContext.subject, mediaType === 'video' ? 'lesson' : 'diagram'].filter(Boolean).join(' ');   // short and specific: long indicator text finds nothing
+    const indicatorFocus = indicator.replace(/\b(?:B[1-9]|SHS[1-3])(?:\.\d+){2,5}\b/gi, '').trim();
+    const focus = [refinement, indicatorFocus].filter(Boolean).join(' ');
+    if (focus.length < 2) { mediaStatus.textContent = 'No curriculum indicator is loaded. Enter a specific teaching concept to search.'; mediaQuery.focus(); return; }
+    const query = [focus, mediaContext && mediaContext.subject, mediaContext && mediaContext.cls, mediaType === 'video' ? 'educational tutorial demonstration' : 'educational labelled diagram illustration'].filter(Boolean).join(' ');
     mediaResults.replaceChildren();
     mediaStatus.textContent = 'Searching…';
     $('#mediaSearchBtn').disabled = true;
@@ -1564,15 +1635,28 @@
     }
     function open() {
       closeMenus(api);
+      const mobileSheet = window.matchMedia('(max-width: 560px)').matches;
       menu.hidden = false;
       btn.setAttribute('aria-expanded', 'true');
-      const r = btn.getBoundingClientRect();
-      const below = window.innerHeight - r.bottom, above = r.top;
-      root.dataset.dir = below < menu.offsetHeight + 16 && above > below ? 'up' : 'down';
+      if (mobileSheet) {
+        // Move outside clipping and stacking contexts in the mobile workspace.
+        menu.classList.add('is-mobile-sheet');
+        document.body.appendChild(menu);
+      } else {
+        menu.classList.remove('is-mobile-sheet');
+        const r = btn.getBoundingClientRect();
+        const below = window.innerHeight - r.bottom, above = r.top;
+        root.dataset.dir = below < menu.offsetHeight + 16 && above > below ? 'up' : 'down';
+      }
       const sel = menu.querySelector('[aria-checked="true"]') || items()[0];
-      if (sel) { sel.focus(); sel.scrollIntoView({ block: 'nearest' }); }
+      if (sel) { sel.focus({ preventScroll: true }); sel.scrollIntoView({ block: 'nearest' }); }
     }
-    function close() { menu.hidden = true; btn.setAttribute('aria-expanded', 'false'); }
+    function close() {
+      menu.hidden = true;
+      menu.classList.remove('is-mobile-sheet');
+      if (menu.parentElement !== root) root.appendChild(menu);
+      btn.setAttribute('aria-expanded', 'false');
+    }
 
     btn.addEventListener('click', () => (menu.hidden ? open() : close()));
     btn.addEventListener('keydown', (e) => { if (e.key === 'ArrowDown' && menu.hidden) { e.preventDefault(); open(); } });
@@ -1706,6 +1790,7 @@
   // Initialize media context only after termNow and schemeFor are initialized.
   loadMediaContext();
   function syncScheme() {
+    refreshStudyCurriculum();
     const S = window.SchoolPadiSchemes;
     if (!S) { schemeStrip.hidden = true; return; }
     const p = state.params;
@@ -1740,7 +1825,6 @@
           h('ul', null, ...e.indicators.map((x) => h('li', { text: x })))));
     }
     schemeStrip.hidden = false;
-    refreshStudyCurriculum();
     if ($('#studioTabMedia') && $('#studioTabMedia').getAttribute('aria-selected') === 'true') loadMediaContext();
   }
   function syncAlso() {

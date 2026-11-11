@@ -15,14 +15,14 @@
   } catch (e) { /* no splash */ }
 })();
 (function () {
-  // Keep the app aligned to the visual viewport. On phones, opening the keyboard can
-  // pan the visual viewport as well as shrink it; treating offsetTop as extra height
-  // makes the app's flex layout use the wrong coordinate system and jumps the composer.
-  var root = document.documentElement, raf = 0;
+  // iOS Safari animates the keyboard and pans the visual viewport in separate steps.
+  // Re-measure during viewport changes and after focus transitions so the composer
+  // stays above the keyboard instead of waiting for a missed resize event.
+  var root = document.documentElement, raf = 0, settleTimers = [];
   function size() {
     raf = 0;
     var vv = window.visualViewport;
-    var top = vv ? Math.max(0, vv.offsetTop || 0) : 0;
+    var top = vv ? (vv.offsetTop || 0) : 0;
     var height = vv && vv.height ? vv.height : (window.innerHeight || 0);
     if (height > 200) {
       root.style.setProperty('--app-top', Math.round(top) + 'px');
@@ -30,9 +30,18 @@
     }
   }
   function queue() { if (!raf) raf = requestAnimationFrame(size); }
+  function settle() {
+    queue();
+    settleTimers.forEach(clearTimeout);
+    settleTimers = [80, 220, 420, 700].map(function (delay) {
+      return setTimeout(size, delay);
+    });
+  }
   size();
   window.addEventListener('resize', queue);
-  window.addEventListener('orientationchange', function () { setTimeout(size, 250); });
+  window.addEventListener('orientationchange', settle);
+  document.addEventListener('focusin', settle);
+  document.addEventListener('focusout', settle);
   if (window.visualViewport) {
     window.visualViewport.addEventListener('resize', queue);
     window.visualViewport.addEventListener('scroll', queue);
