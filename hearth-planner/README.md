@@ -228,3 +228,15 @@ One banner on the start screen, shown only to Guest and Free teachers. Pro never
 - `ADS_PERSONALIZED=1` – optional. Without it ads are requested as non-personalised.
 
 Notes: the `google-adsense-account` tag and the AdSense snippet sit in the `<head>` of `index.html` so Google can verify the site. Google Auto ads can rewrite the page layout and stop scrolling, so `ads.js` undoes those edits on `<html>` and `<body>`; turn Auto ads off in AdSense (Ads → By site) as well. After the site is verified the head snippet can be removed (the ad loader adds the script itself when an ad is shown). `vercel.json` now lets the page load AdSense (script, frames, images, connections for Google ad domains); nothing else changed. AdSense must approve the site first, and Google reviews the public pages (About, Privacy), so keep them live. `public/ads.txt` holds the Google line for publisher 4853272055022457. Teachers in the EEA/UK may need a consent banner (Google's Funding Choices). An ad blocker or an unfilled ad simply hides the slot. Tests: `e2e-ads.js`.
+
+## Curriculum Intelligence Engine (v1)
+
+The generation API resolves the class, subject, term and week against the server-owned scheme dataset before calling the AI provider. The browser cannot submit its own curriculum record. Optional `indicatorCodes` can narrow generation to one or more indicators that actually belong to that resolved week; unknown or mismatched codes are rejected.
+
+`api/_curriculum.js` builds the curriculum contract added to the model's system instructions. It distinguishes content-standard codes from indicator codes, applies the scheme's multi-week pacing boundary, requires measurable objectives and an objective-linked outline, and tells the model not to invent official exemplars, textbook citations or retrieved sources. Revision weeks are treated as revision only, with no new indicator invented.
+
+`GET /api/curriculum?subject=Computing&cls=Basic%207&term=1&week=2` returns the resolved strand, sub-strand, content standard, indicator list and pacing metadata for the Teaching Studio. It labels the response `scheme_metadata_only`: the currently loaded scheme dataset is not the complete official NaCCA curriculum and does not include official exemplars or textbook passages. This endpoint therefore does not claim those materials have been retrieved.
+
+Run `npm test` from `hearth-planner/` to check indicator-code classification, curriculum instruction construction and revision handling.
+
+**Next data milestone:** ingest and curate the full official NaCCA curriculum documents and approved reference materials with page-level provenance. Only after that retrieval layer exists should the product claim document-grounded RAG or source-verified exemplars.
