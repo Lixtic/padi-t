@@ -23,4 +23,4 @@ assert.match(prompt, /not the complete official curriculum document/);
 assert.match(prompt, /part 1 of 2/);
 assert.match(Curriculum.buildInstruction(null, {}), /Do not invent a curriculum indicator/);
 
-process.stdout.write('Curriculum Intelligence Engine tests passed.\\n');
+process.stdout.write('Curriculum Intelligence Engine tests passed.\n');
