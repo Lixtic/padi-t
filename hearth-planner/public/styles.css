@@ -1431,3 +1431,10 @@ main[data-view="chat"] .notice-bar { display: none; }
   }
   .menu.is-mobile-sheet .menu-item { min-height: 50px; font-size: 16px; }
 }
+
+
+/* Inline curriculum illustrations in Study Notes */
+.study-illustration { margin: 1rem 0 1.25rem; padding: .75rem; border: 1px solid var(--card-line); border-radius: 14px; background: var(--card); max-width: 720px; }
+.study-illustration img { display: block; width: 100%; max-height: 360px; object-fit: contain; border-radius: 9px; background: var(--bg); }
+.study-illustration figcaption { margin-top: .55rem; color: var(--muted); font-size: .82rem; line-height: 1.45; }
+.study-illustration + p { font-size: .88rem; }
