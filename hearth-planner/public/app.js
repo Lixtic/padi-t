@@ -1097,17 +1097,21 @@
     const concepts = [...body.matchAll(/^#{1,3}\s+(.+)$/gm)].map((m) => m[1].replace(/[*_`]/g, '').trim()).filter((heading) => heading.length >= 4 && heading.length <= 90 && !ignored.test(heading)).slice(0, 3);
     if (!concepts.length) return;
     bot.note('Finding relevant classroom illustrations…');
+    let timeout;
     try {
       const who = window.PadiSync && window.PadiSync.authHeader ? await window.PadiSync.authHeader() : {};
       if (!who || !(who.authorization || who.Authorization)) { bot.note('Notes are ready. Sign in to add classroom illustrations.'); return; }
+      const controller = new AbortController();
+      timeout = setTimeout(() => controller.abort(), 12000);
       const results = await Promise.all(concepts.map(async (concept) => {
         const query = [concept, p.subject, p.cls, 'educational diagram'].filter(Boolean).join(' ').slice(0, 260);
-        const response = await fetch('/api/media-search?q=' + encodeURIComponent(query) + '&type=image', { headers: Object.assign({ Accept: 'application/json' }, who) });
+        const response = await fetch('/api/media-search?q=' + encodeURIComponent(query) + '&type=image', { headers: Object.assign({ Accept: 'application/json' }, who), signal: controller.signal });
         if (!response.ok) return null;
         const data = await response.json();
         const item = (data.results || []).find((entry) => entry && /^https:\/\//i.test(entry.thumbnail || '') && /^https:\/\//i.test(entry.url || ''));
         return item ? { concept, item } : null;
       }));
+      clearTimeout(timeout); timeout = null;
       const found = results.filter(Boolean);
       if (!found.length) { bot.note('Notes are ready. No suitable illustrations were found for these concepts.'); return; }
       let enriched = body;
@@ -1125,7 +1129,7 @@
       bot.set(enriched, true, msg);
       bot.note('Added ' + found.length + ' curriculum-related illustration' + (found.length === 1 ? '' : 's') + '. Check each source and licence.');
       session.updatedAt = Date.now(); store.save();
-    } catch (error) { bot.note('Notes are ready. Illustration search was unavailable, so no images were added.'); }
+    } catch (error) { if (timeout) clearTimeout(timeout); bot.note('Notes are ready. Illustration search was unavailable, so no images were added.'); }
   }
   async function runGenerate(session) {
     const ctrl = new AbortController();
