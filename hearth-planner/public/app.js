@@ -1402,15 +1402,29 @@
     }
     function open() {
       closeMenus(api);
+      const mobileSheet = window.matchMedia('(max-width: 560px)').matches;
       menu.hidden = false;
       btn.setAttribute('aria-expanded', 'true');
-      const r = btn.getBoundingClientRect();
-      const below = window.innerHeight - r.bottom, above = r.top;
-      root.dataset.dir = below < menu.offsetHeight + 16 && above > below ? 'up' : 'down';
+      if (mobileSheet) {
+        // Escape clipping/stacking contexts created by the scrollable mobile workspace:
+        // render the menu at document level as a true viewport-fixed bottom sheet.
+        menu.classList.add('is-mobile-sheet');
+        document.body.appendChild(menu);
+      } else {
+        menu.classList.remove('is-mobile-sheet');
+        const r = btn.getBoundingClientRect();
+        const below = window.innerHeight - r.bottom, above = r.top;
+        root.dataset.dir = below < menu.offsetHeight + 16 && above > below ? 'up' : 'down';
+      }
       const sel = menu.querySelector('[aria-checked="true"]') || items()[0];
-      if (sel) { sel.focus(); sel.scrollIntoView({ block: 'nearest' }); }
+      if (sel) { sel.focus({ preventScroll: true }); sel.scrollIntoView({ block: 'nearest' }); }
     }
-    function close() { menu.hidden = true; btn.setAttribute('aria-expanded', 'false'); }
+    function close() {
+      menu.hidden = true;
+      menu.classList.remove('is-mobile-sheet');
+      if (menu.parentElement !== root) root.appendChild(menu);
+      btn.setAttribute('aria-expanded', 'false');
+    }
 
     btn.addEventListener('click', () => (menu.hidden ? open() : close()));
     btn.addEventListener('keydown', (e) => { if (e.key === 'ArrowDown' && menu.hidden) { e.preventDefault(); open(); } });
