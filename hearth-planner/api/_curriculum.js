@@ -25,6 +25,17 @@ function indicatorsFor(scheme) {
 }
 
 function buildInstruction(scheme, request) {
+  if (scheme && scheme.type === 'revision') {
+    const topics = Array.isArray(scheme.topics) ? scheme.topics : [];
+    return [
+      '## Curriculum Intelligence Engine — revision scope',
+      'This is a revision week. Do not introduce new curriculum content or invent a new indicator.',
+      'Use only the previously taught topics supplied by the scheme record:',
+      ...(topics.length ? topics.map((topic) => '- ' + topic) : ['- No previous topics are listed in the loaded scheme record.']),
+      'Build retrieval practice, explanation checks and application tasks from these topics. Clearly label this as revision, not new teaching.',
+      'Do not fabricate official exemplars, textbook references, page numbers or claims that external resources were retrieved.'
+    ].join('\\n');
+  }
   if (!scheme || scheme.type !== 'teach') {
     return [
       '## Curriculum integrity',
