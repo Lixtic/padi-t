@@ -55,7 +55,11 @@ function remember(k, data) {
   if (CACHE.size >= 300) CACHE.delete(CACHE.keys().next().value);
   CACHE.set(k, { at: Date.now(), data });
 }
-function withTimeout(promise, ms) {\n  let timer;\n  return Promise.race([promise, new Promise((_, reject) => { timer = setTimeout(() => reject(new Error('Provider timeout')), ms); })]).finally(() => clearTimeout(timer));\n}\nasync function getJson(url, headers = {}) {
+function withTimeout(promise, ms) {
+  let timer;
+  return Promise.race([promise, new Promise((_, reject) => { timer = setTimeout(() => reject(new Error('Provider timeout')), ms); })]).finally(() => clearTimeout(timer));
+}
+async function getJson(url, headers = {}) {
   const response = await fetch(url, { headers: Object.assign({ Accept: 'application/json' }, headers), signal: AbortSignal.timeout(9000) });
   if (!response.ok) throw new Error('Provider returned HTTP ' + response.status);
   return response.json();
