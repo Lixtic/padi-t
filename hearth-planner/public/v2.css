@@ -70,7 +70,9 @@ select, input[type="search"], input[type="text"] { border-radius: 999px; }
 @media (max-width: 760px) {
   body.has-tabbar .app { height: calc(var(--app-h, 100dvh) - 64px - env(safe-area-inset-bottom)); }
   .v2-tabbar { display: grid; grid-template-columns: repeat(4, 1fr); position: fixed; left: 0; right: 0; bottom: 0; z-index: 40; padding: 6px 8px calc(6px + env(safe-area-inset-bottom)); background: var(--card); border-top: 1px solid var(--card-line); box-shadow: 0 -6px 20px rgba(22, 33, 63, .06); }
-  .app.nav-open ~ .v2-tabbar { display: none; }   /* the menu drawer covers the whole screen */
+  .app.nav-open ~ .v2-tabbar { display: none; }
+  body:has(.dd .menu:not([hidden])) .v2-tabbar { display: none; }   /* an open menu sheet uses the bottom edge */
+  .dd .menu { width: auto; min-width: 0 !important; box-sizing: border-box; }   /* the menu drawer covers the whole screen */
   .v2-tabbar button { display: grid; justify-items: center; gap: 2px; min-height: 52px; padding: 6px 4px; border-radius: 14px; color: var(--muted); font-size: .7rem; font-weight: 600; }
   .v2-tabbar button .ico { width: 22px; height: 22px; }
   .v2-tabbar button[aria-current="page"] { background: var(--v2-soft); color: var(--accent); }
@@ -106,3 +108,27 @@ select, input[type="search"], input[type="text"] { border-radius: 999px; }
 .reader-close { background: var(--accent); border-color: var(--accent); color: var(--on-accent); }
 .reader-body { flex: 1; overflow: auto; padding: 18px 16px calc(28px + env(safe-area-inset-bottom)); max-width: 1100px; width: 100%; margin: 0 auto; box-sizing: border-box; outline: none; -webkit-overflow-scrolling: touch; }
 .reader-body table { font-size: inherit; }
+
+/* ── Settings page ── */
+.settings-page[hidden] { display: none; }
+.settings-page { flex: 1; min-height: 0; overflow-y: auto; overscroll-behavior: contain; padding: 18px 16px 40px; }
+body.on-settings .stage, body.on-settings .pro-banner, body.on-settings .v2-tabbar { display: none !important; }
+.sp-inner { width: min(640px, 100%); margin: 0 auto; display: grid; gap: 14px; }
+.sp-head { display: flex; align-items: center; gap: 12px; }
+.sp-head h1 { margin: 0; font-size: 1.5rem; font-family: var(--serif, inherit); }
+.sp-back { display: inline-flex; align-items: center; gap: 4px; min-height: 40px; padding: 0 12px 0 6px; border: 1px solid var(--card-line); border-radius: 999px; background: var(--card); color: var(--text); font: inherit; font-size: 14px; cursor: pointer; }
+.sp-back .ico { width: 18px; height: 18px; transform: rotate(90deg); }
+.sp-card { background: var(--card); border: 1px solid var(--card-line); border-radius: 20px; padding: 14px 10px 10px; display: flex; flex-direction: column; gap: 4px; }
+.sp-card > h2 { margin: 0 0 6px 12px; font-size: .72rem; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); font-weight: 700; }
+.sp-card .acct-card { border: 0; box-shadow: none; padding: 0; }
+.sp-card .acct-card[hidden] { display: none; }
+.foot-settings { justify-content: flex-start; }
+.foot-settings span { flex: 1; text-align: left; }
+.foot-settings .disc-chev { transform: rotate(-90deg); width: 18px; height: 18px; }
+.foot-settings[aria-current="page"] { background: var(--v2-soft, var(--sb-hover)); color: var(--accent); }
+.sp-card[aria-label="Account"]:not(:has(.acct-card:not([hidden]))) { display: none; }
+
+/* Three-way plan grouping: the toggle takes its own full-width row under the label. */
+.sb-list-head { flex-wrap: wrap; row-gap: 6px; }
+.sb-seg { width: 100%; }
+.sb-seg button { flex: 1; padding: 0 6px; white-space: nowrap; }

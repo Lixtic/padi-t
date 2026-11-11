@@ -385,7 +385,8 @@
     <div class="sb-list-head">
       <span>My plans</span>
       <div class="sb-seg" role="group" aria-label="How to list plans">
-        <button type="button" id="viewClass" aria-pressed="true">By class</button>
+        <button type="button" id="viewType" aria-pressed="true">By type</button>
+        <button type="button" id="viewClass" aria-pressed="false">By class</button>
         <button type="button" id="viewRecent" aria-pressed="false">Recent</button>
       </div>
     </div>
@@ -405,36 +406,9 @@
         <span class="plan-cta" id="planRowCta"></span>
       </button>
 
-      <button type="button" class="disc" id="setToggle" data-disc="setPanel" aria-expanded="false" aria-controls="setPanel">
+      <button type="button" class="foot-link foot-settings" id="settingsLink" aria-label="Settings">
         <svg class="ico"><use href="#i-sliders"/></svg><span>Settings</span><svg class="ico disc-chev"><use href="#i-chevron"/></svg>
       </button>
-      <div class="set-panel" id="setPanel" hidden>
-      <div class="acct-card" id="accountRow" hidden>
-        <div id="acctOut">
-          <button type="button" class="acct-open" id="acctOpen">
-            <span class="acct-avatar"><svg class="ico"><use href="#i-user"/></svg></span>
-            <span class="acct-text"><strong>Sign in or create account</strong><small>Sync plans across your phone and computers</small></span>
-            <svg class="ico acct-go"><use href="#i-chevron"/></svg>
-          </button>
-        </div>
-        <div id="acctIn" class="acct-in" hidden>
-          <button type="button" class="acct-id" id="acctManage" aria-label="Open account">
-            <span class="acct-avatar" id="acctAvatar">G</span>
-            <span class="acct-text"><strong id="acctWho"></strong><small id="acctStatus" role="status"></small></span>
-          </button>
-          <button type="button" class="acct-sync" id="acctSyncNow" aria-label="Sync now" title="Sync now"><svg class="ico"><use href="#i-refresh"/></svg></button>
-        </div>
-        <p class="acct-msg" id="acctMsg" role="status" aria-live="polite"></p>
-      </div>
-
-      <div class="foot-group" aria-label="Your tools">
-        <button type="button" class="foot-link" id="profileBtn">
-          <svg class="ico"><use href="#i-user"/></svg><span>My teacher profile</span>
-        </button>
-        <button type="button" class="foot-link" id="feedbackBtn">
-          <svg class="ico"><use href="#i-pencil"/></svg><span>Help and feedback</span>
-        </button>
-      </div>
       <div class="foot-group foot-admin" aria-label="Admin">
         <p class="foot-label">Admin</p>
         <button type="button" class="foot-link" id="usageBtn" hidden>
@@ -446,30 +420,6 @@
         <button type="button" class="foot-link" id="inboxBtn" hidden>
           <svg class="ico"><use href="#i-layers"/></svg><span>Feedback inbox</span>
         </button>
-      </div>
-
-        <div class="set-row">
-          <span class="theme-label" id="themeLabel">Dark mode</span>
-          <button type="button" class="switch" id="themeToggle" role="switch" aria-checked="false" aria-labelledby="themeLabel">
-            <span class="knob">
-              <svg class="ico i-sun"><use href="#i-sun"/></svg>
-              <svg class="ico i-moon"><use href="#i-moon"/></svg>
-            </span>
-          </button>
-        </div>
-
-
-        <button type="button" class="set-action set-install" id="installBtn" hidden>
-          <svg class="ico"><use href="#i-download"/></svg><span>Install app</span>
-      </button>
-        <p class="install-hint" id="installHint" hidden></p>
-
-        <button type="button" class="set-action" id="clearCacheBtn">
-          <svg class="ico"><use href="#i-refresh"/></svg><span>Clear app cache</span>
-      </button>
-        <p class="install-hint" id="clearCacheNote">Fixes a stuck or outdated app. Your saved plans are kept.</p>
-
-        <p class="set-links"><a href="about">About</a><span aria-hidden="true">·</span><a href="privacy">Privacy</a><span aria-hidden="true">·</span><a href="refunds">Refunds</a><span aria-hidden="true">·</span><a href="ads-policy">Ads</a></p>
       </div>
     </div>
   </aside>
@@ -493,6 +443,66 @@
     <div class="pro-banner profile-ask" id="termBar" role="status" hidden></div>
     <div class="pro-banner profile-ask" id="profileAsk" role="status" hidden></div>
     <div class="pro-banner" id="proBanner" role="status" hidden><span id="proBannerText"></span><button type="button" class="pb-go" id="proBannerGo">Extend Pro</button><button type="button" class="pb-x" id="proBannerX" aria-label="Dismiss">×</button></div>
+
+
+    <section class="settings-page" id="settingsPage" aria-labelledby="setTitle" hidden>
+      <div class="sp-inner">
+        <div class="sp-head"><button type="button" class="sp-back" id="settingsBack"><svg class="ico"><use href="#i-chevron"/></svg><span>Back</span></button><h1 id="setTitle">Settings</h1></div>
+        <section class="sp-card" aria-label="Account"><h2>Account</h2>
+        <div class="acct-card" id="accountRow" hidden>
+        <div id="acctOut">
+          <button type="button" class="acct-open" id="acctOpen">
+            <span class="acct-avatar"><svg class="ico"><use href="#i-user"/></svg></span>
+            <span class="acct-text"><strong>Sign in or create account</strong><small>Sync plans across your phone and computers</small></span>
+            <svg class="ico acct-go"><use href="#i-chevron"/></svg>
+          </button>
+        </div>
+        <div id="acctIn" class="acct-in" hidden>
+          <button type="button" class="acct-id" id="acctManage" aria-label="Open account">
+            <span class="acct-avatar" id="acctAvatar">G</span>
+            <span class="acct-text"><strong id="acctWho"></strong><small id="acctStatus" role="status"></small></span>
+          </button>
+          <button type="button" class="acct-sync" id="acctSyncNow" aria-label="Sync now" title="Sync now"><svg class="ico"><use href="#i-refresh"/></svg></button>
+        </div>
+        <p class="acct-msg" id="acctMsg" role="status" aria-live="polite"></p>
+      </div>
+        </section>
+        <section class="sp-card" aria-label="Teacher"><h2>Teacher</h2>
+        <div class="foot-group" aria-label="Your tools">
+        <button type="button" class="foot-link" id="profileBtn">
+          <svg class="ico"><use href="#i-user"/></svg><span>My teacher profile</span>
+        </button>
+        <button type="button" class="foot-link" id="feedbackBtn">
+          <svg class="ico"><use href="#i-pencil"/></svg><span>Help and feedback</span>
+        </button>
+      </div>
+        </section>
+        <section class="sp-card" aria-label="Appearance and app"><h2>App</h2>
+        <div class="set-row">
+          <span class="theme-label" id="themeLabel">Dark mode</span>
+          <button type="button" class="switch" id="themeToggle" role="switch" aria-checked="false" aria-labelledby="themeLabel">
+            <span class="knob">
+              <svg class="ico i-sun"><use href="#i-sun"/></svg>
+              <svg class="ico i-moon"><use href="#i-moon"/></svg>
+            </span>
+          </button>
+        </div>
+
+
+        <button type="button" class="set-action set-install" id="installBtn" hidden>
+          <svg class="ico"><use href="#i-download"/></svg><span>Install app</span>
+      </button>
+        <p class="install-hint" id="installHint" hidden></p>
+
+        <button type="button" class="set-action" id="clearCacheBtn">
+          <svg class="ico"><use href="#i-refresh"/></svg><span>Clear app cache</span>
+      </button>
+        <p class="install-hint" id="clearCacheNote">Fixes a stuck or outdated app. Your saved plans are kept.</p>
+
+        <p class="set-links"><a href="about">About</a><span aria-hidden="true">·</span><a href="privacy">Privacy</a><span aria-hidden="true">·</span><a href="refunds">Refunds</a><span aria-hidden="true">·</span><a href="ads-policy">Ads</a></p>
+        </section>
+      </div>
+    </section>
 
     <section class="stage" id="stage">
       <div class="grow grow-top"></div>
