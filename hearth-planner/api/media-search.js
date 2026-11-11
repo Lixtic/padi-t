@@ -34,7 +34,7 @@ function relevant(item, query) {
   const r = relevance(query, item.title, item.description);
   const count = [...new Set(terms(query))].length;
   // Never accept a result merely because it has an image URL. Require meaningful subject overlap.
-  return count <= 1 ? r.matched >= 1 : (r.matched >= 2 && r.ratio >= 0.5) || (r.phrase && r.matched >= 1);
+  return count <= 2 ? r.matched >= 1 : (r.matched >= 2 && r.ratio >= 0.34) || (r.phrase && r.matched >= 1);
 }
 function cleanText(value) {
   return String(value || '').replace(/<[^>]*>/g, ' ').replace(/&nbsp;/g, ' ').replace(/\s+/g, ' ').trim();
@@ -183,21 +183,35 @@ module.exports = async (req, res) => {
       ['Pexels', pexels],
       ['Flickr', flickr],
     ];
-    const errors = [];
-    for (const [name, search] of providers) {
+    // Providers run concurrently: a slow primary source must not consume the
+    // browser's entire request budget before fallback sources get a chance.
+    const settled = await Promise.all(providers.map(async ([name, search]) => {
       try {
-        const candidates = await search(query);
-        const results = rankAndFilter(candidates, query);
-        if (results.length) {
-          const out = { type, query, results, provider: name, providersTried: providers.slice(0, providers.findIndex((p) => p[0] === name) + 1).map((p) => p[0]) };
-          remember(key, out);
-          return sendJson(res, 200, out);
-        }
+        const candidates = await Promise.race([
+          search(query),
+          new Promise((_, reject) => setTimeout(() => reject(new Error('Provider timeout')), 5500)),
+        ]);
+        return { name, results: rankAndFilter(candidates, query) };
       } catch (error) {
-        errors.push(name + ': ' + (error.message || 'unavailable'));
+        return { name, results: [], error: name + ': ' + (error.message || 'unavailable') };
       }
-    }
-    const out = { type, query, results: [], provider: 'none', providersTried: providers.map((p) => p[0]), message: 'No sufficiently relevant images were found. Try a more specific concept.' };
+    }));
+    const combined = settled.flatMap((entry) => entry.results.map((item) => Object.assign({}, item, { _provider: entry.name })));
+    const ranked = rankAndFilter(combined, query);
+    const results = ranked.map((item) => {
+      const out = Object.assign({}, item);
+      delete out._provider;
+      return out;
+    });
+    const providersWithResults = [...new Set(ranked.map((item) => item._provider))];
+    const errors = settled.filter((entry) => entry.error).map((entry) => entry.error);
+    const out = {
+      type, query, results,
+      provider: providersWithResults[0] || 'none',
+      providersTried: settled.map((entry) => entry.name),
+      message: results.length ? undefined : 'No sufficiently relevant images were found. Try a more specific concept.',
+    };
+    if (providersWithResults.length > 1) out.additionalProviders = providersWithResults.slice(1);
     if (errors.length) out.providerWarnings = errors;
     remember(key, out);
     return sendJson(res, 200, out);
