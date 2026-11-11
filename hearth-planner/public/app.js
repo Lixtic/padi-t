@@ -1443,11 +1443,11 @@
   if (resourceTypeEl) resourceTypeEl.addEventListener('change', refreshStudyCurriculum);
 
   function setMediaType(type) {
-    if (type === 'video') { toast('Video search is coming soon.'); return; }   // remove once YOUTUBE_API_KEY is set and the Videos button is enabled
-    mediaType = type;
+    mediaType = type === 'video' ? 'video' : 'image';
     document.querySelectorAll('[data-media-type]').forEach((button) => button.setAttribute('aria-pressed', String(button.dataset.mediaType === type)));
     mediaResults.replaceChildren();
-    mediaStatus.textContent = 'Search for ' + (type === 'video' ? 'educational videos' : 'images') + ' on your topic.';
+    mediaQuery.placeholder = type === 'video' ? 'Optional focus, e.g. keyboard input devices…' : 'Optional focus, e.g. labelled computer parts…';
+    mediaStatus.textContent = 'Search using the selected curriculum indicator' + (type === 'video' ? ' to find educational videos.' : ' to find classroom images.');
   }
   async function searchMedia() {
     const refinement = mediaQuery.value.trim();
