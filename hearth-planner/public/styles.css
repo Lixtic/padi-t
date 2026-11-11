@@ -1333,3 +1333,8 @@ main[data-view="chat"] .notice-bar { display: none; }
   .topbar .acct-top[data-tier="pro"] { margin: 0 4px; }
   body[data-status="online"] .topbar #statusChip, body[data-status="idle"] .topbar #statusChip { display: none; }
 }
+
+.acct-initial { display: none; font-weight: 700; font-size: 1rem; line-height: 1; }
+.acct-top[data-state="in"] .acct-initial, .acct-top[data-state="warn"] .acct-initial { display: block; }
+.acct-top[data-state="in"] > .ico, .acct-top[data-state="warn"] > .ico { display: none; }
+.acct-top[data-state="in"], .acct-top[data-state="warn"] { display: inline-grid; place-items: center; }
