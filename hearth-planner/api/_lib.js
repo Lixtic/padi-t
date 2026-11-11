@@ -4,6 +4,7 @@ const crypto = require('crypto');
 
 const Schemes = require('./_schemes');
 const Levels = require('./_levels');
+const Curriculum = require('./_curriculum');
 const CLASSES = Levels.ALL_CLASSES;
 const SIZES = ['Up to 30', '31–45', '46–60', 'Over 60'];
 const NAME_RE = /^[\p{L}\p{N} &()\-–—,.'/]{2,60}$/u;
@@ -95,7 +96,16 @@ function validate(body) {
   if (notes.length > MAX_NOTES) return { error: 'Notes are too long (max ' + MAX_NOTES + ' characters).' };
 
   const term = [1, 2, 3].includes(Number(body.params && body.params.term)) ? Number(body.params.term) : Schemes.currentTerm();
-  const scheme = Schemes.lookup(subject, cls, term, week);   // looked up here, never taken from the browser
+  let scheme = Schemes.lookup(subject, cls, term, week);   // looked up here, never taken from the browser
+  const indicatorCodes = Array.isArray(p.indicatorCodes) ? p.indicatorCodes.map((x) => String(x).trim().toUpperCase()).filter(Boolean) : [];
+  if (indicatorCodes.length > 10) return { error: 'Choose no more than 10 curriculum indicators at a time.' };
+  if (indicatorCodes.length) {
+    if (!scheme || !Array.isArray(scheme.indicators)) return { error: 'No curriculum indicators are loaded for this selection.' };
+    const byCode = new Map(scheme.indicators.map((text) => [Curriculum.codeFrom(text), text]).filter((entry) => entry[0]));
+    const missing = indicatorCodes.filter((code) => !byCode.has(code));
+    if (missing.length) return { error: 'One or more selected indicators do not belong to this class, subject, term and week. Refresh the curriculum selection.' };
+    scheme = Object.assign({}, scheme, { indicators: indicatorCodes.map((code) => byCode.get(code)) });
+  }
   if (scheme && scheme.type === 'exam') return { error: 'Week ' + scheme.weeks.join(' and ') + ' is an examination week, so there is no lesson plan. Choose another week.' };
 
   const thread = Array.isArray(body.thread) ? body.thread : [];
@@ -114,7 +124,7 @@ function validate(body) {
   if (thread.length && thread[thread.length - 1].role !== 'user') return { error: 'The last message must be a request.' };
 
   return {
-    params: { subject, cls, week, term, notes, hook, light, studyNotes, bece, size, scheme, mode, resourceType },
+    params: { subject, cls, week, term, notes, hook, light, studyNotes, bece, size, scheme, mode, resourceType, indicatorCodes },
     thread: thread.map((t) => ({ role: t.role, content: t.content })),
   };
 }
