@@ -1104,7 +1104,7 @@
       const controller = new AbortController();
       timeout = setTimeout(() => controller.abort(), 12000);
       const results = await Promise.all(concepts.map(async (concept) => {
-        const query = [concept, p.subject, p.cls, 'educational diagram'].filter(Boolean).join(' ').slice(0, 260);
+        const query = [concept, p.subject].filter(Boolean).join(' ').slice(0, 180);
         const response = await fetch('/api/media-search?q=' + encodeURIComponent(query) + '&type=image', { headers: Object.assign({ Accept: 'application/json' }, who), signal: controller.signal });
         if (!response.ok) return null;
         const data = await response.json();
