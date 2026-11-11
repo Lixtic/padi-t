@@ -1350,7 +1350,9 @@
     state.params.mode = mode;
     state.params.resourceType = resourceType || 'Study notes';
     if (mode === 'resources' && state.params.resourceType === 'Study notes') {
-      if (studyCurriculumLoading) { toast('Wait for the curriculum indicators to finish loading.'); state.params.mode = 'full'; return; }
+      // Indicator checkboxes are a convenience for narrowing the request, not a prerequisite.
+      // The API resolves the authoritative scheme context during generation, so never block
+      // Study Notes merely because the optional UI indicator request is still loading.
       const checked = [...studyIndicatorOptions.querySelectorAll('input[type="checkbox"]:checked')].map((x) => x.value);
       if (checked.length) state.params.indicatorCodes = checked;
       else if (studyIndicatorOptions.childElementCount) { toast('Select at least one curriculum indicator for the study notes.'); state.params.mode = 'full'; return; }
