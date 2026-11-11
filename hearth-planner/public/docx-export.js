@@ -96,7 +96,9 @@
 
     function widths(rows, hasHeader, meta) {
       var cols = rows[0].length, first = hasHeader ? rows[0][0] : '', w = [], c;
-      if (meta) w = cols === 2 ? [28, 72] : rows[0].map(function () { return 1; });
+      var signArea = hasHeader && cols === 3 && /^\**\s*class teacher/i.test(first);
+      if (signArea) w = [36, 36, 28];   // signature and stamp area
+      else if (meta) w = cols === 2 ? [28, 72] : rows[0].map(function () { return 1; });
       else if (hasHeader && cols === 3 && PHASE_HEADER.test(first)) w = [15, 68, 17];
       else if (hasHeader && cols === 4 && PHASE_HEADER.test(first)) w = [13, 36, 36, 15];
       else {
@@ -133,6 +135,7 @@
         w = [G[0], G[1] + G[2] + G[3], G[4]]; wMeta = [G[0] + G[1], G[2], G[3] + G[4]];
       } else w = joined ? (function () { var a = Math.floor(USABLE * 0.19), c = Math.floor(USABLE * 0.23); return [a, USABLE - a - c, c]; })() : widths(rows, hasHeader, meta);
       var labelFirst = hasHeader && !meta && LABEL_COLUMN.test(rows[0][0]);
+      var sign = hasHeader && cols === 3 && /^\**\s*class teacher/i.test(rows[0][0]);
       var line = { style: D.BorderStyle.SINGLE, size: 6, color: BORDER };
       var inLesson = false;
       var trs = rows.map(function (row, r) {
@@ -178,6 +181,7 @@
         var big = row.join('').length >= 700;
         return new D.TableRow({
           tableHeader: isHead || undefined,
+          height: sign && !isHead ? { value: 1500, rule: D.HeightRule.ATLEAST } : undefined,
           cantSplit: !big,
           children: row.map(function (value, c) {
             var o = { size: 17 }, shade = null, children;

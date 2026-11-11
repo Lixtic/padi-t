@@ -471,7 +471,7 @@
     const btnEdit = h('button', { type: 'button', class: 'tool', disabled: true, 'data-act': 'edit' }, icon('pencil'), h('span', { text: 'Edit' }));
     const btnReuse = h('button', { type: 'button', class: 'tool', disabled: true, 'data-act': 'reuse', title: 'Copy this plan into a new plan you can change freely' }, icon('layers'), h('span', { text: 'Reuse' }));
     const btnRegen = h('button', { type: 'button', class: 'tool', disabled: true }, icon('refresh'), h('span', { text: 'Regenerate' }));
-    const btnShare = h('button', { type: 'button', class: 'tool', disabled: true, 'data-act': 'share', title: 'Share only the lesson plan tables and the rubric' }, icon('share'), h('span', { text: 'Share' }));
+    const btnShare = h('button', { type: 'button', class: 'tool', disabled: true, 'data-act': 'share', title: 'Share only the lesson plan tables, with a signature and stamp area' }, icon('share'), h('span', { text: 'Share' }));
     const btnDocx = h('button', { type: 'button', class: 'tool tool-main', disabled: true }, icon('download'), h('span', { text: 'Word (.docx)' }));
     const btnPdf = h('button', { type: 'button', class: 'tool', disabled: true, title: 'Download as a PDF' }, icon('download'), h('span', { text: 'PDF' }));
     if (window.SchoolPadiArtifact) btnPdf.hidden = true;
@@ -751,14 +751,14 @@
     document.body.append(a); a.click(); a.remove();
     setTimeout(() => URL.revokeObjectURL(url), 4000);
   }
-  /* Share: only the lesson plan tables and the rubric. The objectives lines, study or teacher's notes, exam practice and follow-up chips stay out. */
+  /* Share: only the lesson plan tables, then a signature and stamp area. The objectives lines, study or teacher's notes, exam practice and follow-up chips stay out. */
   function planTables(md) {
     const out = []; let keep = false, inTable = false;
     String(md || '').replace(/\r/g, '').split('\n').forEach((line) => {
       const hd = /^(#{1,2})\s+(.*)$/.exec(line);
       if (hd) {
         const t = hd[2].trim().toLowerCase();
-        keep = /^lesson metadata/.test(t) || /^lesson\s*\d/.test(t) || /^assessment rubric/.test(t);
+        keep = /^lesson metadata/.test(t) || /^lesson\s*\d/.test(t);
         inTable = false;
         if (keep) { if (out.length) out.push(''); out.push(line.trim()); out.push(''); }
         return;
@@ -767,8 +767,13 @@
       if (/^\s*\|/.test(line)) { out.push(line.trim()); inTable = true; }
       else if (inTable) { out.push(''); inTable = false; }
     });
-    return out.join('\n').replace(/\n{3,}/g, '\n\n').trim();
+    const body = out.join('\n').replace(/\n{3,}/g, '\n\n').trim();
+    return body ? body + '\n\n' + SIGN_OFF : '';
   }
+  /* Shared and term-pack documents end with a sign-off area (the assessment rubric stays in the app and the full download). */
+  const SIGN_OFF = ['## Approval', '',
+    '| Class Teacher | Head Teacher / Supervisor | School Stamp |', '|---|---|---|',
+    '| Name: ______________________<br>Signature: ________________<br>Date: ____________________ | Name: ______________________<br>Signature: ________________<br>Date: ____________________ | <br><br><br><br><br> |'].join('\n');
   function sharePlan(text, baseTitle, btn) { return shareBody(planTables(splitElic(text).body), baseTitle + ' – lesson plan', btn); }
   /* Ask how to share: PDF opens anywhere (WhatsApp, email, print); Word can be edited. Resolves to 'pdf', 'docx' or '' when closed. */
   function askShareFormat() {
@@ -1192,7 +1197,7 @@
     termProgress();
   }
   function termResume() { if (!termRun) return; termRun.paused = ''; termProgress(); nextInQueue(); }
-  /* One file with every written week of a term: the lesson tables and rubric of each plan, in week order. Works from the saved plans, so it also serves a term planned earlier. */
+  /* One file with every written week of a term: the lesson tables of each plan with its signature and stamp area, in week order. Works from the saved plans, so it also serves a term planned earlier. */
   function termPackBody(r) {
     const term = r.term;
     return state.sessions.filter((x) => x.params && x.params.cls === r.cls && x.params.subject === r.subject && x.params.mode !== 'resources' && (x.params.term || term) === term && x.messages.length >= 2 && x.messages[1] && !x.messages[1].preview)
