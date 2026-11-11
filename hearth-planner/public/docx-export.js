@@ -271,7 +271,9 @@
         ht = ht.replace(/^[*_\s]+|[*_\s]+$/g, '');
         var newPlan = META_HEADING.test(ht) && level === 1 && metaSeen;
         if (META_HEADING.test(ht) && level === 1) metaSeen = true;
-        children.push(heading(ht, level, wrote && (NEW_PAGE.test(ht) || newPlan)));
+        // The Lesson Metadata heading stays hidden: the table is self-explanatory. A new plan in the same file still starts on a new page.
+        if (META_HEADING.test(ht) && level === 1) { if (newPlan) children.push(new D.Paragraph({ pageBreakBefore: true, spacing: { before: 0, after: 0, line: 20, lineRule: D.LineRuleType.EXACT }, children: [] })); }
+        else children.push(heading(ht, level, wrote && NEW_PAGE.test(ht)));
         lastHeading = ht; wrote = true;
         continue;
       }
