@@ -1116,7 +1116,8 @@
 
   async function addStudyIllustrations(session, msg, bot) {
     const p = session && session.params || {};
-    if (p.mode !== 'resources' || !/^study notes$/i.test(p.resourceType || '') || state.config.demo || msg.preview || msg.stopped || !signedIn()) return;
+    if (p.mode !== 'resources' || !/^study notes$/i.test(p.resourceType || '') || state.config.demo || msg.preview || msg.stopped) return;
+    if (!signedIn()) { bot.note('Notes are ready. Sign in to search for classroom illustrations.'); return; }
     const body = String(msg.content || '');
     const ignored = /^(study notes?|introduction|learning objectives?|objectives?|key terms?|summary|conclusion|assessment|class exercise|homework|references|further reading)$/i;
     const concepts = [...body.matchAll(/^#{1,3}\s+(.+)$/gm)].map((m) => m[1].replace(/[*_`]/g, '').trim()).filter((heading) => heading.length >= 4 && heading.length <= 90 && !ignored.test(heading)).slice(0, 3);
@@ -1132,14 +1133,21 @@
         const query = concept.slice(0, 180);
         const context = [p.subject, p.cls].filter(Boolean).join(' ').slice(0, 80);
         const response = await fetch('/api/media-search?q=' + encodeURIComponent(query) + '&context=' + encodeURIComponent(context) + '&type=image', { headers: Object.assign({ Accept: 'application/json' }, who), signal: controller.signal });
-        if (!response.ok) return null;
+        if (!response.ok) return { concept, warning: 'HTTP ' + response.status };
         const data = await response.json();
         const item = (data.results || []).find((entry) => entry && /^https:\/\//i.test(entry.thumbnail || '') && /^https:\/\//i.test(entry.url || ''));
-        return item ? { concept, item } : null;
+        const warning = (data.providerWarnings || []).slice(0, 2).join('; ');
+        return item ? { concept, item, warning } : (warning ? { concept, warning } : null);
       }));
       clearTimeout(timeout); timeout = null;
-      const found = results.filter(Boolean);
-      if (!found.length) { bot.note('Notes are ready. No suitable illustrations were found for these concepts.'); return; }
+      const found = results.filter((result) => result && result.item);
+      if (!found.length) {
+        const warning = results.find((result) => result && result.warning);
+        bot.note(warning
+          ? 'Notes are ready. Image sources could not be reached: ' + warning.warning
+          : 'Notes are ready. No sufficiently relevant illustrations were found for these concepts.');
+        return;
+      }
       let enriched = body;
       found.forEach(({ concept, item }) => {
         const headingLine = body.split('\n').find((line) => /^#{1,3}\s+/.test(line) && line.replace(/^#{1,3}\s+/, '').replace(/[*_`]/g, '').trim() === concept);
