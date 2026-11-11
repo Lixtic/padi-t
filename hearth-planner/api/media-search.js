@@ -146,13 +146,15 @@ module.exports = async (req, res) => {
   if (!me) return sendJson(res, 401, { error: 'account', message: 'Create a free account or sign in to search for images and videos.' });
   const raw = String(req.query && req.query.q || '').replace(/[<>\u0000-\u001f]/g, ' ').replace(/\s+/g, ' ').trim().slice(0, 320);
   const query = keywords(raw, 8);
+  const context = keywords(String(req.query && req.query.context || ''), 3);
+  const providerQuery = keywords([raw, context].filter(Boolean).join(' '), 8);
   const type = req.query && req.query.type === 'video' ? 'video' : 'image';
   if (query.length < 2) return sendJson(res, 400, { error: 'query', message: 'Enter a topic with at least two characters.' });
   try {
     const limit = await Quota.rateLimitShared('media:' + Quota.subjectFor(me, clientIp(req)), 20, 10 * 60 * 1000);
     if (!limit.ok) return sendJson(res, 429, { error: 'rate', message: 'Please wait a few minutes before searching again.' }, { 'Retry-After': String(limit.retryAfter) });
   } catch (e) { return sendJson(res, 503, { error: 'protection_unavailable', message: 'Search is temporarily unavailable. Please try again shortly.' }); }
-  const key = (type === 'image' ? 'image-relevance-v2:' : 'video:') + query;
+  const key = (type === 'image' ? 'image-relevance-v3:' : 'video:') + query + (context ? '|context:' + context : '');
   const hit = cached(key);
   if (hit) return sendJson(res, 200, hit);
   const searchUrl = 'https://www.youtube.com/results?search_query=' + encodeURIComponent(query + ' educational');
@@ -192,7 +194,7 @@ module.exports = async (req, res) => {
     const settled = await Promise.all(providers.map(async ([name, search]) => {
       try {
         const candidates = await Promise.race([
-          search(query),
+          search(providerQuery),
           new Promise((_, reject) => setTimeout(() => reject(new Error('Provider timeout')), 5500)),
         ]);
         return { name, results: rankAndFilter(candidates, query) };
@@ -210,14 +212,15 @@ module.exports = async (req, res) => {
     const providersWithResults = [...new Set(ranked.map((item) => item._provider))];
     const errors = settled.filter((entry) => entry.error).map((entry) => entry.error);
     const out = {
-      type, query, results,
+      type, query, context, results,
       provider: providersWithResults[0] || 'none',
       providersTried: settled.map((entry) => entry.name),
       message: results.length ? undefined : 'No sufficiently relevant images were found. Try a more specific concept.',
     };
     if (providersWithResults.length > 1) out.additionalProviders = providersWithResults.slice(1);
     if (errors.length) out.providerWarnings = errors;
-    remember(key, out);
+    if (errors.length === settled.length) out.unreachable = true;
+    if (results.length || !errors.length) remember(key, out);   // a failed search must not be remembered for a day
     return sendJson(res, 200, out);
   } catch (error) {
     return sendJson(res, 502, { error: 'search_failed', message: error.message || 'Media search failed.' });
