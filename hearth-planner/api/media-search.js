@@ -56,7 +56,7 @@ function remember(k, data) {
   CACHE.set(k, { at: Date.now(), data });
 }
 async function getJson(url, headers = {}) {
-  const response = await fetch(url, { headers: Object.assign({ Accept: 'application/json' }, headers), signal: AbortSignal.timeout(9000) });
+  const response = await fetch(url, { headers: Object.assign({ Accept: 'application/json' }, headers), signal: AbortSignal.timeout(7000) });
   if (!response.ok) throw new Error('Provider returned HTTP ' + response.status);
   return response.json();
 }
@@ -142,13 +142,15 @@ module.exports = async (req, res) => {
   if (!me) return sendJson(res, 401, { error: 'account', message: 'Create a free account or sign in to search for images and videos.' });
   const raw = String(req.query && req.query.q || '').replace(/[<>\u0000-\u001f]/g, ' ').replace(/\s+/g, ' ').trim().slice(0, 320);
   const query = keywords(raw, 8);
+  const context = keywords(String(req.query && req.query.context || ''), 3);
+  const providerQuery = keywords([raw, context].filter(Boolean).join(' '), 8);
   const type = req.query && req.query.type === 'video' ? 'video' : 'image';
   if (query.length < 2) return sendJson(res, 400, { error: 'query', message: 'Enter a topic with at least two characters.' });
   try {
     const limit = await Quota.rateLimitShared('media:' + Quota.subjectFor(me, clientIp(req)), 20, 10 * 60 * 1000);
     if (!limit.ok) return sendJson(res, 429, { error: 'rate', message: 'Please wait a few minutes before searching again.' }, { 'Retry-After': String(limit.retryAfter) });
   } catch (e) { return sendJson(res, 503, { error: 'protection_unavailable', message: 'Search is temporarily unavailable. Please try again shortly.' }); }
-  const key = (type === 'image' ? 'image-relevance-v2:' : 'video:') + query;
+  const key = (type === 'image' ? 'image-relevance-v3:' : 'video:') + query + (context ? '|context:' + context : '');
   const hit = cached(key);
   if (hit) return sendJson(res, 200, hit);
   const searchUrl = 'https://www.youtube.com/results?search_query=' + encodeURIComponent(query + ' educational');
@@ -174,8 +176,8 @@ module.exports = async (req, res) => {
       return sendJson(res, 200, out);
     }
 
-    // Try each source until it yields genuinely relevant matches. One poor result set
-    // must never prevent the next provider from being consulted.
+    // Query providers concurrently: sequential fallbacks could outlive the browser's
+    // illustration timeout before later sources were ever reached.
     const providers = [
       ['Wikimedia Commons', wikimedia],
       ['Openverse', openverse],
@@ -183,21 +185,32 @@ module.exports = async (req, res) => {
       ['Pexels', pexels],
       ['Flickr', flickr],
     ];
+    const settled = await Promise.allSettled(providers.map(async ([name, search]) => {
+      const candidates = await search(providerQuery);
+      return { name, results: rankAndFilter(candidates, query) };
+    }));
     const errors = [];
-    for (const [name, search] of providers) {
-      try {
-        const candidates = await search(query);
-        const results = rankAndFilter(candidates, query);
-        if (results.length) {
-          const out = { type, query, results, provider: name, providersTried: providers.slice(0, providers.findIndex((p) => p[0] === name) + 1).map((p) => p[0]) };
-          remember(key, out);
-          return sendJson(res, 200, out);
-        }
-      } catch (error) {
-        errors.push(name + ': ' + (error.message || 'unavailable'));
+    const results = [];
+    settled.forEach((entry, index) => {
+      if (entry.status === 'rejected') {
+        errors.push(providers[index][0] + ': ' + (entry.reason && entry.reason.message || 'unavailable'));
+        return;
       }
-    }
-    const out = { type, query, results: [], provider: 'none', providersTried: providers.map((p) => p[0]), message: 'No sufficiently relevant images were found. Try a more specific concept.' };
+      entry.value.results.forEach((item) => results.push(item));
+    });
+    const seen = new Set();
+    const unique = results.filter((item) => {
+      const key = item.url || item.thumbnail;
+      if (!key || seen.has(key)) return false;
+      seen.add(key);
+      return true;
+    }).slice(0, 12);
+    const out = {
+      type, query, context, results: unique,
+      provider: unique.length ? 'multi-source' : 'none',
+      providersTried: providers.map((p) => p[0]),
+      message: unique.length ? '' : 'No sufficiently relevant images were found. Try a more specific concept.',
+    };
     if (errors.length) out.providerWarnings = errors;
     remember(key, out);
     return sendJson(res, 200, out);
