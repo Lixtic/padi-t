@@ -1266,7 +1266,7 @@ main[data-view="chat"] .notice-bar { display: none; }
 .study-indicator-option { display:flex; align-items:flex-start; gap:9px; padding:9px 10px; border:1px solid var(--card-line); border-radius:10px; background:var(--card); cursor:pointer; }
 .study-indicator-option input { flex:none; width:17px; height:17px; margin:2px 0 0; accent-color:var(--accent); }
 .study-indicator-option > span { display:grid; gap:2px; min-width:0; font-size:12px; line-height:1.45; }
-.study-indicator-option strong { color:var(--ink); font-size:11px; }
+.study-indicator-option strong { color:var(--text); font-size:11px; }
 .study-curriculum-source { display:block; margin-top:9px; }
 @media(max-width:560px) {
   .teaching-studio { padding:10px; margin-top:10px; }
