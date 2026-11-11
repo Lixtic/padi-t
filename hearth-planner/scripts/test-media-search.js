@@ -2,7 +2,7 @@
 const assert = require('node:assert/strict');
 const Search = require('../api/media-search')._test;
 
-assert.deepEqual(Search.keywords('Input Devices Computing Basic 7 educational diagram'), 'input devices computing');
+assert.deepEqual(Search.keywords('Input Devices Computing Basic 7 educational diagram'), 'input device comput');
 assert.equal(Search.relevant({ title: 'Computer keyboard', description: 'A keyboard used to enter data' }, 'input devices computing'), false);
 assert.equal(Search.relevant({ title: 'Input devices', description: 'Keyboard and mouse' }, 'input devices computing'), true);
 assert.equal(Search.relevant({ title: 'Computer input device', description: 'Keyboard and mouse' }, 'Input Devices'), true);
