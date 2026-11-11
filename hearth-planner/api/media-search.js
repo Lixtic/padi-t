@@ -85,10 +85,9 @@ async function wikimedia(query) {
 }
 async function openverse(query) {
   const token = String(process.env.OPENVERSE_ACCESS_TOKEN || '').trim();
-  if (!token) return [];
   const url = new URL('https://api.openverse.org/v1/images/');
   url.search = new URLSearchParams({ q: query, page_size: '20', mature: 'false' }).toString();
-  const data = await getJson(url, { Authorization: 'Bearer ' + token });
+  const data = await getJson(url, token ? { Authorization: 'Bearer ' + token } : {});
   return (data.results || []).map((x) => ({
     title: cleanText(x.title), description: cleanText(x.description),
     thumbnail: x.thumbnail || x.url, url: x.foreign_landing_url || x.detail_url || x.url,
