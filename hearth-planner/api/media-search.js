@@ -1,27 +1,136 @@
 'use strict';
-// Public educational media discovery. Images come from Wikimedia Commons;
-// videos use YouTube Data API when configured and otherwise a safe YouTube search link.
+// Educational image discovery with relevance ranking and provider fallbacks.
 const { sendJson, clientIp } = require('./_lib');
 const Quota = require('./_quota');
 const A = require('./_auth');
 
-// Search engines match on a few words, not a paragraph: keep the first meaningful words only.
-const STOP = new Set('the and for with from that this into are was were has have had can will their them they its his her our your you who what when where which how why not but all any each some such than then also about over under between using use used make makes made given able learners learner pupils pupil students student should would could examine examines examined demonstrate demonstrates demonstrated identify identifies identified describe describes described explain explains explained explore explores explored create creates created design designs designed compare compares compared discuss discusses discussed analyse analyzes analyze apply applies applied evaluate evaluates evaluated construct constructs constructed develop develops developed investigate investigates investigated understand understands understanding learn learns learning lesson lessons basic jhs shs'.split(' '));
-function keywords(q, max) {
-  const seen = new Set(), out = [];
-  for (const w of q.toLowerCase().replace(/\b(?:b[1-9]|shs[1-3])(?:\.\d+){2,5}\b/gi, ' ').replace(/[^a-z0-9\u00c0-\u024f\s-]/g, ' ').split(/\s+/)) {
-    if (w.length < 3 || STOP.has(w) || seen.has(w)) continue;
-    seen.add(w); out.push(w); if (out.length >= max) break;
-  }
-  return out.join(' ');
+const STOP = new Set((
+  'the and for with from that this into are was were has have had can will their them they its his her our your you who what when where which how why not but all any each some such than then also about over under between using use used make makes made given able learners learner pupils pupil students student should would could examine examines examined demonstrate demonstrates demonstrated identify identifies identified describe describes described explain explains explained explore explores explored create creates created design designs designed compare compares compared discuss discusses discussed analyse analyzes analyze apply applies applied evaluate evaluates evaluated construct constructs constructed develop develops developed investigate investigates investigated understand understands understanding learn learns learning lesson lessons basic jhs shs educational diagram picture image images photo photos illustration illustrations example examples'
+).split(' '));
+
+function terms(value) {
+  return String(value || '').toLowerCase()
+    .normalize('NFKD').replace(/[\u0300-\u036f]/g, '')
+    .replace(/\b(?:b[1-9]|shs[1-3])(?:\.\d+){2,5}\b/gi, ' ')
+    .replace(/[^a-z0-9\s-]/g, ' ')
+    .split(/\s+/).filter((w) => w.length > 2 && !STOP.has(w));
+}
+function keywords(q, max = 8) {
+  return [...new Set(terms(q))].slice(0, max).join(' ');
+}
+function relevance(query, title, description) {
+  const q = [...new Set(terms(query))];
+  if (!q.length) return { score: 0, matched: 0, ratio: 0 };
+  const t = new Set(terms(title));
+  const d = new Set(terms(description));
+  const matched = q.filter((w) => t.has(w) || d.has(w));
+  const titleMatches = q.filter((w) => t.has(w)).length;
+  const phrase = String(title || '').toLowerCase().includes(String(query || '').toLowerCase());
+  const ratio = matched.length / q.length;
+  const score = titleMatches * 3 + (matched.length - titleMatches) + (phrase ? 5 : 0);
+  return { score, matched: matched.length, ratio, phrase };
+}
+function relevant(item, query) {
+  const r = relevance(query, item.title, item.description);
+  const count = [...new Set(terms(query))].length;
+  // Never accept a result merely because it has an image URL. Require meaningful subject overlap.
+  return count <= 1 ? r.matched >= 1 : (r.matched >= 2 && r.ratio >= 0.5) || (r.phrase && r.matched >= 1);
+}
+function cleanText(value) {
+  return String(value || '').replace(/<[^>]*>/g, ' ').replace(/&nbsp;/g, ' ').replace(/\s+/g, ' ').trim();
+}
+function rankAndFilter(results, query) {
+  return results.map((item) => {
+    const match = relevance(query, item.title, item.description);
+    return Object.assign({}, item, { _score: match.score, _matched: match.matched, _ratio: match.ratio });
+  }).filter((item) => item.thumbnail && /^https:\/\//i.test(item.thumbnail) && item.url && /^https:\/\//i.test(item.url) && relevant(item, query))
+    .sort((a, b) => b._score - a._score)
+    .slice(0, 8)
+    .map(({ _score, _matched, _ratio, ...item }) => item);
 }
 
-// Same search within a day is answered from memory (per server instance), so repeats cost no API quota.
 const CACHE = new Map(), TTL = 24 * 60 * 60 * 1000;
 const cached = (k) => { const h = CACHE.get(k); if (h && Date.now() - h.at < TTL) return h.data; CACHE.delete(k); return null; };
 function remember(k, data) {
   if (CACHE.size >= 300) CACHE.delete(CACHE.keys().next().value);
   CACHE.set(k, { at: Date.now(), data });
+}
+async function getJson(url, headers = {}) {
+  const response = await fetch(url, { headers: Object.assign({ Accept: 'application/json' }, headers), signal: AbortSignal.timeout(9000) });
+  if (!response.ok) throw new Error('Provider returned HTTP ' + response.status);
+  return response.json();
+}
+async function wikimedia(query) {
+  const url = new URL('https://commons.wikimedia.org/w/api.php');
+  url.search = new URLSearchParams({
+    action: 'query', generator: 'search', gsrsearch: 'filetype:bitmap ' + query,
+    gsrnamespace: '6', gsrlimit: '20', prop: 'imageinfo', iiprop: 'url|extmetadata',
+    iiurlwidth: '800', format: 'json', origin: '*',
+  }).toString();
+  const data = await getJson(url, { 'User-Agent': 'GuidEd/1.1 (educational media search)' });
+  return Object.values(data.query && data.query.pages || {}).map((page) => {
+    const info = page.imageinfo && page.imageinfo[0] || {};
+    const meta = info.extmetadata || {};
+    const description = cleanText(meta.ImageDescription && meta.ImageDescription.value);
+    return {
+      title: String(page.title || '').replace(/^File:/, ''),
+      description,
+      thumbnail: info.thumburl || info.url || '',
+      url: info.descriptionurl || info.url || '',
+      license: cleanText(meta.LicenseShortName && meta.LicenseShortName.value) || 'See source page',
+      author: cleanText(meta.Artist && meta.Artist.value),
+      provider: 'Wikimedia Commons',
+    };
+  });
+}
+async function openverse(query) {
+  const token = String(process.env.OPENVERSE_ACCESS_TOKEN || '').trim();
+  const url = new URL('https://api.openverse.org/v1/images/');
+  url.search = new URLSearchParams({ q: query, page_size: '20', mature: 'false' }).toString();
+  const data = await getJson(url, token ? { Authorization: 'Bearer ' + token } : {});
+  return (data.results || []).map((x) => ({
+    title: cleanText(x.title), description: cleanText(x.description),
+    thumbnail: x.thumbnail || x.url, url: x.foreign_landing_url || x.detail_url || x.url,
+    license: x.license ? String(x.license).toUpperCase() : 'See source page',
+    author: cleanText(x.creator), provider: 'Openverse',
+  }));
+}
+async function pixabay(query) {
+  const key = String(process.env.PIXABAY_API_KEY || '').trim();
+  if (!key) return [];
+  const url = new URL('https://pixabay.com/api/');
+  url.search = new URLSearchParams({ key, q: query, image_type: 'all', safesearch: 'true', per_page: '20' }).toString();
+  const data = await getJson(url);
+  return (data.hits || []).map((x) => ({
+    title: cleanText(x.tags), description: cleanText(x.tags),
+    thumbnail: x.webformatURL || x.largeImageURL, url: x.pageURL,
+    license: 'Pixabay Content License', author: cleanText(x.user), provider: 'Pixabay',
+  }));
+}
+async function pexels(query) {
+  const key = String(process.env.PEXELS_API_KEY || '').trim();
+  if (!key) return [];
+  const url = new URL('https://api.pexels.com/v1/search');
+  url.search = new URLSearchParams({ query, per_page: '20', orientation: 'landscape' }).toString();
+  const data = await getJson(url, { Authorization: key });
+  return (data.photos || []).map((x) => ({
+    title: cleanText(x.alt || query), description: cleanText(x.alt || ''),
+    thumbnail: x.src && (x.src.large || x.src.medium) || '',
+    url: x.url, license: 'Pexels License', author: cleanText(x.photographer), provider: 'Pexels',
+  }));
+}
+async function flickr(query) {
+  const key = String(process.env.FLICKR_API_KEY || '').trim();
+  if (!key) return [];
+  const url = new URL('https://www.flickr.com/services/rest/');
+  url.search = new URLSearchParams({ method: 'flickr.photos.search', api_key: key, text: query, safe_search: '1', content_type: '1', media: 'photos', per_page: '20', extras: 'description,license,url_m,url_z,owner_name', format: 'json', nojsoncallback: '1' }).toString();
+  const data = await getJson(url);
+  return (data.photos && data.photos.photo || []).map((x) => ({
+    title: cleanText(x.title), description: cleanText(x.description && x.description._content),
+    thumbnail: x.url_z || x.url_m || '',
+    url: 'https://www.flickr.com/photos/' + x.owner + '/' + x.id,
+    license: x.license || 'See source page', author: cleanText(x.ownername), provider: 'Flickr',
+  }));
 }
 
 module.exports = async (req, res) => {
@@ -39,22 +148,20 @@ module.exports = async (req, res) => {
     const limit = await Quota.rateLimitShared('media:' + Quota.subjectFor(me, clientIp(req)), 20, 10 * 60 * 1000);
     if (!limit.ok) return sendJson(res, 429, { error: 'rate', message: 'Please wait a few minutes before searching again.' }, { 'Retry-After': String(limit.retryAfter) });
   } catch (e) { return sendJson(res, 503, { error: 'protection_unavailable', message: 'Search is temporarily unavailable. Please try again shortly.' }); }
-  const hit = cached(type + ':' + query);
+  const key = (type === 'image' ? 'image-relevance-v2:' : 'video:') + query;
+  const hit = cached(key);
   if (hit) return sendJson(res, 200, hit);
   const searchUrl = 'https://www.youtube.com/results?search_query=' + encodeURIComponent(query + ' educational');
   try {
     if (type === 'video') {
-      const key = String(process.env.YOUTUBE_API_KEY || '').trim();
-      if (!key) return sendJson(res, 200, { type, query, results: [], searchUrl, provider: 'youtube-search' });
-      // Each YouTube search costs 100 of the 10,000 daily quota units: stop at a site-wide daily cap and hand over the plain search link instead.
+      const apiKey = String(process.env.YOUTUBE_API_KEY || '').trim();
+      if (!apiKey) return sendJson(res, 200, { type, query, results: [], searchUrl, provider: 'youtube-search' });
       let cap = { ok: true };
       try { cap = await Quota.rateLimitShared('media:yt:site', Math.max(1, parseInt(process.env.YOUTUBE_SEARCHES_DAILY, 10) || 80), 24 * 60 * 60 * 1000); } catch (e) { cap = { ok: false }; }
       if (!cap.ok) return sendJson(res, 200, { type, query, results: [], searchUrl, provider: 'youtube-search' });
       const url = new URL('https://www.googleapis.com/youtube/v3/search');
-      url.search = new URLSearchParams({ part: 'snippet', type: 'video', maxResults: '8', safeSearch: 'strict', q: query + ' educational', key }).toString();
-      const response = await fetch(url, { headers: { Accept: 'application/json' } });
-      if (!response.ok) throw new Error('Video search is temporarily unavailable.');
-      const data = await response.json();
+      url.search = new URLSearchParams({ part: 'snippet', type: 'video', maxResults: '8', safeSearch: 'strict', q: query + ' educational', key: apiKey }).toString();
+      const data = await getJson(url);
       const results = (data.items || []).map((item) => ({
         title: item.snippet && item.snippet.title || 'Educational video',
         description: item.snippet && item.snippet.description || '',
@@ -63,34 +170,40 @@ module.exports = async (req, res) => {
         url: 'https://www.youtube.com/watch?v=' + encodeURIComponent(item.id.videoId),
       }));
       const out = { type, query, results, searchUrl, provider: 'youtube' };
-      if (results.length) remember(type + ':' + query, out);
+      if (results.length) remember(key, out);
       return sendJson(res, 200, out);
     }
-    const url = new URL('https://commons.wikimedia.org/w/api.php');
-    url.search = new URLSearchParams({
-      action: 'query', generator: 'search', gsrsearch: 'filetype:bitmap ' + query,
-      gsrnamespace: '6', gsrlimit: '12', prop: 'imageinfo', iiprop: 'url|extmetadata',
-      iiurlwidth: '640', format: 'json', origin: '*',
-    }).toString();
-    const response = await fetch(url, { headers: { Accept: 'application/json', 'User-Agent': 'GuidEd/1.0 (educational media search)' } });
-    if (!response.ok) throw new Error('Image search is temporarily unavailable.');
-    const data = await response.json();
-    const pages = Object.values(data.query && data.query.pages || {});
-    const results = pages.map((page) => {
-      const info = page.imageinfo && page.imageinfo[0] || {};
-      const meta = info.extmetadata || {};
-      return {
-        title: String(page.title || '').replace(/^File:/, ''),
-        thumbnail: info.thumburl || info.url || '',
-        url: info.descriptionurl || info.url || '',
-        license: meta.LicenseShortName && meta.LicenseShortName.value || 'See source page',
-        author: meta.Artist && String(meta.Artist.value).replace(/<[^>]*>/g, '') || '',
-      };
-    }).filter((item) => item.thumbnail && item.url);
-    const out = { type, query, results, provider: 'wikimedia-commons' };
-    if (results.length) remember(type + ':' + query, out);
+
+    // Try each source until it yields genuinely relevant matches. One poor result set
+    // must never prevent the next provider from being consulted.
+    const providers = [
+      ['Wikimedia Commons', wikimedia],
+      ['Openverse', openverse],
+      ['Pixabay', pixabay],
+      ['Pexels', pexels],
+      ['Flickr', flickr],
+    ];
+    const errors = [];
+    for (const [name, search] of providers) {
+      try {
+        const candidates = await search(query);
+        const results = rankAndFilter(candidates, query);
+        if (results.length) {
+          const out = { type, query, results, provider: name, providersTried: providers.slice(0, providers.findIndex((p) => p[0] === name) + 1).map((p) => p[0]) };
+          remember(key, out);
+          return sendJson(res, 200, out);
+        }
+      } catch (error) {
+        errors.push(name + ': ' + (error.message || 'unavailable'));
+      }
+    }
+    const out = { type, query, results: [], provider: 'none', providersTried: providers.map((p) => p[0]), message: 'No sufficiently relevant images were found. Try a more specific concept.' };
+    if (errors.length) out.providerWarnings = errors;
+    remember(key, out);
     return sendJson(res, 200, out);
   } catch (error) {
     return sendJson(res, 502, { error: 'search_failed', message: error.message || 'Media search failed.' });
   }
 };
+
+module.exports._test = { terms, keywords, relevance, relevant, rankAndFilter };
