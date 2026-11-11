@@ -9,7 +9,7 @@ const A = require('./_auth');
 const STOP = new Set('the and for with from that this into are was were has have had can will their them they its his her our your you who what when where which how why not but all any each some such than then also about over under between using use used make makes made given able learners learner pupils pupil students student should would could examine examines examined demonstrate demonstrates demonstrated identify identifies identified describe describes described explain explains explained explore explores explored create creates created design designs designed compare compares compared discuss discusses discussed analyse analyzes analyze apply applies applied evaluate evaluates evaluated construct constructs constructed develop develops developed investigate investigates investigated understand understands understanding learn learns learning lesson lessons basic jhs shs'.split(' '));
 function keywords(q, max) {
   const seen = new Set(), out = [];
-  for (const w of q.toLowerCase().replace(/[^a-z0-9\u00c0-\u024f\s-]/g, ' ').split(/\s+/)) {
+  for (const w of q.toLowerCase().replace(/\b(?:b[1-9]|shs[1-3])(?:\.\d+){2,5}\b/gi, ' ').replace(/[^a-z0-9\u00c0-\u024f\s-]/g, ' ').split(/\s+/)) {
     if (w.length < 3 || STOP.has(w) || seen.has(w)) continue;
     seen.add(w); out.push(w); if (out.length >= max) break;
   }
