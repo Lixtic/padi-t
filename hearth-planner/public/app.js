@@ -121,6 +121,7 @@
 
   function inline(s) {
     return esc(s)
+      .replace(/\[([^\]]+)\]\((https:\/\/[^)\s]+)\)/g, '<a href="$2" target="_blank" rel="noopener noreferrer">$1</a>')
       .replace(/`([^`]+)`/g, '<code>$1</code>')
       .replace(/\*\*([^*]+?)\*\*/g, '<strong>$1</strong>')
       .replace(/(^|[^*\w])\*([^*\s][^*]*?)\*(?![*\w])/g, '$1<em>$2</em>');
@@ -204,6 +205,11 @@
         continue;
       }
       if (/^\s*(-{3,}|\*{3,}|_{3,})\s*$/.test(line)) { flushP(); flushL(); html += '<hr>'; continue; }
+      if ((m = line.match(/^!\[([^\]]*)\]\((https:\/\/[^)\s]+)\)$/))) {
+        flushP(); flushL();
+        html += '<figure class="study-illustration"><img src="' + esc(m[2]) + '" alt="' + esc(m[1]) + '" loading="lazy"><figcaption>' + esc(m[1]) + '</figcaption></figure>';
+        continue;
+      }
       if ((m = line.match(/^(#{1,6})\s+(.*?)\s*#*$/))) {
         flushP(); flushL();
         const lvl = Math.min(m[1].length, 3);
@@ -1083,6 +1089,44 @@
     submit();
   }
 
+  async function addStudyIllustrations(session, msg, bot) {
+    const p = session && session.params || {};
+    if (p.mode !== 'resources' || !/^study notes$/i.test(p.resourceType || '') || state.config.demo || msg.preview || msg.stopped || !signedIn()) return;
+    const body = String(msg.content || '');
+    const ignored = /^(study notes?|introduction|learning objectives?|objectives?|key terms?|summary|conclusion|assessment|class exercise|homework|references|further reading)$/i;
+    const concepts = [...body.matchAll(/^#{1,3}\\s+(.+)$/gm)].map((m) => m[1].replace(/[*_`]/g, '').trim()).filter((heading) => heading.length >= 4 && heading.length <= 90 && !ignored.test(heading)).slice(0, 3);
+    if (!concepts.length) return;
+    bot.note('Finding relevant classroom illustrations…');
+    try {
+      const who = window.PadiSync && window.PadiSync.authHeader ? await window.PadiSync.authHeader() : {};
+      if (!who || !(who.authorization || who.Authorization)) { bot.note('Notes are ready. Sign in to add classroom illustrations.'); return; }
+      const results = await Promise.all(concepts.map(async (concept) => {
+        const query = [concept, p.subject, p.cls, 'educational diagram'].filter(Boolean).join(' ').slice(0, 260);
+        const response = await fetch('/api/media-search?q=' + encodeURIComponent(query) + '&type=image', { headers: Object.assign({ Accept: 'application/json' }, who) });
+        if (!response.ok) return null;
+        const data = await response.json();
+        const item = (data.results || []).find((entry) => entry && /^https:\\/\\//i.test(entry.thumbnail || '') && /^https:\\/\\//i.test(entry.url || ''));
+        return item ? { concept, item } : null;
+      }));
+      const found = results.filter(Boolean);
+      if (!found.length) { bot.note('Notes are ready. No suitable illustrations were found for these concepts.'); return; }
+      let enriched = body;
+      found.forEach(({ concept, item }) => {
+        const headingLine = body.split('\\n').find((line) => /^#{1,3}\\s+/.test(line) && line.replace(/^#{1,3}\\s+/, '').replace(/[*_`]/g, '').trim() === concept);
+        if (!headingLine) return;
+        const alt = String(item.title || concept).replace(/[\\[\\]]/g, '').slice(0, 100);
+        const imageUrl = String(item.thumbnail).replace(/\\)/g, '%29');
+        const sourceTitle = String(item.title || concept).replace(/[\\[\\]]/g, '');
+        const caption = '*Image source: [' + sourceTitle + '](' + String(item.url) + ') · Licence: ' + String(item.license || 'See source page') + (item.author ? ' · Author: ' + String(item.author) : '') + '.*';
+        enriched = enriched.replace(headingLine, headingLine + '\\n\\n![' + alt + '](' + imageUrl + ')\\n\\n' + caption);
+      });
+      if (enriched === body) { bot.note('Notes are ready. Illustrations could not be placed beside the matching sections.'); return; }
+      msg.content = enriched;
+      bot.set(enriched, true, msg);
+      bot.note('Added ' + found.length + ' curriculum-related illustration' + (found.length === 1 ? '' : 's') + '. Check each source and licence.');
+      session.updatedAt = Date.now(); store.save();
+    } catch (error) { bot.note('Notes are ready. Illustration search was unavailable, so no images were added.'); }
+  }
   async function runGenerate(session) {
     const ctrl = new AbortController();
     const bot = makeBot(session);
@@ -1189,6 +1233,7 @@
       if (same && state.params.week === sp.week && !planQueue.length) { continueWeek(true); syncPills(); }   // the week pill moves on to the next one
     }
     bot.set(text, true, msg);
+    if (!aborted && !warning) addStudyIllustrations(session, msg, bot);
     updateSend(); renderSessions(); updateTopbar(); updateView(); store.save();
     scrollBottom();
     if (window.GuidedPlans && !state.config.demo) window.GuidedPlans.load();       // refresh "plans left"
