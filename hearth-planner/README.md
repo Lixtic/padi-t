@@ -30,7 +30,7 @@ With no key, the site still runs in **demo mode**: it shows a sample plan on a f
 
 ### Educational image search
 
-Study Notes illustrations are searched by concept and subject, then ranked using title and description matches. GuidEd rejects results without sufficient subject overlap and tries the next provider rather than inserting a weak match. Wikimedia Commons is the default; optional fallbacks can be enabled with `PIXABAY_API_KEY`, `PEXELS_API_KEY`, `FLICKR_API_KEY`, and `OPENVERSE_ACCESS_TOKEN`. Add these in Vercel Project Settings → Environment Variables. Each provider returns its source page and available licence/creator details; teachers should still review reuse terms.
+Study Notes illustrations are searched by concept and subject, then ranked using title and description matches. GuidEd rejects results without sufficient subject overlap and tries the next provider rather than inserting a weak match. Wikimedia Commons is the default; optional fallbacks can be enabled with `PIXABAY_API_KEY`, `PEXELS_API_KEY`, `FLICKR_API_KEY`, and, optionally, `OPENVERSE_ACCESS_TOKEN`. Openverse can be queried anonymously; its token is optional. Add any provider keys in Vercel Project Settings → Environment Variables. Each provider returns its source page and available licence/creator details; teachers should still review reuse terms.
 
 ### Environment variables
 
