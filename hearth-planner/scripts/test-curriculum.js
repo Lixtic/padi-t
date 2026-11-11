@@ -22,5 +22,9 @@ assert.match(prompt, /3–5 measurable learning objectives/);
 assert.match(prompt, /not the complete official curriculum document/);
 assert.match(prompt, /part 1 of 2/);
 assert.match(Curriculum.buildInstruction(null, {}), /Do not invent a curriculum indicator/);
+const revision = Curriculum.buildInstruction({ type: 'revision', topics: ['Computer hardware', 'Input devices'] }, {});
+assert.match(revision, /revision week/);
+assert.match(revision, /Computer hardware/);
+assert.match(revision, /Do not introduce new curriculum content/);
 
 process.stdout.write('Curriculum Intelligence Engine tests passed.\n');
