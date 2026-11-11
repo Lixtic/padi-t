@@ -37,7 +37,7 @@ function buildInstruction(scheme, request) {
   const r = request || {};
   const indicators = indicatorsFor(scheme);
   const lines = [
-    '## Curriculum Intelligence Engine — verified planning context',
+    '## Curriculum Intelligence Engine — resolved planning context',
     'Use this server-resolved scheme record as the scope boundary for the requested teaching material.',
     'Class: ' + (r.cls || 'Not supplied'),
     'Subject: ' + (r.subject || 'Not supplied'),
