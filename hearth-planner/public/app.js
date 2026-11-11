@@ -1337,7 +1337,7 @@
   const planAction = $('#planAction'), resourceAction = $('#resourceAction'), resourceTypeEl = $('#resourceType');
   const studyNotesCurriculum = $('#studyNotesCurriculum'), studyIndicatorMeta = $('#studyIndicatorMeta');
   const studyIndicatorOptions = $('#studyIndicatorOptions'), studyCurriculumSource = $('#studyCurriculumSource');
-  let studyCurriculumRequest = 0, studyCurriculumKey = '', studyCurriculumLoading = false;
+  let studyCurriculumRequest = 0, studyCurriculumKey = '', studyCurriculumPendingKey = '', studyCurriculumLoading = false;
   const mediaForm = $('#mediaSearchForm'), mediaQuery = $('#mediaQuery');
   const mediaStatus = $('#mediaStatus'), mediaResults = $('#mediaResults');
   const mediaIndicatorText = $('#mediaIndicatorText'), mediaIndicatorPicker = $('#mediaIndicatorPicker');
@@ -1389,25 +1389,31 @@
   async function refreshStudyCurriculum() {
     if (!studyNotesCurriculum || resourceTypeEl.value !== 'Study notes') {
       studyCurriculumRequest++;
+      studyCurriculumPendingKey = '';
       studyCurriculumLoading = false;
       if (studyNotesCurriculum) studyNotesCurriculum.hidden = true;
       return;
     }
     const p = state.params, term = p.term || termNow();
     const key = [p.subject, p.cls, term, p.week].join('|');
+    if (studyCurriculumLoading && studyCurriculumPendingKey === key) return;
     const requestId = ++studyCurriculumRequest;
+    const controller = new AbortController();
+    studyCurriculumPendingKey = key;
     studyCurriculumLoading = true;
     studyNotesCurriculum.hidden = false;
     studyCurriculumSource.textContent = 'Loading curriculum indicators…';
     studyIndicatorMeta.textContent = '';
+    const timeout = setTimeout(() => controller.abort(), 12000);
     try {
       const query = new URLSearchParams({ subject: p.subject, cls: p.cls, term: String(term), week: String(p.week) });
-      const response = await fetch('/api/curriculum?' + query.toString(), { headers: { accept: 'application/json' } });
+      const response = await fetch('/api/curriculum?' + query.toString(), {
+        headers: { accept: 'application/json' }, signal: controller.signal
+      });
       const data = await response.json();
       if (requestId !== studyCurriculumRequest) return;
       if (!response.ok) throw new Error(data.message || 'No curriculum indicators are available for this selection.');
       if (data.type !== 'teach') {
-        studyCurriculumLoading = false;
         studyIndicatorOptions.replaceChildren();
         studyIndicatorMeta.textContent = data.type === 'revision' ? 'Revision week — no new indicators are assigned.' : 'Examination week — no new indicators are assigned.';
         studyCurriculumSource.textContent = 'Choose a teaching week to select specific indicators.';
@@ -1416,14 +1422,20 @@
         return;
       }
       renderStudyIndicators(data, key);
-      studyCurriculumLoading = false;
       if (!data.indicators || !data.indicators.length) studyCurriculumSource.textContent = 'No coded indicators are loaded for this week. You can still generate general study notes from the scheme topic.';
     } catch (error) {
       if (requestId !== studyCurriculumRequest) return;
-      studyCurriculumLoading = false;
       studyIndicatorOptions.replaceChildren();
       studyIndicatorMeta.textContent = '';
-      studyCurriculumSource.textContent = error.message || 'Could not load curriculum indicators.';
+      studyCurriculumSource.textContent = error.name === 'AbortError'
+        ? 'Curriculum loading took too long. You can still generate general study notes; try changing the week to reload indicators.'
+        : (error.message || 'Could not load curriculum indicators. You can still generate general study notes.');
+    } finally {
+      clearTimeout(timeout);
+      if (requestId === studyCurriculumRequest) {
+        studyCurriculumLoading = false;
+        studyCurriculumPendingKey = '';
+      }
     }
   }
   if (resourceTypeEl) resourceTypeEl.addEventListener('change', refreshStudyCurriculum);
