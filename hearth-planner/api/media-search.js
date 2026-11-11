@@ -100,7 +100,7 @@ async function pixabay(query) {
   const key = String(process.env.PIXABAY_API_KEY || '').trim();
   if (!key) return [];
   const url = new URL('https://pixabay.com/api/');
-  url.search = new URLSearchParams({ key, q: query, image_type: 'photo,illustration,vector', safesearch: 'true', per_page: '20' }).toString();
+  url.search = new URLSearchParams({ key, q: query, image_type: 'all', safesearch: 'true', per_page: '20' }).toString();
   const data = await getJson(url);
   return (data.hits || []).map((x) => ({
     title: cleanText(x.tags), description: cleanText(x.tags),
