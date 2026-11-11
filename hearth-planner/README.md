@@ -28,6 +28,10 @@ Your API key and the master prompt stay on the server. The browser never sees th
 
 With no key, the site still runs in **demo mode**: it shows a sample plan on a fixed topic so you can check the layout. Demo content is not real curriculum for other subjects.
 
+### Educational image search
+
+Study Notes illustrations are searched by concept and subject, then ranked using title and description matches. GuidEd rejects results without sufficient subject overlap and tries the next provider rather than inserting a weak match. Wikimedia Commons is the default; optional fallbacks can be enabled with `PIXABAY_API_KEY`, `PEXELS_API_KEY`, `FLICKR_API_KEY`, and `OPENVERSE_ACCESS_TOKEN`. Add these in Vercel Project Settings → Environment Variables. Each provider returns its source page and available licence/creator details; teachers should still review reuse terms.
+
 ### Environment variables
 
 | Variable | Purpose |
