@@ -1257,6 +1257,17 @@ main[data-view="chat"] .notice-bar { display: none; }
 .studio-media-panel .media-curriculum { margin-top:10px; }
 .studio-media-panel .media-results { max-height:360px; overflow:auto; padding:1px; }
 .studio-media-panel .media-result { min-height:96px; }
+.study-curriculum { margin-top:12px; padding:13px; border:1px solid var(--card-line); border-radius:13px; background:var(--surface, var(--bg)); }
+.study-curriculum-head { display:flex; flex-direction:column; gap:3px; margin-bottom:9px; }
+.study-curriculum-head strong { font-size:13px; }
+.study-curriculum-head small,.study-curriculum-source { color:var(--muted); font-size:11px; line-height:1.45; }
+.study-indicator-meta { margin-bottom:8px; color:var(--muted); font-size:11px; line-height:1.45; }
+.study-indicator-options { display:grid; gap:7px; max-height:230px; overflow:auto; }
+.study-indicator-option { display:flex; align-items:flex-start; gap:9px; padding:9px 10px; border:1px solid var(--card-line); border-radius:10px; background:var(--card); cursor:pointer; }
+.study-indicator-option input { flex:none; width:17px; height:17px; margin:2px 0 0; accent-color:var(--accent); }
+.study-indicator-option > span { display:grid; gap:2px; min-width:0; font-size:12px; line-height:1.45; }
+.study-indicator-option strong { color:var(--text); font-size:11px; }
+.study-curriculum-source { display:block; margin-top:9px; }
 @media(max-width:560px) {
   .teaching-studio { padding:10px; margin-top:10px; }
   .studio-heading { align-items:flex-start; }
