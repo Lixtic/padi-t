@@ -137,11 +137,15 @@
       var joined = meta && !hasHeader && rows.some(isPhaseRow);
       var big = rows.some(function (r) { return r.join('').length >= 700; });
       var w;
-      if (joined) { var a = USABLE * 0.19, c = USABLE * 0.23; w = [a, USABLE - a - c, c]; }
+      var G = null;
+      if (joined && cols === 3) { G = [0.19, 0.05, 0.40, 0.13, 0.23].map(function (x) { return USABLE * x; }); w = G; }   // 5-column grid: metadata rows 24 / 40 / 36, lesson rows 19 / 58 / 23
+      else if (joined) { var a = USABLE * 0.19, c = USABLE * 0.23; w = [a, USABLE - a - c, c]; }
       else w = widths(rows, hasHeader, meta);
       var labelFirst = hasHeader && !meta && LABEL_COLUMN.test(rows[0][0]);
       var out = [], body = [], inLesson = false, breakNext = false;
-      function span(text, o) { var arr = [cell(text, o)]; for (var k = 1; k < cols; k++) arr.push({}); arr[0].colSpan = cols; return arr; }
+      function span(text, o) { var n = G ? 5 : cols, arr = [cell(text, o)]; for (var k = 1; k < n; k++) arr.push({}); arr[0].colSpan = n; return arr; }
+      // spread 3 cells over the 5-column grid: spans [2,1,2] for metadata rows, [1,3,1] for lesson rows
+      function grid(cells, spans) { var out = []; cells.forEach(function (c, i) { out.push(c); for (var k = 1; k < spans[i]; k++) out.push({}); if (spans[i] > 1) c.colSpan = spans[i]; }); return out; }
       function flush() { if (body.length) { out.push(tableNode(body, w, 0, big, breakNext)); breakNext = false; body = []; } }
 
       rows.forEach(function (row, r) {
@@ -157,14 +161,16 @@
             return;
           }
           if (isPhaseRow(row)) {
-            body.push(row.map(function (v) { return cell(v, { size: 8.5, bold: true, color: '#FFFFFF', align: 'center', after: 0, fill: NAVY }); }));
+            var ph = row.map(function (v) { return cell(v, { size: 8.5, bold: true, color: '#FFFFFF', align: 'center', after: 0, fill: NAVY }); });
+            body.push(G ? grid(ph, [1, 3, 1]) : ph);
             return;
           }
-          body.push(row.map(function (value, c) {
+          var cells = row.map(function (value, c) {
             var isLabel = false;
             if (inLesson) isLabel = c === 0; else { var mc = metaCell(value); value = mc.text; isLabel = mc.label; }
-            return cell(value, { size: 8.5, bold: isLabel, after: 1, fill: isLabel ? LABEL : null });
-          }));
+            return cell(value, { size: inLesson ? 8.5 : 8, bold: isLabel, after: inLesson ? 1 : 0, fill: isLabel ? LABEL : null });
+          });
+          body.push(G ? grid(cells, inLesson ? [1, 3, 1] : [2, 1, 2]) : cells);
           return;
         }
         var isHead = hasHeader && r === 0;

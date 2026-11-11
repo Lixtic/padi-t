@@ -126,7 +126,12 @@
       rows = rows.map(function (r) { while (r.length < cols) r.push(''); return r; });
       var isPhaseRow = function (r) { return /^\**\s*phase\s*\/\s*duration/i.test(r[0] || ''); };
       var joined = meta && !hasHeader && rows.some(isPhaseRow);        // Metadata + Lesson 1 + Lesson 2 as one table
-      var w = joined ? (function () { var a = Math.floor(USABLE * 0.19), c = Math.floor(USABLE * 0.23); return [a, USABLE - a - c, c]; })() : widths(rows, hasHeader, meta);
+      var G = null, wMeta = null, w;
+      if (joined && cols === 3) {        // a 5-column grid lets the metadata rows (24 / 40 / 36) and the lesson rows (19 / 58 / 23) each keep their own proportions
+        G = [0.19, 0.05, 0.40, 0.13, 0.23].map(function (x) { return Math.floor(USABLE * x); });
+        G[4] += USABLE - G.reduce(function (p, q) { return p + q; }, 0);
+        w = [G[0], G[1] + G[2] + G[3], G[4]]; wMeta = [G[0] + G[1], G[2], G[3] + G[4]];
+      } else w = joined ? (function () { var a = Math.floor(USABLE * 0.19), c = Math.floor(USABLE * 0.23); return [a, USABLE - a - c, c]; })() : widths(rows, hasHeader, meta);
       var labelFirst = hasHeader && !meta && LABEL_COLUMN.test(rows[0][0]);
       var line = { style: D.BorderStyle.SINGLE, size: 6, color: BORDER };
       var inLesson = false;
@@ -142,7 +147,7 @@
               : { size: 17, after: 0, keepNext: true };
             if (isLessonTitle && /^\**\s*lesson\s*(2|two)\b/i.test(row[0]) && opts && opts.pageBreak !== false) pOpts.pageBreakBefore = true;
             return new D.TableRow({ cantSplit: true, children: [new D.TableCell({
-              columnSpan: cols, width: { size: USABLE, type: D.WidthType.DXA },
+              columnSpan: G ? 5 : cols, width: { size: USABLE, type: D.WidthType.DXA },
               margins: { top: 50, bottom: 50, left: 90, right: 90 },
               shading: { type: D.ShadingType.CLEAR, fill: isLessonTitle ? GREEN : LABEL, color: 'auto' },
               children: paragraphs(row[0], pOpts)
@@ -150,7 +155,7 @@
           }
           if (isPhaseRow(row)) {
             return new D.TableRow({ cantSplit: true, children: row.map(function (value, c) {
-              return new D.TableCell({ width: { size: w[c], type: D.WidthType.DXA }, verticalAlign: D.VerticalAlign.CENTER,
+              return new D.TableCell({ columnSpan: G ? [1, 3, 1][c] : undefined, width: { size: w[c], type: D.WidthType.DXA }, verticalAlign: D.VerticalAlign.CENTER,
                 margins: { top: 50, bottom: 50, left: 90, right: 90 }, shading: { type: D.ShadingType.CLEAR, fill: '1B365D', color: 'auto' },
                 children: paragraphs(value, { size: 17, bold: true, color: 'FFFFFF', align: D.AlignmentType.CENTER, after: 0, keepNext: true }) });
             }) });
@@ -159,10 +164,14 @@
           return new D.TableRow({ cantSplit: !bigRow, children: row.map(function (value, c) {
             var isLabel = false;
             if (inLesson) isLabel = c === 0; else { var mc = metaCell(value); value = mc.text; isLabel = mc.label; }
-            return new D.TableCell({ width: { size: w[c], type: D.WidthType.DXA }, verticalAlign: D.VerticalAlign.TOP,
-              margins: { top: 50, bottom: 50, left: 90, right: 90 },
+            var isMetaRow = !inLesson && !!G;
+            var cw = isMetaRow ? wMeta[c] : w[c];
+            var cellOpts = { width: { size: cw, type: D.WidthType.DXA }, verticalAlign: D.VerticalAlign.TOP,
+              margins: isMetaRow ? { top: 25, bottom: 25, left: 80, right: 80 } : { top: 50, bottom: 50, left: 90, right: 90 },
               shading: isLabel ? { type: D.ShadingType.CLEAR, fill: LABEL, color: 'auto' } : undefined,
-              children: paragraphs(value, { size: 17, bold: isLabel, after: 20 }) });
+              children: paragraphs(value, { size: isMetaRow ? 15 : 17, bold: isLabel, after: isMetaRow ? 0 : 20 }) };
+            if (G) cellOpts.columnSpan = isMetaRow ? [2, 1, 2][c] : [1, 3, 1][c];
+            return new D.TableCell(cellOpts);
           }) });
         }
         var isHead = hasHeader && r === 0;
@@ -194,7 +203,7 @@
       });
       return new D.Table({
         width: { size: USABLE, type: D.WidthType.DXA },
-        columnWidths: w,
+        columnWidths: G || w,
         layout: D.TableLayoutType.FIXED,
         alignment: D.AlignmentType.CENTER,
         borders: { top: line, bottom: line, left: line, right: line, insideHorizontal: line, insideVertical: line },
