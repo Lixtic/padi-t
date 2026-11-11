@@ -87,3 +87,22 @@ select, input[type="search"], input[type="text"] { border-radius: 999px; }
 
 /* with a plan on screen the Studio never takes more than part of the screen */
 .composer-zone.is-collapsed .studio-content { max-height: 42dvh; overflow-y: auto; overscroll-behavior: contain; }
+
+/* the lesson details (subject, class, term, week) fold into one line */
+.pills-summary { display: flex; align-items: center; justify-content: space-between; gap: 10px; width: 100%; min-height: 48px; padding: 8px 16px; border-radius: 999px; border: 1px solid var(--card-line); background: var(--card); text-align: left; font-weight: 600; font-size: .9rem; }
+.pills-summary .ps-text { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.pills-summary .chev { flex: none; color: var(--muted); transition: transform .2s; }
+.pills-summary[aria-expanded="true"] .chev { transform: rotate(180deg); }
+.context-pills.is-folded > :not(.pills-summary) { display: none !important; }
+.context-pills > .pills-summary + * { margin-top: 8px; }
+
+/* full-screen reader */
+.reader-full { position: fixed; inset: 0; width: 100vw; max-width: none; height: 100dvh; max-height: none; margin: 0; padding: 0; border: 0; background: var(--bg); color: var(--text); display: flex; flex-direction: column; }
+.reader-full:not([open]) { display: none; }
+.reader-full::backdrop { background: var(--bg); }
+.reader-bar { position: sticky; top: 0; z-index: 2; display: flex; align-items: center; gap: 8px; padding: calc(10px + env(safe-area-inset-top)) 14px 10px; background: var(--card); border-bottom: 1px solid var(--card-line); }
+.reader-title { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: .95rem; }
+.reader-btn { min-height: 40px; min-width: 44px; padding: 0 14px; border-radius: 999px; border: 1px solid var(--card-line); background: var(--card); font-weight: 700; }
+.reader-close { background: var(--accent); border-color: var(--accent); color: var(--on-accent); }
+.reader-body { flex: 1; overflow: auto; padding: 18px 16px calc(28px + env(safe-area-inset-bottom)); max-width: 1100px; width: 100%; margin: 0 auto; box-sizing: border-box; outline: none; -webkit-overflow-scrolling: touch; }
+.reader-body table { font-size: inherit; }

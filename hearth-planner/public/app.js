@@ -70,6 +70,31 @@
     return el;
   }
 
+  /* Full-screen reader: the plan as it is on screen, with the whole display to read it. Text size can be raised for a classroom. */
+  function openReader(title, source) {
+    const dlg = document.createElement('dialog'); dlg.className = 'reader-full'; dlg.setAttribute('aria-label', title || 'Reading view');
+    const bar = h('div', { class: 'reader-bar' });
+    const heading = h('strong', { class: 'reader-title', text: title || '' });
+    let size = 1;
+    const bigger = h('button', { type: 'button', class: 'reader-btn', 'aria-label': 'Larger text', text: 'A+' });
+    const smaller = h('button', { type: 'button', class: 'reader-btn', 'aria-label': 'Smaller text', text: 'A\u2212' });
+    const close = h('button', { type: 'button', class: 'reader-btn reader-close', text: 'Close' });
+    const body = h('div', { class: 'reader-body md', tabindex: '-1' });
+    body.append(...Array.from(source.childNodes).map((n) => n.cloneNode(true)));
+    const apply = () => { body.style.fontSize = size + 'em'; };
+    bigger.addEventListener('click', () => { size = Math.min(size + 0.15, 2); apply(); });
+    smaller.addEventListener('click', () => { size = Math.max(size - 0.15, 0.8); apply(); });
+    close.addEventListener('click', () => dlg.close());
+    bar.append(heading, smaller, bigger, close);
+    dlg.append(bar, body);
+    dlg.addEventListener('close', () => { if (document.fullscreenElement === dlg && document.exitFullscreen) document.exitFullscreen().catch(() => {}); dlg.remove(); });
+    document.body.appendChild(dlg);
+    if (dlg.showModal) dlg.showModal(); else dlg.setAttribute('open', '');
+    const fs = dlg.requestFullscreen || dlg.webkitRequestFullscreen;
+    if (fs) { try { const r = fs.call(dlg); if (r && r.catch) r.catch(() => {}); } catch (e) { /* already full window */ } }
+    body.focus();
+  }
+
   function icon(name, cls = '') {
     const svg = document.createElementNS(NS, 'svg');
     svg.setAttribute('class', (name === 'logo' ? '' : 'ico ') + cls);
@@ -478,6 +503,7 @@
     const btnEdit = h('button', { type: 'button', class: 'tool', disabled: true, 'data-act': 'edit' }, icon('pencil'), h('span', { text: 'Edit' }));
     const btnReuse = h('button', { type: 'button', class: 'tool', disabled: true, 'data-act': 'reuse', title: 'Copy this plan into a new plan you can change freely' }, icon('layers'), h('span', { text: 'Reuse' }));
     const btnRegen = h('button', { type: 'button', class: 'tool', disabled: true }, icon('refresh'), h('span', { text: 'Regenerate' }));
+    const btnFull = h('button', { type: 'button', class: 'tool', disabled: true, 'data-act': 'full', title: 'Read in full screen' }, icon('expand'), h('span', { text: 'Full screen' }));
     const btnShare = h('button', { type: 'button', class: 'tool', disabled: true, 'data-act': 'share', title: 'Share only the lesson plan tables, with a signature and stamp area' }, icon('share'), h('span', { text: 'Share' }));
     const btnDocx = h('button', { type: 'button', class: 'tool tool-main', disabled: true }, icon('download'), h('span', { text: 'Word (.docx)' }));
     const btnPdf = h('button', { type: 'button', class: 'tool', disabled: true, title: 'Download as a PDF' }, icon('download'), h('span', { text: 'PDF' }));
@@ -489,12 +515,12 @@
         h('div', { class: 'doc' },
           h('div', { class: 'doc-bar' },
             h('div', { class: 'doc-id' }, titleEl, progress),
-            h('div', { class: 'doc-tools' }, btnEdit, btnReuse, btnRegen, btnShare,
+            h('div', { class: 'doc-tools' }, btnEdit, btnReuse, btnRegen, btnShare, btnFull,
               h('div', { class: 'tool-group', role: 'group', 'aria-label': 'Download' }, h('span', { class: 'tool-group-label', text: 'Download' }), h('div', { class: 'tool-pair' }, btnDocx, btnPdf)))),
           noteEl, bodyEl),
         chipsEl, extrasEl, metaEl));
 
-    const tools = [btnEdit, btnReuse, btnRegen, btnShare, btnDocx, btnPdf];
+    const tools = [btnEdit, btnReuse, btnRegen, btnShare, btnFull, btnDocx, btnPdf];
 
     function fillExtras() {
       if (demoted || (session.params && session.params.mode === 'resources')) { extrasEl.replaceChildren(); return; }
@@ -609,6 +635,11 @@
       else startEdit();
     });
     btnReuse.addEventListener('click', () => reuseSession());
+    btnFull.addEventListener('click', () => {
+      const SL = window.SchoolPadiSlides;
+      if (SL && SL.isDeck(session.params) && SL.parse(api.text).length) { slideState = slideState || { i: 0 }; SL.present(api.text, slideState, () => {}); return; }
+      openReader(titleEl.textContent, bodyEl);
+    });
     btnShare.addEventListener('click', () => {
       if (api.msg && api.msg.preview) {
         if (signedIn()) toast('This is a preview of Lesson 1. Write the full plan to share it.');
@@ -2136,8 +2167,10 @@
     applyTheme(document.documentElement.getAttribute('data-theme') === 'dark' ? 'dark' : 'light', false);
 
     const ddSubject = makeDropdown($('#ddSubject'), { name: 'Subject', items: () => {
-      const all = subjectsOf(state.params.cls), mine = mySubjectsOf(state.params.cls), rest = all.filter((x) => !mine.includes(x));
-      return mine.length && rest.length ? [{ header: 'My subjects' }, ...mine.map((x) => ({ id: x, label: x })), { header: 'Other subjects' }, ...rest.map((x) => ({ id: x, label: x }))] : all.map((x) => ({ id: x, label: x }));
+      const all = subjectsOf(state.params.cls), mine = mySubjectsOf(state.params.cls);
+      if (!mine.length) return all.map((x) => ({ id: x, label: x }));
+      const shown = mine.includes(state.params.subject) || !all.includes(state.params.subject) ? mine : [state.params.subject, ...mine];   // the subject in use never vanishes from its own menu
+      return shown.map((x) => ({ id: x, label: x }));   // a teacher with a profile sees only the subjects they teach (change them in Settings)
     }, get: () => state.params.subject, set: (v) => { state.params.subject = v; continueWeek(); store.save(); syncPills(); }, label: (x) => x });
     const chooseClass = (v) => {
       state.params.cls = v;

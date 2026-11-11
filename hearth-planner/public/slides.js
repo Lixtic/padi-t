@@ -142,5 +142,5 @@
     if (fs) { try { var p = fs.call(dlg); if (p && p.catch) p.catch(function () {}); } catch (e) { /* the dialog is already full-window */ } }
   }
 
-  root.SchoolPadiSlides = { parse: parse, deck: deck, isDeck: isDeck };
+  root.SchoolPadiSlides = { parse: parse, deck: deck, isDeck: isDeck, present: function (md, st, sync) { var sl = parse(md); if (sl.length) presentFull(sl, st || { i: 0 }, sync || function () {}); } };
 })(typeof window !== 'undefined' ? window : this);

@@ -52,6 +52,32 @@
     document.body.appendChild(nav); document.body.classList.add('has-tabbar');
   }
 
-  function init() { resourceCards(); tabBar(); }
+  /* The subject, class, term and week pills fold into one line. They open by themselves for someone who has not set up yet,
+     and stay folded for a teacher with a profile or anyone who folded them before. */
+  function foldPills() {
+    var pills = $('#pills'); if (!pills || $('.pills-summary')) return;
+    var KEY = 'gd.pillsOpen', pref = null;
+    try { pref = localStorage.getItem(KEY); } catch (e) { /* private mode */ }
+    var GP = window.GuidedProfile, hasProfile = false;
+    try { var cl = $('#ddClass .dd-label'); hasProfile = !!(GP && ((GP.myClasses && GP.myClasses().length) || (GP.mySubjects && cl && GP.mySubjects(cl.textContent.trim()).length))); } catch (e) { /* ignore */ }
+    var open = pref === null ? !hasProfile : pref === '1';
+    var btn = document.createElement('button'); btn.type = 'button'; btn.className = 'pills-summary'; btn.setAttribute('aria-controls', 'pills');
+    btn.innerHTML = '<span class="ps-text"></span><svg class="ico chev" aria-hidden="true"><use href="#i-chevron"/></svg>';
+    var label = function () {
+      var t = ['#ddSubject', '#ddClass', '#ddTerm', '#ddWeek'].map(function (s) { var e = $(s + ' .dd-label'); return e ? e.textContent.trim() : ''; }).filter(Boolean).join(' \u00b7 ');
+      btn.querySelector('.ps-text').textContent = t || 'Lesson details';
+    };
+    var set = function (o, save) {
+      open = o; pills.classList.toggle('is-folded', !o); btn.setAttribute('aria-expanded', String(o));
+      if (save) { try { localStorage.setItem(KEY, o ? '1' : '0'); } catch (e) { /* ignore */ } }
+    };
+    btn.addEventListener('click', function () { set(!open, true); });
+    pills.insertBefore(btn, pills.firstChild);
+    var mo = new MutationObserver(label);   // watch the four menus only, never the summary itself
+    ['#ddSubject', '#ddClass', '#ddTerm', '#ddWeek'].forEach(function (s) { var e = $(s); if (e) mo.observe(e, { subtree: true, childList: true, characterData: true }); });
+    label(); set(open, false);
+  }
+
+  function init() { resourceCards(); tabBar(); foldPills(); }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init); else init();
 })();
