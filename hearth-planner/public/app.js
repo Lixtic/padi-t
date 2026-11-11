@@ -1130,7 +1130,7 @@
       const controller = new AbortController();
       timeout = setTimeout(() => controller.abort(), 15000);
       const results = await Promise.all(concepts.map(async (concept) => {
-        const query = concept.slice(0, 180);
+        const query = concept.slice(0, 140);
         const context = [p.subject, p.cls].filter(Boolean).join(' ').slice(0, 80);
         const response = await fetch('/api/media-search?q=' + encodeURIComponent(query) + '&context=' + encodeURIComponent(context) + '&type=image', { headers: Object.assign({ Accept: 'application/json' }, who), signal: controller.signal });
         if (!response.ok) return { concept, unreachable: true };

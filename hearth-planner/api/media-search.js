@@ -34,33 +34,19 @@ function relevant(item, query) {
   const r = relevance(query, item.title, item.description);
   const count = [...new Set(terms(query))].length;
   // Never accept a result merely because it has an image URL. Require meaningful subject overlap.
-  return count <= 1 ? r.matched >= 1 : (r.matched >= 2 && r.ratio >= 0.5) || (r.phrase && r.matched >= 1);
+  return count <= 2 ? r.matched >= 1 : (r.matched >= 2 && r.ratio >= 0.34) || (r.phrase && r.matched >= 1);
 }
 function cleanText(value) {
   return String(value || '').replace(/<[^>]*>/g, ' ').replace(/&nbsp;/g, ' ').replace(/\s+/g, ' ').trim();
 }
-function rankAndFilter(results, query, keepScore) {
+function rankAndFilter(results, query) {
   return results.map((item) => {
     const match = relevance(query, item.title, item.description);
     return Object.assign({}, item, { _score: match.score, _matched: match.matched, _ratio: match.ratio });
   }).filter((item) => item.thumbnail && /^https:\/\//i.test(item.thumbnail) && item.url && /^https:\/\//i.test(item.url) && relevant(item, query))
     .sort((a, b) => b._score - a._score)
     .slice(0, 8)
-    .map(({ _score, _matched, _ratio, ...item }) => keepScore ? Object.assign(item, { _score }) : item);
-}
-
-/* Combine the answers of several providers: best relevance first across all of them, no repeats. */
-function mergeProviders(settled, names, limit = 12) {
-  const errors = [], all = [];
-  settled.forEach((entry, i) => {
-    if (entry.status === 'rejected') { errors.push(names[i] + ': ' + (entry.reason && entry.reason.message || 'unavailable')); return; }
-    entry.value.forEach((item) => all.push(item));
-  });
-  const seen = new Set();
-  const results = all.sort((a, b) => (b._score || 0) - (a._score || 0))
-    .filter((item) => { const id = item.url || item.thumbnail; if (!id || seen.has(id)) return false; seen.add(id); return true; })
-    .slice(0, limit).map(({ _score, ...item }) => item);
-  return { results, errors, allFailed: errors.length === names.length };
+    .map(({ _score, _matched, _ratio, ...item }) => item);
 }
 
 const CACHE = new Map(), TTL = 24 * 60 * 60 * 1000;
@@ -69,8 +55,12 @@ function remember(k, data) {
   if (CACHE.size >= 300) CACHE.delete(CACHE.keys().next().value);
   CACHE.set(k, { at: Date.now(), data });
 }
+function withTimeout(promise, ms) {
+  let timer;
+  return Promise.race([promise, new Promise((_, reject) => { timer = setTimeout(() => reject(new Error('Provider timeout')), ms); })]).finally(() => clearTimeout(timer));
+}
 async function getJson(url, headers = {}) {
-  const response = await fetch(url, { headers: Object.assign({ Accept: 'application/json' }, headers), signal: AbortSignal.timeout(7000) });
+  const response = await fetch(url, { headers: Object.assign({ Accept: 'application/json' }, headers), signal: AbortSignal.timeout(9000) });
   if (!response.ok) throw new Error('Provider returned HTTP ' + response.status);
   return response.json();
 }
@@ -190,8 +180,8 @@ module.exports = async (req, res) => {
       return sendJson(res, 200, out);
     }
 
-    // Query providers concurrently: sequential fallbacks could outlive the browser's
-    // illustration timeout before later sources were ever reached.
+    // Try each source until it yields genuinely relevant matches. One poor result set
+    // must never prevent the next provider from being consulted.
     const providers = [
       ['Wikimedia Commons', wikimedia],
       ['Openverse', openverse],
@@ -199,21 +189,42 @@ module.exports = async (req, res) => {
       ['Pexels', pexels],
       ['Flickr', flickr],
     ];
-    const settled = await Promise.allSettled(providers.map(async ([, search]) => rankAndFilter(await search(providerQuery), query, true)));
-    const { results: unique, errors, allFailed } = mergeProviders(settled, providers.map((p) => p[0]));
+    // Providers run concurrently: a slow primary source must not consume the
+    // browser's entire request budget before fallback sources get a chance.
+    const settled = await Promise.all(providers.map(async ([name, search]) => {
+      try {
+        const candidates = await Promise.race([
+          search(providerQuery),
+          new Promise((_, reject) => setTimeout(() => reject(new Error('Provider timeout')), 5500)),
+        ]);
+        return { name, results: rankAndFilter(candidates, query) };
+      } catch (error) {
+        return { name, results: [], error: name + ': ' + (error.message || 'unavailable') };
+      }
+    }));
+    const combined = settled.flatMap((entry) => entry.results.map((item) => Object.assign({}, item, { _provider: entry.name })));
+    const ranked = rankAndFilter(combined, query);
+    const results = ranked.map((item) => {
+      const out = Object.assign({}, item);
+      delete out._provider;
+      return out;
+    });
+    const providersWithResults = [...new Set(ranked.map((item) => item._provider))];
+    const errors = settled.filter((entry) => entry.error).map((entry) => entry.error);
     const out = {
-      type, query, context, results: unique,
-      provider: unique.length ? 'multi-source' : 'none',
-      providersTried: providers.map((p) => p[0]),
-      message: unique.length ? '' : 'No sufficiently relevant images were found. Try a more specific concept.',
+      type, query, context, results,
+      provider: providersWithResults[0] || 'none',
+      providersTried: settled.map((entry) => entry.name),
+      message: results.length ? undefined : 'No sufficiently relevant images were found. Try a more specific concept.',
     };
-    if (allFailed) out.unreachable = true;
+    if (providersWithResults.length > 1) out.additionalProviders = providersWithResults.slice(1);
     if (errors.length) out.providerWarnings = errors;
-    if (unique.length || !errors.length) remember(key, out);   // a failed search must not be remembered for a day
+    if (errors.length === settled.length) out.unreachable = true;
+    if (results.length || !errors.length) remember(key, out);   // a failed search must not be remembered for a day
     return sendJson(res, 200, out);
   } catch (error) {
     return sendJson(res, 502, { error: 'search_failed', message: error.message || 'Media search failed.' });
   }
 };
 
-module.exports._test = { terms, keywords, relevance, relevant, rankAndFilter, mergeProviders };
+module.exports._test = { terms, keywords, relevance, relevant, rankAndFilter };
