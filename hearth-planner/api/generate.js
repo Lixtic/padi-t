@@ -2,13 +2,15 @@
 const BASE_PROMPT = require('./_prompt');
 const LEVEL_PROMPTS = require('./_prompt_levels');
 const Levels = require('./_levels');
+const Curriculum = require('./_curriculum');
 // JHS uses the main prompt as it is. Other levels add their own profile at the end.
-const systemFor = (cls, mode, resourceType) => {
+const systemFor = (cls, mode, resourceType, scheme, request) => {
   const l = Levels.levelOfClass(cls);
   let system = l && LEVEL_PROMPTS[l.id] ? BASE_PROMPT + '\n\n' + LEVEL_PROMPTS[l.id] : BASE_PROMPT;
   if (mode === 'plan') system += '\n\n## Task mode override: lesson plan only\nReturn ONLY Lesson Metadata, Lesson 1, Lesson 2 and the Assessment Rubric. Do not include Study Notes, BECE Practice, worksheets, homework, slides or any other teaching resources. Keep the full lesson plan structure, curriculum alignment, learning objectives, lesson activities, assessment and resources column.';
   if (mode === 'resources') system += '\n\n## Task mode override: teaching resource only\nReturn ONLY the requested teaching resource. Do not include lesson metadata, lesson-plan tables, lesson phases or an assessment rubric. Use the supplied class, subject, term, week and scheme information to keep the resource aligned to the topic. For worksheets and homework, include learner instructions and an answer key. For BECE practice, include questions and a marking guide. For teaching slides, provide a slide-by-slide outline with concise learner-facing content and teacher notes. For study notes, write clear, complete student notes with examples and key terms.';
   if (mode === 'resources' && resourceType === 'Teaching slides') system += '\n\n## Teaching slides format (follow exactly)\nWrite 8 to 12 slides for a Ghanaian classroom, readable from the back of a room. Start every slide with a heading in this exact form: `## Slide 1: Short title` (numbered in order). No text before Slide 1 and no title page heading. Under each heading write: 2 to 4 bullets starting with `- `, each 12 words or fewer, in learner-friendly language (the words learners will see on the board); then, only when it helps, one line starting `**Activity:**` or `**Ask the class:**` with a single task or question; then one line starting `**Teacher notes:**` with 1 to 3 sentences on what to say, local examples and likely misconceptions. Order: Slide 1 is the title slide (topic, class, one-line goal as the bullet). Then the learning objectives, a hook linked to daily life, the concept slides, a worked example, a group activity, a quick check for understanding, and a summary with an exit ticket as the last slide. Plain text only: no tables, no emojis, no images, no LaTeX; describe any diagram in words in the notes.';
+  system += '\\n\\n' + Curriculum.buildInstruction(scheme, Object.assign({ mode, resourceType }, request || {}));
   return system;
 };
 const { sendJson, clientIp, accessOk, readJson, validate, firstMessage } = require('./_lib');
@@ -85,7 +87,7 @@ module.exports = async (req, res) => {
   // 1. A repeat of a recent request is served from the cache, at no token cost and with no quota used.
   //    "fresh" (the Regenerate button) skips the lookup and replaces the stored answer.
   const ck = Cache.keyFor({
-    ver: Cache.version(systemFor(v.params.cls, v.params.mode, v.params.resourceType), provider),
+    ver: Cache.version(systemFor(v.params.cls, v.params.mode, v.params.resourceType, v.params.scheme, v.params), provider),
     settingsText: makeFirst(Object.assign({}, v.params, { notes: '' })),
     notes: v.params.notes, thread: v.thread, subject,
   });
