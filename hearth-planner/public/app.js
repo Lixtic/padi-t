@@ -462,6 +462,7 @@
   function makeBot(session) {
     const baseTitle = planTitle(session.params || state.params) + (session.params && session.params.mode === 'resources' ? ' – ' + session.params.resourceType : session.params && session.params.mode === 'plan' ? ' – Lesson plan' : '');
     let kind = 'plan', demoted = false, editBox = null, ta = null;
+    let slideState = null;   // which slide the person is on, kept while a deck is repainted
     const titleEl = h('span', { class: 'doc-title', text: baseTitle });
     const bodyEl = h('div', { class: 'doc-body md' });
     const noteEl = h('div', { class: 'doc-note', hidden: true });
@@ -545,7 +546,7 @@
 
     function startEdit() {
       if (state.streaming || editor || editBox) return;
-      if (!window.PadiEditor) { startRawEdit(); return; }
+      if (!window.PadiEditor || (window.SchoolPadiSlides && window.SchoolPadiSlides.isDeck(session.params))) { startRawEdit(); return; }   // slides are edited as text
       if (!zone.classList.contains('is-collapsed')) setComposer(true, true);
       const draft = readDrafts()[draftKey()];
       if (draft) { bodyEl.innerHTML = renderMd(draft); toast('Restored your unsaved edits.'); }
@@ -571,7 +572,9 @@
         api.text = raw;
         const pv = !!(msg && msg.preview);
         const { body, chips } = splitElic(raw);
-        bodyEl.innerHTML = renderMd(body);
+        const SL = window.SchoolPadiSlides;
+        if (SL && SL.isDeck(session.params) && SL.parse(body).length) { slideState = slideState || { i: 0 }; bodyEl.replaceChildren(SL.deck(body, slideState)); }
+        else bodyEl.innerHTML = renderMd(body);
         progress.textContent = final ? '' : 'Writing… ' + wordCount(body) + ' words';
         if (final) {
           api.msg = msg || null;
