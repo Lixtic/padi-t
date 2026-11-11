@@ -230,7 +230,7 @@
   const state = {
     sessions: [],
     currentId: null,
-    params: { subject: SUBJECTS[0], cls: 'Basic 8', week: 1, hook: true, size: '31–45', light: false, mode: 'full', resourceType: 'Study notes' },
+    params: { subject: SUBJECTS[0], cls: 'Basic 8', week: 1, hook: true, size: '31–45', light: false, mode: 'full', resourceType: 'Study notes', indicatorCodes: [] },
     streaming: null,
     stick: true,
     bots: [],
@@ -399,7 +399,7 @@
       }
     });
     state.bots.forEach((b, i) => { if (i < state.bots.length - 1) b.demote(); });
-    if (s.params) { state.params = Object.assign({ size: '31–45', light: false, hook: true, studyNotes: true, bece: true }, s.params); syncPills(); }
+    if (s.params) { state.params = Object.assign({ size: '31–45', light: false, hook: true, studyNotes: true, bece: true, indicatorCodes: [] }, s.params); syncPills(); }
     updateView(); updateTopbar(); renderSessions(); updateSend(); scrollBottom(true);
   }
 
@@ -895,7 +895,7 @@
     const res = await fetch('/api/generate', {
       method: 'POST', signal,
       headers: Object.assign({ 'content-type': 'application/json', 'x-access-code': state.access || '' }, who),
-      body: JSON.stringify({ params: { subject: p.subject, cls: p.cls, week: p.week, term: p.term || termNow(), hook: p.hook !== false, light: p.light === true, studyNotes: p.studyNotes !== false, bece: p.bece !== false, size: p.size || '', mode: p.mode || 'full', resourceType: p.resourceType || 'Study notes', notes: session.messages[0].content || '' }, thread: threadOf(session), fresh }),
+      body: JSON.stringify({ params: { subject: p.subject, cls: p.cls, week: p.week, term: p.term || termNow(), hook: p.hook !== false, light: p.light === true, studyNotes: p.studyNotes !== false, bece: p.bece !== false, size: p.size || '', mode: p.mode || 'full', resourceType: p.resourceType || 'Study notes', indicatorCodes: p.mode === 'resources' && p.resourceType === 'Study notes' ? (p.indicatorCodes || []) : undefined, notes: session.messages[0].content || '' }, thread: threadOf(session), fresh }),
     });
     if (!res.ok) {
       let j = {};
@@ -1294,6 +1294,9 @@
     setStudioCollapsed(!studioRoot.classList.contains('is-collapsed'));
   });
   const planAction = $('#planAction'), resourceAction = $('#resourceAction'), resourceTypeEl = $('#resourceType');
+  const studyNotesCurriculum = $('#studyNotesCurriculum'), studyIndicatorMeta = $('#studyIndicatorMeta');
+  const studyIndicatorOptions = $('#studyIndicatorOptions'), studyCurriculumSource = $('#studyCurriculumSource');
+  let studyCurriculumRequest = 0, studyCurriculumKey = '';
   const mediaForm = $('#mediaSearchForm'), mediaQuery = $('#mediaQuery');
   const mediaStatus = $('#mediaStatus'), mediaResults = $('#mediaResults');
   const mediaIndicatorText = $('#mediaIndicatorText'), mediaIndicatorPicker = $('#mediaIndicatorPicker');
@@ -1305,6 +1308,11 @@
     const topic = promptEl.value.trim() || (active && active.messages[0] && active.messages[0].content) || '';
     state.params.mode = mode;
     state.params.resourceType = resourceType || 'Study notes';
+    if (mode === 'resources' && state.params.resourceType === 'Study notes') {
+      const checked = [...studyIndicatorOptions.querySelectorAll('input[type="checkbox"]:checked')].map((x) => x.value);
+      if (checked.length) state.params.indicatorCodes = checked;
+      else if (studyIndicatorOptions.childElementCount) { toast('Select at least one curriculum indicator for the study notes.'); state.params.mode = 'full'; return; }
+    }
     const fresh = makeSession();
     state.sessions.unshift(fresh);
     promptEl.value = topic;
@@ -1313,6 +1321,64 @@
   }
   if (planAction) planAction.addEventListener('click', () => startIndependentTool('plan'));
   if (resourceAction) resourceAction.addEventListener('click', () => startIndependentTool('resources', resourceTypeEl.value));
+  function renderStudyIndicators(data, key) {
+    const indicators = Array.isArray(data.indicators) ? data.indicators : [];
+    const previous = Array.isArray(state.params.indicatorCodes) ? state.params.indicatorCodes : [];
+    const sameContext = studyCurriculumKey === key;
+    const validPrevious = sameContext ? previous.filter((code) => indicators.some((item) => item.code === code)) : [];
+    const selected = validPrevious.length ? validPrevious : indicators.map((item) => item.code).filter(Boolean);
+    studyCurriculumKey = key;
+    state.params.indicatorCodes = selected;
+    studyIndicatorMeta.textContent = [data.strand, data.substrand, data.contentStandard].filter(Boolean).join(' · ');
+    studyIndicatorOptions.replaceChildren(...indicators.map((item) => {
+      const input = h('input', { type: 'checkbox', value: item.code, checked: selected.includes(item.code) });
+      input.addEventListener('change', () => {
+        state.params.indicatorCodes = [...studyIndicatorOptions.querySelectorAll('input[type="checkbox"]:checked')].map((x) => x.value);
+        store.save(true);
+      });
+      return h('label', { class: 'study-indicator-option' }, input,
+        h('span', null, h('strong', { text: item.code || 'Indicator' }), h('span', { text: item.text || '' })));
+    }));
+    studyCurriculumSource.textContent = data.sourceStatus === 'scheme_metadata_only'
+      ? 'Loaded from GuidEd scheme metadata. This is not a full NaCCA document retrieval.'
+      : 'Curriculum details loaded.';
+    studyNotesCurriculum.hidden = resourceTypeEl.value !== 'Study notes';
+  }
+  async function refreshStudyCurriculum() {
+    if (!studyNotesCurriculum || resourceTypeEl.value !== 'Study notes') {
+      if (studyNotesCurriculum) studyNotesCurriculum.hidden = true;
+      return;
+    }
+    const p = state.params, term = p.term || termNow();
+    const key = [p.subject, p.cls, term, p.week].join('|');
+    const requestId = ++studyCurriculumRequest;
+    studyNotesCurriculum.hidden = false;
+    studyCurriculumSource.textContent = 'Loading curriculum indicators…';
+    studyIndicatorMeta.textContent = '';
+    try {
+      const query = new URLSearchParams({ subject: p.subject, cls: p.cls, term: String(term), week: String(p.week) });
+      const response = await fetch('/api/curriculum?' + query.toString(), { headers: { accept: 'application/json' } });
+      const data = await response.json();
+      if (requestId !== studyCurriculumRequest) return;
+      if (!response.ok) throw new Error(data.message || 'No curriculum indicators are available for this selection.');
+      if (data.type !== 'teach') {
+        studyIndicatorOptions.replaceChildren();
+        studyIndicatorMeta.textContent = data.type === 'revision' ? 'Revision week — no new indicators are assigned.' : 'Examination week — no new indicators are assigned.';
+        studyCurriculumSource.textContent = 'Choose a teaching week to select specific indicators.';
+        state.params.indicatorCodes = [];
+        studyCurriculumKey = key;
+        return;
+      }
+      renderStudyIndicators(data, key);
+      if (!data.indicators || !data.indicators.length) studyCurriculumSource.textContent = 'No coded indicators are loaded for this week. You can still generate general study notes from the scheme topic.';
+    } catch (error) {
+      if (requestId !== studyCurriculumRequest) return;
+      studyIndicatorOptions.replaceChildren();
+      studyIndicatorMeta.textContent = '';
+      studyCurriculumSource.textContent = error.message || 'Could not load curriculum indicators.';
+    }
+  }
+  if (resourceTypeEl) resourceTypeEl.addEventListener('change', refreshStudyCurriculum);
 
   function setMediaType(type) {
     if (type === 'video') { toast('Video search is coming soon.'); return; }   // remove once YOUTUBE_API_KEY is set and the Videos button is enabled
@@ -1608,6 +1674,7 @@
           h('ul', null, ...e.indicators.map((x) => h('li', { text: x })))));
     }
     schemeStrip.hidden = false;
+    refreshStudyCurriculum();
     if ($('#studioTabMedia') && $('#studioTabMedia').getAttribute('aria-selected') === 'true') loadMediaContext();
   }
   function syncAlso() {
