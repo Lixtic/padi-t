@@ -1126,25 +1126,23 @@
     let timeout;
     try {
       const who = window.PadiSync && window.PadiSync.authHeader ? await window.PadiSync.authHeader() : {};
-      if (!who || !(who.authorization || who.Authorization)) { bot.note('Notes are ready. Sign in to add classroom illustrations.'); return; }
+      if (!who || !(who.authorization || who.Authorization)) { bot.note('Notes are ready. Sign in to search for classroom illustrations.'); return; }
       const controller = new AbortController();
       timeout = setTimeout(() => controller.abort(), 15000);
       const results = await Promise.all(concepts.map(async (concept) => {
         const query = concept.slice(0, 180);
         const context = [p.subject, p.cls].filter(Boolean).join(' ').slice(0, 80);
         const response = await fetch('/api/media-search?q=' + encodeURIComponent(query) + '&context=' + encodeURIComponent(context) + '&type=image', { headers: Object.assign({ Accept: 'application/json' }, who), signal: controller.signal });
-        if (!response.ok) return { concept, warning: 'HTTP ' + response.status };
+        if (!response.ok) return { concept, unreachable: true };
         const data = await response.json();
         const item = (data.results || []).find((entry) => entry && /^https:\/\//i.test(entry.thumbnail || '') && /^https:\/\//i.test(entry.url || ''));
-        const warning = (data.providerWarnings || []).slice(0, 2).join('; ');
-        return item ? { concept, item, warning } : (warning ? { concept, warning } : null);
+        return item ? { concept, item } : { concept, unreachable: !!data.unreachable };
       }));
       clearTimeout(timeout); timeout = null;
       const found = results.filter((result) => result && result.item);
       if (!found.length) {
-        const warning = results.find((result) => result && result.warning);
-        bot.note(warning
-          ? 'Notes are ready. Image sources could not be reached: ' + warning.warning
+        bot.note(results.length && results.every((result) => result && result.unreachable)
+          ? 'Notes are ready. The image sources could not be reached just now. Try again in a few minutes.'
           : 'Notes are ready. No sufficiently relevant illustrations were found for these concepts.');
         return;
       }

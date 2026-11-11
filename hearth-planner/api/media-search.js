@@ -39,14 +39,28 @@ function relevant(item, query) {
 function cleanText(value) {
   return String(value || '').replace(/<[^>]*>/g, ' ').replace(/&nbsp;/g, ' ').replace(/\s+/g, ' ').trim();
 }
-function rankAndFilter(results, query) {
+function rankAndFilter(results, query, keepScore) {
   return results.map((item) => {
     const match = relevance(query, item.title, item.description);
     return Object.assign({}, item, { _score: match.score, _matched: match.matched, _ratio: match.ratio });
   }).filter((item) => item.thumbnail && /^https:\/\//i.test(item.thumbnail) && item.url && /^https:\/\//i.test(item.url) && relevant(item, query))
     .sort((a, b) => b._score - a._score)
     .slice(0, 8)
-    .map(({ _score, _matched, _ratio, ...item }) => item);
+    .map(({ _score, _matched, _ratio, ...item }) => keepScore ? Object.assign(item, { _score }) : item);
+}
+
+/* Combine the answers of several providers: best relevance first across all of them, no repeats. */
+function mergeProviders(settled, names, limit = 12) {
+  const errors = [], all = [];
+  settled.forEach((entry, i) => {
+    if (entry.status === 'rejected') { errors.push(names[i] + ': ' + (entry.reason && entry.reason.message || 'unavailable')); return; }
+    entry.value.forEach((item) => all.push(item));
+  });
+  const seen = new Set();
+  const results = all.sort((a, b) => (b._score || 0) - (a._score || 0))
+    .filter((item) => { const id = item.url || item.thumbnail; if (!id || seen.has(id)) return false; seen.add(id); return true; })
+    .slice(0, limit).map(({ _score, ...item }) => item);
+  return { results, errors, allFailed: errors.length === names.length };
 }
 
 const CACHE = new Map(), TTL = 24 * 60 * 60 * 1000;
@@ -185,38 +199,21 @@ module.exports = async (req, res) => {
       ['Pexels', pexels],
       ['Flickr', flickr],
     ];
-    const settled = await Promise.allSettled(providers.map(async ([name, search]) => {
-      const candidates = await search(providerQuery);
-      return { name, results: rankAndFilter(candidates, query) };
-    }));
-    const errors = [];
-    const results = [];
-    settled.forEach((entry, index) => {
-      if (entry.status === 'rejected') {
-        errors.push(providers[index][0] + ': ' + (entry.reason && entry.reason.message || 'unavailable'));
-        return;
-      }
-      entry.value.results.forEach((item) => results.push(item));
-    });
-    const seen = new Set();
-    const unique = results.filter((item) => {
-      const key = item.url || item.thumbnail;
-      if (!key || seen.has(key)) return false;
-      seen.add(key);
-      return true;
-    }).slice(0, 12);
+    const settled = await Promise.allSettled(providers.map(async ([, search]) => rankAndFilter(await search(providerQuery), query, true)));
+    const { results: unique, errors, allFailed } = mergeProviders(settled, providers.map((p) => p[0]));
     const out = {
       type, query, context, results: unique,
       provider: unique.length ? 'multi-source' : 'none',
       providersTried: providers.map((p) => p[0]),
       message: unique.length ? '' : 'No sufficiently relevant images were found. Try a more specific concept.',
     };
+    if (allFailed) out.unreachable = true;
     if (errors.length) out.providerWarnings = errors;
-    remember(key, out);
+    if (unique.length || !errors.length) remember(key, out);   // a failed search must not be remembered for a day
     return sendJson(res, 200, out);
   } catch (error) {
     return sendJson(res, 502, { error: 'search_failed', message: error.message || 'Media search failed.' });
   }
 };
 
-module.exports._test = { terms, keywords, relevance, relevant, rankAndFilter };
+module.exports._test = { terms, keywords, relevance, relevant, rankAndFilter, mergeProviders };
