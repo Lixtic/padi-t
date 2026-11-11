@@ -1443,18 +1443,19 @@
   if (resourceTypeEl) resourceTypeEl.addEventListener('change', refreshStudyCurriculum);
 
   function setMediaType(type) {
-    if (type === 'video') { toast('Video search is coming soon.'); return; }   // remove once YOUTUBE_API_KEY is set and the Videos button is enabled
-    mediaType = type;
+    mediaType = type === 'video' ? 'video' : 'image';
     document.querySelectorAll('[data-media-type]').forEach((button) => button.setAttribute('aria-pressed', String(button.dataset.mediaType === type)));
     mediaResults.replaceChildren();
-    mediaStatus.textContent = 'Search for ' + (type === 'video' ? 'educational videos' : 'images') + ' on your topic.';
+    mediaQuery.placeholder = type === 'video' ? 'Optional focus, e.g. keyboard input devices…' : 'Optional focus, e.g. labelled computer parts…';
+    mediaStatus.textContent = 'Search using the selected curriculum indicator' + (type === 'video' ? ' to find educational videos.' : ' to find classroom images.');
   }
   async function searchMedia() {
     const refinement = mediaQuery.value.trim();
     const indicator = mediaIndicator.trim();
-    const focus = indicator || refinement;
-    if (focus.length < 2) { mediaStatus.textContent = 'No indicator is loaded for this selection. Enter the specific indicator or teaching topic above.'; mediaQuery.focus(); return; }
-    const query = [focus.split(/\s+/).slice(0, 14).join(' '), mediaContext && mediaContext.subject, mediaType === 'video' ? 'lesson' : 'diagram'].filter(Boolean).join(' ');   // short and specific: long indicator text finds nothing
+    const indicatorFocus = indicator.replace(/\b(?:B[1-9]|SHS[1-3])(?:\.\d+){2,5}\b/gi, '').trim();
+    const focus = [refinement, indicatorFocus].filter(Boolean).join(' ');
+    if (focus.length < 2) { mediaStatus.textContent = 'No curriculum indicator is loaded. Enter a specific teaching concept to search.'; mediaQuery.focus(); return; }
+    const query = [focus, mediaContext && mediaContext.subject, mediaContext && mediaContext.cls, mediaType === 'video' ? 'educational tutorial demonstration' : 'educational labelled diagram illustration'].filter(Boolean).join(' ');
     mediaResults.replaceChildren();
     mediaStatus.textContent = 'Searching…';
     $('#mediaSearchBtn').disabled = true;
