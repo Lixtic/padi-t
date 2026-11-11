@@ -1760,6 +1760,7 @@
     window.dispatchEvent(new Event('guided:account'));
     acct.top.dataset.state = u ? (problemKind ? 'warn' : 'in') : 'out';
     acct.top.setAttribute('aria-label', u ? 'Account: ' + (u.email || 'signed in') : 'Sign in or create account');
+    const ini = acct.top.querySelector('.acct-initial'); if (ini) ini.textContent = u ? String((u.name && u.name.trim()) || u.email || 'G').trim().charAt(0).toUpperCase() : '';
     if (u) { acct.who.textContent = u.email || 'Signed in'; acct.avatar.textContent = String(u.email || 'G').charAt(0); if (lastSync) acctStatus('Synced ' + ago(lastSync)); }
   }
   function scheduleSync() { if (!signedIn() || !window.PadiSync.syncAvailable()) return; clearTimeout(syncTimer); syncTimer = setTimeout(() => syncNow(), 3000); }
