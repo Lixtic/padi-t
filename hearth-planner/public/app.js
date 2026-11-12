@@ -1134,7 +1134,10 @@
       const results = await Promise.all(concepts.map(async (concept) => {
         const query = concept.slice(0, 140);
         const context = [p.subject, p.cls].filter(Boolean).join(' ').slice(0, 80);
-        const response = await fetch('/api/media-search?q=' + encodeURIComponent(query) + '&context=' + encodeURIComponent(context) + '&type=image', { headers: Object.assign({ Accept: 'application/json' }, who), signal: controller.signal });
+        // The lesson's own topic lets the image check judge fit, not just word overlap.
+        const sch = p.scheme || {};
+        const topic = [sch.substrand, sch.strand].concat(Array.isArray(sch.indicators) ? sch.indicators : []).filter(Boolean).join('. ').replace(/\b(?:B[1-9]|SHS[1-3])(?:\.\d+){2,5}\b/gi, '').replace(/\s+/g, ' ').trim().slice(0, 300);
+        const response = await fetch('/api/media-search?q=' + encodeURIComponent(query) + '&context=' + encodeURIComponent(context) + (topic ? '&topic=' + encodeURIComponent(topic) : '') + '&type=image', { headers: Object.assign({ Accept: 'application/json' }, who), signal: controller.signal });
         if (!response.ok) return { concept, unreachable: true };
         const data = await response.json();
         const item = (data.results || []).find((entry) => entry && /^https:\/\//i.test(entry.thumbnail || '') && /^https:\/\//i.test(entry.url || ''));
@@ -1545,7 +1548,7 @@
     try {
       const who = window.PadiSync && window.PadiSync.authHeader ? await window.PadiSync.authHeader() : {};
       if (!who || !who.authorization && !who.Authorization) { mediaStatus.textContent = 'Create a free account or sign in to search for images and videos.'; openSignupSheet('Create a free account to search for images and videos.'); return; }
-      const response = await fetch('/api/media-search?q=' + encodeURIComponent(query) + '&type=' + mediaType, { headers: Object.assign({ Accept: 'application/json' }, who) });
+      const response = await fetch('/api/media-search?q=' + encodeURIComponent(query) + (indicatorFocus ? '&topic=' + encodeURIComponent(indicatorFocus.slice(0, 300)) : '') + '&type=' + mediaType, { headers: Object.assign({ Accept: 'application/json' }, who) });
       const data = await response.json();
       if (!response.ok) throw new Error(data.message || 'Search failed.');
       if (mediaType === 'video' && data.searchUrl && !data.results.length) {

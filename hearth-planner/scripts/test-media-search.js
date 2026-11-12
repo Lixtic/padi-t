@@ -16,6 +16,21 @@ const ranked = Search.rankAndFilter([
 assert.equal(ranked.length, 1);
 assert.equal(ranked[0].title, 'Input devices');
 assert.deepEqual(['devices', 'computing', 'batteries', 'classes', 'process', 'analysis', 'string'].map(Search.stem), ['device', 'comput', 'battery', 'class', 'process', 'analysis', 'string']);
+// Context only ranks: a good image is not dropped for lacking the subject word, but the on-subject one comes first.
+const withCtx = Search.rankAndFilter([
+  { title: 'Cell (prison)', description: 'A jail cell', thumbnail: 'https://img.example/p.jpg', url: 'https://site.example/p' },
+  { title: 'Animal cell diagram', description: 'Labelled biology diagram', thumbnail: 'https://img.example/c.jpg', url: 'https://site.example/c' },
+], 'cell', 'biology integrated science');
+assert.equal(withCtx[0].title, 'Animal cell diagram');
+// The same picture from two providers appears once.
+assert.equal(Search.dedupe([
+  { title: 'Map of Africa.png', author: 'A', thumbnail: 'https://img.example/m.png?w=800' },
+  { title: 'Map of Africa', author: 'A', thumbnail: 'https://other.example/m2.png' },
+  { title: 'Other', thumbnail: 'https://img.example/o.png' },
+]).length, 2);
+// Flickr is searched only for licences that allow commercial use, and shows the licence name, not its number.
+assert.ok(!('1' in Search.FLICKR_LICENSES) && !('2' in Search.FLICKR_LICENSES) && !('3' in Search.FLICKR_LICENSES), 'no NonCommercial licences');
+assert.equal(Search.FLICKR_LICENSES[4], 'CC BY 2.0');
 process.stdout.write('Educational image relevance tests passed.');
 // Every host an illustration can be loaded from must be allowed by the page's Content-Security-Policy,
 // otherwise the notes show an empty box and only the source link works.
