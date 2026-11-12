@@ -10,6 +10,34 @@ const TRUSTED_HOSTS = new Set([
   'nacca.gov.gh', 'moe.gov.gh', 'ges.gov.gh', 'curriculumresources.edu.gh',
 ]);
 
+const isTrustedHost = (host) => { const h = String(host || '').toLowerCase(); return [...TRUSTED_HOSTS].some((t) => h === t || h.endsWith('.' + t)); };
+// The app names a subject one way and a source may name it another, so a source filed under "Science" also serves Integrated and General Science.
+const SUBJECT_ALIASES = { 'Integrated Science': ['Integrated Science', 'Science'], 'General Science': ['General Science', 'Science'], Science: ['Science', 'Integrated Science', 'General Science'] };
+const subjectsFor = (subject) => { const s = String(subject || '').trim(); return SUBJECT_ALIASES[s] || (s ? [s] : []); };
+const QUERY_STOP = new Set('the and for with from that this into are was were has have had can will their them they its his her our your you who what when where which how why not but all any each some such than then also about over under between using use used make makes made given able learners learner students student should would could demonstrate discuss explain examine describe identify analyse analyze explore'.split(' '));
+/* Words of the request, as an OR query: a passage needs to share a few of them, not all of them. */
+function queryTerms(query) {
+  return [...new Set(String(query || '').toLowerCase().normalize('NFKD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9\s]/g, ' ').split(/\s+/).filter((w) => w.length > 2 && !QUERY_STOP.has(w)))].slice(0, 24);
+}
+const toTsQuery = (terms) => terms.join(' | ');
+// A passage must share enough of the request's words, so one common word cannot pull in an unrelated passage.
+const stemWord = (w) => w.replace(/(?:ing|ies|es|s|ed)$/, '');
+function enoughOverlap(text, terms, byCode) {
+  if (byCode) return true;
+  if (!terms.length) return false;
+  const have = new Set(queryTerms(text + ' ' + text).map(stemWord));
+  const hits = terms.filter((w) => have.has(stemWord(w))).length;
+  return hits >= Math.min(3, Math.max(1, Math.ceil(terms.length * 0.3)));
+}
+let approvedSeen = { at: 0, has: false };
+async function hasApproved() {
+  if (Date.now() - approvedSeen.at < 60000) return approvedSeen.has;
+  await db.ensure();
+  const rows = await db.query("select 1 from knowledge_sources where status = 'approved' limit 1");
+  approvedSeen = { at: Date.now(), has: rows.length > 0 };
+  return approvedSeen.has;
+}
+
 function cleanText(value, max) {
   return String(value || '').replace(/\u0000/g, '').replace(/\r\n?/g, '\n').trim().slice(0, max);
 }
@@ -100,26 +128,32 @@ async function ingest(input, actor) {
     'insert into knowledge_sources (id, title, publisher, source_url, source_host, document_type, subject, classes, curriculum_codes, trust_level, license, edition, approval_reference, published_at, checksum, status, created_by) values ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17)',
     [id, source.title, source.publisher, source.sourceUrl, source.host, source.documentType, source.subject, source.classes, source.curriculumCodes, source.trust, source.license, source.edition, source.approvalReference, source.publishedAt || null, hash, 'pending_review', cleanText(actor, 160)]
   );
-  for (let i = 0; i < chunks.length; i += 50) {
-    const batch = chunks.slice(i, i + 50);
-    const values = [];
-    const params = [];
-    batch.forEach((chunk, offset) => {
-      const n = params.length;
-      const placeholders = Array.from({ length: 10 }, (_, j) => '$' + (n + j + 1)).join(',');
-      values.push('(' + placeholders + ",to_tsvector('simple', coalesce($" + (n + 4) + ",'') || ' ' || $" + (n + 5) + '))');
-      params.push(chunk.id, id, i + offset, chunk.heading, chunk.content, chunk.pageStart, chunk.pageEnd, chunk.subject, chunk.classes, chunk.curriculumCodes);
-    });
-    await db.query(
-      'insert into knowledge_chunks (id, source_id, chunk_index, heading, content, page_start, page_end, subject, classes, curriculum_codes, search_vector) values ' + values.join(','),
-      params
-    );
+  try {
+    for (let i = 0; i < chunks.length; i += 50) {
+      const batch = chunks.slice(i, i + 50);
+      const values = [];
+      const params = [];
+      batch.forEach((chunk, offset) => {
+        const n = params.length;
+        const placeholders = Array.from({ length: 10 }, (_, j) => '$' + (n + j + 1)).join(',');
+        values.push('(' + placeholders + ",to_tsvector('english', coalesce($" + (n + 4) + ",'') || ' ' || $" + (n + 5) + '))');
+        params.push(chunk.id, id, i + offset, chunk.heading, chunk.content, chunk.pageStart, chunk.pageEnd, chunk.subject, chunk.classes, chunk.curriculumCodes);
+      });
+      await db.query(
+        'insert into knowledge_chunks (id, source_id, chunk_index, heading, content, page_start, page_end, subject, classes, curriculum_codes, search_vector) values ' + values.join(','),
+        params
+      );
+    }
+  } catch (e) {
+    // Never leave a half-loaded source in the review queue; its chunks go with it.
+    await db.query('delete from knowledge_sources where id = $1', [id]).catch(() => {});
+    throw e;
   }
   return { sourceId: id, chunks: chunks.length, duplicate: false, trust: source.trust, status: 'pending_review' };
 }
 function trustAfterReview(source) {
   const host = String(source && source.source_host || '').toLowerCase();
-  if (TRUSTED_HOSTS.has(host)) return 'official';
+  if (isTrustedHost(host)) return 'official';
   const kind = String(source && source.document_type || '');
   if ((kind === 'approved_textbook' || kind === 'approved_supplementary') && String(source && source.approval_reference || '').trim()) return 'approved_material';
   return 'reviewed_resource';
@@ -136,6 +170,7 @@ async function reviewSource(sourceId, decision) {
   if (decision === 'approve') {
     const trust = trustAfterReview(source);
     await db.query("update knowledge_sources set status = 'approved', trust_level = $2 where id = $1", [id, trust]);
+    approvedSeen = { at: 0, has: false };
     return { sourceId: id, status: 'approved', trust };
   }
   await db.query("update knowledge_sources set status = 'rejected' where id = $1", [id]);
@@ -151,15 +186,18 @@ async function retrieve(params) {
   if (!db.configured()) return { chunks: [], context: '', sourceCount: 0, status: 'storage_not_configured' };
   const p = params || {};
   const query = requestQuery(p);
+  const terms = queryTerms(query);
   const codes = p.scheme && Array.isArray(p.scheme.indicators)
     ? p.scheme.indicators.map(x => String(x).match(/\b(?:B[1-9]|SHS[1-3])(?:\.\d+){2,5}\b/i)?.[0]?.toUpperCase()).filter(Boolean)
     : [];
-  if (!query.trim() && !codes.length) return { chunks: [], context: '', sourceCount: 0, status: 'no_query' };
-  await db.ensure();
-  const rows = await db.query(
-    "select c.id, c.heading, c.content, c.page_start, c.page_end, s.id as source_id, s.title as source_title, s.publisher, s.source_url, s.document_type, s.trust_level, s.license, s.edition, ts_rank_cd(c.search_vector, plainto_tsquery('simple', $1)) as rank from knowledge_chunks c join knowledge_sources s on s.id = c.source_id where s.status = 'approved' and (c.subject = $2 or c.subject = '') and (cardinality(c.classes) = 0 or $3 = any(c.classes)) and ((length($1) > 0 and c.search_vector @@ plainto_tsquery('simple', $1)) or (cardinality($4::text[]) > 0 and c.curriculum_codes && $4::text[])) order by (case when c.curriculum_codes && $4::text[] then 2 else 0 end) desc, (case s.trust_level when 'official' then 4 when 'approved_material' then 3 else 1 end) desc, rank desc limit $5",
-    [query, cleanText(p.subject, 100), cleanText(p.cls, 24), codes, MAX_RESULTS]
+  if (!terms.length && !codes.length) return { chunks: [], context: '', sourceCount: 0, status: 'no_query' };
+  if (!(await hasApproved())) return { chunks: [], context: '', sourceCount: 0, status: 'no_approved_sources' };
+  const tsq = toTsQuery(terms.length ? terms : ['x']);
+  const found = await db.query(
+    "select c.id, c.heading, c.content, c.page_start, c.page_end, c.curriculum_codes && $4::text[] as by_code, s.id as source_id, s.title as source_title, s.publisher, s.source_url, s.document_type, s.trust_level, s.license, s.edition, ts_rank_cd(c.search_vector, to_tsquery('english', $1)) as rank from knowledge_chunks c join knowledge_sources s on s.id = c.source_id where s.status = 'approved' and (c.subject = any($2::text[]) or c.subject = '') and (cardinality(c.classes) = 0 or $3 = any(c.classes)) and ((cardinality($4::text[]) > 0 and c.curriculum_codes && $4::text[]) or c.search_vector @@ to_tsquery('english', $1)) order by (case when c.curriculum_codes && $4::text[] then 2 else 0 end) desc, rank desc, (case s.trust_level when 'official' then 4 when 'approved_material' then 3 else 1 end) desc limit 30",
+    [tsq, subjectsFor(p.subject), cleanText(p.cls, 24), codes]
   );
+  const rows = found.filter((r) => enoughOverlap((r.heading || '') + ' ' + r.content, terms, r.by_code)).slice(0, MAX_RESULTS);
   const chunks = rows.map(r => ({
     id: r.id, text: r.content, heading: r.heading || '',
     page: r.page_start ? (r.page_end && r.page_end !== r.page_start ? r.page_start + '-' + r.page_end : String(r.page_start)) : '',
@@ -180,4 +218,4 @@ async function retrieve(params) {
   ].join('\n\n') : '';
   return { chunks, context, sourceCount: new Set(chunks.map(c => c.source.id)).size, status: chunks.length ? 'retrieved' : 'no_matching_sources' };
 }
-module.exports = { validateSource, splitText, prepareChunks, requestQuery, retrieve, ingest, reviewSource, trustAfterReview, TRUSTED_HOSTS };
+module.exports = { validateSource, splitText, prepareChunks, requestQuery, retrieve, ingest, reviewSource, trustAfterReview, TRUSTED_HOSTS, isTrustedHost, subjectsFor, queryTerms, toTsQuery, enoughOverlap };
