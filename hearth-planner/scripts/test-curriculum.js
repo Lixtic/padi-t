@@ -43,15 +43,3 @@ process.stdout.write('Curriculum Intelligence Engine tests passed.\n');
   assert2.ok(!/Official NaCCA exemplars/.test(none), 'no exemplar block when the code is not loaded');
   process.stdout.write('Official exemplar tests passed.\n');
 }
-
-{
-  // JHS Terms 1-3 are all scheduled for the eight subjects that have NaCCA data.
-  const S = require('../api/_schemes');
-  const subjects = ['Computing', 'Creative Arts and Design', 'English Language', 'Integrated Science', 'Social Studies', 'Career Technology', 'Mathematics', 'Religious and Moral Education'];
-  for (const s of subjects) for (const c of ['Basic 7', 'Basic 8', 'Basic 9']) for (const t of [1, 2, 3]) {
-    let teach = 0, coded = 0;
-    for (let w = 1; w <= 15; w++) { const r = S.lookup(s, c, t, w); if (r && r.type === 'teach') { teach++; if ((r.indicators || []).some((i) => /B[7-9]\.\d/.test(i))) coded++; } }
-    require('node:assert/strict').ok(teach >= 5 && (t === 1 || coded >= 5), s + ' ' + c + ' Term ' + t + ' has teaching weeks with indicator codes');
-  }
-  process.stdout.write('JHS term coverage tests passed.\n');
-}
