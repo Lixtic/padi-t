@@ -244,3 +244,20 @@ The generation API resolves the class, subject, term and week against the server
 Run `npm test` from `hearth-planner/` to check indicator-code classification, curriculum instruction construction and revision handling.
 
 **Next data milestone:** ingest and curate the full official NaCCA curriculum documents and approved reference materials with page-level provenance. Only after that retrieval layer exists should the product claim document-grounded RAG or source-verified exemplars.
+
+
+## CCP curriculum index audit
+
+The structured CCP index is already included in the app at `data/curriculum-index.json` and compiled into the server-only `api/_curriculum_index.js`. Run a read-only quality report before changing imported curriculum records:
+
+```sh
+npm run audit
+```
+
+The audit reports subject coverage, missing metadata/exemplars and heuristic extraction-contamination flags. Flags are review signals only: the script never edits or deletes source curriculum text. After reviewing corrections against the original NaCCA source, rebuild the server index with:
+
+```sh
+node scripts/build-curriculum-index.js
+```
+
+The generation route must pass the server-resolved scheme and request metadata into the curriculum instruction builder. This ensures the selected indicators and matching structured NaCCA exemplars used in the cache-key prompt are also present in the actual AI generation prompt.
