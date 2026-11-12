@@ -5,11 +5,11 @@ const path = require('node:path');
 
 const DATA_PATH = path.join(__dirname, '..', 'data', 'curriculum-index.json');
 const FLAGS = [
-  ['embedded_exemplar_label', /exemplar\\s*\\(s?\\)\\s*:/i],
-  ['embedded_section_heading', /content\\s+indicators?|core\\s+competencies|curriculum\\s+indicators/i],
-  ['competency_code_in_content', /\\b(?:CC|CI|CP)\\d+\\.\\d+\\b/i],
-  ['document_control_text', /critical\\s+thinking|communication\\s+and\\s+collaboration/i],
-  ['repeated_whitespace_or_punctuation', /(?:\\s{3,}|(?:\\b\\w+\\b)(?:\\s+\\1){2,})/i]
+  ['embedded_exemplar_label', /exemplar\s*\(s?\)\s*:/i],
+  ['embedded_section_heading', /content\s+indicators?|core\s+competencies|curriculum\s+indicators/i],
+  ['competency_code_in_content', /\b(?:CC|CI|CP)\d+\.\d+\b/i],
+  ['document_control_text', /critical\s+thinking|communication\s+and\s+collaboration/i],
+  ['repeated_whitespace_or_punctuation', /(?:\s{3,}|(?:\b\w+\b)(?:\s+\1){2,})/i]
 ];
 
 function audit(data) {
@@ -99,11 +99,11 @@ function markdown(report) {
   lines.push('', '## Flagged records', '');
   for (const issue of report.issues.slice(0, 100)) {
     lines.push('- **' + issue.key + '** — ' + issue.issues.join(', ') +
-      (issue.indicator ? ': ' + issue.indicator.replace(/\\s+/g, ' ') : ''));
+      (issue.indicator ? ': ' + issue.indicator.replace(/\s+/g, ' ') : ''));
   }
   if (report.issues.length > 100) lines.push('', 'Showing first 100 of ' + report.issues.length + ' flagged records.');
   lines.push('', '> Flags are heuristic review signals, not automatic proof that a curriculum record is incorrect. Do not auto-delete or rewrite official source text.');
-  return lines.join('\\n') + '\\n';
+  return lines.join('\n') + '\n';
 }
 
 if (require.main === module) {
