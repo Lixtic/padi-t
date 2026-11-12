@@ -43,3 +43,12 @@ process.stdout.write('Curriculum Intelligence Engine tests passed.\n');
   assert2.ok(!/Official NaCCA exemplars/.test(none), 'no exemplar block when the code is not loaded');
   process.stdout.write('Official exemplar tests passed.\n');
 }
+
+// The actual generation path must pass the server-resolved scheme and request metadata
+// into the same curriculum instruction builder used by the cache-key version.
+{
+  const fs = require('node:fs');
+  const source = fs.readFileSync(require.resolve('../api/generate'), 'utf8');
+  assert.match(source, /systemFor\(v\.params\.cls,\s*v\.params\.mode,\s*v\.params\.resourceType,\s*v\.params\.scheme,\s*v\.params\)/,
+    'generation must pass the resolved scheme and request into systemFor');
+}
