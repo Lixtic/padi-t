@@ -13,7 +13,16 @@ function terms(value) {
     .normalize('NFKD').replace(/[\u0300-\u036f]/g, '')
     .replace(/\b(?:b[1-9]|shs[1-3])(?:\.\d+){2,5}\b/gi, ' ')
     .replace(/[^a-z0-9\s-]/g, ' ')
-    .split(/\s+/).filter((w) => w.length > 2 && !STOP.has(w));
+    .split(/\s+/).filter((w) => w.length > 2 && !STOP.has(w)).map(stem);
+}
+/* Light stemming so "devices" matches "device" and "computing" matches "computer"-family titles. */
+function stem(w) {
+  if (/[^a-z]/.test(w) || w.length < 5) return w;
+  if (/ies$/.test(w)) return w.slice(0, -3) + 'y';
+  if (/(?:sses|xes|ches|shes)$/.test(w)) return w.slice(0, -2);
+  if (/[^sui]s$/.test(w)) w = w.slice(0, -1);
+  if (/ing$/.test(w) && w.length - 3 >= 4) w = w.slice(0, -3);
+  return w;
 }
 function keywords(q, max = 8) {
   return [...new Set(terms(q))].slice(0, max).join(' ');
@@ -227,4 +236,4 @@ module.exports = async (req, res) => {
   }
 };
 
-module.exports._test = { terms, keywords, relevance, relevant, rankAndFilter };
+module.exports._test = { terms, stem, keywords, relevance, relevant, rankAndFilter };
