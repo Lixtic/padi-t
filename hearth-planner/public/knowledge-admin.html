@@ -8,9 +8,9 @@
   <link rel="stylesheet" href="/styles.css">
   <link rel="stylesheet" href="/v2.css">
   <style>
-    body{min-height:100vh;background:var(--bg);color:var(--ink);font-family:var(--font-ui)}
+    body{height:auto;min-height:100vh;overflow:auto;background:var(--bg);color:var(--text);font-family:var(--font-ui)}
     .kl-wrap{width:min(100% - 32px,980px);margin:0 auto;padding:32px 0 64px}
-    .kl-top{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:28px}
+    .kl-back{display:inline-flex;align-items:center;border:1px solid var(--line);border-radius:10px;padding:8px 12px;text-decoration:none;font-weight:650}.kl-top{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:28px}
     .kl-brand{font-weight:800;letter-spacing:-.04em;font-size:22px;color:var(--ink);text-decoration:none}
     .kl-brand span{color:var(--accent)}
     .kl-title{font-size:clamp(28px,5vw,40px);letter-spacing:-.045em;margin:8px 0}
@@ -46,7 +46,7 @@
   <main class="kl-wrap">
     <div class="kl-top">
       <a class="kl-brand" href="/">Guid<span>Ed</span></a>
-      <a href="/" class="foot-link">Back to GuidEd</a>
+      <a href="/" class="kl-back">Back to GuidEd</a>
     </div>
     <header>
       <p class="kl-pill">ADMIN WORKSPACE</p>
