@@ -135,6 +135,13 @@ function levelLine(cls) {
   return l && l.id !== 'jhs' ? ['Level: ' + l.name + ' (' + l.id + ')'] : [];
 }
 
+/* The Study notes / BECE switches mean "include this section in the weekly package". A resource-only run for that very
+   resource must be told "on", otherwise the model answers that no study notes are required. */
+function switchOn(p, resource, flag) {
+  if (p.mode === 'resources') return (p.resourceType || 'Study notes') === resource;
+  return p.mode === 'full' && flag !== false;
+}
+
 function firstMessage(p) {
   const task = p.mode === 'plan'
     ? 'Generate ONLY the two-lesson weekly lesson plan. Do not generate study notes, worksheets, homework, BECE questions or other resources.'
@@ -150,8 +157,8 @@ function firstMessage(p) {
     'Week: ' + p.week,
     'Hook: ' + (p.hook === false ? 'off' : 'on'),
     'Resources: ' + (p.light ? 'light' : 'standard'),
-    'Study notes: ' + (p.mode === 'full' && p.studyNotes !== false ? 'on' : 'off'),
-    'BECE practice: ' + (p.mode === 'full' && p.bece !== false ? 'on' : 'off'),
+    'Study notes: ' + (switchOn(p, 'Study notes', p.studyNotes) ? 'on' : 'off'),
+    'BECE practice: ' + (switchOn(p, 'BECE practice', p.bece) ? 'on' : 'off'),
   ];
   if (p.size) lines.push('Class size: ' + p.size + ' learners');
   Schemes.describe(p.scheme).forEach((l) => lines.push(l));
@@ -159,4 +166,4 @@ function firstMessage(p) {
   return lines.join('\n');
 }
 
-module.exports = { CLASSES, SIZES, sendJson, clientIp, rateLimit, accessRequired, accessOk, readJson, validate, firstMessage };
+module.exports = { switchOn, CLASSES, SIZES, sendJson, clientIp, rateLimit, accessRequired, accessOk, readJson, validate, firstMessage };
