@@ -36,6 +36,12 @@
     items.forEach(function (it) {
       var b = document.createElement('button'); b.type = 'button'; b.innerHTML = svg(it[2]) + '<span></span>'; b.querySelector('span').textContent = it[1];
       b.addEventListener('click', function () {
+        // Tapping the tab you are already on folds the Studio away again, for a wider reading area.
+        if (b.getAttribute('aria-current') === 'page' && !studio.classList.contains('is-collapsed')) {
+          studio.classList.add('is-collapsed');
+          var tg = $('#studioCollapseToggle'); if (tg) tg.setAttribute('aria-expanded', 'false');
+          mark(null); return;
+        }
         studio.classList.remove('is-collapsed');
         var t = $('#studioContent'), tog = $('#studioCollapseToggle'); if (tog) tog.setAttribute('aria-expanded', 'true'); if (t) t.hidden = false;
         if (it[3]) { var tab = $(it[3]); if (tab) tab.click(); }
