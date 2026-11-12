@@ -2422,7 +2422,7 @@
   // Anything that goes back to planning leaves the page first.
   document.addEventListener('click', (e) => {
     if (!pageOpen()) return;
-    if (e.target.closest('#newSession, #brand, .sb-list, .v2-tabbar, .f-add')) showPage(null);
+    if (e.target.closest('#newSession, #brand, .sb-list, .f-add') || (e.target.closest('.v2-tabbar') && !e.target.closest('[data-tab="library"]'))) showPage(null);
   }, true);
   document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && pageOpen() && !document.querySelector('dialog[open]')) showPage(null); });
 
