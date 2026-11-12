@@ -17,8 +17,7 @@ function normalizeCode(value) {
   const code = String(value || '').trim().toUpperCase();
   return /^(?:B[1-9]|SHS[1-3])(?:\.\d+){2,5}$/.test(code) ? code : '';
 }
-function sourceTrust(host, kind, approvalReference) {
-  if (TRUSTED_HOSTS.has(host)) return 'official';
+function sourceTrust() {
   return 'reviewed_resource';
 }
 function validateSource(input) {
