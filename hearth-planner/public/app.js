@@ -39,6 +39,8 @@
   const levelOf = (cls) => GL.levelOfClass(cls) || GL.LEVELS.find((l) => l.id === GL.DEFAULT_LEVEL);
   const subjectsOf = (cls) => levelOf(cls).subjects;
   const examOf = (cls) => levelOf(cls).exam;
+  // The stored resource key stays 'BECE practice'; what the teacher reads follows the level (WASSCE practice for SHS, Class exercise for primary).
+  const resourceLabel = (type, cls) => type === 'BECE practice' ? examOf(cls).toggle : type;
   const notesOf = (cls) => levelOf(cls).notes;
   const SUBJECTS = levelOf('Basic 8').subjects;
   const WEEKS = Array.from({ length: 14 }, (_, i) => i + 1);
@@ -344,7 +346,7 @@
 
   /* One group per kind of document: full plans, lesson plans only, then each resource type. */
   const TYPE_ORDER = ['plan', 'Study notes', 'Learner worksheet', 'Homework pack', 'BECE practice', 'Teaching slides'];
-  const TYPE_LABEL = { plan: 'Lesson plans', 'Study notes': 'Study notes', 'Learner worksheet': 'Worksheets', 'Homework pack': 'Homework packs', 'BECE practice': 'BECE practice', 'Teaching slides': 'Teaching slides' };
+  const TYPE_LABEL = { plan: 'Lesson plans', 'Study notes': 'Study notes', 'Learner worksheet': 'Worksheets', 'Homework pack': 'Homework packs', 'BECE practice': 'Exam practice', 'Teaching slides': 'Teaching slides' };
   const typeOf = (s) => (s.params && s.params.mode === 'resources' && TYPE_ORDER.includes(s.params.resourceType)) ? s.params.resourceType : 'plan';
 
   function sessionRow(s, inFolder) {
@@ -504,7 +506,7 @@
             h('span', { class: 'tag', text: p.subject }), h('span', { class: 'tag', text: p.cls }), h('span', { class: 'tag', text: 'Week ' + p.week }),
             p.size ? h('span', { class: 'tag', text: p.size + ' learners' }) : null,
             p.light ? h('span', { class: 'tag', text: 'Low-resource' }) : null,
-            p.mode === 'resources' ? h('span', { class: 'tag', text: p.resourceType }) : p.mode === 'plan' ? h('span', { class: 'tag', text: 'Lesson plan only' }) : null,
+            p.mode === 'resources' ? h('span', { class: 'tag', text: resourceLabel(p.resourceType, p.cls) }) : p.mode === 'plan' ? h('span', { class: 'tag', text: 'Lesson plan only' }) : null,
             p.studyNotes === false ? h('span', { class: 'tag', text: notesOf(p.cls).tag }) : null,
             p.bece === false ? h('span', { class: 'tag', text: examOf(p.cls).tag }) : null),
           m.content ? h('div', { class: 'req-notes', text: m.content }) : null));
@@ -522,7 +524,7 @@
   }
 
   function makeBot(session) {
-    const baseTitle = planTitle(session.params || state.params) + (session.params && session.params.mode === 'resources' ? ' – ' + session.params.resourceType : session.params && session.params.mode === 'plan' ? ' – Lesson plan' : '');
+    const baseTitle = planTitle(session.params || state.params) + (session.params && session.params.mode === 'resources' ? ' – ' + resourceLabel(session.params.resourceType, session.params.cls) : session.params && session.params.mode === 'plan' ? ' – Lesson plan' : '');
     let kind = 'plan', demoted = false, editBox = null, ta = null;
     let slideState = null;   // which slide the person is on, kept while a deck is repainted
     const titleEl = h('span', { class: 'doc-title', text: baseTitle });
@@ -1063,7 +1065,7 @@
         if (skipped.length) toast('Skipped ' + skipped.join(', ') + ': that week is an examination week.');
       }
       s.params = p;
-      s.title = planTitle(p) + (p.mode === 'resources' ? ' – ' + p.resourceType : p.mode === 'plan' ? ' – Lesson plan' : '');
+      s.title = planTitle(p) + (p.mode === 'resources' ? ' – ' + resourceLabel(p.resourceType, p.cls) : p.mode === 'plan' ? ' – Lesson plan' : '');
       s.messages.push({ role: 'user', content: text });
     } else {                                        // follow-up
       if (!text) return;
@@ -1718,6 +1720,7 @@
     $('small', notesBtn).textContent = lv.id === 'lower' ? 'Key ideas for you and a take-home activity' : 'Board copy and take-home notes';
     $('.dd-label', beceBtn).textContent = ex.toggle + (lv.id === 'lower' || lv.id === 'upper' ? '' : ' questions');
     $('small', beceBtn).textContent = lv.id === 'lower' ? 'Oral and written, with answers' : 'With a marking guide';
+    const beceOpt = $('#resourceType option[value="BECE practice"]'); if (beceOpt) beceOpt.textContent = ex.toggle;
     syncSummary();
   }
   notesBtn.addEventListener('click', () => { state.params.studyNotes = state.params.studyNotes === false; syncContent(); store.save(); });
