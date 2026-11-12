@@ -110,7 +110,7 @@ select, input[type="search"], input[type="text"] { border-radius: 999px; }
 /* ── Settings page ── */
 .settings-page[hidden] { display: none; }
 .settings-page { flex: 1; min-height: 0; overflow-y: auto; overscroll-behavior: contain; padding: 18px 16px 40px; }
-body.on-settings .stage, body.on-settings .pro-banner, body.on-settings .v2-tabbar { display: none !important; }
+body.on-page .stage, body.on-page .pro-banner, body.on-page .v2-tabbar { display: none !important; }
 .sp-inner { width: min(640px, 100%); margin: 0 auto; display: grid; gap: 14px; }
 .sp-head { display: flex; align-items: center; gap: 12px; }
 .sp-head h1 { margin: 0; font-size: 1.5rem; font-family: var(--serif, inherit); }
@@ -130,3 +130,17 @@ body.on-settings .stage, body.on-settings .pro-banner, body.on-settings .v2-tabb
 .sb-list-head { flex-wrap: wrap; row-gap: 6px; }
 .sb-seg { width: 100%; }
 .sb-seg button { flex: 1; padding: 0 6px; white-space: nowrap; }
+
+/* ── My Library ── */
+.library-page .lib-inner { width: min(960px, 100%); }
+.lib-search { width: 100%; min-height: 44px; padding: 0 16px; border: 1px solid var(--card-line); border-radius: 999px; background: var(--card); color: var(--text); font: inherit; }
+.lib-chips { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 2px; scrollbar-width: none; }
+.lib-chip { flex: none; min-height: 36px; padding: 0 14px; border: 1px solid var(--card-line); border-radius: 999px; background: var(--card); color: var(--text); font: inherit; font-size: 13px; cursor: pointer; }
+.lib-chip[aria-pressed="true"] { background: #111; color: #fff; border-color: #111; }
+.lib-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 12px; }
+.lib-card { display: flex; flex-direction: column; align-items: flex-start; gap: 6px; text-align: left; padding: 16px; border: 1px solid var(--card-line); border-radius: 20px; background: var(--card); color: var(--text); font: inherit; cursor: pointer; }
+.lib-card:hover { border-color: var(--accent); }
+.lib-tag { font-size: 11px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--accent); }
+.lib-name { font-size: 1.05rem; font-weight: 700; }
+.lib-meta, .lib-time { font-size: 13px; color: var(--muted); }
+.lib-empty { text-align: center; color: var(--muted); padding: 32px 0; }

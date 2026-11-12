@@ -415,7 +415,7 @@
   function updateTopbar() {
     const s = current();
     if (!s) return;
-    if (document.body.classList.contains('on-settings')) { topTitle.textContent = 'Settings'; return; }
+    { const pg = pageOpen(); if (pg) { topTitle.textContent = pg[1]; return; } }
     topTitle.textContent = s.messages.length ? s.title : 'New plan';
     document.title = (s.messages.length ? s.title + ' · ' : '') + 'GuidEd';
     let st = statusOf(s);
@@ -2400,25 +2400,55 @@
     try { if (localStorage.getItem(key) === '1') set(true, false); } catch (e) { /* ignore */ }
   });
 
-  /* Settings is its own page inside the main area; the sidebar keeps one link to it. */
-  const settingsPage = $('#settingsPage'), settingsLink = $('#settingsLink');
-  function showSettings(on) {
-    if (!settingsPage || settingsPage.hidden === !on) return;
-    settingsPage.hidden = !on;
-    document.body.classList.toggle('on-settings', on);
-    settingsLink.setAttribute('aria-current', on ? 'page' : 'false');
-    if (on) { if (isMobile()) setNav(false); settingsPage.scrollTop = 0; topTitle.textContent = 'Settings'; document.title = 'Settings · GuidEd'; }
-    else updateTopbar();
+  /* Settings and My Library are pages inside the main area; the sidebar keeps one link to each. */
+  const PAGES = [['settings', 'Settings', $('#settingsPage'), $('#settingsLink')], ['library', 'My Library', $('#libraryPage'), $('#libraryLink')]];
+  const pageOpen = () => PAGES.find((x) => x[2] && !x[2].hidden);
+  function showPage(name) {
+    PAGES.forEach(([key, title, el, link]) => {
+      if (!el) return;
+      const on = key === name;
+      el.hidden = !on;
+      if (link) link.setAttribute('aria-current', on ? 'page' : 'false');
+      document.body.classList.toggle('on-' + key, on);
+      if (on) { if (isMobile()) setNav(false); el.scrollTop = 0; topTitle.textContent = title; document.title = title + ' · GuidEd'; }
+    });
+    document.body.classList.toggle('on-page', !!name);
+    if (!name) updateTopbar();
+    if (name === 'library') renderLibrary();
   }
-  if (settingsPage && settingsLink) {
-    settingsLink.addEventListener('click', () => showSettings(true));
-    $('#settingsBack').addEventListener('click', () => showSettings(false));
-    // Anything that goes back to planning leaves the settings page first.
-    document.addEventListener('click', (e) => {
-      if (settingsPage.hidden) return;
-      if (e.target.closest('#newSession, #brand, .sb-list, .v2-tabbar, .f-add, #menuBtn') && !e.target.closest('#menuBtn')) showSettings(false);
-    }, true);
-    document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && !settingsPage.hidden && !document.querySelector('dialog[open]')) showSettings(false); });
+  const showSettings = (on) => showPage(on ? 'settings' : null);
+  PAGES.forEach(([key, , el, link]) => { if (el && link) link.addEventListener('click', () => showPage(key)); });
+  [['#settingsBack'], ['#libraryBack']].forEach(([sel]) => { const b = $(sel); if (b) b.addEventListener('click', () => showPage(null)); });
+  // Anything that goes back to planning leaves the page first.
+  document.addEventListener('click', (e) => {
+    if (!pageOpen()) return;
+    if (e.target.closest('#newSession, #brand, .sb-list, .v2-tabbar, .f-add')) showPage(null);
+  }, true);
+  document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && pageOpen() && !document.querySelector('dialog[open]')) showPage(null); });
+
+  /* My Library: every saved plan and resource as a card, filterable by type. */
+  let libType = 'all';
+  function renderLibrary() {
+    const grid = $('#libGrid'); if (!grid) return;
+    const q = ($('#libSearch').value || '').trim().toLowerCase();
+    const all = state.sessions.filter((s) => s.messages.length).sort((a, b) => b.updatedAt - a.updatedAt);
+    const counts = {}; all.forEach((s) => { const t = typeOf(s); counts[t] = (counts[t] || 0) + 1; });
+    const chips = $('#libChips');
+    chips.replaceChildren(...[['all', 'All', all.length]].concat(TYPE_ORDER.filter((t) => counts[t]).map((t) => [t, TYPE_LABEL[t], counts[t]]))
+      .map(([id, label, n]) => h('button', { type: 'button', class: 'lib-chip', 'data-type': id, 'aria-pressed': String(libType === id), text: label + ' ' + n })));
+    const list = all.filter((s) => (libType === 'all' || typeOf(s) === libType) &&
+      (!q || (s.title + ' ' + (s.params ? s.params.cls + ' ' + s.params.subject : '')).toLowerCase().includes(q)));
+    grid.replaceChildren(...list.map((s) => h('button', { type: 'button', class: 'lib-card', 'data-id': s.id },
+      h('span', { class: 'lib-tag', text: TYPE_LABEL[typeOf(s)] }),
+      h('span', { class: 'lib-name', text: s.params ? s.params.subject : s.title }),
+      h('span', { class: 'lib-meta', text: s.params ? s.params.cls + ' · Week ' + s.params.week : s.title }),
+      h('span', { class: 'lib-time', text: rel(s.updatedAt) }))));
+    $('#libEmpty').hidden = !!list.length;
+  }
+  if ($('#libraryPage')) {
+    $('#libSearch').addEventListener('input', renderLibrary);
+    $('#libChips').addEventListener('click', (e) => { const b = e.target.closest('.lib-chip'); if (b) { libType = b.dataset.type; renderLibrary(); } });
+    $('#libGrid').addEventListener('click', (e) => { const c = e.target.closest('.lib-card'); if (c) { showPage(null); showSession(c.dataset.id); } });
   }
 
   // Clears the app's cached files (not the saved plans) and reloads, so a stuck or outdated copy is replaced.
