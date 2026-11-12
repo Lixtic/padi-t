@@ -771,9 +771,16 @@
   let touching = false;
   const jumpBtn = $('#jumpLatest');
   function nearBottom() { return messagesWrap.scrollHeight - messagesWrap.scrollTop - messagesWrap.clientHeight < 140; }
-  function scrollBottom(force) {
+  function scrollBottom(force, behavior) {
     if (!force && (!state.stick || touching)) return;
-    messagesWrap.scrollTop = messagesWrap.scrollHeight;
+    const top = messagesWrap.scrollHeight;
+    // Smoothly follow new content without taking control away from a reader
+    // who has deliberately scrolled up through the transcript.
+    if (typeof messagesWrap.scrollTo === 'function') {
+      messagesWrap.scrollTo({ top, behavior: behavior || 'smooth' });
+    } else {
+      messagesWrap.scrollTop = top;
+    }
   }
   function syncJump() { if (jumpBtn) jumpBtn.hidden = !(state.streaming && !state.stick); }
   const letGo = () => { state.stick = false; syncJump(); };
@@ -784,7 +791,7 @@
   messagesWrap.addEventListener('touchcancel', () => { touching = false; }, { passive: true });
   messagesWrap.addEventListener('keydown', (e) => { if (['ArrowUp', 'PageUp', 'Home'].includes(e.key)) letGo(); });
   messagesWrap.addEventListener('scroll', () => { if (nearBottom()) state.stick = true; else if (touching) state.stick = false; syncJump(); }, { passive: true });
-  if (jumpBtn) jumpBtn.addEventListener('click', () => { state.stick = true; scrollBottom(true); syncJump(); });
+  if (jumpBtn) jumpBtn.addEventListener('click', () => { state.stick = true; scrollBottom(true, 'smooth'); syncJump(); });
 
   /* ───────── Export ───────── */
   const hintProfile = () => { const p = profile(); return p.teacher || p.school ? '' : '. Tip: add your name and school in the menu to print them on every file.'; };
@@ -1187,7 +1194,7 @@
       lastPaint = performance.now();
       const keep = messagesWrap.scrollTop, hold = !state.stick;
       bot.set(text, false);
-      if (hold) messagesWrap.scrollTop = keep; else scrollBottom();      // a reader who scrolled up keeps their place
+      if (hold) messagesWrap.scrollTop = keep; else scrollBottom(false, 'smooth'); // smoothly follow generated content
     };
     // Rendering the entire growing lesson on every animation frame becomes expensive
     // for long two-lesson plans. Cap intermediate DOM paints at roughly 8 per second;
