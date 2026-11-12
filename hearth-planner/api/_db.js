@@ -31,6 +31,12 @@ const SCHEMA = [
   // Bug reports and suggestions sent from inside the app.
   "create table if not exists feedback (id text primary key, kind text not null, message text not null, email text not null default '', user_id text not null default '', tier text not null default '', context text not null default '', status text not null default 'new', created_at bigint not null)",
   'create index if not exists feedback_status on feedback (status, created_at)',
+  // Approved curriculum and teaching-resource knowledge base. Source metadata is retained for citations.
+  "create table if not exists knowledge_sources (id text primary key, title text not null, publisher text not null, source_url text not null, source_host text not null, document_type text not null, subject text not null default '', classes text[] not null default '{}', curriculum_codes text[] not null default '{}', trust_level text not null, license text not null default '', edition text not null default '', published_at text, checksum text unique not null, status text not null default 'approved', created_by text not null default '', created_at timestamptz not null default now())",
+  "create table if not exists knowledge_chunks (id text primary key, source_id text not null references knowledge_sources(id) on delete cascade, chunk_index int not null, heading text not null default '', content text not null, page_start int, page_end int, subject text not null default '', classes text[] not null default '{}', curriculum_codes text[] not null default '{}', search_vector tsvector not null)",
+  'create index if not exists knowledge_chunks_search on knowledge_chunks using gin (search_vector)',
+  'create index if not exists knowledge_chunks_scope on knowledge_chunks (subject, source_id)',
+  'create index if not exists knowledge_sources_status on knowledge_sources (status, created_at desc)',
   // Usage numbers for the admin: daily counters, and one row per account the first time it is seen (first_seen 0 = existed before tracking began).
   'create table if not exists events (day text not null, name text not null, n int not null default 0, primary key (day, name))',
   'create table if not exists accounts (user_id text primary key, email text not null default \'\', first_seen bigint not null)',
