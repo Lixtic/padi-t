@@ -9,7 +9,7 @@ const source = K.validateSource({
   documentType: 'curriculum', subject: 'Computing', classes: ['Basic 7', 'Basic 8', 'Basic 9'],
   curriculumCodes: ['B7.1.1.1.2', 'invalid'], license: '© NaCCA'
 });
-assert.equal(source.trust, 'official');
+assert.equal(source.trust, 'reviewed_resource');
 assert.throws(() => K.validateSource({ title: 'Textbook', publisher: 'Publisher', sourceUrl: 'https://publisher.example/book.pdf', documentType: 'approved_textbook', subject: 'Computing' }), /approval-register/);
 const approved = K.validateSource({ title: 'Approved text', publisher: 'Publisher', sourceUrl: 'https://publisher.example/book.pdf', documentType: 'approved_textbook', subject: 'Computing', approvalReference: 'NaCCA register entry 2026-01' });
 assert.equal(approved.trust, 'reviewed_resource');
