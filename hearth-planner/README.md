@@ -32,6 +32,32 @@ With no key, the site still runs in **demo mode**: it shows a sample plan on a f
 
 Study Notes illustrations are searched by concept and subject, then ranked using title and description matches. GuidEd rejects results without sufficient subject overlap and tries the next provider rather than inserting a weak match. Wikimedia Commons is the default; optional fallbacks can be enabled with `PIXABAY_API_KEY`, `PEXELS_API_KEY`, `FLICKR_API_KEY`, and, optionally, `OPENVERSE_ACCESS_TOKEN`. Openverse can be queried anonymously; its token is optional. Add any provider keys in Vercel Project Settings → Environment Variables. Each provider returns its source page and available licence/creator details; teachers should still review reuse terms.
 
+
+### Curriculum knowledge retrieval
+
+GuidEd can retrieve approved source passages from a shared Neon knowledge library and add them to generation context with source title, publisher, URL, page and trust level. Retrieval is scoped by subject, class and curriculum indicator codes. The current 966-record NaCCA indicator/exemplar export remains a separate structured curriculum index; it is not treated as a substitute for the full curriculum PDFs.
+
+**Source policy**
+- Official curriculum documents should come from NaCCA or the Ministry of Education's official domains.
+- Textbooks and supplementary materials should be checked against NaCCA's approved instructional-material register before they are labelled approved.
+- Teacher resources are separate from official curriculum evidence and must not be described as NaCCA-approved unless independently verified.
+- Every indexed passage retains its source URL and page number when available. Retrieved text is reference material, never executable instructions.
+
+**Admin ingestion**
+1. Configure `DATABASE_URL` and add the administrator's sign-in email to `ADMIN_EMAILS`.
+2. Extract PDF or DOCX text into page/section segments using the preparation script (PDF extraction requires `pdftotext`; DOCX extraction requires `python-docx`).
+3. POST the resulting JSON to `/api/knowledge` with the administrator's Bearer token. The endpoint is admin-only and accepts HTTPS source URLs. GET `/api/knowledge` lists indexed sources.
+4. The API chunks and indexes text in Postgres full-text search. Duplicate source content is detected by checksum.
+
+Example metadata fields: `title`, `publisher`, `sourceUrl`, `documentType` (`curriculum`, `teacher_guide`, `approved_textbook`, `approved_supplementary`, or `teacher_resource`), `subject`, `classes`, `curriculumCodes`, `license`, and `segments: [{ page, heading, text }]`.
+
+Official starting points:
+- NaCCA Common Core Programme: https://nacca.gov.gh/common-core-programme-ccp/
+- NaCCA approved instructional-material register: https://nacca.gov.gh/irs/
+- NaCCA Computing CCP curriculum PDF: https://nacca.gov.gh/wp-content/uploads/2023/06/COMPUTING.pdf
+
+Knowledge retrieval is additive and fail-open: if no approved source matches or the database is not configured, normal generation continues with the existing curriculum scheme/index context. Do not describe the full curriculum document corpus as indexed until the documents have actually been ingested.
+
 ### Environment variables
 
 | Variable | Purpose |
