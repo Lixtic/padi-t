@@ -12,7 +12,10 @@ const source = K.validateSource({
 assert.equal(source.trust, 'official');
 assert.throws(() => K.validateSource({ title: 'Textbook', publisher: 'Publisher', sourceUrl: 'https://publisher.example/book.pdf', documentType: 'approved_textbook', subject: 'Computing' }), /approval-register/);
 const approved = K.validateSource({ title: 'Approved text', publisher: 'Publisher', sourceUrl: 'https://publisher.example/book.pdf', documentType: 'approved_textbook', subject: 'Computing', approvalReference: 'NaCCA register entry 2026-01' });
-assert.equal(approved.trust, 'approved_material');
+assert.equal(approved.trust, 'reviewed_resource');
+assert.equal(K.trustAfterReview({ source_host: 'publisher.example', document_type: 'approved_textbook', approval_reference: 'NaCCA register entry 2026-01' }), 'approved_material');
+assert.equal(K.trustAfterReview({ source_host: 'nacca.gov.gh', document_type: 'curriculum', approval_reference: '' }), 'official');
+assert.equal(K.trustAfterReview({ source_host: 'publisher.example', document_type: 'teacher_resource', approval_reference: '' }), 'reviewed_resource');
 const externalCurriculum = K.validateSource({ title: 'Unverified curriculum', publisher: 'Unknown', sourceUrl: 'https://example.org/curriculum.pdf', documentType: 'curriculum', subject: 'Computing' });
 assert.equal(externalCurriculum.trust, 'reviewed_resource');
 assert.deepEqual(source.curriculumCodes, ['B7.1.1.1.2']);
