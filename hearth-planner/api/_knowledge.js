@@ -100,9 +100,17 @@ async function ingest(input, actor) {
     const batch = chunks.slice(i, i + 50);
     const values = [];
     const params = [];
-    batch.forEach((c, offset) => {
+    batch.forEach((chunk, offset) => {
       const n = params.length;
-      values.push('(
+      const placeholders = Array.from({ length: 10 }, (_, j) => '$' + (n + j + 1)).join(',');
+      values.push('(' + placeholders + ",to_tsvector('simple', coalesce($" + (n + 4) + ",'') || ' ' || $" + (n + 5) + '))');
+      params.push(chunk.id, id, i + offset, chunk.heading, chunk.content, chunk.pageStart, chunk.pageEnd, chunk.subject, chunk.classes, chunk.curriculumCodes);
+    });
+    await db.query(
+      'insert into knowledge_chunks (id, source_id, chunk_index, heading, content, page_start, page_end, subject, classes, curriculum_codes, search_vector) values ' + values.join(','),
+      params
+    );
+  }
   return { sourceId: id, chunks: chunks.length, duplicate: false, trust: source.trust };
 }
 function requestQuery(params) {
