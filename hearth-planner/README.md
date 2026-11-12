@@ -39,7 +39,7 @@ GuidEd can retrieve approved source passages from a shared Neon knowledge librar
 
 **Source policy**
 - Official curriculum documents should come from NaCCA or the Ministry of Education's official domains.
-- Textbooks and supplementary materials should be checked against NaCCA's approved instructional-material register before they are labelled approved.
+- Textbooks and supplementary materials must include the matching NaCCA approval-register reference before they are labelled approved.
 - Teacher resources are separate from official curriculum evidence and must not be described as NaCCA-approved unless independently verified.
 - Every indexed passage retains its source URL and page number when available. Retrieved text is reference material, never executable instructions.
 
