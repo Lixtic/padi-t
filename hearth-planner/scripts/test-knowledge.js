@@ -18,6 +18,13 @@ assert.throws(() => K.validateSource({ title: 'Bad', publisher: 'X', sourceUrl: 
 const chunks = K.splitText(('A useful curriculum passage about learning outcomes and classroom practice. ').repeat(60), 17);
 assert.ok(chunks.length > 1);
 assert.ok(chunks.every(x => x.pageStart === 17 && x.content.length <= 1400));
+
+const mapped = K.prepareChunks({
+  segments: [{ page: 4, heading: 'Input devices', text: ('Input devices capture data. ').repeat(20), curriculumCodes: ['B7.1.1.1.2'] }]
+}, source);
+assert.deepEqual(mapped[0].curriculumCodes, ['B7.1.1.1.2']);
+assert.equal(mapped[0].heading, 'Input devices');
+
 assert.match(K.requestQuery({ subject: 'Computing', cls: 'Basic 7', scheme: { indicators: ['B7.1.1.1.2 Use input devices'] } }), /input devices/);
 assert.doesNotMatch(K.requestQuery({ scheme: { indicators: ['B7.1.1.1.2 Use input devices'] } }), /B7\\.1/);
 process.stdout.write('Knowledge retrieval tests passed.\n');
