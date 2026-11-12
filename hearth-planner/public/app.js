@@ -2422,7 +2422,7 @@
   }
   const showSettings = (on) => showPage(on ? 'settings' : null);
   PAGES.forEach(([key, , el, link]) => { if (el && link) link.addEventListener('click', () => showPage(key)); });
-  [['#settingsBack'], ['#libraryBack']].forEach(([sel]) => { const b = $(sel); if (b) b.addEventListener('click', () => showPage(null)); });
+  [['#settingsBack'], ['#dashboardBack'], ['#libraryBack']].forEach(([sel]) => { const b = $(sel); if (b) b.addEventListener('click', () => showPage(null)); });
   // Anything that goes back to planning leaves the page first.
   document.addEventListener('click', (e) => {
     if (!pageOpen()) return;
