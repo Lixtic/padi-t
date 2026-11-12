@@ -113,7 +113,7 @@ module.exports = async (req, res) => {
   }
 
   // 2. Not cached, so it will cost tokens. Stop here if today's allowance is used up.
-  const system = systemFor(v.params.cls, v.params.mode, v.params.resourceType);
+  const system = systemFor(v.params.cls, v.params.mode, v.params.resourceType, v.params.scheme, v.params);
   const inputTokens = Quota.estimateTokens(system.length + messages.reduce((n, m) => n + m.content.length, 0));
   const outputCap = guest ? (Number(Entitle.cfg().previewMaxTokens) || 2200) : Providers.maxOutputTokens();
   let q;
