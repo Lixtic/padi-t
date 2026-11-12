@@ -76,9 +76,9 @@ function prepareChunks(input, source) {
       chunks.push(Object.assign(chunk, {
         id: crypto.randomBytes(12).toString('hex'),
         heading: cleanText(segment.heading, 240),
-        subject: source.subject,
-        classes: source.classes,
-        curriculumCodes: source.curriculumCodes,
+        subject: cleanText(segment.subject, 100) || source.subject,
+        classes: Array.isArray(segment.classes) ? [...new Set(segment.classes.map(x => cleanText(x, 24)).filter(Boolean))].slice(0, 12) : source.classes,
+        curriculumCodes: Array.isArray(segment.curriculumCodes) ? [...new Set(segment.curriculumCodes.map(normalizeCode).filter(Boolean))].slice(0, 200) : source.curriculumCodes,
       }));
       if (chunks.length > 2500) throw new Error('Document is too large; split it into smaller files.');
     }
@@ -132,7 +132,7 @@ async function retrieve(params) {
   if (!query.trim() && !codes.length) return { chunks: [], context: '', sourceCount: 0, status: 'no_query' };
   await db.ensure();
   const rows = await db.query(
-    "select c.id, c.heading, c.content, c.page_start, c.page_end, s.id as source_id, s.title as source_title, s.publisher, s.source_url, s.document_type, s.trust_level, s.license, s.edition, ts_rank_cd(c.search_vector, plainto_tsquery('simple', $1)) as rank from knowledge_chunks c join knowledge_sources s on s.id = c.source_id where s.status = 'approved' and (c.subject = $2 or c.subject = '') and (cardinality(c.classes) = 0 or $3 = any(c.classes)) and ((length($1) > 0 and c.search_vector @@ plainto_tsquery('simple', $1)) or (cardinality($4::text[]) > 0 and c.curriculum_codes && $4::text[])) order by (case s.trust_level when 'official' then 4 when 'approved_material' then 3 else 1 end) desc, (case when c.curriculum_codes && $4::text[] then 2 else 0 end) desc, rank desc limit $5",
+    "select c.id, c.heading, c.content, c.page_start, c.page_end, s.id as source_id, s.title as source_title, s.publisher, s.source_url, s.document_type, s.trust_level, s.license, s.edition, ts_rank_cd(c.search_vector, plainto_tsquery('simple', $1)) as rank from knowledge_chunks c join knowledge_sources s on s.id = c.source_id where s.status = 'approved' and (c.subject = $2 or c.subject = '') and (cardinality(c.classes) = 0 or $3 = any(c.classes)) and ((length($1) > 0 and c.search_vector @@ plainto_tsquery('simple', $1)) or (cardinality($4::text[]) > 0 and c.curriculum_codes && $4::text[])) order by (case when c.curriculum_codes && $4::text[] then 2 else 0 end) desc, (case s.trust_level when 'official' then 4 when 'approved_material' then 3 else 1 end) desc, rank desc limit $5",
     [query, cleanText(p.subject, 100), cleanText(p.cls, 24), codes, MAX_RESULTS]
   );
   const chunks = rows.map(r => ({
