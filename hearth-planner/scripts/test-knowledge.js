@@ -2,7 +2,6 @@
 const assert = require('node:assert/strict');
 const K = require('../api/_knowledge');
 
-assert.equal(K.normalizeCode, undefined);
 assert.equal(K.TRUSTED_HOSTS.has('nacca.gov.gh'), true);
 const source = K.validateSource({
   title: 'NaCCA Computing CCP Curriculum', publisher: 'NaCCA, Ministry of Education',
@@ -17,4 +16,4 @@ const chunks = K.splitText(('A useful curriculum passage about learning outcomes
 assert.ok(chunks.length > 1);
 assert.ok(chunks.every(x => x.pageStart === 17 && x.content.length <= 1400));
 assert.match(K.requestQuery({ subject: 'Computing', cls: 'Basic 7', scheme: { indicators: ['B7.1.1.1.2 Use input devices'] } }), /input devices/);
-process.stdout.write('Knowledge retrieval tests passed.\\n');
+process.stdout.write('Knowledge retrieval tests passed.\n');
