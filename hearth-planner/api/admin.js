@@ -185,6 +185,12 @@ module.exports = async (req, res) => {
       const result = await Knowledge.ingest(body, me.email || me.uid);
       return sendJson(res, 201, { ok: true, ...result });
     }
+    if (action === 'knowledge-review' && req.method === 'POST') {
+      const body = await readJson(req);
+      const result = await Knowledge.reviewSource(body.sourceId, body.decision);
+      await logAction(me, 'knowledge_' + result.status, result.sourceId, result.trust || '');
+      return sendJson(res, 200, { ok: true, ...result });
+    }
     if (req.method === 'GET' && action === 'stats') {
       const days = Math.min(365, Math.max(1, parseInt(url.searchParams.get('days') || '30', 10) || 30));
       return sendJson(res, 200, await stats(days));
