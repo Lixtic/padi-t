@@ -14,6 +14,7 @@ const E = require('./_entitle');
 const billing = require('./billing');
 const Quota = require('./_quota');
 const crypto = require('crypto');
+const Knowledge = require('./_knowledge');
 
 const DAY = 86400000;
 const money = (pesewas) => Math.round(Number(pesewas || 0)) / 100;
@@ -174,6 +175,22 @@ module.exports = async (req, res) => {
     if (!db.configured()) return sendJson(res, 503, { error: 'not_configured', message: 'The database is not set up.' });
     const me = req.headers.authorization ? await A.authed(req).catch(() => null) : null;
     if (!E.isAdmin(me)) return sendJson(res, 403, { error: 'forbidden', message: 'Not allowed.' });
+    if (action === 'knowledge' && req.method === 'GET') {
+      await db.ensure();
+      const rows = await db.query("select id, title, publisher, source_url, document_type, subject, classes, curriculum_codes, trust_level, license, edition, approval_reference, status, created_at, (select count(*)::int from knowledge_chunks c where c.source_id = s.id) as chunks from knowledge_sources s order by created_at desc limit 200");
+      return sendJson(res, 200, { sources: rows });
+    }
+    if (action === 'knowledge' && req.method === 'POST') {
+      const body = await readJson(req, 2500000);
+      const result = await Knowledge.ingest(body, me.email || me.uid);
+      return sendJson(res, 201, { ok: true, ...result });
+    }
+    if (action === 'knowledge-review' && req.method === 'POST') {
+      const body = await readJson(req);
+      const result = await Knowledge.reviewSource(body.sourceId, body.decision);
+      await logAction(me, 'knowledge_' + result.status, result.sourceId, result.trust || '');
+      return sendJson(res, 200, { ok: true, ...result });
+    }
     if (req.method === 'GET' && action === 'stats') {
       const days = Math.min(365, Math.max(1, parseInt(url.searchParams.get('days') || '30', 10) || 30));
       return sendJson(res, 200, await stats(days));
