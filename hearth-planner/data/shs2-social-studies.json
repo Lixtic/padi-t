@@ -1,0 +1,248 @@
+{
+ "source": "NaCCA Social Studies Teacher Manual for SHS Year 2 (2025). Weeks 1-12 are Semester 1 and weeks 13-24 Semester 2.",
+ "weeks": {
+  "1": {
+   "strand": "Identity Significance and Purpose",
+   "substrand": "Identity and National Cohesion",
+   "standard": "Demonstrate knowledge and understanding of Ghanaian values and traditions and how they promote or challenge national cohesion.",
+   "outcome": "Analyse Ghanaian values and traditions that promote national cohesion.",
+   "indicators": [
+    "Discuss the values and traditions that identify a Ghanaian."
+   ],
+   "focus": "Values and Traditions that Identify a Ghanaian"
+  },
+  "2": {
+   "strand": "Identity Significance and Purpose",
+   "substrand": "Identity and National Cohesion",
+   "standard": "Demonstrate knowledge and understanding of Ghanaian values and traditions and how they promote or challenge national cohesion.",
+   "outcome": "Analyse Ghanaian values and traditions that promote national cohesion.",
+   "indicators": [
+    "Examine the concept of false identity and its implications for personal development."
+   ],
+   "focus": "Concept of False Identity and Its Implications for Personal Development"
+  },
+  "3": {
+   "strand": "Identity Significance and Purpose",
+   "substrand": "Identity and National Cohesion",
+   "standard": "Demonstrate knowledge and understanding of Ghanaian values and traditions and how they promote or challenge national cohesion.",
+   "outcome": "Analyse Ghanaian values and traditions that promote national cohesion.",
+   "indicators": [
+    "Discuss ways of promoting national cohesion in Ghana."
+   ],
+   "focus": "Promoting National Cohesion in Ghana"
+  },
+  "4": {
+   "strand": "Environment",
+   "substrand": "Environmental Literacy and Sustainability",
+   "standard": "Demonstrate knowledge and understanding of the interdependent relationship between humans and the physical environment and how they promote sustainable development.",
+   "outcome": "Analyse the interdependent relationship between humans and the physical environment and ways of developing a sense of responsibility towards the environment.",
+   "indicators": [
+    "Examine the relationship between humans and the physical environment and how they promote sustainable development."
+   ],
+   "focus": "The Relationship Between Humans and the Physical Environment and How They Promote Sustainable Development"
+  },
+  "5": {
+   "strand": "Environment",
+   "substrand": "Environmental Literacy and Sustainability",
+   "standard": "Demonstrate knowledge and understanding of the interdependent relationship between humans and the physical environment and how they promote sustainable development.",
+   "outcome": "Analyse the interdependent relationship between humans and the physical environment and ways of developing a sense of responsibility towards the environment.",
+   "indicators": [
+    "Examine ways of developing a sense of responsibility among the Youth towards the physical environment with an emphasis on environmental sanitation."
+   ],
+   "focus": "Ways of Developing a Sense of Responsibility Among the Youth Towards the Physical Environment"
+  },
+  "6": {
+   "strand": "Law and Order in Society",
+   "substrand": "Law Enforcement Mechanisms in Ghana",
+   "standard": "Demonstrate knowledge and understanding of law enforcement in Ghana.",
+   "outcome": "Analyse the need for the existence of law enforcement institutions and mechanisms in Ghana.",
+   "indicators": [
+    "Discuss the institutions mandated to enforce law and order in Ghanaian society and how their functions help to maintain law and order."
+   ],
+   "focus": "Institutions Mandated to Enforce Law and Order in Ghanaian Society and How Their Functions Help to Maintain Law and Order"
+  },
+  "7": {
+   "strand": "Law and Order in Society",
+   "substrand": "Law Enforcement Mechanisms in Ghana",
+   "standard": "Demonstrate knowledge and understanding of law enforcement in Ghana.",
+   "outcome": "Analyse the need for the existence of law enforcement institutions and mechanisms in Ghana.",
+   "indicators": [
+    "Examine the challenges of law enforcement in Ghana and how they can be addressed."
+   ],
+   "focus": "The Challenges of Law Enforcement in Ghana and How They Can Be Addressed"
+  },
+  "8": {
+   "strand": "Nationalism and Nationhood",
+   "substrand": "European Encounter, Colonialism and Neo-Colonialism",
+   "standard": "Demonstrate knowledge and understanding of European encounters and colonialism in Africa.",
+   "outcome": "Demonstrate an understanding of European encounters and colonialism in Africa, recognising the limitations and biases inherent in traditional Eurocentric narratives.",
+   "indicators": [
+    "Explain the motivations behind European exploration of Africa."
+   ],
+   "focus": "The Motivations Behind European Exploration of Africa"
+  },
+  "9": {
+   "strand": "Nationalism and Nationhood",
+   "substrand": "European Encounter, Colonialism and Neo-Colonialism",
+   "standard": "Demonstrate knowledge and understanding of European encounters and colonialism in Africa.",
+   "outcome": "Demonstrate an understanding of European encounters and colonialism in Africa, recognising the limitations and biases inherent in traditional Eurocentric narratives.",
+   "indicators": [
+    "Explain the concept of the “Scramble for and Partition of Africa” and its impact on the African continent."
+   ],
+   "focus": "The \"Scramble for and Partition of Africa\" and Its Impact on the African Continent"
+  },
+  "10": {
+   "strand": "Nationalism and Nationhood",
+   "substrand": "European Encounter, Colonialism and Neo-Colonialism",
+   "standard": "Demonstrate knowledge and understanding of European encounters and colonialism in Africa.",
+   "outcome": "Demonstrate an understanding of European encounters and colonialism in Africa, recognising the limitations and biases inherent in traditional Eurocentric narratives.",
+   "indicators": [
+    "Analyse the different forms and legacies of European colonialism in Africa and propose solutions for present-day challenges arising from colonial legacies."
+   ],
+   "focus": "Forms and Legacies of European Colonialism in Africa"
+  },
+  "11": {
+   "strand": "Nationalism and Nationhood",
+   "substrand": "Nationalism, Citizenship and Nation Building",
+   "standard": "Demonstrate understanding of the origins and impact of Pan-Africanist ideals, highlighting how these ideals can be used to solve contemporary problems faced by African countries.",
+   "outcome": "Analyse the origins and impact of Pan-Africanist ideals on the decolonisation process in Africa, highlighting how these ideals can be used to solve contemporary problems faced.",
+   "indicators": [
+    "Analyse the origins and impact of Pan-Africanism on the growth of nationalist consciousness in Africa."
+   ],
+   "focus": "The Origins and Impact of Pan-Africanism on the Growth of Nationalist Consciousness in Africa"
+  },
+  "12": {
+   "strand": "Nationalism and Nationhood",
+   "substrand": "Nationalism, Citizenship and Nation Building",
+   "standard": "Demonstrate understanding of the origins and impact of Pan-Africanist ideals, highlighting how these ideals can be used to solve contemporary problems faced by African countries.",
+   "outcome": "Analyse the origins and impact of Pan-Africanist ideals on the decolonisation process in Africa, highlighting how these ideals can be used to solve contemporary problems faced.",
+   "indicators": [
+    "Analyse challenges faced by African nations after decolonisation and suggest solutions informed by Pan-Africanist ideals."
+   ],
+   "focus": "Challenges Faced by African Nations After Decolonisation and Solutions Informed by Pan-Africanist Ideals"
+  },
+  "13": {
+   "strand": "Ethics and Human Development",
+   "substrand": "Leisure and Tourism",
+   "standard": "Appreciate the relevance of leisure and recreation to personal and national development.",
+   "outcome": "Explore opportunities for leisure and recreation in Ghana and how leisure and recreation can contribute to individual and national development.",
+   "indicators": [
+    "Investigate opportunities for leisure and recreation."
+   ],
+   "focus": "Opportunities for Leisure and Recreation"
+  },
+  "14": {
+   "strand": "Ethics and Human Development",
+   "substrand": "Leisure and Tourism",
+   "standard": "Appreciate the relevance of leisure and recreation to personal and national development.",
+   "outcome": "Explore opportunities for leisure and recreation in Ghana and how leisure and recreation can contribute to individual and national development.",
+   "indicators": [
+    "Investigate opportunities for leisure and recreation."
+   ],
+   "focus": "Relevance of Leisure and Recreation to Personal and National Development"
+  },
+  "15": {
+   "strand": "Ethics and Human Development",
+   "substrand": "Revolutions that Changed the World",
+   "standard": "Demonstrate knowledge and understanding of the Scientific Revolution of the sixteenth century and its impact on the world.",
+   "outcome": "Analyse the evolution of scientific ideas and their impact on the world.",
+   "indicators": [
+    "Examine the major events leading to the rise of the scientific revolution in the sixteenth century."
+   ],
+   "focus": "Major Events Leading to the Rise of the Scientific Revolution in the Sixteenth Century"
+  },
+  "16": {
+   "strand": "Ethics and Human Development",
+   "substrand": "Revolutions that Changed the World",
+   "standard": "Demonstrate knowledge and understanding of the Scientific Revolution of the sixteenth century and its impact on the world.",
+   "outcome": "Analyse the evolution of scientific ideas and their impact on the world.",
+   "indicators": [
+    "Evaluate the relevance of the Scientific Revolution in shaping the modern world, considering its lasting impact."
+   ],
+   "focus": "Relevance of the Scientific Revolution in Shaping the Modern World"
+  },
+  "17": {
+   "strand": "Ethics and Human Development",
+   "substrand": "The Youth and National Development",
+   "standard": "Demonstrate understanding of the expectations of the Ghanaian youth, the challenges they face and ways of addressing these challenges.",
+   "outcome": "Analyse the expectations of the Ghanaian youth, the challenges they face, and ways of addressing these challenges.",
+   "indicators": [
+    "Assess the expectations of the Ghanaian youth and how they can be met."
+   ],
+   "focus": "Expectations of the Ghanaian Youth and How They Can Be Met"
+  },
+  "18": {
+   "strand": "Ethics and Human Development",
+   "substrand": "The Youth and National Development",
+   "standard": "Demonstrate understanding of the expectations of the Ghanaian youth, the challenges they face and ways of addressing these challenges.",
+   "outcome": "Analyse the expectations of the Ghanaian youth, the challenges they face, and ways of addressing these challenges.",
+   "indicators": [
+    "Discuss challenges faced by the Ghanaian youth and how they can be addressed."
+   ],
+   "focus": "Challenges Faced by the Ghanaian Youth and How They Can Be Addressed"
+  },
+  "19": {
+   "strand": "Production, Exchange and Creativity",
+   "substrand": "Economic Activities in Ghana",
+   "standard": "Demonstrate knowledge and understanding of the concept of local production and consumption and their benefits to national development.",
+   "outcome": "Examine the benefits and challenges of local production and consumption and how to address the challenges.",
+   "indicators": [
+    "Explain the concepts of local production and local consumption.",
+    "Discuss the challenges of local production and how the consumption of made-in- Ghana products can be promoted."
+   ],
+   "focus": "The Concepts of Local Production and Local Consumption / Challenges of Local Production and Ways of Promoting Made-in-Ghana Products"
+  },
+  "20": {
+   "strand": "Production, Exchange and Creativity",
+   "substrand": "Entrepreneurship, Workplace Culture and Productivity",
+   "standard": "Demonstrate knowledge and understanding of the relevance of an entrepreneur to national development.",
+   "outcome": "Evaluate the role of an entrepreneur in national development.",
+   "indicators": [
+    "Apply knowledge of the traits of an entrepreneur to assess one’s capabilities in setting up a business.",
+    "Examine the role entrepreneurs play in national development."
+   ],
+   "focus": "Traits and Capabilities of an Entrepreneur in Setting Up a Business / The Role Entrepreneurs Play in National Development"
+  },
+  "21": {
+   "strand": "Production, Exchange and Creativity",
+   "substrand": "Entrepreneurship, Workplace Culture and Productivity",
+   "standard": "Demonstrate knowledge and understanding of the relevance of an entrepreneur to national development.",
+   "outcome": "Evaluate the role of an entrepreneur in national development.",
+   "indicators": [
+    "Discuss challenges facing entrepreneurs in Ghana and how to sustain a business."
+   ],
+   "focus": "Challenges Facing Entrepreneurs in Ghana and How to Sustain a Business"
+  },
+  "22": {
+   "strand": "Production, Exchange and Creativity",
+   "substrand": "Consumer Rights, Protection and Responsibilities",
+   "standard": "Demonstrate knowledge and understanding of the various forms of consumer responsibilities towards the nation.",
+   "outcome": "Examine the various forms of consumer responsibilities towards the nation.",
+   "indicators": [
+    "Discuss the consumer responsibilities in choosing sustainable and eco-friendly products, as well as proper product recycling.",
+    "Examine how the various forms of consumer responsibilities ensure national growth and development."
+   ],
+   "focus": "The Role of Responsible Consumers in Promoting Sustainable and Eco-Friendly Products / How Forms of Consumer Responsibilities Ensure National Growth and Development"
+  },
+  "23": {
+   "strand": "Production, Exchange and Creativity",
+   "substrand": "Financial Literacy",
+   "standard": "Demonstrate knowledge and understanding of effective saving habits to achieve financial goals.",
+   "outcome": "Examine ways of developing responsible and effective saving habits to achieve financial goals.",
+   "indicators": [
+    "Explain the importance of saving and its role in achieving financial goals."
+   ],
+   "focus": "Roles of Savings in Achieving Financial Goals"
+  },
+  "24": {
+   "strand": "Production, Exchange and Creativity",
+   "substrand": "Financial Literacy",
+   "standard": "Demonstrate knowledge and understanding of effective saving habits to achieve financial goals.",
+   "outcome": "Examine ways of developing responsible and effective saving habits to achieve financial goals.",
+   "indicators": [
+    "Create a personalised saving plan based on short-term and long-term financial goals."
+   ],
+   "focus": "Personalised Saving Plan Based on Short-Term and Long-Term Financial Goals"
+  }
+ }
+}

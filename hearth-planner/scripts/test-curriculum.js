@@ -55,3 +55,15 @@ process.stdout.write('Curriculum Intelligence Engine tests passed.\n');
   }
   process.stdout.write('JHS term coverage tests passed.\n');
 }
+
+{
+  // SHS 2 Social Studies follows the 2025 NaCCA Teacher Manual: 12 teaching weeks per semester, Terms 1 and 2.
+  const S = require('../api/_schemes');
+  for (const t of [1, 2]) {
+    let teach = 0;
+    for (let w = 1; w <= 12; w++) { const r = S.lookup('Social Studies', 'SHS 2', t, w); if (r && r.type === 'teach' && r.indicators.length && r.focus) teach++; }
+    require('node:assert/strict').equal(teach, 12, 'SHS 2 Social Studies Term ' + t + ' has 12 teaching weeks from the manual');
+  }
+  require('node:assert/strict').match(S.lookup('Social Studies', 'SHS 2', 2, 1).substrand, /Leisure and Tourism/);
+  process.stdout.write('SHS 2 Social Studies manual tests passed.\n');
+}

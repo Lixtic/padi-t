@@ -17172,188 +17172,157 @@
        "weeks": [
         1
        ],
-       "type": "revision",
-       "strand": "",
-       "substrand": "",
-       "standard": "",
-       "indicators": [],
-       "focus": "Key ideas from last term that this class needs"
+       "type": "teach",
+       "strand": "Identity Significance and Purpose",
+       "substrand": "Identity and National Cohesion",
+       "standard": "Demonstrate knowledge and understanding of Ghanaian values and traditions and how they promote or challenge national cohesion.",
+       "indicators": [
+        "Discuss the values and traditions that identify a Ghanaian."
+       ],
+       "focus": "Values and Traditions that Identify a Ghanaian"
       },
       {
        "weeks": [
         2
        ],
        "type": "teach",
-       "strand": "2. Governance, Politics and Stability",
-       "substrand": "2.3 Democracy and Law-Making",
-       "standard": "SHS2.2.3.1 Understand the principles and practices of democracy and the rule of law",
+       "strand": "Identity Significance and Purpose",
+       "substrand": "Identity and National Cohesion",
+       "standard": "Demonstrate knowledge and understanding of Ghanaian values and traditions and how they promote or challenge national cohesion.",
        "indicators": [
-        "SHS2.2.3.1.1 Describe the organs of government and their functions under the 1992 Constitution"
+        "Examine the concept of false identity and its implications for personal development."
        ],
-       "part": [
-        1,
-        6
-       ]
+       "focus": "Concept of False Identity and Its Implications for Personal Development"
       },
       {
        "weeks": [
         3
        ],
        "type": "teach",
-       "strand": "2. Governance, Politics and Stability",
-       "substrand": "2.3 Democracy and Law-Making",
-       "standard": "SHS2.2.3.1 Understand the principles and practices of democracy and the rule of law",
+       "strand": "Identity Significance and Purpose",
+       "substrand": "Identity and National Cohesion",
+       "standard": "Demonstrate knowledge and understanding of Ghanaian values and traditions and how they promote or challenge national cohesion.",
        "indicators": [
-        "SHS2.2.3.1.1 Describe the organs of government and their functions under the 1992 Constitution"
+        "Discuss ways of promoting national cohesion in Ghana."
        ],
-       "part": [
-        2,
-        6
-       ]
+       "focus": "Promoting National Cohesion in Ghana"
       },
       {
        "weeks": [
         4
        ],
        "type": "teach",
-       "strand": "2. Governance, Politics and Stability",
-       "substrand": "2.3 Democracy and Law-Making",
-       "standard": "SHS2.2.3.1 Understand the principles and practices of democracy and the rule of law",
+       "strand": "Environment",
+       "substrand": "Environmental Literacy and Sustainability",
+       "standard": "Demonstrate knowledge and understanding of the interdependent relationship between humans and the physical environment and how they promote sustainable development.",
        "indicators": [
-        "SHS2.2.3.1.1 Describe the organs of government and their functions under the 1992 Constitution"
+        "Examine the relationship between humans and the physical environment and how they promote sustainable development."
        ],
-       "part": [
-        3,
-        6
-       ]
+       "focus": "The Relationship Between Humans and the Physical Environment and How They Promote Sustainable Development"
       },
       {
        "weeks": [
         5
        ],
        "type": "teach",
-       "strand": "2. Governance, Politics and Stability",
-       "substrand": "2.3 Democracy and Law-Making",
-       "standard": "SHS2.2.3.1 Understand the principles and practices of democracy and the rule of law",
+       "strand": "Environment",
+       "substrand": "Environmental Literacy and Sustainability",
+       "standard": "Demonstrate knowledge and understanding of the interdependent relationship between humans and the physical environment and how they promote sustainable development.",
        "indicators": [
-        "SHS2.2.3.1.1 Describe the organs of government and their functions under the 1992 Constitution"
+        "Examine ways of developing a sense of responsibility among the Youth towards the physical environment with an emphasis on environmental sanitation."
        ],
-       "part": [
-        4,
-        6
-       ]
+       "focus": "Ways of Developing a Sense of Responsibility Among the Youth Towards the Physical Environment"
       },
       {
        "weeks": [
         6
        ],
        "type": "teach",
-       "strand": "2. Governance, Politics and Stability",
-       "substrand": "2.3 Democracy and Law-Making",
-       "standard": "SHS2.2.3.1 Understand the principles and practices of democracy and the rule of law",
+       "strand": "Law and Order in Society",
+       "substrand": "Law Enforcement Mechanisms in Ghana",
+       "standard": "Demonstrate knowledge and understanding of law enforcement in Ghana.",
        "indicators": [
-        "SHS2.2.3.1.1 Describe the organs of government and their functions under the 1992 Constitution"
+        "Discuss the institutions mandated to enforce law and order in Ghanaian society and how their functions help to maintain law and order."
        ],
-       "part": [
-        5,
-        6
-       ]
+       "focus": "Institutions Mandated to Enforce Law and Order in Ghanaian Society and How Their Functions Help to Maintain Law and Order"
       },
       {
        "weeks": [
         7
        ],
        "type": "teach",
-       "strand": "2. Governance, Politics and Stability",
-       "substrand": "2.3 Democracy and Law-Making",
-       "standard": "SHS2.2.3.1 Understand the principles and practices of democracy and the rule of law",
+       "strand": "Law and Order in Society",
+       "substrand": "Law Enforcement Mechanisms in Ghana",
+       "standard": "Demonstrate knowledge and understanding of law enforcement in Ghana.",
        "indicators": [
-        "SHS2.2.3.1.1 Describe the organs of government and their functions under the 1992 Constitution"
+        "Examine the challenges of law enforcement in Ghana and how they can be addressed."
        ],
-       "part": [
-        6,
-        6
-       ]
+       "focus": "The Challenges of Law Enforcement in Ghana and How They Can Be Addressed"
       },
       {
        "weeks": [
         8
        ],
        "type": "teach",
-       "strand": "2. Governance, Politics and Stability",
-       "substrand": "2.4 Human Rights and Responsibilities",
-       "standard": "SHS2.2.4.1 Understand fundamental human rights and civic obligations",
+       "strand": "Nationalism and Nationhood",
+       "substrand": "European Encounter, Colonialism and Neo-Colonialism",
+       "standard": "Demonstrate knowledge and understanding of European encounters and colonialism in Africa.",
        "indicators": [
-        "SHS2.2.4.1.1 Discuss the protection of human rights and the responsibilities of citizens"
+        "Explain the motivations behind European exploration of Africa."
        ],
-       "part": [
-        1,
-        6
-       ]
+       "focus": "The Motivations Behind European Exploration of Africa"
       },
       {
        "weeks": [
         9
        ],
        "type": "teach",
-       "strand": "2. Governance, Politics and Stability",
-       "substrand": "2.4 Human Rights and Responsibilities",
-       "standard": "SHS2.2.4.1 Understand fundamental human rights and civic obligations",
+       "strand": "Nationalism and Nationhood",
+       "substrand": "European Encounter, Colonialism and Neo-Colonialism",
+       "standard": "Demonstrate knowledge and understanding of European encounters and colonialism in Africa.",
        "indicators": [
-        "SHS2.2.4.1.1 Discuss the protection of human rights and the responsibilities of citizens"
+        "Explain the concept of the “Scramble for and Partition of Africa” and its impact on the African continent."
        ],
-       "part": [
-        2,
-        6
-       ]
+       "focus": "The \"Scramble for and Partition of Africa\" and Its Impact on the African Continent"
       },
       {
        "weeks": [
         10
        ],
        "type": "teach",
-       "strand": "2. Governance, Politics and Stability",
-       "substrand": "2.4 Human Rights and Responsibilities",
-       "standard": "SHS2.2.4.1 Understand fundamental human rights and civic obligations",
+       "strand": "Nationalism and Nationhood",
+       "substrand": "European Encounter, Colonialism and Neo-Colonialism",
+       "standard": "Demonstrate knowledge and understanding of European encounters and colonialism in Africa.",
        "indicators": [
-        "SHS2.2.4.1.1 Discuss the protection of human rights and the responsibilities of citizens"
+        "Analyse the different forms and legacies of European colonialism in Africa and propose solutions for present-day challenges arising from colonial legacies."
        ],
-       "part": [
-        3,
-        6
-       ]
+       "focus": "Forms and Legacies of European Colonialism in Africa"
       },
       {
        "weeks": [
         11
        ],
        "type": "teach",
-       "strand": "2. Governance, Politics and Stability",
-       "substrand": "2.4 Human Rights and Responsibilities",
-       "standard": "SHS2.2.4.1 Understand fundamental human rights and civic obligations",
+       "strand": "Nationalism and Nationhood",
+       "substrand": "Nationalism, Citizenship and Nation Building",
+       "standard": "Demonstrate understanding of the origins and impact of Pan-Africanist ideals, highlighting how these ideals can be used to solve contemporary problems faced by African countries.",
        "indicators": [
-        "SHS2.2.4.1.1 Discuss the protection of human rights and the responsibilities of citizens"
+        "Analyse the origins and impact of Pan-Africanism on the growth of nationalist consciousness in Africa."
        ],
-       "part": [
-        4,
-        6
-       ]
+       "focus": "The Origins and Impact of Pan-Africanism on the Growth of Nationalist Consciousness in Africa"
       },
       {
        "weeks": [
         12
        ],
        "type": "teach",
-       "strand": "2. Governance, Politics and Stability",
-       "substrand": "2.4 Human Rights and Responsibilities",
-       "standard": "SHS2.2.4.1 Understand fundamental human rights and civic obligations",
+       "strand": "Nationalism and Nationhood",
+       "substrand": "Nationalism, Citizenship and Nation Building",
+       "standard": "Demonstrate understanding of the origins and impact of Pan-Africanist ideals, highlighting how these ideals can be used to solve contemporary problems faced by African countries.",
        "indicators": [
-        "SHS2.2.4.1.1 Discuss the protection of human rights and the responsibilities of citizens"
+        "Analyse challenges faced by African nations after decolonisation and suggest solutions informed by Pan-Africanist ideals."
        ],
-       "part": [
-        5,
-        6
-       ]
+       "focus": "Challenges Faced by African Nations After Decolonisation and Solutions Informed by Pan-Africanist Ideals"
       },
       {
        "weeks": [
@@ -17364,18 +17333,17 @@
        "substrand": "",
        "standard": "",
        "indicators": [],
-       "focus": ""
+       "focus": "Revision of the semester"
       },
       {
        "weeks": [
         14
        ],
        "type": "exam",
-       "strand": "",
+       "strand": "Examination",
        "substrand": "",
        "standard": "",
-       "indicators": [],
-       "focus": ""
+       "indicators": []
       }
      ],
      "2": [
@@ -17383,188 +17351,160 @@
        "weeks": [
         1
        ],
-       "type": "revision",
-       "strand": "",
-       "substrand": "",
-       "standard": "",
-       "indicators": [],
-       "focus": "Key ideas from last term that this class needs"
+       "type": "teach",
+       "strand": "Ethics and Human Development",
+       "substrand": "Leisure and Tourism",
+       "standard": "Appreciate the relevance of leisure and recreation to personal and national development.",
+       "indicators": [
+        "Investigate opportunities for leisure and recreation."
+       ],
+       "focus": "Opportunities for Leisure and Recreation"
       },
       {
        "weeks": [
         2
        ],
        "type": "teach",
-       "strand": "2. Governance, Politics and Stability",
-       "substrand": "2.4 Human Rights and Responsibilities",
-       "standard": "SHS2.2.4.1 Understand fundamental human rights and civic obligations",
+       "strand": "Ethics and Human Development",
+       "substrand": "Leisure and Tourism",
+       "standard": "Appreciate the relevance of leisure and recreation to personal and national development.",
        "indicators": [
-        "SHS2.2.4.1.1 Discuss the protection of human rights and the responsibilities of citizens"
+        "Investigate opportunities for leisure and recreation."
        ],
-       "part": [
-        6,
-        6
-       ]
+       "focus": "Relevance of Leisure and Recreation to Personal and National Development"
       },
       {
        "weeks": [
         3
        ],
        "type": "teach",
-       "strand": "3. Social Change and Development",
-       "substrand": "3.3 Human Resource Development",
-       "standard": "SHS2.3.3.1 Appreciate the importance of human resource development for national growth",
+       "strand": "Ethics and Human Development",
+       "substrand": "Revolutions that Changed the World",
+       "standard": "Demonstrate knowledge and understanding of the Scientific Revolution of the sixteenth century and its impact on the world.",
        "indicators": [
-        "SHS2.3.3.1.1 Evaluate the role of education, health, and skill training in national development"
+        "Examine the major events leading to the rise of the scientific revolution in the sixteenth century."
        ],
-       "part": [
-        1,
-        6
-       ]
+       "focus": "Major Events Leading to the Rise of the Scientific Revolution in the Sixteenth Century"
       },
       {
        "weeks": [
         4
        ],
        "type": "teach",
-       "strand": "3. Social Change and Development",
-       "substrand": "3.3 Human Resource Development",
-       "standard": "SHS2.3.3.1 Appreciate the importance of human resource development for national growth",
+       "strand": "Ethics and Human Development",
+       "substrand": "Revolutions that Changed the World",
+       "standard": "Demonstrate knowledge and understanding of the Scientific Revolution of the sixteenth century and its impact on the world.",
        "indicators": [
-        "SHS2.3.3.1.1 Evaluate the role of education, health, and skill training in national development"
+        "Evaluate the relevance of the Scientific Revolution in shaping the modern world, considering its lasting impact."
        ],
-       "part": [
-        2,
-        6
-       ]
+       "focus": "Relevance of the Scientific Revolution in Shaping the Modern World"
       },
       {
        "weeks": [
         5
        ],
        "type": "teach",
-       "strand": "3. Social Change and Development",
-       "substrand": "3.3 Human Resource Development",
-       "standard": "SHS2.3.3.1 Appreciate the importance of human resource development for national growth",
+       "strand": "Ethics and Human Development",
+       "substrand": "The Youth and National Development",
+       "standard": "Demonstrate understanding of the expectations of the Ghanaian youth, the challenges they face and ways of addressing these challenges.",
        "indicators": [
-        "SHS2.3.3.1.1 Evaluate the role of education, health, and skill training in national development"
+        "Assess the expectations of the Ghanaian youth and how they can be met."
        ],
-       "part": [
-        3,
-        6
-       ]
+       "focus": "Expectations of the Ghanaian Youth and How They Can Be Met"
       },
       {
        "weeks": [
         6
        ],
        "type": "teach",
-       "strand": "3. Social Change and Development",
-       "substrand": "3.3 Human Resource Development",
-       "standard": "SHS2.3.3.1 Appreciate the importance of human resource development for national growth",
+       "strand": "Ethics and Human Development",
+       "substrand": "The Youth and National Development",
+       "standard": "Demonstrate understanding of the expectations of the Ghanaian youth, the challenges they face and ways of addressing these challenges.",
        "indicators": [
-        "SHS2.3.3.1.1 Evaluate the role of education, health, and skill training in national development"
+        "Discuss challenges faced by the Ghanaian youth and how they can be addressed."
        ],
-       "part": [
-        4,
-        6
-       ]
+       "focus": "Challenges Faced by the Ghanaian Youth and How They Can Be Addressed"
       },
       {
        "weeks": [
         7
        ],
        "type": "teach",
-       "strand": "3. Social Change and Development",
-       "substrand": "3.3 Human Resource Development",
-       "standard": "SHS2.3.3.1 Appreciate the importance of human resource development for national growth",
+       "strand": "Production, Exchange and Creativity",
+       "substrand": "Economic Activities in Ghana",
+       "standard": "Demonstrate knowledge and understanding of the concept of local production and consumption and their benefits to national development.",
        "indicators": [
-        "SHS2.3.3.1.1 Evaluate the role of education, health, and skill training in national development"
+        "Explain the concepts of local production and local consumption.",
+        "Discuss the challenges of local production and how the consumption of made-in- Ghana products can be promoted."
        ],
-       "part": [
-        5,
-        6
-       ]
+       "focus": "The Concepts of Local Production and Local Consumption / Challenges of Local Production and Ways of Promoting Made-in-Ghana Products"
       },
       {
        "weeks": [
         8
        ],
        "type": "teach",
-       "strand": "3. Social Change and Development",
-       "substrand": "3.3 Human Resource Development",
-       "standard": "SHS2.3.3.1 Appreciate the importance of human resource development for national growth",
+       "strand": "Production, Exchange and Creativity",
+       "substrand": "Entrepreneurship, Workplace Culture and Productivity",
+       "standard": "Demonstrate knowledge and understanding of the relevance of an entrepreneur to national development.",
        "indicators": [
-        "SHS2.3.3.1.1 Evaluate the role of education, health, and skill training in national development"
+        "Apply knowledge of the traits of an entrepreneur to assess one’s capabilities in setting up a business.",
+        "Examine the role entrepreneurs play in national development."
        ],
-       "part": [
-        6,
-        6
-       ]
+       "focus": "Traits and Capabilities of an Entrepreneur in Setting Up a Business / The Role Entrepreneurs Play in National Development"
       },
       {
        "weeks": [
         9
        ],
        "type": "teach",
-       "strand": "3. Social Change and Development",
-       "substrand": "3.4 Population and Settlement",
-       "standard": "SHS2.3.4.1 Understand population dynamics and settlement patterns in Ghana",
+       "strand": "Production, Exchange and Creativity",
+       "substrand": "Entrepreneurship, Workplace Culture and Productivity",
+       "standard": "Demonstrate knowledge and understanding of the relevance of an entrepreneur to national development.",
        "indicators": [
-        "SHS2.3.4.1.1 Analyze the effects of rapid population growth and rural-urban migration"
+        "Discuss challenges facing entrepreneurs in Ghana and how to sustain a business."
        ],
-       "part": [
-        1,
-        5
-       ]
+       "focus": "Challenges Facing Entrepreneurs in Ghana and How to Sustain a Business"
       },
       {
        "weeks": [
         10
        ],
        "type": "teach",
-       "strand": "3. Social Change and Development",
-       "substrand": "3.4 Population and Settlement",
-       "standard": "SHS2.3.4.1 Understand population dynamics and settlement patterns in Ghana",
+       "strand": "Production, Exchange and Creativity",
+       "substrand": "Consumer Rights, Protection and Responsibilities",
+       "standard": "Demonstrate knowledge and understanding of the various forms of consumer responsibilities towards the nation.",
        "indicators": [
-        "SHS2.3.4.1.1 Analyze the effects of rapid population growth and rural-urban migration"
+        "Discuss the consumer responsibilities in choosing sustainable and eco-friendly products, as well as proper product recycling.",
+        "Examine how the various forms of consumer responsibilities ensure national growth and development."
        ],
-       "part": [
-        2,
-        5
-       ]
+       "focus": "The Role of Responsible Consumers in Promoting Sustainable and Eco-Friendly Products / How Forms of Consumer Responsibilities Ensure National Growth and Development"
       },
       {
        "weeks": [
         11
        ],
        "type": "teach",
-       "strand": "3. Social Change and Development",
-       "substrand": "3.4 Population and Settlement",
-       "standard": "SHS2.3.4.1 Understand population dynamics and settlement patterns in Ghana",
+       "strand": "Production, Exchange and Creativity",
+       "substrand": "Financial Literacy",
+       "standard": "Demonstrate knowledge and understanding of effective saving habits to achieve financial goals.",
        "indicators": [
-        "SHS2.3.4.1.1 Analyze the effects of rapid population growth and rural-urban migration"
+        "Explain the importance of saving and its role in achieving financial goals."
        ],
-       "part": [
-        3,
-        5
-       ]
+       "focus": "Roles of Savings in Achieving Financial Goals"
       },
       {
        "weeks": [
         12
        ],
        "type": "teach",
-       "strand": "3. Social Change and Development",
-       "substrand": "3.4 Population and Settlement",
-       "standard": "SHS2.3.4.1 Understand population dynamics and settlement patterns in Ghana",
+       "strand": "Production, Exchange and Creativity",
+       "substrand": "Financial Literacy",
+       "standard": "Demonstrate knowledge and understanding of effective saving habits to achieve financial goals.",
        "indicators": [
-        "SHS2.3.4.1.1 Analyze the effects of rapid population growth and rural-urban migration"
+        "Create a personalised saving plan based on short-term and long-term financial goals."
        ],
-       "part": [
-        4,
-        5
-       ]
+       "focus": "Personalised Saving Plan Based on Short-Term and Long-Term Financial Goals"
       },
       {
        "weeks": [
@@ -17575,18 +17515,17 @@
        "substrand": "",
        "standard": "",
        "indicators": [],
-       "focus": ""
+       "focus": "Revision of the semester"
       },
       {
        "weeks": [
         14
        ],
        "type": "exam",
-       "strand": "",
+       "strand": "Examination",
        "substrand": "",
        "standard": "",
-       "indicators": [],
-       "focus": ""
+       "indicators": []
       }
      ],
      "3": [
