@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#1B365D">
+  <title>GuidEd · Knowledge Library</title>
+  <link rel="stylesheet" href="/styles.css">
+  <link rel="stylesheet" href="/v2.css">
+  <style>
+    body{min-height:100vh;background:var(--bg);color:var(--ink);font-family:var(--font-ui)}
+    .kl-wrap{width:min(100% - 32px,980px);margin:0 auto;padding:32px 0 64px}
+    .kl-top{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:28px}
+    .kl-brand{font-weight:800;letter-spacing:-.04em;font-size:22px;color:var(--ink);text-decoration:none}
+    .kl-brand span{color:var(--accent)}
+    .kl-title{font-size:clamp(28px,5vw,40px);letter-spacing:-.045em;margin:8px 0}
+    .kl-sub{color:var(--muted);max-width:680px;line-height:1.6;margin:0}
+    .kl-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:18px;margin-top:24px}
+    .kl-card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:20px;min-width:0}
+    .kl-card h2{font-size:17px;margin:0 0 8px}
+    .kl-help{font-size:13px;line-height:1.55;color:var(--muted);margin:0 0 16px}
+    .kl-field{display:grid;gap:7px;margin:12px 0}
+    .kl-field label{font-size:13px;font-weight:650}
+    .kl-field input,.kl-field select{width:100%;min-height:44px;border:1px solid var(--line);border-radius:10px;background:var(--bg);color:var(--ink);padding:10px 12px}
+    .kl-drop{border:1px dashed var(--line);border-radius:12px;padding:18px;text-align:center;background:var(--bg)}
+    .kl-btn{border:0;border-radius:10px;padding:11px 15px;background:var(--accent);color:white;font-weight:700;cursor:pointer}
+    .kl-btn:disabled{opacity:.5;cursor:not-allowed}
+    .kl-status{font-size:13px;line-height:1.5;margin-top:12px;color:var(--muted);overflow-wrap:anywhere}
+    .kl-list{display:grid;gap:12px;margin-top:16px}
+    .kl-item{border:1px solid var(--line);border-radius:13px;padding:14px;display:grid;gap:8px}
+    .kl-item strong{overflow-wrap:anywhere}
+    .kl-meta{font-size:12px;color:var(--muted);line-height:1.5;overflow-wrap:anywhere}
+    .kl-actions{display:flex;gap:8px;flex-wrap:wrap}
+    .kl-actions button{border:1px solid var(--line);border-radius:9px;padding:8px 11px;background:transparent;color:var(--ink);font-weight:650}
+    .kl-actions .kl-approve{background:var(--accent);border-color:var(--accent);color:white}
+    .kl-pill{display:inline-flex;width:max-content;border-radius:99px;padding:4px 9px;font-size:11px;font-weight:700;background:var(--sb);color:var(--ink)}
+    .kl-note{font-size:12px;color:var(--muted);line-height:1.5;margin-top:16px}
+    @media(max-width:700px){.kl-grid{grid-template-columns:1fr}.kl-wrap{padding-top:20px}.kl-card{padding:16px}}
+  </style>
+  <script src="/vendor/neon-realtime.js" defer></script>
+  <script src="/vendor/neon-auth.js" defer></script>
+  <script src="/sync.js" defer></script>
+  <script src="/knowledge-admin.js" defer></script>
+</head>
+<body>
+  <main class="kl-wrap">
+    <div class="kl-top">
+      <a class="kl-brand" href="/">Guid<span>Ed</span></a>
+      <a href="/" class="foot-link">Back to GuidEd</a>
+    </div>
+    <header>
+      <p class="kl-pill">ADMIN WORKSPACE</p>
+      <h1 class="kl-title">Knowledge library</h1>
+      <p class="kl-sub">Import curriculum documents and trusted teaching resources. Every new source stays out of Study Notes until it has been reviewed and approved.</p>
+    </header>
+    <div class="kl-grid">
+      <section class="kl-card">
+        <h2>Import a prepared document</h2>
+        <p class="kl-help">Choose the JSON file created by <code>scripts/prepare-knowledge.py</code>. It contains document metadata and extracted page or section text. PDF and DOCX files must first be prepared locally.</p>
+        <div class="kl-field">
+          <label for="klFile">Prepared JSON file</label>
+          <div class="kl-drop"><input id="klFile" type="file" accept=".json,application/json"></div>
+        </div>
+        <div class="kl-field">
+          <label for="klPreview">Import preview</label>
+          <textarea id="klPreview" rows="7" readonly placeholder="Choose a prepared JSON file to preview its metadata."></textarea>
+        </div>
+        <button class="kl-btn" id="klImport" disabled>Import for review</button>
+        <p class="kl-status" id="klImportStatus" role="status" aria-live="polite">Checking administrator access…</p>
+        <p class="kl-note">Maximum request size: 2.5 MB. Importing does not publish the document. Verify the publisher, licence, subject, class and page references before approval.</p>
+      </section>
+      <section class="kl-card">
+        <h2>Source review queue</h2>
+        <p class="kl-help">Review source details before approving. For textbooks or supplementary materials, check the exact title and approval reference against the NaCCA register.</p>
+        <button class="kl-btn" id="klRefresh" type="button">Refresh sources</button>
+        <div class="kl-status" id="klListStatus" role="status" aria-live="polite"></div>
+        <div class="kl-list" id="klList"></div>
+      </section>
+    </div>
+  </main>
+</body>
+</html>
