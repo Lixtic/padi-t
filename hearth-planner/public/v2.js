@@ -30,12 +30,14 @@
 
   function tabBar() {
     var studio = $('.teaching-studio'); if (!studio || $('.v2-tabbar')) return;
-    var items = [['studio', 'Studio', 'i-home', null], ['plan', 'Lesson plan', 'i-book', '#studioTabPlan'], ['resources', 'Resources', 'i-layers', '#studioTabResources'], ['media', 'Find media', 'i-search', '#studioTabMedia']];
+    var items = [['studio', 'Studio', 'i-home', null], ['plan', 'Lesson plan', 'i-book', '#studioTabPlan'], ['resources', 'Resources', 'i-layers', '#studioTabResources'], ['media', 'Find media', 'i-search', '#studioTabMedia'], ['library', 'Library', 'i-library', null]];
     var nav = document.createElement('nav'); nav.className = 'v2-tabbar'; nav.setAttribute('aria-label', 'Teaching Studio');
     var btns = {};
     items.forEach(function (it) {
       var b = document.createElement('button'); b.type = 'button'; b.innerHTML = svg(it[2]) + '<span></span>'; b.querySelector('span').textContent = it[1];
+      b.dataset.tab = it[0];
       b.addEventListener('click', function () {
+        if (it[0] === 'library') { var lk = $('#libraryLink'); if (lk) { lk.click(); mark('library'); } return; }
         // Tapping the tab you are already on folds the Studio away again, for a wider reading area.
         if (b.getAttribute('aria-current') === 'page' && !studio.classList.contains('is-collapsed')) {
           studio.classList.add('is-collapsed');
@@ -55,6 +57,11 @@
       var tab = $('#studioTab' + n); if (tab) tab.addEventListener('click', function () { mark(n.toLowerCase()); });
     });
     mark('studio');
+    // Keep the Library tab in step with the page: lit while My Library is open, cleared when it closes.
+    new MutationObserver(function () {
+      if (document.body.classList.contains('on-library')) mark('library');
+      else if (btns.library.getAttribute('aria-current') === 'page') mark(null);
+    }).observe(document.body, { attributes: true, attributeFilter: ['class'] });
     document.body.appendChild(nav); document.body.classList.add('has-tabbar');
   }
 

@@ -69,7 +69,7 @@ select, input[type="search"], input[type="text"] { border-radius: 999px; }
 .v2-tabbar { display: none; }
 @media (max-width: 760px) {
   body.has-tabbar .app { height: calc(var(--app-h, 100dvh) - 64px - env(safe-area-inset-bottom)); }
-  .v2-tabbar { display: grid; grid-template-columns: repeat(4, 1fr); position: fixed; left: 0; right: 0; bottom: 0; z-index: 40; padding: 6px 8px calc(6px + env(safe-area-inset-bottom)); background: var(--card); border-top: 1px solid var(--card-line); box-shadow: 0 -6px 20px rgba(22, 33, 63, .06); }
+  .v2-tabbar { display: grid; grid-template-columns: repeat(5, 1fr); position: fixed; left: 0; right: 0; bottom: 0; z-index: 40; padding: 6px 8px calc(6px + env(safe-area-inset-bottom)); background: var(--card); border-top: 1px solid var(--card-line); box-shadow: 0 -6px 20px rgba(22, 33, 63, .06); }
   .app.nav-open ~ .v2-tabbar { display: none; }
   .v2-tabbar button { display: grid; justify-items: center; gap: 2px; min-height: 52px; padding: 6px 4px; border-radius: 14px; color: var(--muted); font-size: .7rem; font-weight: 600; }
   .v2-tabbar button .ico { width: 22px; height: 22px; }
@@ -110,7 +110,8 @@ select, input[type="search"], input[type="text"] { border-radius: 999px; }
 /* ── Settings page ── */
 .settings-page[hidden] { display: none; }
 .settings-page { flex: 1; min-height: 0; overflow-y: auto; overscroll-behavior: contain; padding: 18px 16px 40px; }
-body.on-page .stage, body.on-page .pro-banner, body.on-page .v2-tabbar { display: none !important; }
+body.on-page .stage, body.on-page .pro-banner { display: none !important; }
+body.on-settings .v2-tabbar { display: none !important; }
 .sp-inner { width: min(640px, 100%); margin: 0 auto; display: grid; gap: 14px; }
 .sp-head { display: flex; align-items: center; gap: 12px; }
 .sp-head h1 { margin: 0; font-size: 1.5rem; font-family: var(--serif, inherit); }
@@ -257,3 +258,8 @@ body.on-page .stage, body.on-page .pro-banner, body.on-page .v2-tabbar { display
   .sidebar { width: min(88vw, 360px); }
   .sb-foot { max-height: min(40dvh, 320px); }
 }
+
+/* Five tabs: tighter labels. */
+.v2-tabbar button span { font-size: 11px; white-space: nowrap; }
+/* Plan row now lives in the signed-in account sheet. */
+#asAccount .plan-row { margin: 4px 0 12px; }

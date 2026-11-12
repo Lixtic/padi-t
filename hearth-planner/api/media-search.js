@@ -103,7 +103,7 @@ async function openverse(query) {
   const data = await getJson(url, token ? { Authorization: 'Bearer ' + token } : {});
   return (data.results || []).map((x) => ({
     title: cleanText(x.title), description: cleanText(x.description),
-    thumbnail: x.thumbnail || x.url, url: x.foreign_landing_url || x.detail_url || x.url,
+    thumbnail: x.thumbnail || '', url: x.foreign_landing_url || x.detail_url || x.url,
     license: x.license ? String(x.license).toUpperCase() : 'See source page',
     author: cleanText(x.creator), provider: 'Openverse',
   }));

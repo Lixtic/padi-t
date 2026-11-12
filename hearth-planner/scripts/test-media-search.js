@@ -17,3 +17,8 @@ assert.equal(ranked.length, 1);
 assert.equal(ranked[0].title, 'Input devices');
 assert.deepEqual(['devices', 'computing', 'batteries', 'classes', 'process', 'analysis', 'string'].map(Search.stem), ['device', 'comput', 'battery', 'class', 'process', 'analysis', 'string']);
 process.stdout.write('Educational image relevance tests passed.');
+// Every host an illustration can be loaded from must be allowed by the page's Content-Security-Policy,
+// otherwise the notes show an empty box and only the source link works.
+const csp = JSON.stringify(require('../vercel.json'));
+['upload.wikimedia.org', 'cdn.pixabay.com', 'images.pexels.com', 'live.staticflickr.com', 'api.openverse.org'].forEach((host) => assert.ok(csp.includes(host), 'CSP img-src is missing ' + host));
+process.stdout.write('\nIllustration host tests passed.\n');
