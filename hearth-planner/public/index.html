@@ -406,6 +406,9 @@
         <span class="plan-cta" id="planRowCta"></span>
       </button>
 
+      <button type="button" class="foot-link foot-settings" id="libraryLink" aria-label="My Library">
+        <svg class="ico"><use href="#i-book"/></svg><span>My Library</span><svg class="ico disc-chev"><use href="#i-chevron"/></svg>
+      </button>
       <button type="button" class="foot-link foot-settings" id="settingsLink" aria-label="Settings">
         <svg class="ico"><use href="#i-sliders"/></svg><span>Settings</span><svg class="ico disc-chev"><use href="#i-chevron"/></svg>
       </button>
@@ -504,6 +507,16 @@
       </div>
     </section>
 
+
+    <section class="settings-page library-page" id="libraryPage" aria-labelledby="libTitle" hidden>
+      <div class="sp-inner lib-inner">
+        <div class="sp-head"><button type="button" class="sp-back" id="libraryBack"><svg class="ico"><use href="#i-chevron"/></svg><span>Back</span></button><h1 id="libTitle">My Library</h1></div>
+        <input type="search" id="libSearch" class="lib-search" placeholder="Search your plans and resources" aria-label="Search your library" autocomplete="off">
+        <div class="lib-chips" id="libChips" role="group" aria-label="Filter by type"></div>
+        <div class="lib-grid" id="libGrid"></div>
+        <p class="lib-empty" id="libEmpty" hidden>Nothing here yet. Make a plan or a resource and it shows up here.</p>
+      </div>
+    </section>
     <section class="stage" id="stage">
       <div class="grow grow-top"></div>
 
