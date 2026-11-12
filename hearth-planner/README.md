@@ -51,6 +51,24 @@ GuidEd can retrieve approved source passages from a shared Neon knowledge librar
 
 Example metadata fields: `title`, `publisher`, `sourceUrl`, `documentType` (`curriculum`, `teacher_guide`, `approved_textbook`, `approved_supplementary`, or `teacher_resource`), `subject`, `classes`, `curriculumCodes`, `license`, and `segments: [{ page, heading, text }]`.
 
+Example for the official NaCCA Computing CCP PDF:
+
+```bash
+python3 scripts/prepare-knowledge.py ./COMPUTING.pdf \
+  --title "Computing CCP Curriculum (Basic 7–9)" \
+  --publisher "NaCCA, Ministry of Education" \
+  --url "https://nacca.gov.gh/wp-content/uploads/2023/06/COMPUTING.pdf" \
+  --subject "Computing" --class "Basic 7" --class "Basic 8" --class "Basic 9" \
+  --type curriculum --license "© NaCCA" --output computing-ccp.json
+
+curl -X POST "https://YOUR-DOMAIN/api/admin?action=knowledge" \
+  -H "Authorization: Bearer YOUR_ADMIN_SESSION_TOKEN" \
+  -H "Content-Type: application/json" \
+  --data-binary @computing-ccp.json
+```
+
+For approved textbooks, add `--type approved_textbook --approval-reference "exact entry from the NaCCA register"`. Do not use that type unless the title has been verified in the register.
+
 Official starting points:
 - NaCCA Common Core Programme: https://nacca.gov.gh/common-core-programme-ccp/
 - NaCCA approved instructional-material register: https://nacca.gov.gh/irs/
