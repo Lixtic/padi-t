@@ -4,6 +4,15 @@
 // It turns the server-side scheme record into a strict, inspectable teaching contract.
 // The scheme is a planning record, not proof that the complete official curriculum text
 // or its exemplars have been retrieved.
+const OFFICIAL = require('./_curriculum_index');
+const SUBJECT_ALIAS = { 'Integrated Science': 'Science', 'General Science': 'Science' };
+
+/* Official NaCCA record for one indicator code (statement, content standard, exemplars), or null when it is not loaded. */
+function officialFor(subject, code) {
+  const hit = code && OFFICIAL.indicators[(SUBJECT_ALIAS[subject] || subject) + '|' + code];
+  return hit ? { statement: hit[0], standardCode: hit[1], standard: hit[2], substrand: hit[3], strand: hit[4], exemplars: hit[5] } : null;
+}
+
 function codeFrom(text) {
   const match = String(text || '').match(/\b((?:B[1-9]|SHS[1-3])(?:\.\d+){2,5})\b/i);
   return match ? match[1].toUpperCase() : '';
@@ -58,11 +67,21 @@ function buildInstruction(scheme, request) {
     'Content standard: ' + (scheme.standard || 'Not supplied'),
     'Indicator(s):',
   ];
+  const official = [];
   if (indicators.length) {
-    indicators.forEach((item) => lines.push('- ' + item.text + (item.code ? ' [' + item.codeType + ': ' + item.code + ']' : ' [code not parsed]')));
+    indicators.forEach((item) => {
+      lines.push('- ' + item.text + (item.code ? ' [' + item.codeType + ': ' + item.code + ']' : ' [code not parsed]'));
+      const rec = officialFor(r.subject, item.code);
+      if (rec && rec.exemplars.length) official.push({ code: item.code, rec });
+    });
   } else {
     lines.push('- No indicator is present in the loaded scheme record.');
   }
+  official.forEach(({ code, rec }) => {
+    lines.push('Official NaCCA exemplars for ' + code + ' (' + rec.standardCode + ' ' + rec.standard + '):');
+    rec.exemplars.slice(0, 8).forEach((text) => lines.push('  - ' + text));
+  });
+  if (official.length) lines.push('The exemplars above are the official curriculum exemplars loaded for this indicator. Use them to shape the activities and questions; you may cite them as NaCCA exemplars, but do not add exemplars that are not listed.');
   if (scheme.part && Array.isArray(scheme.part)) {
     lines.push('Pacing boundary: this is part ' + scheme.part[0] + ' of ' + scheme.part[1] + '. Teach only the appropriate progression for this week; do not repeat or prematurely cover the whole sequence.');
   }
@@ -81,4 +100,4 @@ function buildInstruction(scheme, request) {
   return lines.join('\n');
 }
 
-module.exports = { codeFrom, classifyCode, indicatorsFor, buildInstruction };
+module.exports = { codeFrom, classifyCode, indicatorsFor, officialFor, buildInstruction };

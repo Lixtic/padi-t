@@ -27,10 +27,10 @@ module.exports = async (req, res) => {
     class: cls, subject, week, term: scheme.term, type: scheme.type,
     strand: scheme.strand || '', substrand: scheme.substrand || '',
     contentStandard: scheme.standard || '',
-    indicators: Curriculum.indicatorsFor(scheme),
+    indicators: Curriculum.indicatorsFor(scheme).map((item) => { const rec = Curriculum.officialFor(subject, item.code); return rec ? Object.assign(item, { official: rec }) : item; }),
     pacing: scheme.part || null,
     sourceLabel: scheme.source || 'Unlabelled scheme record',
-    sourceStatus: 'scheme_metadata_only',
+    sourceStatus: Curriculum.indicatorsFor(scheme).some((item) => Curriculum.officialFor(subject, item.code)) ? 'scheme_with_official_exemplars' : 'scheme_metadata_only',
     note: 'This response contains the loaded scheme metadata and indicator text. It does not claim that the complete official curriculum document, exemplars or reference textbooks have been retrieved.',
   });
 };
