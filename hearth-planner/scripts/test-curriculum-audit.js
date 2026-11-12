@@ -34,4 +34,4 @@ const computing = report.issues.find(x => x.key.startsWith('Computing|'));
 assert.ok(computing.issues.includes('embedded_exemplar_label'));
 assert.ok(computing.issues.includes('competency_code_in_content'));
 assert.ok(computing.issues.includes('document_control_text'));
-process.stdout.write('Curriculum index audit tests passed.\\n');
+process.stdout.write('Curriculum index audit tests passed.\n');
