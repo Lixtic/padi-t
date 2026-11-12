@@ -120,7 +120,7 @@ function requestQuery(params) {
   const p = params || {};
   const bits = [p.notes, p.scheme && p.scheme.strand, p.scheme && p.scheme.substrand, p.scheme && p.scheme.standard];
   if (p.scheme && Array.isArray(p.scheme.indicators)) bits.push(...p.scheme.indicators);
-  return cleanText(bits.filter(Boolean).join(' ').replace(/\\b(?:B[1-9]|SHS[1-3])(?:\\.\\d+){2,5}\\b/gi, ' '), 1200);
+  return cleanText(bits.filter(Boolean).join(' ').replace(/\b(?:B[1-9]|SHS[1-3])(?:\.\d+){2,5}\b/gi, ' '), 1200);
 }
 async function retrieve(params) {
   if (!db.configured()) return { chunks: [], context: '', sourceCount: 0, status: 'storage_not_configured' };
