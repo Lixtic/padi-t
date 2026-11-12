@@ -17,9 +17,9 @@ function normalizeCode(value) {
   const code = String(value || '').trim().toUpperCase();
   return /^(?:B[1-9]|SHS[1-3])(?:\.\d+){2,5}$/.test(code) ? code : '';
 }
-function sourceTrust(host, kind) {
+function sourceTrust(host, kind, approvalReference) {
   if (TRUSTED_HOSTS.has(host)) return 'official';
-  if (kind === 'approved_textbook' || kind === 'approved_supplementary') return 'approved_material';
+  if ((kind === 'approved_textbook' || kind === 'approved_supplementary') && approvalReference) return 'approved_material';
   return 'reviewed_resource';
 }
 function validateSource(input) {
@@ -36,10 +36,13 @@ function validateSource(input) {
   if (!title || !publisher || !subject) throw new Error('Title, publisher and subject are required.');
   const allowedKinds = ['curriculum', 'teacher_guide', 'approved_textbook', 'approved_supplementary', 'teacher_resource'];
   if (!allowedKinds.includes(documentType)) throw new Error('Unsupported document type.');
+  const approvalReference = cleanText(input.approvalReference, 240);
+  if ((documentType === 'approved_textbook' || documentType === 'approved_supplementary') && !approvalReference) throw new Error('Provide the NaCCA approval-register reference for approved materials.');
   return {
     title, publisher, sourceUrl: url.toString(), host: url.hostname.toLowerCase(),
     documentType, subject, classes, curriculumCodes,
-    trust: sourceTrust(url.hostname.toLowerCase(), documentType),
+    trust: sourceTrust(url.hostname.toLowerCase(), documentType, approvalReference),
+    approvalReference,
     license: cleanText(input.license, 300),
     edition: cleanText(input.edition, 80),
     publishedAt: cleanText(input.publishedAt, 40),
@@ -93,8 +96,8 @@ async function ingest(input, actor) {
   if (existing.length) return { sourceId: existing[0].id, chunks: 0, duplicate: true };
   const id = crypto.randomBytes(16).toString('hex');
   await db.query(
-    'insert into knowledge_sources (id, title, publisher, source_url, source_host, document_type, subject, classes, curriculum_codes, trust_level, license, edition, published_at, checksum, status, created_by) values ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16)',
-    [id, source.title, source.publisher, source.sourceUrl, source.host, source.documentType, source.subject, source.classes, source.curriculumCodes, source.trust, source.license, source.edition, source.publishedAt || null, hash, 'approved', cleanText(actor, 160)]
+    'insert into knowledge_sources (id, title, publisher, source_url, source_host, document_type, subject, classes, curriculum_codes, trust_level, license, edition, approval_reference, published_at, checksum, status, created_by) values ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17)',
+    [id, source.title, source.publisher, source.sourceUrl, source.host, source.documentType, source.subject, source.classes, source.curriculumCodes, source.trust, source.license, source.edition, source.approvalReference, source.publishedAt || null, hash, 'approved', cleanText(actor, 160)]
   );
   for (let i = 0; i < chunks.length; i += 50) {
     const batch = chunks.slice(i, i + 50);
@@ -117,7 +120,7 @@ function requestQuery(params) {
   const p = params || {};
   const bits = [p.notes, p.scheme && p.scheme.strand, p.scheme && p.scheme.substrand, p.scheme && p.scheme.standard];
   if (p.scheme && Array.isArray(p.scheme.indicators)) bits.push(...p.scheme.indicators);
-  return cleanText(bits.filter(Boolean).join(' '), 1200);
+  return cleanText(bits.filter(Boolean).join(' ').replace(/\\b(?:B[1-9]|SHS[1-3])(?:\\.\\d+){2,5}\\b/gi, ' '), 1200);
 }
 async function retrieve(params) {
   if (!db.configured()) return { chunks: [], context: '', sourceCount: 0, status: 'storage_not_configured' };
