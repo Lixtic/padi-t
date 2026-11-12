@@ -46,7 +46,7 @@ GuidEd can retrieve approved source passages from a shared Neon knowledge librar
 **Admin ingestion**
 1. Configure `DATABASE_URL` and add the administrator's sign-in email to `ADMIN_EMAILS`.
 2. Extract PDF or DOCX text into page/section segments using the preparation script (PDF extraction requires `pdftotext`; DOCX extraction requires `python-docx`).
-3. POST the resulting JSON to `/api/knowledge` with the administrator's Bearer token. The endpoint is admin-only and accepts HTTPS source URLs. GET `/api/knowledge` lists indexed sources.
+3. POST the resulting JSON to `/api/admin?action=knowledge` with the administrator's Bearer token. The endpoint is admin-only and accepts HTTPS source URLs. GET `/api/admin?action=knowledge` lists indexed sources.
 4. The API chunks and indexes text in Postgres full-text search. Duplicate source content is detected by checksum.
 
 Example metadata fields: `title`, `publisher`, `sourceUrl`, `documentType` (`curriculum`, `teacher_guide`, `approved_textbook`, `approved_supplementary`, or `teacher_resource`), `subject`, `classes`, `curriculumCodes`, `license`, and `segments: [{ page, heading, text }]`.
