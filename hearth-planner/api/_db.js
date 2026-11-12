@@ -37,6 +37,7 @@ const SCHEMA = [
   'create index if not exists knowledge_chunks_search on knowledge_chunks using gin (search_vector)',
   'create index if not exists knowledge_chunks_scope on knowledge_chunks (subject, source_id)',
   'create index if not exists knowledge_sources_status on knowledge_sources (status, created_at desc)',
+  'alter table knowledge_sources add column if not exists approval_reference text not null default \'\'',
   // Usage numbers for the admin: daily counters, and one row per account the first time it is seen (first_seen 0 = existed before tracking began).
   'create table if not exists events (day text not null, name text not null, n int not null default 0, primary key (day, name))',
   'create table if not exists accounts (user_id text primary key, email text not null default \'\', first_seen bigint not null)',
