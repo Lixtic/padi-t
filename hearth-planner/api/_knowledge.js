@@ -17,9 +17,7 @@ function normalizeCode(value) {
   const code = String(value || '').trim().toUpperCase();
   return /^(?:B[1-9]|SHS[1-3])(?:\.\d+){2,5}$/.test(code) ? code : '';
 }
-function sourceTrust(host, kind, approvalReference) {
-  if (TRUSTED_HOSTS.has(host)) return 'official';
-  if ((kind === 'approved_textbook' || kind === 'approved_supplementary') && approvalReference) return 'approved_material';
+function sourceTrust() {
   return 'reviewed_resource';
 }
 function validateSource(input) {
@@ -93,11 +91,14 @@ async function ingest(input, actor) {
   const hash = crypto.createHash('sha256').update(source.sourceUrl + '\n' + chunks.map(x => x.content).join('\n')).digest('hex');
   await db.ensure();
   const existing = await db.query('select id from knowledge_sources where checksum = $1', [hash]);
-  if (existing.length) return { sourceId: existing[0].id, chunks: 0, duplicate: true };
+  if (existing.length) {
+    const status = await db.query('select status from knowledge_sources where id = $1', [existing[0].id]);
+    return { sourceId: existing[0].id, chunks: 0, duplicate: true, status: status[0] && status[0].status || 'unknown' };
+  }
   const id = crypto.randomBytes(16).toString('hex');
   await db.query(
     'insert into knowledge_sources (id, title, publisher, source_url, source_host, document_type, subject, classes, curriculum_codes, trust_level, license, edition, approval_reference, published_at, checksum, status, created_by) values ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17)',
-    [id, source.title, source.publisher, source.sourceUrl, source.host, source.documentType, source.subject, source.classes, source.curriculumCodes, source.trust, source.license, source.edition, source.approvalReference, source.publishedAt || null, hash, 'approved', cleanText(actor, 160)]
+    [id, source.title, source.publisher, source.sourceUrl, source.host, source.documentType, source.subject, source.classes, source.curriculumCodes, source.trust, source.license, source.edition, source.approvalReference, source.publishedAt || null, hash, 'pending_review', cleanText(actor, 160)]
   );
   for (let i = 0; i < chunks.length; i += 50) {
     const batch = chunks.slice(i, i + 50);
@@ -114,7 +115,31 @@ async function ingest(input, actor) {
       params
     );
   }
-  return { sourceId: id, chunks: chunks.length, duplicate: false, trust: source.trust };
+  return { sourceId: id, chunks: chunks.length, duplicate: false, trust: source.trust, status: 'pending_review' };
+}
+function trustAfterReview(source) {
+  const host = String(source && source.source_host || '').toLowerCase();
+  if (TRUSTED_HOSTS.has(host)) return 'official';
+  const kind = String(source && source.document_type || '');
+  if ((kind === 'approved_textbook' || kind === 'approved_supplementary') && String(source && source.approval_reference || '').trim()) return 'approved_material';
+  return 'reviewed_resource';
+}
+async function reviewSource(sourceId, decision) {
+  if (!db.configured()) throw new Error('Knowledge storage requires DATABASE_URL.');
+  const id = cleanText(sourceId, 64);
+  if (!/^[a-f0-9]{32}$/.test(id)) throw new Error('A valid source ID is required.');
+  if (!['approve', 'reject'].includes(decision)) throw new Error('Decision must be approve or reject.');
+  await db.ensure();
+  const rows = await db.query('select id, source_host, document_type, approval_reference from knowledge_sources where id = $1', [id]);
+  if (!rows.length) throw new Error('Knowledge source not found.');
+  const source = rows[0];
+  if (decision === 'approve') {
+    const trust = trustAfterReview(source);
+    await db.query("update knowledge_sources set status = 'approved', trust_level = $2 where id = $1", [id, trust]);
+    return { sourceId: id, status: 'approved', trust };
+  }
+  await db.query("update knowledge_sources set status = 'rejected' where id = $1", [id]);
+  return { sourceId: id, status: 'rejected', trust: null };
 }
 function requestQuery(params) {
   const p = params || {};
@@ -155,4 +180,4 @@ async function retrieve(params) {
   ].join('\n\n') : '';
   return { chunks, context, sourceCount: new Set(chunks.map(c => c.source.id)).size, status: chunks.length ? 'retrieved' : 'no_matching_sources' };
 }
-module.exports = { validateSource, splitText, prepareChunks, requestQuery, retrieve, ingest, TRUSTED_HOSTS };
+module.exports = { validateSource, splitText, prepareChunks, requestQuery, retrieve, ingest, reviewSource, trustAfterReview, TRUSTED_HOSTS };
