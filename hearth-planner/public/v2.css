@@ -144,3 +144,6 @@ body.on-page .stage, body.on-page .pro-banner, body.on-page .v2-tabbar { display
 .lib-name { font-size: 1.05rem; font-weight: 700; }
 .lib-meta, .lib-time { font-size: 13px; color: var(--muted); }
 .lib-empty { text-align: center; color: var(--muted); padding: 32px 0; }
+
+/* Phones: the tab bar already opens the Studio, so a folded Studio is not drawn at all (more room for the plan). */
+@media (max-width: 760px) { body.has-tabbar .teaching-studio.is-collapsed { display: none; } }
