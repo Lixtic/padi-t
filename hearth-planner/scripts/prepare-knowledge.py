@@ -67,6 +67,7 @@ def main():
     ap.add_argument("--code", dest="curriculumCodes", action="append", default=[])
     ap.add_argument("--type", dest="documentType", default="curriculum")
     ap.add_argument("--license", default="")
+    ap.add_argument("--approval-reference", default="")
     ap.add_argument("--edition", default="")
     ap.add_argument("--published-at", default="")
     ap.add_argument("--output", default="-")
@@ -83,7 +84,7 @@ def main():
     data = {
         "title": args.title, "publisher": args.publisher, "sourceUrl": args.sourceUrl,
         "subject": args.subject, "classes": args.classes, "curriculumCodes": args.curriculumCodes,
-        "documentType": args.documentType, "license": args.license, "edition": args.edition,
+        "documentType": args.documentType, "license": args.license, "approvalReference": args.approval_reference, "edition": args.edition,
         "publishedAt": args.published_at, "segments": segments,
     }
     output = json.dumps(data, ensure_ascii=False)
