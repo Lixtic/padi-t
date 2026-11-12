@@ -2444,7 +2444,7 @@
       h('article', { class: 'dash-stat' }, h('span', { class: 'dash-stat-label', text: 'Subjects planned' }), h('strong', { class: 'dash-stat-value', text: String(subjects.size) }), h('span', { class: 'dash-stat-foot', text: resources + ' saved teaching resources' }))
     );
 
-    const term = Number(state.params.term) || 1;
+    const term = Number(termNow()) || 1;
     const week = Number(state.params.week) || 1;
     const weekPlans = plans.filter((s) => s.params && Number(s.params.week) === week && Number(s.params.term || term) === term);
     const tag = $('#dashWeekTag');
