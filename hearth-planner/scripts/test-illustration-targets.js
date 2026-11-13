@@ -32,7 +32,7 @@ const metadataLabels = Targets.extract([
   '- **Topic:** Introduction to Computer Systems',
   '- **Monitor:** Displays information.',
   '## Assessment'
-].join('\\n'), 8);
+].join('\n'), 8);
 assert.deepEqual(metadataLabels.map(x => x.concept), ['Monitor']);
 assert.deepEqual(Targets.extract('## BECE Practice\n- **Keyboard:** not notes', 8), []);
 assert.deepEqual(Targets.extract('## Study Notes\n- **Definition:** A computer is...', 8), []);
