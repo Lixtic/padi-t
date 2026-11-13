@@ -42,11 +42,23 @@ function relevance(query, title, description, context) {
   const score = titleMatches * 3 + (matched.length - titleMatches) + (phrase ? 5 : 0) + ctx * 2;
   return { score, matched: matched.length, ratio, phrase, ctx };
 }
-function relevant(item, query) {
-  const r = relevance(query, item.title, item.description);
+function relevant(item, query, context) {
+  const r = relevance(query, item.title, item.description, context);
   const count = [...new Set(terms(query))].length;
-  // Never accept a result merely because it has an image URL. Require meaningful subject overlap.
-  return count <= 2 ? r.matched >= 1 : (r.matched >= 2 && r.ratio >= 0.34) || (r.phrase && r.matched >= 1);
+  // Never accept a result merely because it has an image URL. Require meaningful concept overlap.
+  const conceptMatch = count <= 2 ? r.matched >= 1 : (r.matched >= 2 && r.ratio >= 0.34) || (r.phrase && r.matched >= 1);
+  if (!conceptMatch) return false;
+
+  // Short, ambiguous concepts (e.g. "cell", "port", "network") need at least
+  // one lesson-context signal when the caller supplied useful context.
+  const contextTerms = [...new Set(terms(context))];
+  if (count <= 2 && contextTerms.length) {
+    const titleTerms = new Set(terms(item.title));
+    const descriptionTerms = new Set(terms(item.description));
+    const contextMatches = contextTerms.filter((word) => titleTerms.has(word) || descriptionTerms.has(word)).length;
+    if (!contextMatches) return false;
+  }
+  return true;
 }
 function cleanText(value) {
   return String(value || '').replace(/<[^>]*>/g, ' ').replace(/&nbsp;/g, ' ').replace(/\s+/g, ' ').trim();
@@ -66,7 +78,7 @@ function rankAndFilter(results, query, context) {
   return dedupe(results).map((item) => {
     const match = relevance(query, item.title, item.description, context);
     return Object.assign({}, item, { _score: match.score, _matched: match.matched, _ratio: match.ratio });
-  }).filter((item) => item.thumbnail && /^https:\/\//i.test(item.thumbnail) && item.url && /^https:\/\//i.test(item.url) && relevant(item, query))
+  }).filter((item) => item.thumbnail && /^https:\/\//i.test(item.thumbnail) && item.url && /^https:\/\//i.test(item.url) && relevant(item, query, context))
     .sort((a, b) => b._score - a._score)
     .slice(0, 12)
     .map(({ _score, _matched, _ratio, ...item }) => item);
@@ -205,7 +217,8 @@ module.exports = async (req, res) => {
   const rawContext = String(req.query && req.query.context || '').replace(/[<>\u0000-\u001f]/g, ' ').replace(/\s+/g, ' ').trim().slice(0, 80);
   const topic = String(req.query && req.query.topic || '').replace(/[<>\u0000-\u001f]/g, ' ').replace(/\s+/g, ' ').trim().slice(0, 300);
   const context = keywords(rawContext, 3);
-  const providerQuery = keywords([raw, context].filter(Boolean).join(' '), 8);
+  const lessonContext = keywords([rawContext, topic].filter(Boolean).join(' '), 8);
+  const providerQuery = keywords([raw, rawContext, topic].filter(Boolean).join(' '), 8);
   const type = req.query && req.query.type === 'video' ? 'video' : 'image';
   if (query.length < 2) return sendJson(res, 400, { error: 'query', message: 'Enter a topic with at least two characters.' });
   try {
@@ -240,15 +253,15 @@ module.exports = async (req, res) => {
 
     // Providers run concurrently: a slow primary source must not consume the browser's entire request budget before fallback
     // sources get a chance. One poor result set never stops the others from being consulted.
-    let { settled, ranked } = await searchProviders(providerQuery, query, context);
+    let { settled, ranked } = await searchProviders(providerQuery, query, lessonContext);
     // The AI re-ranker reads the lesson context and keeps only candidates that really fit. When it is off or unavailable the
     // keyword ranking stands, so a failure here never costs the teacher their images.
     let ranking = 'keyword';
     if (Judge.enabled() && ranked.length) {
-      const ctx = { subject: '', cls: '', topic: [rawContext, topic].filter(Boolean).join(' | '), query: raw };
+      const ctx = { subject: rawContext, cls: '', topic, query: raw };
       let judged = await judgeWithinCap(ranked, ctx);
       if (judged && !judged.results.length && judged.betterQuery) {
-        const retry = await searchProviders(keywords([judged.betterQuery, context].filter(Boolean).join(' '), 8), keywords(judged.betterQuery, 8) || query, context);
+        const retry = await searchProviders(keywords([judged.betterQuery, rawContext, topic].filter(Boolean).join(' '), 8), keywords(judged.betterQuery, 8) || query, lessonContext);
         settled = settled.concat(retry.settled);
         if (retry.ranked.length) judged = await judgeWithinCap(retry.ranked, Object.assign({}, ctx, { query: judged.betterQuery }));
         else judged = { results: [] };
