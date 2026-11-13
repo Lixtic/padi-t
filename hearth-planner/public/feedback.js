@@ -317,13 +317,13 @@
   }
   function setupKnowledge() {
     var form = $('#kbForm'); if (!form) return;
-    var fileEl = $('#kbFile'), state = $('#kbState');
+    var fileEl = $('#kbFile'), state = $('#kbState'), unsupportedPreparedType = false;
     function updateApprovalReference() {
       var required = $('#kbType').value === 'approved_textbook' || $('#kbType').value === 'approved_supplementary';
       var row = $('#kbApprovalRow'), input = $('#kbApprovalReference');
       row.hidden = !required; input.required = required; input.disabled = !required;
     }
-    $('#kbType').addEventListener('change', updateApprovalReference);
+    $('#kbType').addEventListener('change', function () { unsupportedPreparedType = false; updateApprovalReference(); });
     updateApprovalReference();
     function fill(id, v) { var e = $(id); if (e && !e.value && v) e.value = v; }
     fileEl.addEventListener('change', function () {
@@ -331,13 +331,19 @@
       readKnowledgeFile(f).then(function (j) {
         fill('#kbTitle', j.title); fill('#kbPublisher', j.publisher); fill('#kbUrl', j.sourceUrl); fill('#kbSubject', j.subject);
         fill('#kbClasses', (j.classes || []).join(', ')); fill('#kbLicense', j.license); fill('#kbApprovalReference', j.approvalReference);
-        if (j.documentType && $('#kbType').querySelector('option[value="' + j.documentType + '"]')) $('#kbType').value = j.documentType;
+        if (j.documentType) {
+          if ($('#kbType').querySelector('option[value="' + j.documentType + '"]')) $('#kbType').value = j.documentType;
+          else unsupportedPreparedType = true;
+        }
         updateApprovalReference();
-        state.textContent = 'Read ' + j.segments.length + ' pages. Check the details, then add it.';
+        state.textContent = unsupportedPreparedType
+          ? 'Read ' + j.segments.length + ' pages. This file uses unsupported document type “' + j.documentType + '”. Choose the correct supported kind before adding it.'
+          : 'Read ' + j.segments.length + ' pages. Check the details, then add it.';
       }, function (e) { state.textContent = e.message; });
     });
     form.addEventListener('submit', function (e) {
       e.preventDefault();
+      if (unsupportedPreparedType) { state.textContent = 'Choose a supported document kind before adding this file.'; return; }
       var f = fileEl.files[0]; if (!f) return;
       var btn = $('#kbAdd'); btn.disabled = true; state.textContent = 'Reading the file…';
       readKnowledgeFile(f).then(function (doc) {
