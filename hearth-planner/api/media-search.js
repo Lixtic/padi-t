@@ -217,7 +217,8 @@ module.exports = async (req, res) => {
   const rawContext = String(req.query && req.query.context || '').replace(/[<>\u0000-\u001f]/g, ' ').replace(/\s+/g, ' ').trim().slice(0, 80);
   const topic = String(req.query && req.query.topic || '').replace(/[<>\u0000-\u001f]/g, ' ').replace(/\s+/g, ' ').trim().slice(0, 300);
   const context = keywords(rawContext, 3);
-  const lessonContext = keywords([rawContext, topic].filter(Boolean).join(' '), 8);\n  const providerQuery = keywords([raw, rawContext, topic].filter(Boolean).join(' '), 8);
+  const lessonContext = keywords([rawContext, topic].filter(Boolean).join(' '), 8);
+  const providerQuery = keywords([raw, rawContext, topic].filter(Boolean).join(' '), 8);
   const type = req.query && req.query.type === 'video' ? 'video' : 'image';
   if (query.length < 2) return sendJson(res, 400, { error: 'query', message: 'Enter a topic with at least two characters.' });
   try {
