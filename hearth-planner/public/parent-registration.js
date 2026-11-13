@@ -57,7 +57,8 @@
     return checked ? checked.value : '';
   }
   function isSignup() {
-    return document.getElementById('asTabUp').getAttribute('aria-selected') === 'true';
+    var tabs = document.getElementById('asTabs');
+    return !tabs.hidden && document.getElementById('asTabUp').getAttribute('aria-selected') === 'true';
   }
   function showMode() {
     var up = isSignup();
