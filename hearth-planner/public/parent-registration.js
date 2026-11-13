@@ -6,11 +6,8 @@
   var P = window.PadiSync;
   if (!form || !P) return;
 
-  var subjects = [
-    'Mathematics', 'English Language', 'Science', 'Computing',
-    'Social Studies', 'Creative Arts & Design', 'Career Technology',
-    'Religious and Moral Education'
-  ];
+  var fallbackSubjects = ['Mathematics', 'English Language', 'Science', 'Computing', 'Social Studies', 'Creative Arts', 'Religious and Moral Education'];
+  var levels = window.GuidedLevels;
   var wrap = document.createElement('div');
   wrap.id = 'guidedSignupFields';
   wrap.innerHTML =
@@ -44,13 +41,20 @@
   var minutesInput = document.getElementById('guidedLearningMinutes');
   var subjectBox = document.getElementById('guidedParentSubjects');
 
-  subjects.forEach(function (subject, index) {
-    var label = document.createElement('label');
-    var input = document.createElement('input');
-    input.type = 'checkbox'; input.value = subject; input.checked = index < 3;
-    var text = document.createElement('span'); text.textContent = subject;
-    label.append(input, text); subjectBox.appendChild(label);
-  });
+  function renderSubjects() {
+    var level = levels && levels.levelOfClass(classInput.value);
+    var options = level ? level.subjects : fallbackSubjects;
+    subjectBox.replaceChildren();
+    options.forEach(function (subject, index) {
+      var label = document.createElement('label');
+      var input = document.createElement('input');
+      input.type = 'checkbox'; input.value = subject; input.checked = index < 3;
+      var text = document.createElement('span'); text.textContent = subject;
+      label.append(input, text); subjectBox.appendChild(label);
+    });
+  }
+  classInput.addEventListener('change', renderSubjects);
+  renderSubjects();
 
   function selectedRole() {
     var checked = form.querySelector('input[name="guidedRole"]:checked');
@@ -119,7 +123,12 @@
   P.signUp = async function (email, password) {
     var data = collectProfile();
     localStorage.setItem(pendingKey, JSON.stringify({ email: email.toLowerCase(), data: data }));
-    var user = await baseSignUp(email, password, data.displayName);
+    var user;
+    try { user = await baseSignUp(email, password, data.displayName); }
+    catch (error) {
+      if (!(error && (error.code === 'verify' || error.created))) localStorage.removeItem(pendingKey);
+      throw error;
+    }
     await savePending(email);
     return user;
   };
@@ -140,7 +149,13 @@
   var baseSignIn = P.signIn.bind(P);
   P.signIn = async function (email, password) {
     var user = await baseSignIn(email, password);
-    await savePending(email);
+    var pending;
+    try { pending = JSON.parse(localStorage.getItem(pendingKey) || 'null'); } catch (e) { pending = null; }
+    if (pending && pending.email === String(email).toLowerCase()) {
+      var existing = await P.getAccountProfile();
+      if (existing) localStorage.removeItem(pendingKey);
+      else await savePending(email);
+    }
     return user;
   };
 
