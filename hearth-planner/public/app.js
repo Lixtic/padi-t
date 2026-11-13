@@ -1146,7 +1146,7 @@
       const context = [p.subject, p.cls].filter(Boolean).join(' ').slice(0, 80);
       const sch = p.scheme || {};
       const topic = [sch.substrand, sch.strand].concat(Array.isArray(sch.indicators) ? sch.indicators : [])
-        .filter(Boolean).join('. ').replace(/\\b(?:B[1-9]|SHS[1-3])(?:\\.\\d+){2,5}\\b/gi, '').replace(/\\s+/g, ' ').trim().slice(0, 300);
+        .filter(Boolean).join('. ').replace(/\b(?:B[1-9]|SHS[1-3])(?:\.\\d+){2,5}\b/gi, '').replace(/\s+/g, ' ').trim().slice(0, 300);
       const results = await Promise.all(targets.map(async (target) => {
         const query = target.concept.slice(0, 100);
         try {
@@ -1155,7 +1155,7 @@
             { headers: Object.assign({ Accept: 'application/json' }, who), signal: controller.signal });
           if (!response.ok) return { target, unreachable: true };
           const data = await response.json();
-          const item = (data.results || []).find((entry) => entry && /^https:\\/\\//i.test(entry.thumbnail || '') && /^https:\\/\\//i.test(entry.url || ''));
+          const item = (data.results || []).find((entry) => entry && /^https:\/\//i.test(entry.thumbnail || '') && /^https:\/\//i.test(entry.url || ''));
           return item ? { target, item } : { target, unreachable: !!data.unreachable };
         } catch (error) { return { target, unreachable: true }; }
       }));
@@ -1170,9 +1170,9 @@
 
       const insertions = new Map();
       found.forEach(({ target, item }) => {
-        const alt = String(target.concept || item.title || 'Classroom example').replace(/[\\[\\]]/g, '').slice(0, 100);
-        const imageUrl = String(item.thumbnail).replace(/\\)/g, '%29');
-        const sourceTitle = String(item.title || target.concept).replace(/[\\[\\]]/g, '');
+        const alt = String(target.concept || item.title || 'Classroom example').replace(/[\[\]]/g, '').slice(0, 100);
+        const imageUrl = String(item.thumbnail).replace(/\)/g, '%29');
+        const sourceTitle = String(item.title || target.concept).replace(/[\[\]]/g, '');
         const caption = '*Image source: [' + sourceTitle + '](' + String(item.url) + ') · Licence: '
           + String(item.license || 'See source page') + (item.author ? ' · Author: ' + String(item.author) : '') + '.*';
         const block = ['![' + alt + '](' + imageUrl + ')', caption];
