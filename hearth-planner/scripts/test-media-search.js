@@ -27,7 +27,8 @@ assert.equal(Search.relevant({ title: 'Prison cell', description: 'A jail cell' 
 assert.equal(Search.relevant({ title: 'Animal cell diagram', description: 'A labelled biology cell structure' }, 'cell', 'Basic 7 Biology'), true);
 assert.equal(Search.relevant({ title: 'Computer keyboard', description: 'Input hardware for a computer' }, 'keyboard', 'Introduction to Computer Systems'), true);
 assert.equal(Search.relevant({ title: 'Keyboard instrument', description: 'A musical instrument' }, 'keyboard', 'Introduction to Computer Systems'), false);
-\n// The same picture from two providers appears once.
+
+// The same picture from two providers appears once.
 assert.equal(Search.dedupe([
   { title: 'Map of Africa.png', author: 'A', thumbnail: 'https://img.example/m.png?w=800' },
   { title: 'Map of Africa', author: 'A', thumbnail: 'https://other.example/m2.png' },
