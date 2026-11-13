@@ -1177,9 +1177,11 @@
       found.forEach(({ target, item }) => {
         const alt = String(target.concept || item.title || 'Classroom example').replace(/[\[\]]/g, '').slice(0, 100);
         const imageUrl = String(item.thumbnail).replace(/\)/g, '%29');
-        const sourceTitle = String(item.title || target.concept).replace(/[\[\]]/g, '');
-        const caption = '*Image source: [' + sourceTitle + '](' + String(item.url) + ') · Licence: '
-          + String(item.license || 'See source page') + (item.author ? ' · Author: ' + String(item.author) : '') + '.*';
+        const sourceUrl = String(item.url || '');
+        const licence = String(item.license || 'See source page').replace(/[\r\n*_]/g, ' ').replace(/\s+/g, ' ').trim().slice(0, 100);
+        const author = String(item.author || '').replace(/[\r\n*_]/g, ' ').replace(/\s+/g, ' ').trim().slice(0, 80);
+        const caption = '*Image source: [View original image](' + sourceUrl + ') · Licence: '
+          + licence + (author ? ' · Author: ' + author : '') + '.*';
         const block = ['![' + alt + '](' + imageUrl + ')', caption];
         if (!insertions.has(target.lineIndex)) insertions.set(target.lineIndex, []);
         insertions.get(target.lineIndex).push.apply(insertions.get(target.lineIndex), block);
