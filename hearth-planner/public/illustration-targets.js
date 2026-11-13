@@ -11,7 +11,11 @@
     'computer system','computer systems','parts of a computer','main parts','components','main components',
     'key term','key terms','key terms and meanings','learning objectives','lesson objectives','prerequisite knowledge',
     'features','functions','uses','advantages','disadvantages','importance','characteristics','types','steps','process',
-    'materials','tools','equipment','resources','activities','assessment','class exercise'
+    'materials','tools','equipment','resources','activities','assessment','class exercise',
+    'which subject','subject','class','class level','level','content standard','content standards',
+    'curriculum standard','curriculum standards','curriculum indicator','curriculum indicators',
+    'learning indicator','learning indicators','strand','sub-strand','substrand','term','week',
+    'duration','date','teacher','school','topic','lesson topic','subject area','grade','basic level'
   ]);
   function cleanName(value) {
     return String(value || '').replace(/^\s*(?:the|a|an)\s+/i, '')
