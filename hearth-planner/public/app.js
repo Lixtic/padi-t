@@ -728,7 +728,7 @@
   // Writes the full version of a plan that was only previewed.
   function unlockFull(s) {
     if (state.streaming || !s || !s.params) return;
-    state.params = Object.assign({}, state.params, { subject: s.params.subject, cls: s.params.cls, week: s.params.week, size: s.params.size || state.params.size, hook: s.params.hook !== false, light: s.params.light === true, studyNotes: true, bece: true, also: [] });
+    state.params = Object.assign({}, state.params, { subject: s.params.subject, cls: s.params.cls, week: s.params.week, size: s.params.size || state.params.size, hook: s.params.hook !== false, light: s.params.light === true, studyNotes: true, bece: true, inc: s.params.inc, also: [] });
     syncPills(); syncAlso();
     const fresh = makeSession();
     state.sessions.unshift(fresh);
@@ -977,7 +977,7 @@
     const res = await fetch('/api/generate', {
       method: 'POST', signal,
       headers: Object.assign({ 'content-type': 'application/json', 'x-access-code': state.access || '' }, who),
-      body: JSON.stringify({ params: { subject: p.subject, cls: p.cls, week: p.week, term: p.term || termNow(), hook: p.hook !== false, light: p.light === true, studyNotes: p.studyNotes !== false, bece: p.bece !== false, size: p.size || '', mode: p.mode || 'full', resourceType: p.resourceType || 'Study notes', indicatorCodes: p.mode === 'resources' && p.resourceType === 'Study notes' ? (p.indicatorCodes || []) : undefined, notes: session.messages[0].content || '' }, thread: threadOf(session), fresh }),
+      body: JSON.stringify({ params: { subject: p.subject, cls: p.cls, week: p.week, term: p.term || termNow(), hook: p.hook !== false, light: p.light === true, studyNotes: p.studyNotes !== false, bece: p.bece !== false, size: p.size || '', inc: incOf(p), mode: p.mode || 'full', resourceType: p.resourceType || 'Study notes', indicatorCodes: p.mode === 'resources' && p.resourceType === 'Study notes' ? (p.indicatorCodes || []) : undefined, notes: session.messages[0].content || '' }, thread: threadOf(session), fresh }),
     });
     if (!res.ok) {
       let j = {};
@@ -1115,7 +1115,7 @@
     const wk = text.match(/\bweek\s*(\d{1,2})\b/i);
     if (wk && /^(generate|create|plan|write)/i.test(text) && s && s.params) {
       const n = Math.min(Math.max(parseInt(wk[1], 10), 1), weeksFor(s.params.cls).length);
-      state.params = { subject: s.params.subject, cls: s.params.cls, week: n, hook: s.params.hook !== false, size: s.params.size || state.params.size, light: s.params.light === true, studyNotes: s.params.studyNotes !== false, bece: s.params.bece !== false };
+      state.params = { subject: s.params.subject, cls: s.params.cls, week: n, hook: s.params.hook !== false, size: s.params.size || state.params.size, light: s.params.light === true, studyNotes: s.params.studyNotes !== false, bece: s.params.bece !== false, inc: s.params.inc };
       syncPills();
       const fresh = makeSession();
       state.sessions.unshift(fresh);
@@ -1729,6 +1729,7 @@
     if (p.studyNotes !== false) parts.push('Notes');
     if (p.bece !== false) parts.push(examOf(p.cls).id === 'bece' ? 'BECE' : examOf(p.cls).id === 'wassce' ? 'WASSCE' : 'Exercise');
     if (p.hook !== false) parts.push('Hook');
+    const ic = incOf(p), nInc = (ic.support ? 1 : 0) + (ic.gender ? 1 : 0) + (ic.ict ? 1 : 0) + ic.acts.length; if (nInc) parts.push('Inclusive');
     const n = (p.also || []).length; if (n) parts.push('+' + n + (n === 1 ? ' class' : ' classes'));
     $('#optSummary').textContent = parts.join(' · ');
   }
@@ -1739,6 +1740,27 @@
     syncSummary();
   }
   hookBtn.addEventListener('click', () => { state.params.hook = state.params.hook === false; syncHook(); store.save(); });
+  /* Inclusive teaching: learner support, gender-responsive grouping, a simple ICT step and the activities the teacher wants.
+     Lower primary starts with support and grouping on; the teacher's own choice is kept with the plan. */
+  const ACTS = [['group', 'Group discussion'], ['roleplay', 'Role play'], ['song', 'Song or rhyme'], ['game', 'Learning game'], ['make', 'Drawing or making'], ['talk', 'Resource person talk'], ['call', 'Voice call to a resource person']];
+  const incDefault = (cls) => { const lower = levelOf(cls).id === 'lower'; return { support: lower, gender: lower, ict: false, acts: [] }; };
+  const incOf = (p) => { const d = incDefault(p.cls), i = p.inc && typeof p.inc === 'object' ? p.inc : {}; return { support: i.support === undefined ? d.support : i.support === true, gender: i.gender === undefined ? d.gender : i.gender === true, ict: i.ict === undefined ? d.ict : i.ict === true, acts: Array.isArray(i.acts) ? i.acts.filter((a) => ACTS.some((x) => x[0] === a)) : d.acts }; };
+  const incRows = { support: $('#incSupport'), gender: $('#incGender'), ict: $('#incIct') };
+  const actsBox = $('#incActs');
+  if (actsBox) actsBox.replaceChildren(...ACTS.map(([id, label]) => h('button', { type: 'button', class: 'act-chip', 'data-act': id, 'aria-pressed': 'false', text: label })));
+  function syncInc() {
+    const i = incOf(state.params);
+    Object.keys(incRows).forEach((k) => { if (incRows[k]) incRows[k].setAttribute('aria-checked', String(i[k])); });
+    if (actsBox) actsBox.querySelectorAll('.act-chip').forEach((b) => b.setAttribute('aria-pressed', String(i.acts.includes(b.dataset.act))));
+    syncSummary();
+  }
+  const setInc = (patch) => { state.params.inc = Object.assign(incOf(state.params), patch); syncInc(); store.save(); };
+  Object.keys(incRows).forEach((k) => { if (incRows[k]) incRows[k].addEventListener('click', () => setInc({ [k]: !incOf(state.params)[k] })); });
+  if (actsBox) actsBox.addEventListener('click', (e) => {
+    const b = e.target.closest('.act-chip'); if (!b) return;
+    const cur = incOf(state.params).acts, id = b.dataset.act;
+    setInc({ acts: cur.includes(id) ? cur.filter((x) => x !== id) : cur.concat(id) });
+  });
   const lightBtn = $('#lightToggle');
   function syncLight() {
     const on = state.params.light === true;
@@ -1897,7 +1919,7 @@
     const n = 1 + state.params.also.length;
     sendBtn.title = n > 1 ? 'Write ' + n + ' plans' : '';
   }
-  function syncPills() { dropdowns.forEach((d) => d.build()); syncHook(); syncLight(); syncContent(); syncScheme(); syncAlso(); }
+  function syncPills() { dropdowns.forEach((d) => d.build()); syncHook(); syncLight(); syncInc(); syncContent(); syncScheme(); syncAlso(); }
 
   /* ───────── Sidebar behaviour ───────── */
   const navOpen = () => (isMobile() ? app.classList.contains('nav-open') : !app.classList.contains('sb-collapsed'));
@@ -2379,7 +2401,7 @@
     const saved = store.load();
     state.sessions = saved && Array.isArray(saved.sessions) ? saved.sessions.filter((s) => s && Array.isArray(s.messages)) : [];
     if (saved && saved.params && CLASSES.includes(saved.params.cls) && subjectsOf(saved.params.cls).includes(saved.params.subject) && weeksFor(saved.params.cls).includes(saved.params.week)) {
-      state.params = { subject: saved.params.subject, cls: saved.params.cls, week: saved.params.week, hook: saved.params.hook !== false, size: SIZES.includes(saved.params.size) ? saved.params.size : state.params.size, light: saved.params.light === true, studyNotes: saved.params.studyNotes !== false, bece: saved.params.bece !== false, mode: ['plan', 'resources', 'full'].includes(saved.params.mode) ? saved.params.mode : 'full', resourceType: ['Study notes', 'Learner worksheet', 'Homework pack', 'BECE practice', 'Teaching slides'].includes(saved.params.resourceType) ? saved.params.resourceType : 'Study notes' };
+      state.params = { subject: saved.params.subject, cls: saved.params.cls, week: saved.params.week, hook: saved.params.hook !== false, size: SIZES.includes(saved.params.size) ? saved.params.size : state.params.size, light: saved.params.light === true, studyNotes: saved.params.studyNotes !== false, bece: saved.params.bece !== false, inc: saved.params.inc, mode: ['plan', 'resources', 'full'].includes(saved.params.mode) ? saved.params.mode : 'full', resourceType: ['Study notes', 'Learner worksheet', 'Homework pack', 'BECE practice', 'Teaching slides'].includes(saved.params.resourceType) ? saved.params.resourceType : 'Study notes' };
     }
     try { state.access = localStorage.getItem(ACCESS_KEY) || ''; accessInput.value = state.access; } catch (e) { /* ignore */ }
     if (window.GuidedProfile) {
@@ -2398,6 +2420,7 @@
       return shown.map((x) => ({ id: x, label: x }));   // a teacher with a profile sees only the subjects they teach (change them in Settings)
     }, get: () => state.params.subject, set: (v) => { state.params.subject = v; continueWeek(); store.save(); syncPills(); }, label: (x) => x });
     const chooseClass = (v) => {
+      if (levelOf(v).id !== levelOf(state.params.cls).id) delete state.params.inc;   // the inclusive choices follow the level: a new level starts from its own defaults
       state.params.cls = v;
       if (!subjectsOf(v).includes(state.params.subject)) state.params.subject = mySubjectsOf(v)[0] || subjectsOf(v)[0];   // a subject that is not taught at this level falls back to the teacher's first one
       if (state.params.week > weeksFor(v).length) state.params.week = 1;
@@ -2420,7 +2443,7 @@
     makeDropdown($('#ddWeek'), { name: 'Week', items: () => weeksFor(state.params.cls).map((x) => { const we = weekEnd(termNow(), x, state.params.cls); return { id: x, label: 'Week ' + x, sub: we ? (we.afterClose ? 'date to be confirmed' : we.short + (x === calendarWeek() ? ' · this week' : '')) : '' }; }), get: () => state.params.week, set: (v) => { state.params.week = v; store.save(); syncScheme(); }, label: (x) => 'Week ' + x });
 
     makeDropdown($('#ddSize'), { name: 'Class size', items: SIZES.map((x) => ({ id: x, label: x + ' learners' })), get: () => state.params.size, set: (v) => { state.params.size = v; syncSummary(); store.save(); }, label: (x) => x + ' learners' });
-    syncHook(); syncLight(); syncContent(); syncScheme(); syncAlso();
+    syncHook(); syncLight(); syncInc(); syncContent(); syncScheme(); syncAlso();
     syncNav();
     const s = makeSession();
     state.sessions.unshift(s);
