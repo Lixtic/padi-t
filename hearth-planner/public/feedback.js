@@ -318,13 +318,21 @@
   function setupKnowledge() {
     var form = $('#kbForm'); if (!form) return;
     var fileEl = $('#kbFile'), state = $('#kbState');
+    function updateApprovalReference() {
+      var required = $('#kbType').value === 'approved_textbook' || $('#kbType').value === 'approved_supplementary';
+      var row = $('#kbApprovalRow'), input = $('#kbApprovalReference');
+      row.hidden = !required; input.required = required; input.disabled = !required;
+    }
+    $('#kbType').addEventListener('change', updateApprovalReference);
+    updateApprovalReference();
     function fill(id, v) { var e = $(id); if (e && !e.value && v) e.value = v; }
     fileEl.addEventListener('change', function () {
       var f = fileEl.files[0]; if (!f || !/\.json$/i.test(f.name)) return;
       readKnowledgeFile(f).then(function (j) {
         fill('#kbTitle', j.title); fill('#kbPublisher', j.publisher); fill('#kbUrl', j.sourceUrl); fill('#kbSubject', j.subject);
-        fill('#kbClasses', (j.classes || []).join(', ')); fill('#kbLicense', j.license);
+        fill('#kbClasses', (j.classes || []).join(', ')); fill('#kbLicense', j.license); fill('#kbApprovalReference', j.approvalReference);
         if (j.documentType && $('#kbType').querySelector('option[value="' + j.documentType + '"]')) $('#kbType').value = j.documentType;
+        updateApprovalReference();
         state.textContent = 'Read ' + j.segments.length + ' pages. Check the details, then add it.';
       }, function (e) { state.textContent = e.message; });
     });
@@ -337,7 +345,8 @@
           title: $('#kbTitle').value.trim() || doc.title, publisher: $('#kbPublisher').value.trim() || doc.publisher,
           sourceUrl: $('#kbUrl').value.trim() || doc.sourceUrl, subject: $('#kbSubject').value.trim() || doc.subject,
           classes: $('#kbClasses').value.trim() ? $('#kbClasses').value.split(',').map(function (x) { return x.trim(); }).filter(Boolean) : (doc.classes || []),
-          documentType: $('#kbType').value, license: $('#kbLicense').value.trim() || doc.license || ''
+          documentType: $('#kbType').value, license: $('#kbLicense').value.trim() || doc.license || '',
+          approvalReference: $('#kbApprovalReference').value.trim() || doc.approvalReference || ''
         });
         state.textContent = 'Adding ' + body.segments.length + ' pages…';
         return post('knowledge', body);
