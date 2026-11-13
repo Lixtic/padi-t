@@ -993,6 +993,30 @@
     }
   }
 
+  async function qualityCheck(session, content, signal) {
+    const p = session.params || {};
+    const who = window.PadiSync && window.PadiSync.authHeader ? await window.PadiSync.authHeader() : {};
+    const res = await fetch('/api/quality-check', {
+      method: 'POST',
+      signal,
+      headers: Object.assign({ 'content-type': 'application/json', 'x-access-code': state.access || '' }, who),
+      body: JSON.stringify({
+        params: {
+          subject: p.subject, cls: p.cls, week: p.week, term: p.term || termNow(),
+          hook: p.hook !== false, light: p.light === true, studyNotes: p.studyNotes !== false,
+          bece: p.bece !== false, size: p.size || '', mode: p.mode || 'full',
+          resourceType: p.resourceType || 'Study notes',
+          indicatorCodes: p.mode === 'resources' && p.resourceType === 'Study notes' ? (p.indicatorCodes || []) : undefined,
+          notes: session.messages[0] && session.messages[0].content || ''
+        },
+        content
+      })
+    });
+    if (!res.ok) throw new Error('Quality check unavailable');
+    const data = await res.json();
+    return data.report || null;
+  }
+
   async function* demoStream(session, signal) {
     const S = window.SchoolPadiSample;
     const isFollow = session.messages.length > 1;
@@ -1270,7 +1294,12 @@
     }
 
     if (kind === 'plan') text = fillWeekEnding(text, session.params);
-    const msg = { role: 'assistant', kind, content: text, seconds: (performance.now() - t0) / 1000, stopped: aborted, demo: state.config.demo, warning };
+    let qualityReport = null;
+    if (!aborted && !warning && !state.config.demo && text.trim()) {
+      try { qualityReport = await qualityCheck(session, text, ctrl.signal); }
+      catch (e) { if (e.name !== 'AbortError') console.warn('[quality-check] unavailable', e.message); }
+    }
+    const msg = { role: 'assistant', kind, content: text, quality: qualityReport, seconds: (performance.now() - t0) / 1000, stopped: aborted, demo: state.config.demo, warning };
     if (previewFlag) msg.preview = true;
     if (!text.trim()) { bot.error(warning || 'The model returned nothing. Please try again.', () => { bot.root.remove(); state.bots.pop(); runGenerate(session); }); updateSend(); renderSessions(); updateTopbar(); return; }
     session.messages.push(msg);
