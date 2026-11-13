@@ -68,6 +68,10 @@
   ],
   "rewrites": [
     {
+      "source": "/api/account-profile",
+      "destination": "/api/sync?what=account-profile"
+    },
+    {
       "source": "/api/neon-auth/:path*",
       "destination": "/api/neon-auth?path=:path*"
     }
