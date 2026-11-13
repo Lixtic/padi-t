@@ -1,6 +1,15 @@
 'use strict';
 const assert = require('node:assert/strict');
+const fs = require('node:fs');
+const path = require('node:path');
 const K = require('../api/_knowledge');
+
+// Keep the admin form's selectable types in lockstep with server validation.
+const html = fs.readFileSync(path.join(__dirname, '../public/index.html'), 'utf8');
+const form = html.match(/<select id="kbType">([\s\S]*?)<\/select>/);
+assert.ok(form, 'Knowledge Base document type selector exists');
+const uiTypes = [...form[1].matchAll(/<option value="([^"]+)"/g)].map(match => match[1]);
+assert.deepEqual(uiTypes, K.DOCUMENT_TYPES);
 
 assert.equal(K.TRUSTED_HOSTS.has('nacca.gov.gh'), true);
 const source = K.validateSource({
@@ -13,6 +22,8 @@ assert.equal(source.trust, 'reviewed_resource');
 assert.throws(() => K.validateSource({ title: 'Textbook', publisher: 'Publisher', sourceUrl: 'https://publisher.example/book.pdf', documentType: 'approved_textbook', subject: 'Computing' }), /approval-register/);
 const approved = K.validateSource({ title: 'Approved text', publisher: 'Publisher', sourceUrl: 'https://publisher.example/book.pdf', documentType: 'approved_textbook', subject: 'Computing', approvalReference: 'NaCCA register entry 2026-01' });
 assert.equal(approved.trust, 'reviewed_resource');
+assert.equal(approved.approvalReference, 'NaCCA register entry 2026-01');
+assert.throws(() => K.validateSource({ title: 'Old textbook type', publisher: 'Publisher', sourceUrl: 'https://publisher.example/book.pdf', documentType: 'textbook', subject: 'Computing' }), /Unsupported document type/);
 assert.equal(K.trustAfterReview({ source_host: 'publisher.example', document_type: 'approved_textbook', approval_reference: 'NaCCA register entry 2026-01' }), 'approved_material');
 assert.equal(K.trustAfterReview({ source_host: 'nacca.gov.gh', document_type: 'curriculum', approval_reference: '' }), 'official');
 assert.equal(K.trustAfterReview({ source_host: 'publisher.example', document_type: 'teacher_resource', approval_reference: '' }), 'reviewed_resource');
