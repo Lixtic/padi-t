@@ -292,8 +292,10 @@
           <label>Classes <input type="text" id="kbClasses" maxlength="100" placeholder="SHS 2, SHS 3"></label>
         </div>
         <div class="ad-row">
-          <label>Kind <select id="kbType"><option value="curriculum">Curriculum</option><option value="teacher_guide">Teacher manual</option><option value="syllabus">Syllabus</option><option value="textbook">Textbook</option><option value="past_questions">Past questions</option></select></label>
+          <label>Kind <select id="kbType"><option value="curriculum">Curriculum</option><option value="teacher_guide">Teacher manual</option><option value="approved_textbook">NaCCA-approved textbook</option><option value="approved_supplementary">NaCCA-approved supplementary material</option><option value="teacher_resource">Teacher resource</option></select></label>
           <label>Licence <input type="text" id="kbLicense" maxlength="160" placeholder="Who may use it"></label>
+        </div>
+        <div class="ad-row" id="kbApprovalRow" hidden><label>NaCCA approval-register reference <input type="text" id="kbApprovalReference" maxlength="240" placeholder="Enter the exact register reference" autocomplete="off"></label></div>
         </div>
         <div class="ad-row"><button type="submit" class="primary" id="kbAdd">Add for review</button></div>
         <p class="us-note" id="kbState" role="status"></p>
