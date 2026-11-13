@@ -18,7 +18,7 @@
     for (var i = start + 1; i < end && found.length < max; i++) {
       var line = lines[i].trim(), m;
       if (!line || line.charAt(0) === '|' || /^#{1,6}\s/.test(line) || /^```/.test(line)) continue;
-      m = line.match(/^(?:[-•▪]\s*)?\*\*([^*]{2,48})\*\*\s*(?::|—|–|-)\s*\S/);
+      m = line.match(/^(?:[-•▪]\s*)?\*\*([^*]{2,48}?):?\*\*\s*(?::|—|–|-)?\s*\S/);
       if (m) { add(m[1], i); continue; }
       m = line.match(/^[-•▪*]\s+([A-Z][A-Za-z0-9 ()/&-]{1,38}?)\s*(?::|—|–|-)\s+\S/);
       if (m) { add(m[1], i); continue; }
