@@ -146,8 +146,8 @@
         return jwt ? { authorization: 'Bearer ' + jwt } : {};
       } catch (e) { return {}; }
     },
-    signUp: async function (email, password) {
-      var result = await authCall(function () { return authClient.signUp.email({ email: email, password: password, name: email.split('@')[0] }); }, 'signup');
+    signUp: async function (email, password, displayName) {
+      var result = await authCall(function () { return authClient.signUp.email({ email: email, password: password, name: String(displayName || '').trim() || email.split('@')[0] }); }, 'signup');
       var user = result.data && result.data.user;
       if (!user || !(result.data.token || result.data.session)) {      // no session yet (e.g. email check on): sign in right away
         try { user = (await authCall(function () { return authClient.signIn.email({ email: email, password: password }); }, 'signin')).data.user; }
@@ -207,6 +207,8 @@
       return { failed: failed };
     },
     getProfile: async function () { var j = await call('/api/sync?what=profile', { auth: true }); return j && j.profile ? j.profile : null; },
-    setProfile: function (data, updatedAt) { return call('/api/sync', { method: 'POST', auth: true, body: { what: 'profile', data: data, updated_at: updatedAt } }); }
+    setProfile: function (data, updatedAt) { return call('/api/sync', { method: 'POST', auth: true, body: { what: 'profile', data: data, updated_at: updatedAt } }); },
+    getAccountProfile: async function () { var j = await call('/api/account-profile', { auth: true }); return j && j.profile ? j.profile : null; },
+    setAccountProfile: function (data) { return call('/api/account-profile', { method: 'POST', auth: true, body: { data: data } }); }
   };
 })();
