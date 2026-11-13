@@ -348,3 +348,11 @@ body.on-dashboard .v2-tabbar { display: none !important; }
 .lib-del { position: absolute; top: 10px; right: 10px; width: 28px; height: 28px; display: grid; place-items: center; border-radius: 9px; border: 0; background: transparent; color: var(--muted); }
 .lib-del .ico { width: 14px; height: 14px; }
 .lib-del:hover, .lib-del:focus-visible { background: color-mix(in srgb, var(--del, #c0392b) 14%, transparent); color: var(--del, #c0392b); }
+
+/* Sidebar: main links sit right under New Plan; only account/admin stay at the bottom */
+.sb-nav { display: flex; flex-direction: column; gap: 2px; padding: 6px 12px; }
+.sb-nav .foot-link { min-height: 40px; border-radius: 10px; font-size: 14px; }
+.sb-nav .foot-link[aria-current="page"] { font-weight: 600; }
+.sb-nav .foot-link[aria-current="page"] .ico { color: var(--accent); }
+.sidebar .sb-foot:not(:has(.access-row:not([hidden]), .foot-link:not([hidden]))) { display: none; }
+@media (max-width: 900px) { .sb-nav { padding: 4px 14px; } }
