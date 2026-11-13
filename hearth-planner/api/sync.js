@@ -46,7 +46,7 @@ module.exports = async (req, res) => {
       for (const r of rows) {
         const ts = Number(r && r.updated_at);
         const json = JSON.stringify(r && r.data && typeof r.data === 'object' ? r.data : {});
-        if (!r || typeof r.id !== 'string' || !/^[\\w-]{1,64}$/.test(r.id) || !Number.isFinite(ts) || ts <= 0 || ts > maxTs || json.length > MAX_ROW_BYTES) {
+        if (!r || typeof r.id !== 'string' || !/^[\w-]{1,64}$/.test(r.id) || !Number.isFinite(ts) || ts <= 0 || ts > maxTs || json.length > MAX_ROW_BYTES) {
           return sendJson(res, 400, { error: 'bad_request', message: 'A plan could not be saved.' });
         }
         const i = vals.length;
@@ -71,7 +71,7 @@ module.exports = async (req, res) => {
       const termOpen = {};
       Object.keys(d.termOpen && typeof d.termOpen === 'object' ? d.termOpen : {}).slice(0, 12).forEach((k) => {
         const v = d.termOpen[k];
-        if (/^\\d{4}-[123]$/.test(k) && typeof v === 'string' && /^\\d{4}-\\d{2}-\\d{2}$/.test(v) && !isNaN(Date.parse(v))) termOpen[k] = v;
+        if (/^\d{4}-[123]$/.test(k) && typeof v === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(v) && !isNaN(Date.parse(v))) termOpen[k] = v;
       });
       const clean = {
         teacher: String(d.teacher || '').slice(0, 80), school: String(d.school || '').slice(0, 100),
