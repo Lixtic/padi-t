@@ -43,7 +43,12 @@
   const resourceLabel = (type, cls) => type === 'BECE practice' ? examOf(cls).toggle : type;
   const notesOf = (cls) => levelOf(cls).notes;
   const SUBJECTS = levelOf('Basic 8').subjects;
-  const WEEKS = Array.from({ length: 14 }, (_, i) => i + 1);
+  /* Basic schools run three terms of 14 weeks; senior high schools run two semesters of 17 weeks. */
+  const isShsCls = (cls) => /^SHS/i.test(String(cls || ''));
+  const weeksFor = (cls) => Array.from({ length: isShsCls(cls) ? 17 : 14 }, (_, i) => i + 1);
+  const termWord = (cls) => (isShsCls(cls) ? 'Semester' : 'Term');
+  const termsFor = (cls) => (isShsCls(cls) ? [1, 2] : [1, 2, 3]);
+  const WEEKS = weeksFor('Basic 8');   // only for code that has no class yet; use weeksFor(cls) otherwise
 
   /* ───────── Helpers ───────── */
   const $ = (s, r = document) => r.querySelector(s);
@@ -351,7 +356,7 @@
 
   function sessionRow(s, inFolder) {
     const st = statusOf(s);
-    const sub = s.params ? (inFolder ? [s.params.term ? 'Term ' + s.params.term : '', 'Week ' + s.params.week].filter(Boolean).join(' · ') : s.params.cls + ' · Week ' + s.params.week) + (s.copy ? ' · copy' : '') : '';
+    const sub = s.params ? (inFolder ? [s.params.term ? termWord(s.params.cls) + ' ' + s.params.term : '', 'Week ' + s.params.week].filter(Boolean).join(' · ') : s.params.cls + ' · Week ' + s.params.week) + (s.copy ? ' · copy' : '') : '';
     return h('li', { class: 's-row' },
       h('button', { type: 'button', class: 's-item', 'data-id': s.id, 'aria-current': String(s.id === state.currentId) },
         h('span', { class: 'dot dot-' + st, role: 'img', 'aria-label': STATUS[st], title: STATUS[st] }),
@@ -1109,7 +1114,7 @@
     const s = current();
     const wk = text.match(/\bweek\s*(\d{1,2})\b/i);
     if (wk && /^(generate|create|plan|write)/i.test(text) && s && s.params) {
-      const n = Math.min(Math.max(parseInt(wk[1], 10), 1), WEEKS.length);
+      const n = Math.min(Math.max(parseInt(wk[1], 10), 1), weeksFor(s.params.cls).length);
       state.params = { subject: s.params.subject, cls: s.params.cls, week: n, hook: s.params.hook !== false, size: s.params.size || state.params.size, light: s.params.light === true, studyNotes: s.params.studyNotes !== false, bece: s.params.bece !== false };
       syncPills();
       const fresh = makeSession();
@@ -1340,7 +1345,7 @@
     if (r && r.timer) clearTimeout(r.timer);
     if (stopped && state.streaming) stopStreaming();
     if (r && !stopped && r.done) {
-      termBarShow('All ' + r.done + ' plans are ready: ' + r.subject + ', ' + r.cls + ', Term ' + r.term + '.', termPackButtons(r));
+      termBarShow('All ' + r.done + ' plans are ready: ' + r.subject + ', ' + r.cls + ', ' + termWord(r.cls) + ' ' + r.term + '.', termPackButtons(r));
     } else if (r && stopped && r.done) {
       termBarShow(r.done + ' of ' + r.total + ' plans were written before you stopped.', termPackButtons(r));
     } else termBarShow('');
@@ -1358,7 +1363,7 @@
     return state.sessions.filter((x) => x.params && x.params.cls === r.cls && x.params.subject === r.subject && x.params.mode !== 'resources' && (x.params.term || term) === term && x.messages.length >= 2 && x.messages[1] && !x.messages[1].preview)
       .sort((a, b) => a.params.week - b.params.week).map((x) => planTables(splitElic(x.messages[1].content).body)).filter(Boolean).join('\n\n');
   }
-  const termPackTitle = (r) => r.subject + ' – ' + r.cls + ' – Term ' + r.term + ' lesson plans';
+  const termPackTitle = (r) => r.subject + ' – ' + r.cls + ' – ' + termWord(r.cls) + ' ' + r.term + ' lesson plans';
   function termPackButtons(r) {
     return [['Download PDF', () => downloadBody(termPackBody(r), termPackTitle(r), 'pdf'), true], ['Word', () => downloadBody(termPackBody(r), termPackTitle(r), 'docx')], ['Share', () => shareBody(termPackBody(r), termPackTitle(r), null)], ['Close', () => termBarShow('')]];
   }
@@ -1368,7 +1373,7 @@
     if (tier === 'guest') { openSignupSheet('Create an account to plan a whole term.'); return; }
     if (tier === 'free') { GP.openUpgrade('', 'Planning a whole term in one go is part of GuidEd Pro.'); return; }
     const p = state.params, term = termNow();
-    if (!(window.SchoolPadiSchemes && window.SchoolPadiSchemes.has(p.subject, p.cls, term))) { toast('Term planning needs a scheme of learning for ' + p.subject + ', ' + p.cls + ', Term ' + term + ', and none is loaded yet.'); return; }
+    if (!(window.SchoolPadiSchemes && window.SchoolPadiSchemes.has(p.subject, p.cls, term))) { toast('Term planning needs a scheme of learning for ' + p.subject + ', ' + p.cls + ', ' + termWord(p.cls) + ' ' + term + ', and none is loaded yet.'); return; }
     const weeks = termWeeks();
     if (!weeks.length) {
       const r = { cls: p.cls, subject: p.subject, term };
@@ -1376,7 +1381,7 @@
       toast('Every week from Week ' + p.week + ' is already planned. Pick an earlier week to fill gaps.'); return;
     }
     const dlg = $('#termSheet');
-    $('#tsText').textContent = p.subject + ' · ' + p.cls + ' · Term ' + term + '. GuidEd will write ' + (weeks.length === 1 ? 'Week ' + weeks[0] : 'Weeks ' + weeks[0] + ' to ' + weeks[weeks.length - 1] + ' (' + weeks.length + ' plans)') + ', one after another. Weeks you have already planned are skipped.';
+    $('#tsText').textContent = p.subject + ' · ' + p.cls + ' · ' + termWord(p.cls) + ' ' + term + '. GuidEd will write ' + (weeks.length === 1 ? 'Week ' + weeks[0] : 'Weeks ' + weeks[0] + ' to ' + weeks[weeks.length - 1] + ' (' + weeks.length + ' plans)') + ', one after another. Weeks you have already planned are skipped.';
     $('#tsTime').textContent = 'This takes about ' + Math.max(2, Math.round(weeks.length * 1.5)) + ' minutes. Keep this page open; GuidEd pauses by itself if it needs to wait and lets you resume.';
     $('#tsGo').onclick = () => {
       dlg.close();
@@ -1615,7 +1620,7 @@
     mediaIndicatorText.textContent = mediaIndicator || (scheme && scheme.focus) || 'No indicator is loaded for this selection.';
     mediaIndicatorPicker.replaceChildren(...indicators.map((item, index) => h('option', { value: String(index), text: item })));
     mediaIndicatorPickerWrap.hidden = indicators.length < 2;
-    mediaCurriculumMeta.textContent = [p.subject, p.cls, 'Term ' + (p.term || termNow()), 'Week ' + p.week, mediaContext.strand, mediaContext.substrand].filter(Boolean).join(' · ');
+    mediaCurriculumMeta.textContent = [p.subject, p.cls, termWord(p.cls) + ' ' + (p.term || termNow()), 'Week ' + p.week, mediaContext.strand, mediaContext.substrand].filter(Boolean).join(' · ');
     mediaQuery.value = '';
     mediaQuery.placeholder = mediaIndicator ? 'Add a detail to refine the search…' : 'Enter a topic or indicator to search…';
     mediaResults.replaceChildren();
@@ -1766,13 +1771,14 @@
   // The teaching week today falls in, from the calendar and the school's opening date. A weekend counts as the coming week, and a holiday as week 1.
   // It is null when the teacher has picked a term other than the current one.
   function calendarWeek() {
-    const S = window.SchoolPadiSchemes, term = termNow();
-    if (!S || term !== S.currentTerm()) return null;
+    const S = window.SchoolPadiSchemes, term = termNow(), cls = state.params.cls;
+    if (!S || term !== S.currentTerm(undefined, cls)) return null;
     const d = new Date(), day = d.getDay();
     d.setDate(d.getDate() + (day === 6 ? 2 : day === 0 ? 1 : 0));            // Saturday and Sunday look ahead to Monday
     const today = d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
-    for (let w = 1; w <= WEEKS.length; w++) { const we = weekEnd(term, w); if (we && we.iso >= today) return w; }
-    return WEEKS.length;
+    const n = weeksFor(cls).length;
+    for (let w = 1; w <= n; w++) { const we = weekEnd(term, w, cls); if (we && we.iso >= today) return w; }
+    return n;
   }
   // After a plan is written the pill moves to the next week; otherwise it sits on this week, or on the week after the last one planned when there is no calendar.
   function continueWeek(afterPlan) {
@@ -1794,16 +1800,17 @@
   }
   /* Week-ending dates: the Friday that closes each week, from the GES calendar or the school's own opening date (set in the profile). */
   const ayNow = () => (window.SchoolPadiSchemes ? window.SchoolPadiSchemes.academicYear() : new Date().getFullYear());
-  const openKey = (term) => ayNow() + '-' + term;
-  function weekEnd(term, week) {
+  const openKey = (term, cls) => ayNow() + (isShsCls(cls || state.params.cls) ? '-sem' : '-') + term;
+  function weekEnd(term, week, cls) {
     const S = window.SchoolPadiSchemes; if (!S) return null;
+    cls = cls || state.params.cls;
     const o = window.GuidedProfile && window.GuidedProfile.get().termOpen;
-    return S.weekEnding(term, week, { open: o && o[openKey(term)] });
+    return S.weekEnding(term, week, { open: o && o[openKey(term, cls)], cls });
   }
   // The plan leaves the Week Ending cell as a blank to fill in; put the Friday there unless the teacher gave a date.
   function fillWeekEnding(text, params) {
     if (!params || !params.week) return text;
-    const we = weekEnd(params.term || termNow(), params.week);
+    const we = weekEnd(params.term || termNow(), params.week, params.cls);
     if (!we) return text;
     const when = we.afterClose ? 'To be confirmed' : we.label;   // the term calendar ends before this week: say so instead of printing a date after the break
     return String(text).split('\n').map((line) => (/week[\s-]*ending/i.test(line) && line.indexOf('|') !== -1 ? line.split('|').map((cell) => {
@@ -1820,10 +1827,10 @@
     $('#noticeText').textContent = n.text; bar.hidden = false;
     $('#noticeX').onclick = () => { bar.hidden = true; try { localStorage.setItem('guided.notice.gone', n.id); } catch (e) { /* fine */ } };
   }
-  const termAuto = () => (window.SchoolPadiSchemes ? window.SchoolPadiSchemes.currentTerm() : 1);
+  const termAuto = () => (window.SchoolPadiSchemes ? window.SchoolPadiSchemes.currentTerm(undefined, state.params.cls) : 1);
   const termKey = () => { const u = window.PadiSync && window.PadiSync.user && window.PadiSync.user(); return 'guided.term.' + ((u && (u.id || u.email)) || 'guest'); };
   function termNow() {
-    try { const t = JSON.parse(localStorage.getItem(termKey())); if (t && t.auto === termAuto() && [1, 2, 3].includes(t.v)) return t.v; } catch (e) { /* use the calendar */ }
+    try { const t = JSON.parse(localStorage.getItem(termKey())); if (t && t.auto === termAuto() && termsFor(state.params.cls).includes(t.v)) return t.v; } catch (e) { /* use the calendar */ }
     return termAuto();
   }
   function termSet(v) { try { localStorage.setItem(termKey(), JSON.stringify({ v, auto: termAuto() })); } catch (e) { /* the calendar term still works */ } }
@@ -1842,7 +1849,7 @@
     if (!e) {
       const last = S.span(p.subject, p.cls, p.term || termNow());
       schemeStrip.replaceChildren(h('p', { class: 'scheme-note', text: last
-        ? 'Your Term ' + (p.term || termNow()) + ' scheme covers Weeks 1 to ' + last + '. Claude will choose the topic for Week ' + p.week + '.'
+        ? 'Your ' + termWord(p.cls) + ' ' + (p.term || termNow()) + ' scheme covers Weeks 1 to ' + last + '. Claude will choose the topic for Week ' + p.week + '.'
         : 'No scheme is loaded for this subject and class yet. Claude will choose the strand and topic.' }));
     } else if (e.type === 'exam') {
       schemeStrip.replaceChildren(h('div', { class: 'scheme-top' }, h('span', { class: 'scheme-tag', text: e.term }), h('span', { class: 'scheme-line', text: 'Week ' + e.weeks.join(' and ') + ': examinations' })),
@@ -2371,12 +2378,12 @@
   function init() {
     const saved = store.load();
     state.sessions = saved && Array.isArray(saved.sessions) ? saved.sessions.filter((s) => s && Array.isArray(s.messages)) : [];
-    if (saved && saved.params && CLASSES.includes(saved.params.cls) && subjectsOf(saved.params.cls).includes(saved.params.subject) && WEEKS.includes(saved.params.week)) {
+    if (saved && saved.params && CLASSES.includes(saved.params.cls) && subjectsOf(saved.params.cls).includes(saved.params.subject) && weeksFor(saved.params.cls).includes(saved.params.week)) {
       state.params = { subject: saved.params.subject, cls: saved.params.cls, week: saved.params.week, hook: saved.params.hook !== false, size: SIZES.includes(saved.params.size) ? saved.params.size : state.params.size, light: saved.params.light === true, studyNotes: saved.params.studyNotes !== false, bece: saved.params.bece !== false, mode: ['plan', 'resources', 'full'].includes(saved.params.mode) ? saved.params.mode : 'full', resourceType: ['Study notes', 'Learner worksheet', 'Homework pack', 'BECE practice', 'Teaching slides'].includes(saved.params.resourceType) ? saved.params.resourceType : 'Study notes' };
     }
     try { state.access = localStorage.getItem(ACCESS_KEY) || ''; accessInput.value = state.access; } catch (e) { /* ignore */ }
     if (window.GuidedProfile) {
-      window.GuidedProfile.init({ toast, signedIn, changed: () => scheduleSync(), apply: applyProfile, termInfo: () => { const t = termNow(), o = window.SchoolPadiSchemes.termOpening(t), mine = (window.GuidedProfile.get().termOpen || {})[openKey(t)]; return { term: t, key: openKey(t), calendar: o.open, mine: mine || '', estimated: o.estimated }; } });
+      window.GuidedProfile.init({ toast, signedIn, changed: () => scheduleSync(), apply: applyProfile, termInfo: () => { const cls = state.params.cls, t = termNow(), o = window.SchoolPadiSchemes.termOpening(t, { cls }), mine = (window.GuidedProfile.get().termOpen || {})[openKey(t, cls)]; return { term: t, name: termWord(cls), key: openKey(t, cls), calendar: o.open, mine: mine || '', estimated: o.estimated }; } });
       const d = !saved || !saved.params ? window.GuidedProfile.defaults() : null;
       if (d) { state.params.cls = d.cls; state.params.subject = d.subject; }
       continueWeek();
@@ -2393,7 +2400,8 @@
     const chooseClass = (v) => {
       state.params.cls = v;
       if (!subjectsOf(v).includes(state.params.subject)) state.params.subject = mySubjectsOf(v)[0] || subjectsOf(v)[0];   // a subject that is not taught at this level falls back to the teacher's first one
-      continueWeek(); ddSubject.build(); syncPills(); store.save();
+      if (state.params.week > weeksFor(v).length) state.params.week = 1;
+      continueWeek(); ddSubject.build(); ddTerm.build(); syncPills(); store.save();
     };
     makeDropdown($('#ddClass'), { name: 'Class', items: () => {
       const mine = window.GuidedProfile ? window.GuidedProfile.myClasses() : [];
@@ -2407,9 +2415,9 @@
       chooseClass(cls);
       if (!coarse) promptEl.focus();
     };
-    const ddTerm = makeDropdown($('#ddTerm'), { name: 'Term', items: () => [1, 2, 3].map((x) => ({ id: x, label: 'Term ' + x + (x === termAuto() ? ' (now)' : '') })), get: () => termNow(), set: (v) => { termSet(v); continueWeek(); syncPills(); }, label: (x) => 'Term ' + x });
+    const ddTerm = makeDropdown($('#ddTerm'), { name: 'Term', items: () => termsFor(state.params.cls).map((x) => ({ id: x, label: termWord(state.params.cls) + ' ' + x + (x === termAuto() ? ' (now)' : '') })), get: () => termNow(), set: (v) => { termSet(v); continueWeek(); syncPills(); }, label: (x) => termWord(state.params.cls) + ' ' + x });
     window.addEventListener('guided:account', () => { ddTerm.build(); syncScheme(); });
-    makeDropdown($('#ddWeek'), { name: 'Week', items: () => WEEKS.map((x) => { const we = weekEnd(termNow(), x); return { id: x, label: 'Week ' + x, sub: we ? (we.afterClose ? 'date to be confirmed' : we.short + (x === calendarWeek() ? ' · this week' : '')) : '' }; }), get: () => state.params.week, set: (v) => { state.params.week = v; store.save(); syncScheme(); }, label: (x) => 'Week ' + x });
+    makeDropdown($('#ddWeek'), { name: 'Week', items: () => weeksFor(state.params.cls).map((x) => { const we = weekEnd(termNow(), x, state.params.cls); return { id: x, label: 'Week ' + x, sub: we ? (we.afterClose ? 'date to be confirmed' : we.short + (x === calendarWeek() ? ' · this week' : '')) : '' }; }), get: () => state.params.week, set: (v) => { state.params.week = v; store.save(); syncScheme(); }, label: (x) => 'Week ' + x });
 
     makeDropdown($('#ddSize'), { name: 'Class size', items: SIZES.map((x) => ({ id: x, label: x + ' learners' })), get: () => state.params.size, set: (v) => { state.params.size = v; syncSummary(); store.save(); }, label: (x) => x + ' learners' });
     syncHook(); syncLight(); syncContent(); syncScheme(); syncAlso();
@@ -2480,7 +2488,7 @@
     const week = Number(state.params.week) || 1;
     const weekPlans = plans.filter((s) => s.params && Number(s.params.week) === week && Number(s.params.term || term) === term);
     const tag = $('#dashWeekTag');
-    if (tag) tag.textContent = 'Term ' + term + ' · Week ' + week;
+    if (tag) tag.textContent = termWord(state.params.cls) + ' ' + term + ' · Week ' + week;
     const weekList = $('#dashWeekList');
     if (weekList) {
       if (!weekPlans.length) {
@@ -2517,7 +2525,7 @@
       h('button', { type: 'button', class: 'dash-plan-card', 'data-dash-plan': s.id },
         h('span', { class: 'dash-plan-top' }, h('span', { class: 'dash-plan-type', text: 'LESSON PLAN' }), h('span', { class: 'dash-plan-time', text: rel(s.updatedAt) })),
         h('strong', { class: 'dash-plan-title', text: (s.params && s.params.subject) || s.title }),
-        h('span', { class: 'dash-plan-meta', text: s.params ? [s.params.cls, s.params.term ? 'Term ' + s.params.term : '', 'Week ' + s.params.week].filter(Boolean).join(' · ') : 'Saved plan' }),
+        h('span', { class: 'dash-plan-meta', text: s.params ? [s.params.cls, s.params.term ? termWord(s.params.cls) + ' ' + s.params.term : '', 'Week ' + s.params.week].filter(Boolean).join(' · ') : 'Saved plan' }),
         h('span', { class: 'dash-plan-open', text: 'Open lesson plan →' })
       )
     ));

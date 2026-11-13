@@ -95,7 +95,8 @@ function validate(body) {
   if (!Number.isInteger(week) || week < 1 || week > 20) return { error: 'Please choose a week between 1 and 20.' };
   if (notes.length > MAX_NOTES) return { error: 'Notes are too long (max ' + MAX_NOTES + ' characters).' };
 
-  const term = [1, 2, 3].includes(Number(body.params && body.params.term)) ? Number(body.params.term) : Schemes.currentTerm();
+  const maxTerm = Schemes.isShs(cls) ? 2 : 3;   // senior high schools have two semesters
+  const term = Number.isInteger(Number(body.params && body.params.term)) && Number(body.params.term) >= 1 && Number(body.params.term) <= maxTerm ? Number(body.params.term) : Schemes.currentTerm(undefined, cls);
   let scheme = Schemes.lookup(subject, cls, term, week);   // looked up here, never taken from the browser
   const indicatorCodes = Array.isArray(p.indicatorCodes) ? p.indicatorCodes.map((x) => String(x).trim().toUpperCase()).filter(Boolean) : [];
   if (indicatorCodes.length > 10) return { error: 'Choose no more than 10 curriculum indicators at a time.' };
@@ -159,7 +160,7 @@ function firstMessage(p) {
     'Subject: ' + p.subject,
     'Class: ' + p.cls,
     ...(levelLine(p.cls)),
-    'Term: ' + p.term,
+    (/^SHS/i.test(p.cls) ? 'Semester: ' : 'Term: ') + p.term,
     'Week: ' + p.week,
     'Hook: ' + (p.hook === false ? 'off' : 'on'),
     'Resources: ' + (p.light ? 'light' : 'standard'),

@@ -37,7 +37,8 @@
     // The week after the one the teacher last planned for this class and subject, when it is still the same term.
     nextWeek: function (cls, subject, term) {
       var v = (read().last || {})[cls + '|' + subject];
-      return v && v[0] === term && v[1] < 13 ? v[1] + 1 : null;
+      var S = window.SchoolPadiSchemes, last = (S && S.weeksIn ? S.weeksIn(cls) : 14) - 1;
+      return v && v[0] === term && v[1] < last ? v[1] + 1 : null;
     },
     // Called when a first plan has been written: remembers the week, and asks once about the profile when it helps.
     planned: function (p) {
@@ -127,9 +128,9 @@
   function renderDates() {
     var info = hooks.termInfo && hooks.termInfo(); if (!info) return;
     var nice = function (iso) { var d = new Date(iso + 'T00:00:00Z'); return d.toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric', timeZone: 'UTC' }); };
-    $('#pfOpenLabel').textContent = 'Term ' + info.term + ' opened on';
+    $('#pfOpenLabel').textContent = (info.name || 'Term') + ' ' + info.term + ' opened on';
     $('#pfOpen').value = info.mine || info.calendar;
-    $('#pfTermText').textContent = 'Week-ending dates are the Fridays counted from the day the term opens. The GES calendar says ' + nice(info.calendar) + (info.estimated ? ' (an estimate: the official dates are not published yet)' : '') + '. If your school opened on another day, change it here.';
+    $('#pfTermText').textContent = 'Week-ending dates are the Fridays counted from the day the ' + (info.name === 'Semester' ? 'semester' : 'term') + ' opens. The GES calendar says ' + nice(info.calendar) + (info.estimated ? ' (an estimate: the official dates are not published yet)' : '') + '. If your school opened on another day, change it here.';
     $('#pfOpenReset').hidden = !info.mine;
   }
   function setOpen(iso) {

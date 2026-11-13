@@ -66,3 +66,21 @@ process.stdout.write('Curriculum Intelligence Engine tests passed.\n');
   require('node:assert/strict').match(S.lookup('Social Studies', 'SHS 2', 2, 1).substrand, /Leisure and Tourism/);
   process.stdout.write('SHS 2 Social Studies manual tests passed.\n');
 }
+
+{
+  // SHS: two semesters of 17 weeks. Semester 1 of 2026/27 follows the school's own week-ending list (the Christmas break is skipped).
+  const S = require('../api/_schemes');
+  const eq = require('node:assert/strict').equal;
+  const d = new Date(2026, 10, 13);
+  eq(S.isShs('SHS 2'), true); eq(S.isShs('Basic 8'), false);
+  eq(S.weeksIn('SHS 1'), 17); eq(S.weeksIn('Basic 7'), 14);
+  eq(S.termName('SHS 3'), 'Semester'); eq(S.termName('Basic 9'), 'Term');
+  const we = (w) => S.weekEnding(1, w, { today: d, cls: 'SHS 2' }).iso;
+  eq(we(1), '2026-09-25'); eq(we(8), '2026-11-13'); eq(we(13), '2026-12-18'); eq(we(14), '2027-01-08'); eq(we(17), '2027-01-29');
+  eq(S.weekEnding(1, 8, { today: d, cls: 'Basic 8' }).iso !== '2026-11-13', true, 'basic schools keep the GES term calendar');
+  eq(S.currentTerm(d, 'SHS 2'), 1);
+  eq(S.currentTerm(new Date(2027, 1, 1), 'SHS 2'), 2, 'after semester 1 closes the next semester is current');
+  eq(S.currentTerm(new Date(2027, 6, 1), 'SHS 2') <= 2, true);
+  eq(S.weekEnding(1, 18, { today: d, cls: 'SHS 2' }).afterClose, true);
+  process.stdout.write('SHS semester calendar tests passed.\n');
+}
