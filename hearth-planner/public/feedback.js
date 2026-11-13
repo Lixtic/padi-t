@@ -327,6 +327,7 @@
     updateApprovalReference();
     function fill(id, v) { var e = $(id); if (e && !e.value && v) e.value = v; }
     fileEl.addEventListener('change', function () {
+      unsupportedPreparedType = false;
       var f = fileEl.files[0]; if (!f || !/\.json$/i.test(f.name)) return;
       readKnowledgeFile(f).then(function (j) {
         fill('#kbTitle', j.title); fill('#kbPublisher', j.publisher); fill('#kbUrl', j.sourceUrl); fill('#kbSubject', j.subject);
