@@ -4,7 +4,7 @@
   if (typeof module !== 'undefined' && module.exports) module.exports = api;
   if (root) root.GuidEdIllustrationTargets = api;
 })(typeof window !== 'undefined' ? window : globalThis, function () {
-  var IGNORED = new Set(['definition','key points','example','examples','summary','input devices','output devices','storage devices','computer system','components','key terms']);
+  var IGNORED = new Set(['definition','key points','example','examples','worked or real-life example','worked or real-life examples','ghanaian example','summary','quick summary','diagram','common mistakes','support','extension','answer','answers','meaning','input device','input devices','output device','output devices','storage device','storage devices','computer system','computer systems','parts of a computer','main parts','components','main components','key term','key terms','key terms and meanings','learning objectives','lesson objectives','prerequisite knowledge','features','functions','uses','advantages','disadvantages','importance','characteristics','types','steps','process']);
   function cleanName(value) { return String(value || '').replace(/^\s*(?:the|a|an)\s+/i, '').replace(/[\s*_:;,.!?]+$/g, '').replace(/\s+/g, ' ').trim(); }
   function validName(value) { var name = cleanName(value); return name.length >= 3 && name.length <= 42 && name.split(' ').length <= 4 && !IGNORED.has(name.toLowerCase()) && !/\b(?:is|are|was|were|means|refers|include|includes|used|helps|allows)\b/i.test(name); }
   function extract(markdown, limit) {
