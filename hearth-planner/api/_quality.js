@@ -76,7 +76,7 @@ function inspect(output, params, options) {
   }
 
   const objectives = countMatches(text, /\b(?:learning objectives?|by the end of the lesson)\b/gi);
-  const questions = countMatches(text, /^\s*(?:\d+[.)]\s+|[-*]\s+).*(?:\?|(?:explain|describe|identify|state|list|calculate|compare|give|name|define)\b)/gim);
+  const questions = countMatches(text, /^\s*(?:\d+[.)]\s+|[-*]\s+).*(?:\?|\b(?:explain|describe|identify|state|list|calculate|compare|give|name|define)\b)/gim);
   check('objective_assessment_presence', objectives > 0 && (questions > 0 || QUESTION_RE.test(text)),
     'The response needs explicit objectives and learner questions/tasks that can assess them.', 'warning');
 
