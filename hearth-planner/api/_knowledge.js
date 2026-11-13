@@ -61,8 +61,7 @@ function validateSource(input) {
   try { url = new URL(sourceUrl); } catch (e) { throw new Error('A valid HTTPS source URL is required.'); }
   if (url.protocol !== 'https:') throw new Error('Only HTTPS source URLs are accepted.');
   if (!title || !publisher || !subject) throw new Error('Title, publisher and subject are required.');
-  const allowedKinds = ['curriculum', 'teacher_guide', 'approved_textbook', 'approved_supplementary', 'teacher_resource'];
-  if (!allowedKinds.includes(documentType)) throw new Error('Unsupported document type.');
+  if (!DOCUMENT_TYPES.includes(documentType)) throw new Error('Unsupported document type.');
   const approvalReference = cleanText(input.approvalReference, 240);
   if ((documentType === 'approved_textbook' || documentType === 'approved_supplementary') && !approvalReference) throw new Error('Provide the NaCCA approval-register reference for approved materials.');
   return {
