@@ -73,7 +73,7 @@ function audit(data, manifest) {
   for (const item of (manifest && manifest.verifiedIndicators) || []) {
     const key = item.subject + '|' + item.code;
     if (!Object.prototype.hasOwnProperty.call(data.indicators || {}, key)) structuralErrors.push('Verified manifest references missing record: ' + key);
-    if (item.status !== 'verified' || !item.documentTitle || !item.publisher || !item.page) structuralErrors.push('Incomplete verification provenance: ' + key);
+    if (item.status !== 'verified' || !item.documentTitle || !item.publisher || !item.page || !item.sourceUrl) structuralErrors.push('Incomplete verification provenance: ' + key);
   }
 
   return {
