@@ -11,7 +11,7 @@
     "build:prompt": "node scripts/build-prompt.js",
     "build:realtime": "node scripts/build-realtime.js",
     "dev": "vercel dev",
-    "test": "node scripts/test-curriculum.js && node scripts/test-media-search.js && node scripts/test-image-judge.js && node scripts/test-prompt-switches.js && node scripts/test-knowledge.js"
+    "test": "node scripts/audit-curriculum-index.js --check && node scripts/test-curriculum.js && node scripts/test-media-search.js && node scripts/test-image-judge.js && node scripts/test-prompt-switches.js && node scripts/test-knowledge.js"
   },
   "dependencies": {
     "@neon/auth": "^0.8.2",
