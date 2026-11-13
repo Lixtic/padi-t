@@ -536,7 +536,7 @@
     const btnEdit = h('button', { type: 'button', class: 'tool', disabled: true, 'data-act': 'edit' }, icon('pencil'), h('span', { text: 'Edit' }));
     const btnReuse = h('button', { type: 'button', class: 'tool', disabled: true, 'data-act': 'reuse', title: 'Copy this plan into a new plan you can change freely' }, icon('layers'), h('span', { text: 'Reuse' }));
     const btnRegen = h('button', { type: 'button', class: 'tool', disabled: true }, icon('refresh'), h('span', { text: 'Regenerate' }));
-    const btnFull = h('button', { type: 'button', class: 'tool', disabled: true, 'data-act': 'full', title: 'Read in full screen' }, icon('expand'), h('span', { text: 'Full screen' }));
+    const btnFull = h('button', { type: 'button', class: 'tool', disabled: true, 'data-act': 'full', title: 'Read in full screen', 'aria-label': 'Full screen' }, icon('expand'), h('span', { text: 'Full screen' }));
     const btnShare = h('button', { type: 'button', class: 'tool', disabled: true, 'data-act': 'share', title: 'Share only the lesson plan tables, with a signature and stamp area' }, icon('share'), h('span', { text: 'Share' }));
     const btnDocx = h('button', { type: 'button', class: 'tool tool-main', disabled: true }, icon('download'), h('span', { text: 'Word (.docx)' }));
     const btnPdf = h('button', { type: 'button', class: 'tool', disabled: true, title: 'Download as a PDF' }, icon('download'), h('span', { text: 'PDF' }));
@@ -2522,17 +2522,23 @@
       .map(([id, label, n]) => h('button', { type: 'button', class: 'lib-chip', 'data-type': id, 'aria-pressed': String(libType === id), text: label + ' ' + n })));
     const list = all.filter((s) => (libType === 'all' || typeOf(s) === libType) &&
       (!q || (s.title + ' ' + (s.params ? s.params.cls + ' ' + s.params.subject : '')).toLowerCase().includes(q)));
-    grid.replaceChildren(...list.map((s) => h('button', { type: 'button', class: 'lib-card', 'data-id': s.id },
-      h('span', { class: 'lib-tag', text: TYPE_LABEL[typeOf(s)] }),
-      h('span', { class: 'lib-name', text: s.params ? s.params.subject : s.title }),
-      h('span', { class: 'lib-meta', text: s.params ? s.params.cls + ' · Week ' + s.params.week : s.title }),
-      h('span', { class: 'lib-time', text: rel(s.updatedAt) }))));
+    grid.replaceChildren(...list.map((s) => h('div', { class: 'lib-item' },
+      h('button', { type: 'button', class: 'lib-card', 'data-id': s.id },
+        h('span', { class: 'lib-tag', text: TYPE_LABEL[typeOf(s)] }),
+        h('span', { class: 'lib-name', text: s.params ? s.params.subject : s.title }),
+        h('span', { class: 'lib-meta', text: s.params ? s.params.cls + ' · Week ' + s.params.week : s.title }),
+        h('span', { class: 'lib-time', text: rel(s.updatedAt) })),
+      h('button', { type: 'button', class: 'lib-del', 'data-del-id': s.id, 'aria-label': 'Delete ' + (s.params ? s.params.subject + ' ' + s.params.cls + ' week ' + s.params.week : s.title), title: 'Delete' }, icon('x')))));
     $('#libEmpty').hidden = !!list.length;
   }
   if ($('#libraryPage')) {
     $('#libSearch').addEventListener('input', renderLibrary);
     $('#libChips').addEventListener('click', (e) => { const b = e.target.closest('.lib-chip'); if (b) { libType = b.dataset.type; renderLibrary(); } });
-    $('#libGrid').addEventListener('click', (e) => { const c = e.target.closest('.lib-card'); if (c) { showPage(null); showSession(c.dataset.id); } });
+    $('#libGrid').addEventListener('click', (e) => {
+      const d = e.target.closest('.lib-del');
+      if (d) { const s = state.sessions.find((x) => x.id === d.dataset.delId); if (s && window.confirm('Delete "' + (s.params ? s.params.subject + ' · ' + s.params.cls + ' · Week ' + s.params.week : s.title) + '"? This cannot be undone.')) { deleteSession(s.id); renderLibrary(); } return; }
+      const c = e.target.closest('.lib-card'); if (c) { showPage(null); showSession(c.dataset.id); }
+    });
   }
 
   // Clears the app's cached files (not the saved plans) and reloads, so a stuck or outdated copy is replaced.
