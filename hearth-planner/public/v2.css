@@ -318,3 +318,33 @@ body.on-settings .v2-tabbar { display: none !important; }
 }
 
 body.on-dashboard .v2-tabbar { display: none !important; }
+
+/* Compact plan toolbar: small buttons in tidy rows (actions, then Download) */
+.doc-bar { padding: 8px 12px; gap: 6px 10px; }
+.doc-bar .tool, .tool { height: 30px; min-height: 30px; padding: 0 10px; gap: 5px; font-size: 12.5px; border-radius: 8px; }
+.doc-bar .tool .ico, .tool .ico { width: 14px; height: 14px; }
+.doc-tools { gap: 6px; align-items: center; }
+.tool-group { margin-top: 2px; gap: 8px; }
+.tool-group-label { font-size: 10.5px; letter-spacing: .08em; }
+.tool-pair .tool:first-child { border-radius: 8px 0 0 8px; }
+.tool-pair .tool + .tool { border-radius: 0 8px 8px 0; }
+@media (max-width: 560px) {
+  .doc-bar { padding: 8px 10px; }
+  .doc-bar .tool, .tool { height: 30px; min-height: 30px; padding: 0 7px; gap: 4px; font-size: 12px; }
+  .doc-id { flex: 1 1 100%; }
+  .doc-title { font-size: 14px; }
+  .doc-tools { display: flex; flex-wrap: wrap; gap: 5px; width: 100%; }
+  .doc-tools > .tool { flex: 0 0 auto; justify-content: center; white-space: nowrap; }
+  /* Full screen is the least used action: icon only on phones so the five actions fit one row */
+  .doc-tools > .tool[data-act="full"] span { display: none; }
+  .doc-tools > .tool[data-act="full"] { flex: 0 0 30px; width: 30px; padding: 0; }
+  .tool-group { flex-basis: 100%; margin-top: 4px; padding-top: 6px; border-top: 1px solid var(--line); }
+}
+
+/* Plans live in My Library: sidebar keeps its footer at the bottom; library cards carry a delete button */
+.sidebar .sb-foot { margin-top: auto; }
+.lib-item { position: relative; min-width: 0; }
+.lib-item .lib-card { width: 100%; height: 100%; padding-right: 44px; }
+.lib-del { position: absolute; top: 10px; right: 10px; width: 28px; height: 28px; display: grid; place-items: center; border-radius: 9px; border: 0; background: transparent; color: var(--muted); }
+.lib-del .ico { width: 14px; height: 14px; }
+.lib-del:hover, .lib-del:focus-visible { background: color-mix(in srgb, var(--del, #c0392b) 14%, transparent); color: var(--del, #c0392b); }

@@ -1041,10 +1041,7 @@ main[data-view="chat"] .notice-bar { display: none; }
 .tool-pair .tool:hover:not(:disabled) { position: relative; z-index: 1; }
 .tool-pair .tool[hidden] { display: none; }
 @media (max-width: 520px) {
-  .doc-tools { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
-  .doc-tools > .tool { justify-content: center; }
   .doc-tools > .tool[hidden] { display: none; }
-  .tool-group { grid-column: 1 / -1; }
 }
 .f-add { flex: none; display: grid; place-items: center; width: 30px; height: 30px; margin-left: 2px; border-radius: 9px; color: var(--muted); }
 .f-add:hover, .f-add:focus-visible { background: var(--sb-hover); color: var(--accent); }
@@ -1174,7 +1171,6 @@ main[data-view="chat"] .notice-bar { display: none; }
   .hero h1 { font-size: 26px; }
   .pill-main { gap: 6px; }
   .pill-main .dd .pill { padding: 0 9px; font-size: 13px; }
-  .doc-tools { grid-template-columns: 1fr 1fr; }
 }
 
 /* Avoid hover-only affordances on touch screens. */

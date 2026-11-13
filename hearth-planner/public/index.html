@@ -402,7 +402,7 @@
       <button type="button" class="btn btn-new" id="newSession">
         <svg class="ico"><use href="#i-plus"/></svg><span>New Plan</span>
       </button>
-      <button type="button" class="btn" id="searchToggle" aria-expanded="false" aria-controls="searchWrap">
+      <button type="button" class="btn" id="searchToggle" aria-expanded="false" aria-controls="searchWrap" hidden>
         <svg class="ico"><use href="#i-search"/></svg><span>Search</span>
       </button>
     </div>
@@ -412,7 +412,8 @@
       <input id="searchInput" type="search" placeholder="Filter plans" autocomplete="off">
     </div>
 
-    <div class="sb-list-head">
+    <!-- Plans now live in My Library. The list stays in the page (hidden) because the app still keeps it up to date. -->
+    <div class="sb-list-head" hidden>
       <span>My plans</span>
       <div class="sb-seg" role="group" aria-label="How to list plans">
         <button type="button" id="viewType" aria-pressed="true">By type</button>
@@ -420,7 +421,7 @@
         <button type="button" id="viewRecent" aria-pressed="false">Recent</button>
       </div>
     </div>
-    <nav class="sb-list" aria-label="Plan history">
+    <nav class="sb-list" aria-label="Plan history" hidden>
       <ul id="sessionList"></ul>
       <p class="sb-empty" id="sbEmpty" hidden>No matching plans</p>
     </nav>
