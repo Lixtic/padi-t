@@ -387,7 +387,7 @@
 <div class="app" id="app">
 
   <!-- ───────── Sidebar ───────── -->
-  <aside class="sidebar" id="sidebar" aria-label="Lesson plans">
+  <aside class="sidebar" id="sidebar" aria-label="Menu">
     <div class="sb-head">
       <a class="brand" href="./" id="brand" aria-label="GuidEd, start a new plan">
         <svg class="logo" aria-hidden="true"><use href="#i-logo"/></svg>
@@ -412,6 +412,18 @@
       <input id="searchInput" type="search" placeholder="Filter plans" autocomplete="off">
     </div>
 
+    <nav class="sb-nav" aria-label="Main">
+      <button type="button" class="foot-link foot-settings" id="dashboardLink" aria-label="Teacher Dashboard">
+        <svg class="ico"><use href="#i-calendar"/></svg><span>Teacher Dashboard</span>
+      </button>
+      <button type="button" class="foot-link foot-settings" id="libraryLink" aria-label="My Library">
+        <svg class="ico"><use href="#i-book"/></svg><span>My Library</span>
+      </button>
+      <button type="button" class="foot-link foot-settings" id="settingsLink" aria-label="Settings">
+        <svg class="ico"><use href="#i-sliders"/></svg><span>Settings</span>
+      </button>
+    </nav>
+
     <!-- Plans now live in My Library. The list stays in the page (hidden) because the app still keeps it up to date. -->
     <div class="sb-list-head" hidden>
       <span>My plans</span>
@@ -432,22 +444,13 @@
         <input id="accessInput" type="password" autocomplete="off" placeholder="Enter code" maxlength="80">
       </div>
 
-      <button type="button" class="foot-link foot-settings" id="dashboardLink" aria-label="Teacher Dashboard">
-        <svg class="ico"><use href="#i-calendar"/></svg><span>Teacher Dashboard</span><svg class="ico disc-chev"><use href="#i-chevron"/></svg>
-      </button>
-      <button type="button" class="foot-link foot-settings" id="libraryLink" aria-label="My Library">
-        <svg class="ico"><use href="#i-book"/></svg><span>My Library</span><svg class="ico disc-chev"><use href="#i-chevron"/></svg>
-      </button>
-      <button type="button" class="foot-link foot-settings" id="settingsLink" aria-label="Settings">
-        <svg class="ico"><use href="#i-sliders"/></svg><span>Settings</span><svg class="ico disc-chev"><use href="#i-chevron"/></svg>
-      </button>
       <div class="foot-group foot-admin" aria-label="Admin">
         <p class="foot-label">Admin</p>
         <button type="button" class="foot-link" id="usageBtn" hidden>
           <svg class="ico"><use href="#i-sliders"/></svg><span>Usage and payments</span>
         </button>
         <button type="button" class="foot-link" id="adminBtn" hidden>
-          <svg class="ico"><use href="#i-user"/></svg><span>Admin: teachers, announcements, knowledge</span>
+          <svg class="ico"><use href="#i-user"/></svg><span>Teachers and knowledge</span>
         </button>
         <button type="button" class="foot-link" id="inboxBtn" hidden>
           <svg class="ico"><use href="#i-layers"/></svg><span>Feedback inbox</span>
