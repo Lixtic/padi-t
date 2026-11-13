@@ -45,6 +45,7 @@ function normalizeCode(value) {
   const code = String(value || '').trim().toUpperCase();
   return /^(?:B[1-9]|SHS[1-3])(?:\.\d+){2,5}$/.test(code) ? code : '';
 }
+const DOCUMENT_TYPES = Object.freeze(['curriculum', 'teacher_guide', 'approved_textbook', 'approved_supplementary', 'teacher_resource']);
 function sourceTrust() {
   return 'reviewed_resource';
 }
@@ -219,4 +220,4 @@ async function retrieve(params) {
   ].join('\n\n') : '';
   return { chunks, context, sourceCount: new Set(chunks.map(c => c.source.id)).size, status: chunks.length ? 'retrieved' : 'no_matching_sources' };
 }
-module.exports = { validateSource, splitText, prepareChunks, requestQuery, retrieve, ingest, reviewSource, trustAfterReview, TRUSTED_HOSTS, isTrustedHost, subjectsFor, queryTerms, toTsQuery, enoughOverlap };
+module.exports = { DOCUMENT_TYPES, validateSource, splitText, prepareChunks, requestQuery, retrieve, ingest, reviewSource, trustAfterReview, TRUSTED_HOSTS, isTrustedHost, subjectsFor, queryTerms, toTsQuery, enoughOverlap };
