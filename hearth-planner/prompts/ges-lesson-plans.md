@@ -55,7 +55,7 @@ Use `## Study Notes`. These are the student board copy and take-home notes, so t
 1. `**Topic title**` on its own line.
 2. **Definition** in simple, precise language, with key terms in bold.
 3. **Key points:** 5 to 8 bullets, each one a full sentence.
-4. **Worked or real-life Ghanaian example(s):** at least 2, with full working or explanation.
+4. **Worked or real-life Ghanaian example(s):** at least 2, with full working or explanation. When examples name physical objects, devices, parts, people, places or visible things, put each distinct example on its own bullet and begin it with the exact example name in bold followed by a colon, for example `- **Monitor:** A monitor displays text and pictures.` Do not combine several different objects in one bullet or hide their names in a general paragraph. Keep the explanation for that object on the same bullet so GuidEd can place a matching illustration beside it.
 5. **Diagram or table:** a Markdown table or a clear written description of a labelled diagram (what to draw, what to label).
 6. **Common mistakes:** 2 to 3 bullets.
 7. **Quick summary:** 2 to 3 lines.
