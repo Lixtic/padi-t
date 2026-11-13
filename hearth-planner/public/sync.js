@@ -172,6 +172,13 @@
     resetPassword: async function (token, newPassword) {
       await authCall(function () { return authClient.resetPassword({ newPassword: newPassword, token: token }); }, 'reset');
     },
+    // Deletes the account and everything stored for it on the server, then signs out on this device. Needs the word DELETE typed by the teacher.
+    deleteAccount: async function (confirm) {
+      var r = await call('/api/sync', { method: 'POST', auth: true, body: { what: 'delete-account', confirm: confirm } });
+      try { if (authClient) await authClient.signOut(); } catch (e) { /* the account is gone, so there is nothing left to sign out of */ }
+      session = null; store();
+      return r;
+    },
     signOut: async function () { try { if (authClient) await authClient.signOut(); } catch (e) { /* signing out locally is enough */ } session = null; store(); },
     watch: async function (onChange) {
       if (!realtime || !window.NeonRealtime || !session) return function () {};

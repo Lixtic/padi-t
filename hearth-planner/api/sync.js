@@ -37,6 +37,13 @@ module.exports = async (req, res) => {
 
     let body;
     try { body = await readJson(req, 3000000); } catch (e) { return sendJson(res, e.status || 400, { error: 'bad_request', message: e.message }); }
+    if (body && body.what === 'delete-account') {
+      // The teacher must type DELETE, so a stray tap or a replayed request cannot remove an account.
+      if (String(body.confirm || '').trim() !== 'DELETE') return sendJson(res, 400, { error: 'confirm', message: 'Type DELETE to confirm.' });
+      const r = await require('./_erase').eraseAccount(me);
+      require('./_entitle').event('account_deleted');
+      return sendJson(res, 200, { ok: true, identityRemoved: r.identityRemoved });
+    }
     const maxTs = Date.now() + 864e5;
     if (body.what === 'plans') {
       const rows = Array.isArray(body.rows) ? body.rows : [];

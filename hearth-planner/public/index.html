@@ -167,6 +167,28 @@
       <button type="button" class="as-second" id="asSyncNow"><span>Sync now</span></button>
       <button type="button" class="as-second as-danger" id="asSignOut"><span>Sign out</span></button>
     </div>
+    <button type="button" class="as-link as-delete" id="asDelete">Delete my account</button>
+  </section>
+</dialog>
+
+<dialog class="acct-sheet up-sheet" id="delSheet" aria-labelledby="dlTitle">
+  <button type="button" class="icon-btn as-close" id="dlClose" aria-label="Close"><svg class="ico"><use href="#i-x"/></svg></button>
+  <section>
+    <h2 id="dlTitle">Delete your account?</h2>
+    <p class="as-sub">This permanently removes your sign-in, your saved plans and your teacher profile from our servers. It cannot be undone.</p>
+    <ul class="dl-list">
+      <li>Pro or other paid access ends now and is not refunded automatically. Contact us first if you are unsure.</li>
+      <li>Payment records stay for accounting, without your email address.</li>
+      <li>Plans saved on this device can be removed too (tick the box below).</li>
+    </ul>
+    <label class="dl-check"><input type="checkbox" id="dlLocal" checked> Also remove the plans and settings saved on this device</label>
+    <div class="as-field">
+      <label for="dlConfirm">Type <strong>DELETE</strong> to confirm</label>
+      <input id="dlConfirm" type="text" autocomplete="off" autocapitalize="characters" spellcheck="false" maxlength="12" placeholder="DELETE">
+    </div>
+    <p class="as-err" id="dlErr" role="alert" hidden></p>
+    <button type="button" class="as-submit as-danger-solid" id="dlGo" disabled><span>Delete my account</span></button>
+    <button type="button" class="as-second" id="dlCancel">Keep my account</button>
   </section>
 </dialog>
 
