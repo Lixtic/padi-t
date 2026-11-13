@@ -13,7 +13,7 @@ const SUBJECT_ALIAS = { 'Integrated Science': 'Science', 'General Science': 'Sci
 function officialFor(subject, code) {
   const normalizedSubject = SUBJECT_ALIAS[subject] || subject;
   const verification = code && VERIFIED.get(normalizedSubject + '|' + code);
-  if (!verification || verification.status !== 'verified' || !verification.documentTitle || !verification.publisher || !verification.page) return null;
+  if (!verification || verification.status !== 'verified' || !verification.documentTitle || !verification.publisher || !verification.page || !verification.sourceUrl) return null;
   const hit = OFFICIAL.indicators[normalizedSubject + '|' + code];
   return hit ? {
     statement: hit[0], standardCode: hit[1], standard: hit[2], substrand: hit[3], strand: hit[4], exemplars: hit[5],
@@ -108,4 +108,4 @@ function buildInstruction(scheme, request) {
   return lines.join('\n');
 }
 
-module.exports = { codeFrom, classifyCode, indicatorsFor, officialFor, buildInstruction, verificationStatus: VERIFICATION.status, verificationManifest: VERIFICATION };
+module.exports = { codeFrom, classifyCode, indicatorsFor, officialFor, buildInstruction, verificationStatus: VERIFIED.size >= Object.keys(OFFICIAL.indicators).length ? 'verified' : VERIFIED.size ? 'partially_verified' : 'unverified_database_export', verificationManifest: VERIFICATION };
