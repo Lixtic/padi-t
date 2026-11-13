@@ -26,6 +26,22 @@
     });
     row.classList.add('is-enhanced'); row.setAttribute('aria-hidden', 'true');
     row.parentNode.insertBefore(grid, row);
+    examCard(select, grid);
+  }
+
+  // The exam card follows the class: BECE Practice (JHS), WASSCE Practice (SHS), Class Exercise (primary).
+  // app.js renames the hidden select's option when the class changes; this keeps the card in step with it.
+  function examCard(select, grid) {
+    var opt = select.querySelector('option[value="BECE practice"]'), card = grid.querySelector('[data-res="BECE practice"]');
+    if (!opt || !card) return;
+    function sync() {
+      var label = (opt.textContent || 'BECE practice').replace(/\b[a-z]/g, function (c) { return c.toUpperCase(); }).replace(/\bBece\b/, 'BECE').replace(/\bWassce\b/, 'WASSCE');
+      card.querySelector('strong').textContent = label;
+      card.setAttribute('aria-label', 'Create ' + label);
+      card.querySelector('small').textContent = /Class/i.test(label) ? 'Questions to check understanding' : 'Examination-style questions';
+    }
+    sync();
+    new MutationObserver(sync).observe(opt, { childList: true, characterData: true, subtree: true });
   }
 
   function tabBar() {
