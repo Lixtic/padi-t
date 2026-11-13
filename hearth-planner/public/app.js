@@ -2414,7 +2414,7 @@
   });
 
   /* Settings and My Library are pages inside the main area; the sidebar keeps one link to each. */
-  const PAGES = [['settings', 'Settings', $('#settingsPage'), $('#settingsLink')], ['library', 'My Library', $('#libraryPage'), $('#libraryLink')]];
+  const PAGES = [['settings', 'Settings', $('#settingsPage'), $('#settingsLink')], ['dashboard', 'Teacher Dashboard', $('#dashboardPage'), $('#dashboardLink')], ['library', 'My Library', $('#libraryPage'), $('#libraryLink')]];
   const pageOpen = () => PAGES.find((x) => x[2] && !x[2].hidden);
   function showPage(name) {
     PAGES.forEach(([key, title, el, link]) => {
@@ -2428,16 +2428,87 @@
     document.body.classList.toggle('on-page', !!name);
     if (!name) updateTopbar();
     if (name === 'library') renderLibrary();
+    if (name === 'dashboard') renderDashboard();
   }
   const showSettings = (on) => showPage(on ? 'settings' : null);
   PAGES.forEach(([key, , el, link]) => { if (el && link) link.addEventListener('click', () => showPage(key)); });
-  [['#settingsBack'], ['#libraryBack']].forEach(([sel]) => { const b = $(sel); if (b) b.addEventListener('click', () => showPage(null)); });
+  [['#settingsBack'], ['#dashboardBack'], ['#libraryBack']].forEach(([sel]) => { const b = $(sel); if (b) b.addEventListener('click', () => showPage(null)); });
   // Anything that goes back to planning leaves the page first.
   document.addEventListener('click', (e) => {
     if (!pageOpen()) return;
     if (e.target.closest('#newSession, #brand, .sb-list, .f-add') || (e.target.closest('.v2-tabbar') && !e.target.closest('[data-tab="library"]'))) showPage(null);
   }, true);
   document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && pageOpen() && !document.querySelector('dialog[open]')) showPage(null); });
+
+  /* Teacher Dashboard: an overview derived from the teacher's saved sessions. */
+  function renderDashboard() {
+    const all = state.sessions.filter((s) => s.messages.length).sort((a, b) => b.updatedAt - a.updatedAt);
+    const plans = all.filter((s) => typeOf(s) === 'plan');
+    const resources = all.length - plans.length;
+    const classes = new Set(plans.map((s) => s.params && s.params.cls).filter(Boolean));
+    const subjects = new Set(plans.map((s) => s.params && s.params.subject).filter(Boolean));
+    const stats = $('#dashStats');
+    if (stats) stats.replaceChildren(
+      h('article', { class: 'dash-stat' }, h('span', { class: 'dash-stat-label', text: 'Saved lesson plans' }), h('strong', { class: 'dash-stat-value', text: String(plans.length) }), h('span', { class: 'dash-stat-foot', text: 'Across your workspace' })),
+      h('article', { class: 'dash-stat' }, h('span', { class: 'dash-stat-label', text: 'Classes covered' }), h('strong', { class: 'dash-stat-value', text: String(classes.size) }), h('span', { class: 'dash-stat-foot', text: 'Different class levels' })),
+      h('article', { class: 'dash-stat' }, h('span', { class: 'dash-stat-label', text: 'Subjects planned' }), h('strong', { class: 'dash-stat-value', text: String(subjects.size) }), h('span', { class: 'dash-stat-foot', text: resources + ' saved teaching resources' }))
+    );
+
+    const term = Number(termNow()) || 1;
+    const week = Number(state.params.week) || 1;
+    const weekPlans = plans.filter((s) => s.params && Number(s.params.week) === week && Number(s.params.term || term) === term);
+    const tag = $('#dashWeekTag');
+    if (tag) tag.textContent = 'Term ' + term + ' · Week ' + week;
+    const weekList = $('#dashWeekList');
+    if (weekList) {
+      if (!weekPlans.length) {
+        weekList.replaceChildren(h('div', { class: 'dash-week-empty' }, h('strong', { text: 'No saved plans for this selected week yet' }), h('span', { text: 'Choose this term and week in the planner, then save your lesson plans to see them here.' })));
+      } else {
+        const grouped = new Map();
+        weekPlans.forEach((s) => {
+          const cls = (s.params && s.params.cls) || 'Class not specified';
+          if (!grouped.has(cls)) grouped.set(cls, []);
+          grouped.get(cls).push(s);
+        });
+        weekList.replaceChildren(...Array.from(grouped.entries()).map(([cls, rows]) =>
+          h('article', { class: 'dash-class-card' },
+            h('div', { class: 'dash-class-head' }, h('strong', { text: cls }), h('span', { text: rows.length + (rows.length === 1 ? ' saved plan' : ' saved plans') })),
+            h('div', { class: 'dash-subject-list' }, ...rows.map((s) =>
+              h('button', { type: 'button', class: 'dash-subject', 'data-dash-plan': s.id },
+                h('span', { class: 'dash-subject-name', text: (s.params && s.params.subject) || s.title }),
+                h('span', { class: 'dash-subject-meta', text: 'Open plan · ' + rel(s.updatedAt) })
+              )
+            ))
+          )
+        ));
+      }
+    }
+
+    const search = $('#dashSearch');
+    const q = search ? search.value.trim().toLowerCase() : '';
+    const visible = plans.filter((s) => {
+      const p = s.params || {};
+      return !q || [s.title, p.subject, p.cls, p.week].join(' ').toLowerCase().includes(q);
+    });
+    const grid = $('#dashPlanGrid');
+    if (grid) grid.replaceChildren(...visible.map((s) =>
+      h('button', { type: 'button', class: 'dash-plan-card', 'data-dash-plan': s.id },
+        h('span', { class: 'dash-plan-top' }, h('span', { class: 'dash-plan-type', text: 'LESSON PLAN' }), h('span', { class: 'dash-plan-time', text: rel(s.updatedAt) })),
+        h('strong', { class: 'dash-plan-title', text: (s.params && s.params.subject) || s.title }),
+        h('span', { class: 'dash-plan-meta', text: s.params ? [s.params.cls, s.params.term ? 'Term ' + s.params.term : '', 'Week ' + s.params.week].filter(Boolean).join(' · ') : 'Saved plan' }),
+        h('span', { class: 'dash-plan-open', text: 'Open lesson plan →' })
+      )
+    ));
+    const count = $('#dashPlanCount'); if (count) count.textContent = plans.length + (plans.length === 1 ? ' plan' : ' plans');
+    const empty = $('#dashEmpty'); if (empty) empty.hidden = visible.length > 0;
+  }
+  if ($('#dashboardPage')) {
+    $('#dashSearch').addEventListener('input', renderDashboard);
+    $('#dashboardPage').addEventListener('click', (e) => {
+      const b = e.target.closest('[data-dash-plan]');
+      if (b) { showPage(null); showSession(b.dataset.dashPlan); }
+    });
+  }
 
   /* My Library: every saved plan and resource as a card, filterable by type. */
   let libType = 'all';
