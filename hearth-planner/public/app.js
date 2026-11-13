@@ -652,7 +652,11 @@
             chipsEl.replaceChildren(...chips.map((c) => h('button', { type: 'button', class: 'chip-btn', text: c, onclick: () => onChip(c) })));
             fillExtras();
           }
-          if (msg && msg.warning) api.note(msg.warning);
+          if (msg && msg.quality) {
+            const q = msg.quality;
+            const details = (q.issues || []).slice(0, 2).map((x) => x.message).join(' ');
+            api.note('Content quality: ' + (q.status === 'structural_checks_passed' ? 'structural checks passed' : q.status === 'needs_revision' ? 'revision recommended' : 'teacher review recommended') + '. ' + q.blockingCount + ' blocking issue(s), ' + q.warningCount + ' warning(s). ' + (details || q.scope || ''));
+          } else if (msg && msg.warning) api.note(msg.warning);
         }
       },
       note(text) { noteEl.textContent = text; noteEl.hidden = !text; },
