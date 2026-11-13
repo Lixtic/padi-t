@@ -66,7 +66,7 @@ function audit(data, manifest) {
   if (!data || typeof data.source !== 'string' || !data.source.trim()) structuralErrors.push('Missing dataset source description.');
   if (!Number.isInteger(data && data.count) || data.count !== records.length) structuralErrors.push('Declared indicator count does not match actual index entries.');
   for (const [key, value] of records) {
-    if (!/^(?:[^|]+)\\|(?:B[1-9]|SHS[1-3])(?:\\.\\d+){2,5}$/.test(key)) structuralErrors.push('Invalid subject/code key: ' + key);
+    if (!/^(?:[^|]+)\|(?:B[1-9]|SHS[1-3])(?:\.\d+){2,5}$/.test(key)) structuralErrors.push('Invalid subject/code key: ' + key);
     if (!Array.isArray(value) || value.length < 6 || typeof value[0] !== 'string' || typeof value[1] !== 'string' || typeof value[2] !== 'string' || typeof value[3] !== 'string' || typeof value[4] !== 'string' || !Array.isArray(value[5])) structuralErrors.push('Malformed curriculum record: ' + key);
   }
   if (!manifest || manifest.schemaVersion !== 1 || !Array.isArray(manifest.verifiedIndicators)) structuralErrors.push('Missing or invalid curriculum verification manifest.');
