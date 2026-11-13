@@ -11,7 +11,7 @@
   var wrap = document.createElement('div');
   wrap.id = 'guidedSignupFields';
   wrap.innerHTML =
-    '<div class="guided-signup-only" id="guidedSignupOnly" hidden>' +
+    '<div class="guided-signup-only" id="guidedSignupOnly" tabindex="-1" hidden>' +
       '<p class="guided-signup-intro">First, tell us how you will use GuidEd.</p>' +
       '<div class="guided-role-group" role="radiogroup" aria-label="Choose your GuidEd role">' +
         '<label class="guided-role-card"><input type="radio" name="guidedRole" value="parent"><span class="guided-role-icon" aria-hidden="true">🏡</span><strong>I am a Parent</strong><small>Support my child’s learning at home.</small></label>' +
