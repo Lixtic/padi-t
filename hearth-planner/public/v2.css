@@ -274,3 +274,47 @@ body.on-settings .v2-tabbar { display: none !important; }
 #kbForm .ad-row > label { flex: 1 1 200px; display: grid; gap: 4px; font-size: 13px; }
 #kbForm input[type="text"], #kbForm input[type="url"] { width: 100%; min-width: 0; box-sizing: border-box; font: 500 14px var(--font-ui); padding: 9px 11px; border-radius: 10px; border: 1px solid var(--card-line); background: var(--card); color: var(--ink); }
 #kbForm input::placeholder { color: var(--muted); }
+
+
+/* ───────── Teacher Dashboard ───────── */
+.dashboard-page .dash-inner { width: min(1080px, 100%); gap: 20px; }
+.dash-intro { margin: -8px 0 0; color: var(--muted); font-size: 14px; }
+.dash-stats { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
+.dash-stat { min-width: 0; display: flex; flex-direction: column; gap: 6px; padding: 16px; border: 1px solid var(--card-line); border-radius: 18px; background: var(--card); }
+.dash-stat-label, .dash-stat-foot { color: var(--muted); font-size: 12px; }
+.dash-stat-value { font-size: clamp(1.65rem, 4vw, 2.2rem); line-height: 1.1; font-weight: 750; letter-spacing: -.04em; }
+.dash-week, .dash-saved { display: grid; gap: 14px; }
+.dash-section-head { display: flex; align-items: end; justify-content: space-between; gap: 12px; }
+.dash-section-head h2 { margin: 3px 0 0; font-size: 1.2rem; }
+.dash-eyebrow { color: var(--accent); font-size: 10px; font-weight: 800; letter-spacing: .12em; }
+.dash-week-tag, .dash-count { flex: none; padding: 7px 11px; border-radius: 999px; background: var(--v2-soft, var(--sb-hover)); color: var(--text); font-size: 12px; font-weight: 700; }
+.dash-week-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 12px; }
+.dash-class-card, .dash-week-empty { min-width: 0; padding: 15px; border: 1px solid var(--card-line); border-radius: 18px; background: var(--card); }
+.dash-class-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding-bottom: 10px; border-bottom: 1px solid var(--card-line); }
+.dash-class-head strong { font-size: 14px; }
+.dash-class-head span, .dash-subject-meta { color: var(--muted); font-size: 11px; }
+.dash-subject-list { display: grid; gap: 5px; padding-top: 8px; }
+.dash-subject { display: flex; align-items: center; justify-content: space-between; gap: 8px; width: 100%; padding: 9px 0; border: 0; background: transparent; color: var(--text); text-align: left; cursor: pointer; }
+.dash-subject-name { font-size: 13px; font-weight: 650; }
+.dash-week-empty { display: grid; gap: 6px; }
+.dash-week-empty span { color: var(--muted); font-size: 13px; }
+.dash-note { margin: -4px 0 0; color: var(--muted); font-size: 12px; line-height: 1.5; }
+.dash-saved { padding-top: 4px; }
+.dash-plan-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 12px; }
+.dash-plan-card { display: flex; flex-direction: column; align-items: flex-start; gap: 9px; min-width: 0; padding: 16px; border: 1px solid var(--card-line); border-radius: 18px; background: var(--card); color: var(--text); text-align: left; font: inherit; cursor: pointer; transition: border-color .18s, transform .18s; }
+.dash-plan-card:hover { border-color: var(--accent); transform: translateY(-2px); }
+.dash-plan-top { display: flex; justify-content: space-between; align-items: center; gap: 8px; width: 100%; }
+.dash-plan-type { color: var(--accent); font-size: 10px; font-weight: 800; letter-spacing: .1em; }
+.dash-plan-time, .dash-plan-meta { color: var(--muted); font-size: 12px; }
+.dash-plan-title { font-size: 1rem; }
+.dash-plan-open { margin-top: 2px; color: var(--accent); font-size: 12px; font-weight: 700; }
+@media (max-width: 640px) {
+  .dashboard-page { padding: 14px 12px calc(30px + env(safe-area-inset-bottom)); }
+  .dash-stats { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .dash-stat:last-child { grid-column: 1 / -1; }
+  .dash-section-head { align-items: flex-start; flex-direction: column; }
+  .dash-week-tag, .dash-count { align-self: flex-start; }
+  .dash-week-list, .dash-plan-grid { grid-template-columns: 1fr; }
+}
+
+body.on-dashboard .v2-tabbar { display: none !important; }

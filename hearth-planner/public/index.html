@@ -429,6 +429,9 @@
         <input id="accessInput" type="password" autocomplete="off" placeholder="Enter code" maxlength="80">
       </div>
 
+      <button type="button" class="foot-link foot-settings" id="dashboardLink" aria-label="Teacher Dashboard">
+        <svg class="ico"><use href="#i-calendar"/></svg><span>Teacher Dashboard</span><svg class="ico disc-chev"><use href="#i-chevron"/></svg>
+      </button>
       <button type="button" class="foot-link foot-settings" id="libraryLink" aria-label="My Library">
         <svg class="ico"><use href="#i-book"/></svg><span>My Library</span><svg class="ico disc-chev"><use href="#i-chevron"/></svg>
       </button>
@@ -531,6 +534,24 @@
     </section>
 
 
+    <section class="settings-page dashboard-page" id="dashboardPage" aria-labelledby="dashTitle" hidden>
+      <div class="sp-inner dash-inner">
+        <div class="sp-head"><button type="button" class="sp-back" id="dashboardBack"><svg class="ico"><use href="#i-chevron"/></svg><span>Back</span></button><h1 id="dashTitle">Teacher Dashboard</h1></div>
+        <p class="dash-intro">Your teaching week and saved lesson plans, together in one place.</p>
+        <div class="dash-stats" id="dashStats" aria-label="Teaching summary"></div>
+        <section class="dash-week" aria-labelledby="dashWeekTitle">
+          <div class="dash-section-head"><div><span class="dash-eyebrow">WEEK AT A GLANCE</span><h2 id="dashWeekTitle">Upcoming teaching week</h2></div><span class="dash-week-tag" id="dashWeekTag"></span></div>
+          <div class="dash-week-list" id="dashWeekList"></div>
+          <p class="dash-note">This overview uses the class, subject and week saved with each plan. Lesson periods and weekdays are not currently stored in GuidEd, so this is a planning overview rather than a bell-time timetable.</p>
+        </section>
+        <section class="dash-saved" aria-labelledby="dashSavedTitle">
+          <div class="dash-section-head"><div><span class="dash-eyebrow">YOUR WORKSPACE</span><h2 id="dashSavedTitle">All saved lesson plans</h2></div><span class="dash-count" id="dashPlanCount"></span></div>
+          <input type="search" id="dashSearch" class="lib-search" placeholder="Search by subject, class or topic" aria-label="Search saved lesson plans" autocomplete="off">
+          <div class="dash-plan-grid" id="dashPlanGrid"></div>
+          <p class="lib-empty" id="dashEmpty" hidden>No saved lesson plans yet. Create your first plan and it will appear here.</p>
+        </section>
+      </div>
+    </section>
     <section class="settings-page library-page" id="libraryPage" aria-labelledby="libTitle" hidden>
       <div class="sp-inner lib-inner">
         <div class="sp-head"><button type="button" class="sp-back" id="libraryBack"><svg class="ico"><use href="#i-chevron"/></svg><span>Back</span></button><h1 id="libTitle">My Library</h1></div>
