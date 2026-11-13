@@ -353,7 +353,7 @@
       }).then(function (r) {
         if (r && r.ok) {
           state.textContent = r.duplicate ? 'That document is already here (' + (KB_STATUS[r.status] || r.status) + ').' : 'Added ' + r.chunks + ' passages. Approve it in the list above to start using it.';
-          form.reset(); loadKnowledge(); loadLog();
+          form.reset(); updateApprovalReference(); loadKnowledge(); loadLog();
         } else state.textContent = (r && r.message) || 'Could not add the document.';
       }).catch(function (err) { state.textContent = err.message || 'Could not add the document.'; }).then(function () { btn.disabled = false; });
     });
