@@ -1,0 +1,10 @@
+{
+  "schemaVersion": 1,
+  "status": "unverified_database_export",
+  "source": {
+    "description": "NaCCA curriculum tables exported from the SchoolPadi database (portals saas > public.curriculum_*)",
+    "exportedAt": "2026-11-12",
+    "verificationNote": "The export has not yet been independently reconciled against the original NaCCA curriculum documents. No indicator is currently approved for official exemplar use."
+  },
+  "verifiedIndicators": []
+}
