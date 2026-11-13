@@ -257,7 +257,7 @@
 <dialog class="acct-sheet up-sheet fb-inbox" id="adminSheet" aria-labelledby="adTitle">
   <button type="button" class="icon-btn as-close" id="adClose" aria-label="Close"><svg class="ico"><use href="#i-x"/></svg></button>
   <section>
-    <h2 id="adTitle">Teachers and announcements</h2>
+    <h2 id="adTitle">Admin: teachers, announcements, knowledge</h2>
     <p class="as-sub">Look up a teacher, give or take off Pro days, pause an account, or post a message everyone sees.</p>
     <div class="us-sec">
       <h3 class="ps-h">Find a teacher</h3>
@@ -275,6 +275,28 @@
         </div>
         <div class="ad-row"><button type="submit" class="primary" id="adPost">Show to everyone</button><button type="button" id="adOff">Turn off</button></div>
         <p class="us-note" id="adNoticeState"></p>
+      </form>
+    </div>
+    <div class="us-sec">
+      <h3 class="ps-h">Knowledge base</h3>
+      <p class="us-note">Curriculum documents GuidEd can draw on. A new document waits here until you approve it; nothing is used before that.</p>
+      <ul class="us-rows kb-list" id="kbList"></ul>
+      <form class="ad-notice" id="kbForm">
+        <label class="kb-file">Document file <small>(prepared .json from scripts/prepare-knowledge.py, or plain .txt / .md)</small>
+          <input type="file" id="kbFile" accept=".json,.txt,.md,application/json,text/plain,text/markdown" required></label>
+        <div class="ad-row"><label>Title <input type="text" id="kbTitle" maxlength="200" placeholder="Social Studies Teacher Manual, SHS Year 2"></label></div>
+        <div class="ad-row"><label>Publisher <input type="text" id="kbPublisher" maxlength="160" placeholder="NaCCA, Ministry of Education"></label></div>
+        <div class="ad-row"><label>Link to the original <input type="url" id="kbUrl" placeholder="https://nacca.gov.gh/..."></label></div>
+        <div class="ad-row">
+          <label>Subject <input type="text" id="kbSubject" maxlength="100" placeholder="Social Studies"></label>
+          <label>Classes <input type="text" id="kbClasses" maxlength="100" placeholder="SHS 2, SHS 3"></label>
+        </div>
+        <div class="ad-row">
+          <label>Kind <select id="kbType"><option value="curriculum">Curriculum</option><option value="teacher_guide">Teacher manual</option><option value="syllabus">Syllabus</option><option value="textbook">Textbook</option><option value="past_questions">Past questions</option></select></label>
+          <label>Licence <input type="text" id="kbLicense" maxlength="160" placeholder="Who may use it"></label>
+        </div>
+        <div class="ad-row"><button type="submit" class="primary" id="kbAdd">Add for review</button></div>
+        <p class="us-note" id="kbState" role="status"></p>
       </form>
     </div>
     <div class="us-sec">
@@ -419,7 +441,7 @@
           <svg class="ico"><use href="#i-sliders"/></svg><span>Usage and payments</span>
         </button>
         <button type="button" class="foot-link" id="adminBtn" hidden>
-          <svg class="ico"><use href="#i-user"/></svg><span>Teachers and announcements</span>
+          <svg class="ico"><use href="#i-user"/></svg><span>Admin: teachers, announcements, knowledge</span>
         </button>
         <button type="button" class="foot-link" id="inboxBtn" hidden>
           <svg class="ico"><use href="#i-layers"/></svg><span>Feedback inbox</span>

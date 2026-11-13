@@ -174,6 +174,7 @@ async function reviewSource(sourceId, decision) {
     return { sourceId: id, status: 'approved', trust };
   }
   await db.query("update knowledge_sources set status = 'rejected' where id = $1", [id]);
+  approvedSeen = { at: 0, has: false };
   return { sourceId: id, status: 'rejected', trust: null };
 }
 function requestQuery(params) {

@@ -262,7 +262,7 @@
     var q = $('#adQ').value.trim(); if (q.length < 3) { $('#adResults').replaceChildren(el2('p', 'us-note', 'Type at least 3 letters of the email.')); return Promise.resolve(); }
     return getA('find&q=' + encodeURIComponent(q)).then(function (j) { if (j.results) renderTeachers(j.results); else $('#adResults').replaceChildren(el2('p', 'us-note', j.message || 'Could not search.')); loadLog(); });
   }
-  var ACTIONS = { grant: 'Gave Pro days', remove: 'Took Pro days off', block: 'Paused', unblock: 'Restored', notice_on: 'Posted announcement', notice_off: 'Turned off announcement' };
+  var ACTIONS = { knowledge_approved: 'Approved a document', knowledge_rejected: 'Rejected a document', grant: 'Gave Pro days', remove: 'Took Pro days off', block: 'Paused', unblock: 'Restored', notice_on: 'Posted announcement', notice_off: 'Turned off announcement' };
   function loadLog() {
     return getA('log').then(function (j) {
       var ul = $('#adLog'); ul.replaceChildren();
@@ -276,11 +276,85 @@
       $('#adNoticeState').textContent = n.on ? 'Showing now' + (n.until ? ', until ' + day(n.until) : ', until you turn it off') + '.' : 'Not showing.';
     });
   }
+
+  /* ───────── Admin: knowledge base (add a document, approve or reject it) ───────── */
+  var KB_STATUS = { pending_review: 'Waiting for review', approved: 'Approved', rejected: 'Rejected' };
+  var KB_TRUST = { official: 'Official', approved_material: 'Approved material', reviewed_resource: 'Reviewed resource' };
+  function loadKnowledge() {
+    return getA('knowledge').then(function (j) {
+      var ul = $('#kbList'); ul.replaceChildren();
+      (j.sources || []).forEach(function (s) {
+        var li = el2('li', 'kb-item'), top = el2('span', '');
+        top.append(el2('b', '', s.title), el2('span', 'tag' + (s.status === 'approved' ? ' pro' : s.status === 'rejected' ? ' bad' : ''), KB_STATUS[s.status] || s.status));
+        li.append(top, el2('small', '', [s.publisher, s.subject, (s.classes || []).join(', '), s.chunks + ' passages', s.status === 'approved' ? (KB_TRUST[s.trust_level] || s.trust_level) : '', s.source_url].filter(Boolean).join(' · ')));
+        var acts = el2('div', 'ad-acts');
+        function review(label, decision, cls) {
+          var b = el2('button', cls || '', label); b.type = 'button';
+          b.addEventListener('click', function () {
+            if (decision === 'reject' && !window.confirm('Stop GuidEd using "' + s.title + '"?')) return;
+            b.disabled = true;
+            post('knowledge-review', { sourceId: s.id, decision: decision }).then(function (r) { if (!r || !r.ok) window.alert((r && r.message) || 'That did not work.'); loadKnowledge(); loadLog(); });
+          });
+          acts.append(b);
+        }
+        if (s.status !== 'approved') review('Approve', 'approve');
+        if (s.status !== 'rejected') review(s.status === 'approved' ? 'Withdraw' : 'Reject', 'reject', 'danger');
+        li.append(acts); ul.append(li);
+      });
+      if (!ul.children.length) ul.append(el2('li', '', 'No documents yet.'));
+    });
+  }
+  // A plain text file becomes page-sized segments (form feeds mark pages when the text came from a PDF).
+  function textSegments(text) {
+    var pages = text.indexOf('\f') >= 0 ? text.split('\f') : text.match(/[\s\S]{1,6000}(?:\n|$)/g) || [];
+    return pages.map(function (p, i) { return { page: i + 1, heading: '', text: p.trim() }; }).filter(function (s) { return s.text.length > 80; });
+  }
+  function readKnowledgeFile(file) {
+    return file.text().then(function (text) {
+      if (/\.json$/i.test(file.name)) { var j; try { j = JSON.parse(text); } catch (e) { throw new Error('That file is not valid JSON.'); } if (!j || !Array.isArray(j.segments)) throw new Error('This JSON has no "segments". Use a file made by prepare-knowledge.py.'); return j; }
+      return { segments: textSegments(text) };
+    });
+  }
+  function setupKnowledge() {
+    var form = $('#kbForm'); if (!form) return;
+    var fileEl = $('#kbFile'), state = $('#kbState');
+    function fill(id, v) { var e = $(id); if (e && !e.value && v) e.value = v; }
+    fileEl.addEventListener('change', function () {
+      var f = fileEl.files[0]; if (!f || !/\.json$/i.test(f.name)) return;
+      readKnowledgeFile(f).then(function (j) {
+        fill('#kbTitle', j.title); fill('#kbPublisher', j.publisher); fill('#kbUrl', j.sourceUrl); fill('#kbSubject', j.subject);
+        fill('#kbClasses', (j.classes || []).join(', ')); fill('#kbLicense', j.license);
+        if (j.documentType && $('#kbType').querySelector('option[value="' + j.documentType + '"]')) $('#kbType').value = j.documentType;
+        state.textContent = 'Read ' + j.segments.length + ' pages. Check the details, then add it.';
+      }, function (e) { state.textContent = e.message; });
+    });
+    form.addEventListener('submit', function (e) {
+      e.preventDefault();
+      var f = fileEl.files[0]; if (!f) return;
+      var btn = $('#kbAdd'); btn.disabled = true; state.textContent = 'Reading the file…';
+      readKnowledgeFile(f).then(function (doc) {
+        var body = Object.assign({}, doc, {
+          title: $('#kbTitle').value.trim() || doc.title, publisher: $('#kbPublisher').value.trim() || doc.publisher,
+          sourceUrl: $('#kbUrl').value.trim() || doc.sourceUrl, subject: $('#kbSubject').value.trim() || doc.subject,
+          classes: $('#kbClasses').value.trim() ? $('#kbClasses').value.split(',').map(function (x) { return x.trim(); }).filter(Boolean) : (doc.classes || []),
+          documentType: $('#kbType').value, license: $('#kbLicense').value.trim() || doc.license || ''
+        });
+        state.textContent = 'Adding ' + body.segments.length + ' pages…';
+        return post('knowledge', body);
+      }).then(function (r) {
+        if (r && r.ok) {
+          state.textContent = r.duplicate ? 'That document is already here (' + (KB_STATUS[r.status] || r.status) + ').' : 'Added ' + r.chunks + ' passages. Approve it in the list above to start using it.';
+          form.reset(); loadKnowledge(); loadLog();
+        } else state.textContent = (r && r.message) || 'Could not add the document.';
+      }).catch(function (err) { state.textContent = err.message || 'Could not add the document.'; }).then(function () { btn.disabled = false; });
+    });
+  }
   function setupAdmin() {
     var dlg = $('#adminSheet'), btn = $('#adminBtn'); if (!dlg || !btn) return;
     backdropClose(dlg);
     $('#adClose').addEventListener('click', function () { close(dlg); });
-    btn.addEventListener('click', function () { open(dlg); loadNotice(); loadLog(); });
+    btn.addEventListener('click', function () { open(dlg); loadNotice(); loadLog(); loadKnowledge(); });
+    setupKnowledge();
     $('#adFind').addEventListener('submit', function (e) { e.preventDefault(); findTeacher(); });
     $('#adNotice').addEventListener('submit', function (e) {
       e.preventDefault();
