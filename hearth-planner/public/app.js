@@ -1127,53 +1127,75 @@
     const p = session && session.params || {};
     if (p.mode !== 'resources' || !/^study notes$/i.test(p.resourceType || '') || state.config.demo || msg.preview || msg.stopped) return;
     if (!signedIn()) { bot.note('Notes are ready. Sign in to search for classroom illustrations.'); return; }
+
     const body = String(msg.content || '');
-    const ignored = /^(study notes?|introduction|learning objectives?|objectives?|key terms?|summary|conclusion|assessment|class exercise|homework|references|further reading)$/i;
-    const concepts = [...body.matchAll(/^#{1,3}\s+(.+)$/gm)].map((m) => m[1].replace(/[*_`]/g, '').trim()).filter((heading) => heading.length >= 4 && heading.length <= 90 && !ignored.test(heading)).slice(0, 3);
-    if (!concepts.length) return;
-    bot.note('Finding relevant classroom illustrations…');
+    const finder = window.GuidEdIllustrationTargets;
+    const targets = finder && typeof finder.extract === 'function' ? finder.extract(body, 8) : [];
+    if (!targets.length) {
+      bot.note('Notes are ready. No individually named examples were found to illustrate. Keep physical examples on separate, clearly labelled bullets for image matching.');
+      return;
+    }
+
+    bot.note('Finding images for ' + targets.map((target) => target.concept).join(', ') + '…');
     let timeout;
     try {
       const who = window.PadiSync && window.PadiSync.authHeader ? await window.PadiSync.authHeader() : {};
       if (!who || !(who.authorization || who.Authorization)) { bot.note('Notes are ready. Sign in to search for classroom illustrations.'); return; }
       const controller = new AbortController();
-      timeout = setTimeout(() => controller.abort(), 15000);
-      const results = await Promise.all(concepts.map(async (concept) => {
-        const query = concept.slice(0, 140);
-        const context = [p.subject, p.cls].filter(Boolean).join(' ').slice(0, 80);
-        // The lesson's own topic lets the image check judge fit, not just word overlap.
-        const sch = p.scheme || {};
-        const topic = [sch.substrand, sch.strand].concat(Array.isArray(sch.indicators) ? sch.indicators : []).filter(Boolean).join('. ').replace(/\b(?:B[1-9]|SHS[1-3])(?:\.\d+){2,5}\b/gi, '').replace(/\s+/g, ' ').trim().slice(0, 300);
-        const response = await fetch('/api/media-search?q=' + encodeURIComponent(query) + '&context=' + encodeURIComponent(context) + (topic ? '&topic=' + encodeURIComponent(topic) : '') + '&type=image', { headers: Object.assign({ Accept: 'application/json' }, who), signal: controller.signal });
-        if (!response.ok) return { concept, unreachable: true };
-        const data = await response.json();
-        const item = (data.results || []).find((entry) => entry && /^https:\/\//i.test(entry.thumbnail || '') && /^https:\/\//i.test(entry.url || ''));
-        return item ? { concept, item } : { concept, unreachable: !!data.unreachable };
+      timeout = setTimeout(() => controller.abort(), 18000);
+      const context = [p.subject, p.cls].filter(Boolean).join(' ').slice(0, 80);
+      const sch = p.scheme || {};
+      const topic = [sch.substrand, sch.strand].concat(Array.isArray(sch.indicators) ? sch.indicators : [])
+        .filter(Boolean).join('. ').replace(/\b(?:B[1-9]|SHS[1-3])(?:\.\d+){2,5}\b/gi, '').replace(/\s+/g, ' ').trim().slice(0, 300);
+      const results = await Promise.all(targets.map(async (target) => {
+        const query = target.concept.slice(0, 100);
+        try {
+          const response = await fetch('/api/media-search?q=' + encodeURIComponent(query) + '&context=' + encodeURIComponent(context)
+            + (topic ? '&topic=' + encodeURIComponent(topic) : '') + '&type=image',
+            { headers: Object.assign({ Accept: 'application/json' }, who), signal: controller.signal });
+          if (!response.ok) return { target, unreachable: true };
+          const data = await response.json();
+          const item = (data.results || []).find((entry) => entry && /^https:\/\//i.test(entry.thumbnail || '') && /^https:\/\//i.test(entry.url || ''));
+          return item ? { target, item } : { target, unreachable: !!data.unreachable };
+        } catch (error) { return { target, unreachable: true }; }
       }));
       clearTimeout(timeout); timeout = null;
       const found = results.filter((result) => result && result.item);
       if (!found.length) {
         bot.note(results.length && results.every((result) => result && result.unreachable)
           ? 'Notes are ready. The image sources could not be reached just now. Try again in a few minutes.'
-          : 'Notes are ready. No sufficiently relevant illustrations were found for these concepts.');
+          : 'Notes are ready. No sufficiently relevant images were found for the named examples, so no unrelated pictures were added.');
         return;
       }
-      let enriched = body;
-      found.forEach(({ concept, item }) => {
-        const headingLine = body.split('\n').find((line) => /^#{1,3}\s+/.test(line) && line.replace(/^#{1,3}\s+/, '').replace(/[*_`]/g, '').trim() === concept);
-        if (!headingLine) return;
-        const alt = String(item.title || concept).replace(/[\[\]]/g, '').slice(0, 100);
+
+      const insertions = new Map();
+      found.forEach(({ target, item }) => {
+        const alt = String(target.concept || item.title || 'Classroom example').replace(/[\[\]]/g, '').slice(0, 100);
         const imageUrl = String(item.thumbnail).replace(/\)/g, '%29');
-        const sourceTitle = String(item.title || concept).replace(/[\[\]]/g, '');
-        const caption = '*Image source: [' + sourceTitle + '](' + String(item.url) + ') · Licence: ' + String(item.license || 'See source page') + (item.author ? ' · Author: ' + String(item.author) : '') + '.*';
-        enriched = enriched.replace(headingLine, headingLine + '\n\n![' + alt + '](' + imageUrl + ')\n\n' + caption);
+        const sourceTitle = String(item.title || target.concept).replace(/[\[\]]/g, '');
+        const caption = '*Image source: [' + sourceTitle + '](' + String(item.url) + ') · Licence: '
+          + String(item.license || 'See source page') + (item.author ? ' · Author: ' + String(item.author) : '') + '.*';
+        const block = ['![' + alt + '](' + imageUrl + ')', caption];
+        if (!insertions.has(target.lineIndex)) insertions.set(target.lineIndex, []);
+        insertions.get(target.lineIndex).push.apply(insertions.get(target.lineIndex), block);
       });
-      if (enriched === body) { bot.note('Notes are ready. Illustrations could not be placed beside the matching sections.'); return; }
+      const lines = body.split('\n');
+      const enrichedLines = [];
+      lines.forEach((line, index) => {
+        enrichedLines.push(line);
+        const blocks = insertions.get(index);
+        if (blocks && blocks.length) enrichedLines.push('', ...blocks, '');
+      });
+      const enriched = enrichedLines.join('\n').replace(/\n{3,}/g, '\n\n');
+      if (enriched === body) { bot.note('Notes are ready. Illustrations could not be placed beside their matching examples.'); return; }
       msg.content = enriched;
       bot.set(enriched, true, msg);
-      bot.note('Added ' + found.length + ' curriculum-related illustration' + (found.length === 1 ? '' : 's') + '. Check each source and licence.');
+      bot.note('Added ' + found.length + ' relevant illustration' + (found.length === 1 ? '' : 's') + ' beside the named examples. Check each source and licence.');
       session.updatedAt = Date.now(); store.save();
-    } catch (error) { if (timeout) clearTimeout(timeout); bot.note('Notes are ready. Illustration search was unavailable, so no images were added.'); }
+    } catch (error) {
+      if (timeout) clearTimeout(timeout);
+      bot.note('Notes are ready. Illustration search was unavailable, so no images were added.');
+    }
   }
   async function runGenerate(session) {
     const ctrl = new AbortController();
