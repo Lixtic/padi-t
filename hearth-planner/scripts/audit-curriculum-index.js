@@ -4,6 +4,7 @@ const fs = require('node:fs');
 const path = require('node:path');
 
 const DATA_PATH = path.join(__dirname, '..', 'data', 'curriculum-index.json');
+const MANIFEST_PATH = path.join(__dirname, '..', 'data', 'curriculum-verification.json');
 const FLAGS = [
   ['embedded_exemplar_label', /exemplar\s*\(s?\)\s*:/i],
   ['embedded_section_heading', /content\s+indicators?|core\s+competencies|curriculum\s+indicators/i],
@@ -12,7 +13,7 @@ const FLAGS = [
   ['repeated_whitespace_or_punctuation', /(?:\s{3,}|(?:\b\w+\b)(?:\s+\1){2,})/i]
 ];
 
-function audit(data) {
+function audit(data, manifest) {
   const records = Object.entries((data && data.indicators) || {});
   const bySubject = {};
   const issues = [];
@@ -61,7 +62,22 @@ function audit(data) {
     }
   }
 
+  const structuralErrors = [];
+  if (!data || typeof data.source !== 'string' || !data.source.trim()) structuralErrors.push('Missing dataset source description.');
+  if (!Number.isInteger(data && data.count) || data.count !== records.length) structuralErrors.push('Declared indicator count does not match actual index entries.');
+  for (const [key, value] of records) {
+    if (!/^(?:[^|]+)\|(?:B[1-9]|SHS[1-3])(?:\.\d+){2,5}$/.test(key)) structuralErrors.push('Invalid subject/code key: ' + key);
+    if (!Array.isArray(value) || value.length < 6 || typeof value[0] !== 'string' || typeof value[1] !== 'string' || typeof value[2] !== 'string' || typeof value[3] !== 'string' || typeof value[4] !== 'string' || !Array.isArray(value[5])) structuralErrors.push('Malformed curriculum record: ' + key);
+  }
+  if (!manifest || manifest.schemaVersion !== 1 || !Array.isArray(manifest.verifiedIndicators)) structuralErrors.push('Missing or invalid curriculum verification manifest.');
+  for (const item of (manifest && manifest.verifiedIndicators) || []) {
+    const key = item.subject + '|' + item.code;
+    if (!Object.prototype.hasOwnProperty.call(data.indicators || {}, key)) structuralErrors.push('Verified manifest references missing record: ' + key);
+    if (item.status !== 'verified' || !item.documentTitle || !item.publisher || !item.page || !item.sourceUrl) structuralErrors.push('Incomplete verification provenance: ' + key);
+  }
+
   return {
+    structuralErrors,
     source: data && data.source || null,
     exportedAt: data && data.exportedAt || null,
     declaredCount: Number(data && data.count) || 0,
@@ -108,9 +124,17 @@ function markdown(report) {
 
 if (require.main === module) {
   const data = JSON.parse(fs.readFileSync(DATA_PATH, 'utf8'));
-  const report = audit(data);
-  process.stdout.write(markdown(report));
-  if (!report.countMatches) process.exitCode = 1;
+  const manifest = JSON.parse(fs.readFileSync(MANIFEST_PATH, 'utf8'));
+  const report = audit(data, manifest);
+  if (process.argv.includes('--check')) {
+    console.log('Curriculum index: ' + report.actualCount + ' records; declared count ' + (report.countMatches ? 'matches' : 'DOES NOT MATCH') + '.');
+    console.log('Verification manifest: ' + manifest.status + '; ' + manifest.verifiedIndicators.length + ' verified indicators.');
+    if (report.structuralErrors.length) { report.structuralErrors.forEach((x) => console.error('- ' + x)); process.exitCode = 1; }
+    else console.log('Structural checks passed. ' + report.issues.length + ' records have heuristic review flags; run npm run audit:curriculum for the full report.');
+  } else {
+    process.stdout.write(markdown(report));
+    if (report.structuralErrors.length) process.exitCode = 1;
+  }
 }
 
 module.exports = { audit, markdown };

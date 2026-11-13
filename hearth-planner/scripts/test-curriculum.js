@@ -29,19 +29,18 @@ assert.match(revision, /Do not introduce new curriculum content/);
 
 process.stdout.write('Curriculum Intelligence Engine tests passed.\n');
 
-// Official NaCCA exemplars (exported from the SchoolPadi database) reach the prompt.
+// Database-exported exemplars are not called official until a source and page are verified.
 {
   const assert2 = require('node:assert/strict');
   const C = require('../api/_curriculum');
-  const rec = C.officialFor('Integrated Science', 'B8.2.1.1.1');
-  assert2.ok(rec && rec.exemplars.length, 'Integrated Science resolves through the Science alias');
-  assert2.equal(C.officialFor('Mathematics', 'B0.0.0.0.0'), null, 'unknown codes resolve to nothing');
-  const scheme = { type: 'teach', term: 1, strand: 'S', substrand: 'SS', standard: 'B8.1.1.1', indicators: ['Round numbers [B8.1.1.1.2]'] };
+  assert2.equal(C.verificationStatus, 'unverified_database_export');
+  assert2.equal(C.verificationManifest.verifiedIndicators.length, 0);
+  assert2.equal(C.officialFor('Integrated Science', 'B8.2.1.1.1'), null,
+    'unverified database-exported exemplars are withheld from official curriculum claims');
+  const scheme = { type: 'teach', term: 1, indicators: ['Round numbers [B8.1.1.1.2]'] };
   const text = C.buildInstruction(scheme, { cls: 'Basic 8', subject: 'Mathematics', week: 3 });
-  assert2.ok(/Official NaCCA exemplars for B8\.1\.1\.1\.2/.test(text), 'exemplars are listed for a matched indicator');
-  const none = C.buildInstruction({ type: 'teach', term: 1, indicators: ['Something [B8.9.9.9.9]'] }, { cls: 'Basic 8', subject: 'Mathematics', week: 3 });
-  assert2.ok(!/Official NaCCA exemplars/.test(none), 'no exemplar block when the code is not loaded');
-  process.stdout.write('Official exemplar tests passed.\n');
+  assert2.ok(!/Official NaCCA exemplars/.test(text), 'unverified exemplars are not sent as official');
+  process.stdout.write('Curriculum provenance tests passed.\\n');
 }
 
 {

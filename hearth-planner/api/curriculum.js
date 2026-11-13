@@ -30,7 +30,10 @@ module.exports = async (req, res) => {
     indicators: Curriculum.indicatorsFor(scheme).map((item) => { const rec = Curriculum.officialFor(subject, item.code); return rec ? Object.assign(item, { official: rec }) : item; }),
     pacing: scheme.part || null,
     sourceLabel: scheme.source || 'Unlabelled scheme record',
-    sourceStatus: Curriculum.indicatorsFor(scheme).some((item) => Curriculum.officialFor(subject, item.code)) ? 'scheme_with_official_exemplars' : 'scheme_metadata_only',
-    note: 'This response contains the loaded scheme metadata and indicator text. It does not claim that the complete official curriculum document, exemplars or reference textbooks have been retrieved.',
+    sourceStatus: Curriculum.indicatorsFor(scheme).some((item) => Curriculum.officialFor(subject, item.code)) ? 'verified_official_exemplars' : 'scheme_metadata_only',
+    curriculumVerification: { status: Curriculum.verificationStatus, verifiedIndicatorCount: Curriculum.verificationManifest.verifiedIndicators.length },
+    note: Curriculum.indicatorsFor(scheme).some((item) => Curriculum.officialFor(subject, item.code))
+      ? 'Official exemplars are included only for indicators with a verified source document and page reference. Other records are scheme metadata only.'
+      : 'This response contains loaded scheme metadata and indicator text only. The database-exported exemplar index has not been independently verified against traceable NaCCA source documents, so its exemplars are not presented as official.'
   });
 };

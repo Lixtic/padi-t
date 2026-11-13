@@ -5,12 +5,20 @@
 // The scheme is a planning record, not proof that the complete official curriculum text
 // or its exemplars have been retrieved.
 const OFFICIAL = require('./_curriculum_index');
+const VERIFICATION = require('../data/curriculum-verification.json');
+const VERIFIED = new Map((VERIFICATION.verifiedIndicators || []).map((item) => [item.subject + '|' + item.code, item]));
 const SUBJECT_ALIAS = { 'Integrated Science': 'Science', 'General Science': 'Science' };
 
 /* Official NaCCA record for one indicator code (statement, content standard, exemplars), or null when it is not loaded. */
 function officialFor(subject, code) {
-  const hit = code && OFFICIAL.indicators[(SUBJECT_ALIAS[subject] || subject) + '|' + code];
-  return hit ? { statement: hit[0], standardCode: hit[1], standard: hit[2], substrand: hit[3], strand: hit[4], exemplars: hit[5] } : null;
+  const normalizedSubject = SUBJECT_ALIAS[subject] || subject;
+  const verification = code && VERIFIED.get(normalizedSubject + '|' + code);
+  if (!verification || verification.status !== 'verified' || !verification.documentTitle || !verification.publisher || !verification.page || !verification.sourceUrl) return null;
+  const hit = OFFICIAL.indicators[normalizedSubject + '|' + code];
+  return hit ? {
+    statement: hit[0], standardCode: hit[1], standard: hit[2], substrand: hit[3], strand: hit[4], exemplars: hit[5],
+    provenance: { documentTitle: verification.documentTitle, publisher: verification.publisher, edition: verification.edition || '', page: verification.page, sourceUrl: verification.sourceUrl || '' }
+  } : null;
 }
 
 function codeFrom(text) {
@@ -100,4 +108,4 @@ function buildInstruction(scheme, request) {
   return lines.join('\n');
 }
 
-module.exports = { codeFrom, classifyCode, indicatorsFor, officialFor, buildInstruction };
+module.exports = { codeFrom, classifyCode, indicatorsFor, officialFor, buildInstruction, verificationStatus: VERIFIED.size >= Object.keys(OFFICIAL.indicators).length ? 'verified' : VERIFIED.size ? 'partially_verified' : 'unverified_database_export', verificationManifest: VERIFICATION };
