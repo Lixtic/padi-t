@@ -238,7 +238,7 @@
       var raw = lines[i].trim();
       if (!raw || /^(?:-{3,}|\*{3,}|_{3,})$/.test(raw) || raw.indexOf('```') === 0) { i++; continue; }
 
-      var imageMatch = raw.match(/^!\\[([^\\]]*)\\]\\((https:\\/\\/[^)\\s]+)\\)$/);
+      var imageMatch = raw.match(/^!\[([^\]]*)\]\((https:\/\/[^)\s]+)\)$/);
       if (imageMatch) {
         i++;
         var asset = opts && opts.imageData && opts.imageData[imageMatch[2]];
@@ -328,8 +328,8 @@
 
   // Fetches and rasterizes markdown illustrations so they are embedded in the Word file, not left as URLs.
   async function imageAssets(content) {
-    var matches = String(content || '').match(/^!\\[[^\\]]*\\]\\((https:\\/\\/[^)\\s]+)\\)$/gm) || [];
-    var urls = matches.map(function (line) { return line.match(/\\((https:\\/\\/[^)\\s]+)\\)$/)[1]; });
+    var matches = String(content || '').match(/^!\[[^\]]*\]\((https:\/\/[^)\s]+)\)$/gm) || [];
+    var urls = matches.map(function (line) { return line.match(/\((https:\/\/[^)\s]+)\)$/)[1]; });
     var unique = Array.from(new Set(urls)), assets = Object.create(null);
     if (typeof fetch !== 'function' || typeof document === 'undefined') return assets;
     await Promise.all(unique.map(async function (url) {
