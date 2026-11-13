@@ -1146,7 +1146,7 @@
       const context = [p.subject, p.cls].filter(Boolean).join(' ').slice(0, 80);
       const sch = p.scheme || {};
       const topic = [sch.substrand, sch.strand].concat(Array.isArray(sch.indicators) ? sch.indicators : [])
-        .filter(Boolean).join('. ').replace(/\b(?:B[1-9]|SHS[1-3])(?:\.\\d+){2,5}\b/gi, '').replace(/\s+/g, ' ').trim().slice(0, 300);
+        .filter(Boolean).join('. ').replace(/\b(?:B[1-9]|SHS[1-3])(?:\.\d+){2,5}\b/gi, '').replace(/\s+/g, ' ').trim().slice(0, 300);
       const results = await Promise.all(targets.map(async (target) => {
         const query = target.concept.slice(0, 100);
         try {
@@ -1179,14 +1179,14 @@
         if (!insertions.has(target.lineIndex)) insertions.set(target.lineIndex, []);
         insertions.get(target.lineIndex).push.apply(insertions.get(target.lineIndex), block);
       });
-      const lines = body.split('\\n');
+      const lines = body.split('\n');
       const enrichedLines = [];
       lines.forEach((line, index) => {
         enrichedLines.push(line);
         const blocks = insertions.get(index);
         if (blocks && blocks.length) enrichedLines.push('', ...blocks, '');
       });
-      const enriched = enrichedLines.join('\\n').replace(/\\n{3,}/g, '\\n\\n');
+      const enriched = enrichedLines.join('\n').replace(/\n{3,}/g, '\n\n');
       if (enriched === body) { bot.note('Notes are ready. Illustrations could not be placed beside their matching examples.'); return; }
       msg.content = enriched;
       bot.set(enriched, true, msg);
