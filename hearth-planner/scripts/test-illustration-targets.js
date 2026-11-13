@@ -23,6 +23,17 @@ assert.deepEqual(categoryList.map(x => x.concept), ['keyboard','mouse','scanner'
 assert.equal(categoryList.every(x => x.lineIndex < 3), true);
 const components = Targets.extract(['## Study Notes','The main parts are monitor, keyboard and system unit.','The system unit contains the processor.'].join('\n'), 8);
 assert.deepEqual(components.map(x => x.concept), ['monitor','keyboard','system unit']);
+const metadataLabels = Targets.extract([
+  '## Study Notes',
+  '- **Which subject:** Computing',
+  '- **Content standards:** B7.1.1.1 Examine the parts of a computer system.',
+  '- **Curriculum indicator:** B7.1.1.1.1 Identify the parts.',
+  '- **Strand:** Computing Systems',
+  '- **Topic:** Introduction to Computer Systems',
+  '- **Monitor:** Displays information.',
+  '## Assessment'
+].join('\\n'), 8);
+assert.deepEqual(metadataLabels.map(x => x.concept), ['Monitor']);
 assert.deepEqual(Targets.extract('## BECE Practice\n- **Keyboard:** not notes', 8), []);
 assert.deepEqual(Targets.extract('## Study Notes\n- **Definition:** A computer is...', 8), []);
 assert.deepEqual(Targets.extract('## Study Notes\n- **Examples:** a list of ideas', 8), []);
