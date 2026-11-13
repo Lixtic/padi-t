@@ -28,6 +28,19 @@ assert.equal(Search.relevant({ title: 'Animal cell diagram', description: 'A lab
 assert.equal(Search.relevant({ title: 'Computer keyboard', description: 'Input hardware for a computer' }, 'keyboard', 'Introduction to Computer Systems'), true);
 assert.equal(Search.relevant({ title: 'Keyboard instrument', description: 'A musical instrument' }, 'keyboard', 'Introduction to Computer Systems'), false);
 
+// YouTube candidates must match the requested concept and lesson context.
+const videos = Search.rankVideos([
+  { title: 'Animal cell structure explained', description: 'Biology lesson on organelles', channel: 'Science Classroom', thumbnail: 'https://img.example/v1.jpg', url: 'https://youtube.com/watch?v=1' },
+  { title: 'Prison cell tour', description: 'Inside a jail', channel: 'Travel Channel', thumbnail: 'https://img.example/v2.jpg', url: 'https://youtube.com/watch?v=2' },
+  { title: 'Cell phone review', description: 'Latest smartphone features', channel: 'Tech Reviews', thumbnail: 'https://img.example/v3.jpg', url: 'https://youtube.com/watch?v=3' },
+], 'cell', 'Basic 7 Biology');
+assert.equal(videos.length, 1);
+assert.equal(videos[0].title, 'Animal cell structure explained');
+assert.equal(Search.rankVideos([
+  { title: 'How to build a computer network', description: 'Networking basics', channel: 'Computing Lessons', thumbnail: 'https://img.example/v4.jpg', url: 'https://youtube.com/watch?v=4' },
+  { title: 'Network marketing tips', description: 'Business sales', channel: 'Business Channel', thumbnail: 'https://img.example/v5.jpg', url: 'https://youtube.com/watch?v=5' },
+], 'computer network', 'Basic 8 Computing').length, 1);
+
 // The same picture from two providers appears once.
 assert.equal(Search.dedupe([
   { title: 'Map of Africa.png', author: 'A', thumbnail: 'https://img.example/m.png?w=800' },
