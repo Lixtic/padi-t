@@ -152,9 +152,11 @@
     var pending;
     try { pending = JSON.parse(localStorage.getItem(pendingKey) || 'null'); } catch (e) { pending = null; }
     if (pending && pending.email === String(email).toLowerCase()) {
-      var existing = await P.getAccountProfile();
-      if (existing) localStorage.removeItem(pendingKey);
-      else await savePending(email);
+      try {
+        var existing = await P.getAccountProfile();
+        if (existing) localStorage.removeItem(pendingKey);
+        else await savePending(email);
+      } catch (e) { console.warn('[GuidEd account profile] sign-in succeeded; profile setup will retry:', e && e.message); }
     }
     return user;
   };
