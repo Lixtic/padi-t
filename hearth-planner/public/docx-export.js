@@ -238,6 +238,27 @@
       var raw = lines[i].trim();
       if (!raw || /^(?:-{3,}|\*{3,}|_{3,})$/.test(raw) || raw.indexOf('```') === 0) { i++; continue; }
 
+      var imageMatch = raw.match(/^!\\[([^\\]]*)\\]\\((https:\\/\\/[^)\\s]+)\\)$/);
+      if (imageMatch) {
+        i++;
+        var asset = opts && opts.imageData && opts.imageData[imageMatch[2]];
+        if (asset && D.ImageRun) {
+          children.push(new D.Paragraph({
+            alignment: D.AlignmentType.CENTER,
+            spacing: { before: 40, after: 60 },
+            children: [new D.ImageRun({
+              data: asset.data,
+              transformation: { width: asset.width, height: asset.height }
+            })]
+          }));
+        } else {
+          paragraphs(imageMatch[1] || 'Classroom illustration', { size: 17, after: 40, italic: true, align: D.AlignmentType.CENTER })
+            .forEach(function (p) { children.push(p); });
+        }
+        wrote = true;
+        continue;
+      }
+
       if (isTableLine(raw)) {
         var block = [];
         while (i < lines.length && isTableLine(lines[i].trim())) { block.push(lines[i].trim()); i++; }
@@ -305,8 +326,44 @@
     });
   }
 
+  // Fetches and rasterizes markdown illustrations so they are embedded in the Word file, not left as URLs.
+  async function imageAssets(content) {
+    var matches = String(content || '').match(/^!\\[[^\\]]*\\]\\((https:\\/\\/[^)\\s]+)\\)$/gm) || [];
+    var urls = matches.map(function (line) { return line.match(/\\((https:\\/\\/[^)\\s]+)\\)$/)[1]; });
+    var unique = Array.from(new Set(urls)), assets = Object.create(null);
+    if (typeof fetch !== 'function' || typeof document === 'undefined') return assets;
+    await Promise.all(unique.map(async function (url) {
+      try {
+        var response = await fetch(url, { mode: 'cors', credentials: 'omit' });
+        if (!response.ok) return;
+        var blob = await response.blob();
+        var bitmap;
+        if (typeof createImageBitmap === 'function') bitmap = await createImageBitmap(blob);
+        else bitmap = await new Promise(function (resolve, reject) {
+          var objectUrl = URL.createObjectURL(blob), img = new Image();
+          img.onload = function () { URL.revokeObjectURL(objectUrl); resolve(img); };
+          img.onerror = function () { URL.revokeObjectURL(objectUrl); reject(new Error('Image decode failed')); };
+          img.src = objectUrl;
+        });
+        var scale = Math.min(1, 920 / bitmap.width, 620 / bitmap.height);
+        var width = Math.max(1, Math.round(bitmap.width * scale));
+        var height = Math.max(1, Math.round(bitmap.height * scale));
+        var canvas = document.createElement('canvas');
+        canvas.width = width; canvas.height = height;
+        canvas.getContext('2d').drawImage(bitmap, 0, 0, width, height);
+        if (bitmap.close) bitmap.close();
+        var png = await new Promise(function (resolve) { canvas.toBlob(resolve, 'image/png'); });
+        if (!png) return;
+        assets[url] = { data: new Uint8Array(await png.arrayBuffer()), width: width, height: height };
+      } catch (e) { /* CORS, unsupported format or a missing image: keep the alt text in Word. */ }
+    }));
+    return assets;
+  }
+
   // Resolves to a Blob (browser) or Buffer (Node).
-  function toFile(docx, title, content, opts) {
+  async function toFile(docx, title, content, opts) {
+    opts = Object.assign({}, opts || {});
+    opts.imageData = await imageAssets(content);
     var doc = build(docx, title, content, opts);
     return typeof Blob !== 'undefined' ? docx.Packer.toBlob(doc) : docx.Packer.toBuffer(doc);
   }
