@@ -45,20 +45,25 @@ function relevance(query, title, description, context) {
 function relevant(item, query, context) {
   const r = relevance(query, item.title, item.description, context);
   const count = [...new Set(terms(query))].length;
-  // Never accept a result merely because it has an image URL. Require meaningful concept overlap.
   const conceptMatch = count <= 2 ? r.matched >= 1 : (r.matched >= 2 && r.ratio >= 0.34) || (r.phrase && r.matched >= 1);
   if (!conceptMatch) return false;
-
-  // Short, ambiguous concepts (e.g. "cell", "port", "network") need at least
-  // one lesson-context signal when the caller supplied useful context.
   const contextTerms = [...new Set(terms(context))];
   if (count <= 2 && contextTerms.length) {
     const titleTerms = new Set(terms(item.title));
     const descriptionTerms = new Set(terms(item.description));
-    const contextMatches = contextTerms.filter((word) => titleTerms.has(word) || descriptionTerms.has(word)).length;
-    if (!contextMatches) return false;
+    if (!contextTerms.some((word) => titleTerms.has(word) || descriptionTerms.has(word))) return false;
   }
   return true;
+}
+function rankVideos(items, query, context) {
+  return (items || []).map((item) => {
+    const description = [item.description, item.channel].filter(Boolean).join(' ');
+    return Object.assign({}, item, { _score: relevance(query, item.title, description, context).score });
+  }).filter((item) => {
+    const description = [item.description, item.channel].filter(Boolean).join(' ');
+    return item.url && /^https:\/\//i.test(item.url) && item.thumbnail && /^https:\/\//i.test(item.thumbnail)
+      && relevant({ title: item.title, description }, query, context);
+  }).sort((a, b) => b._score - a._score).slice(0, 8).map(({ _score, ...item }) => item);
 }
 function cleanText(value) {
   return String(value || '').replace(/<[^>]*>/g, ' ').replace(/&nbsp;/g, ' ').replace(/\s+/g, ' ').trim();
@@ -228,7 +233,8 @@ module.exports = async (req, res) => {
   const key = (type === 'image' ? 'image-relevance-v4:' : 'video:') + query + (context ? '|context:' + context : '') + (topic ? '|topic:' + keywords(topic, 6) : '');
   const hit = cached(key);
   if (hit) return sendJson(res, 200, hit);
-  const searchUrl = 'https://www.youtube.com/results?search_query=' + encodeURIComponent(query + ' educational');
+  const videoQuery = keywords([raw, rawContext, topic].filter(Boolean).join(' '), 12);
+  const searchUrl = 'https://www.youtube.com/results?search_query=' + encodeURIComponent(videoQuery + ' educational');
   try {
     if (type === 'video') {
       const apiKey = String(process.env.YOUTUBE_API_KEY || '').trim();
@@ -237,16 +243,17 @@ module.exports = async (req, res) => {
       try { cap = await Quota.rateLimitShared('media:yt:site', Math.max(1, parseInt(process.env.YOUTUBE_SEARCHES_DAILY, 10) || 80), 24 * 60 * 60 * 1000); } catch (e) { cap = { ok: false }; }
       if (!cap.ok) return sendJson(res, 200, { type, query, results: [], searchUrl, provider: 'youtube-search' });
       const url = new URL('https://www.googleapis.com/youtube/v3/search');
-      url.search = new URLSearchParams({ part: 'snippet', type: 'video', maxResults: '8', safeSearch: 'strict', q: query + ' educational', key: apiKey }).toString();
+      url.search = new URLSearchParams({ part: 'snippet', type: 'video', maxResults: '8', safeSearch: 'strict', q: videoQuery + ' educational', key: apiKey }).toString();
       const data = await getJson(url);
-      const results = (data.items || []).map((item) => ({
+      const candidates = (data.items || []).map((item) => ({
         title: item.snippet && item.snippet.title || 'Educational video',
         description: item.snippet && item.snippet.description || '',
         channel: item.snippet && item.snippet.channelTitle || '',
         thumbnail: item.snippet && item.snippet.thumbnails && (item.snippet.thumbnails.medium || item.snippet.thumbnails.default) && (item.snippet.thumbnails.medium || item.snippet.thumbnails.default).url || '',
         url: 'https://www.youtube.com/watch?v=' + encodeURIComponent(item.id.videoId),
       }));
-      const out = { type, query, results, searchUrl, provider: 'youtube' };
+      const results = rankVideos(candidates, query, lessonContext);
+      const out = { type, query, context: lessonContext, results, searchUrl, provider: 'youtube', ranking: 'keyword', message: results.length ? undefined : 'No sufficiently relevant educational videos were found. Try a more specific concept.' };
       if (results.length) remember(key, out);
       return sendJson(res, 200, out);
     }
@@ -291,4 +298,4 @@ module.exports = async (req, res) => {
   }
 };
 
-module.exports._test = { terms, stem, keywords, relevance, relevant, rankAndFilter, dedupe, FLICKR_LICENSES };
+module.exports._test = { terms, stem, keywords, relevance, relevant, rankAndFilter, rankVideos, dedupe, FLICKR_LICENSES };
