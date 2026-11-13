@@ -9,8 +9,7 @@ const BASIC_CLASS = /^Basic [1-9]$/;
 const ROLES = new Set(['teacher', 'parent']);
 const cleanText = (value, max) => String(value || '').trim().slice(0, max);
 
-// GET /api/account-profile -> { profile: { roles, primaryRole, displayName, children } | null }
-// POST /api/account-profile { data } -> validates and saves the signed-in user's role and parent setup.
+// Shared account-role handler, routed through /api/sync to keep the deployment function count down.
 module.exports = async (req, res) => {
   if (req.method !== 'GET' && req.method !== 'POST') {
     res.setHeader('Allow', 'GET, POST');

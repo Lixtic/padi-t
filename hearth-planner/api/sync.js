@@ -9,19 +9,22 @@ const MAX_ROWS = 20, MAX_ROW_BYTES = 400000;
 // GET  /api/sync?what=plans&limit=60   -> [{ id, data, updated_at, deleted }]
 // GET  /api/sync?what=profile          -> { profile: { data, updated_at } | null }
 // POST /api/sync { what: 'plans', rows: [...] } | { what: 'profile', data, updated_at }
-// Every query is scoped to the signed-in teacher's id.
+// /api/account-profile is rewritten here and delegated to the same authenticated sync service.
 module.exports = async (req, res) => {
+  const route = new URL(req.url, 'http://x');
+  if (route.searchParams.get('what') === 'account-profile') {
+    return require('./_account-profile')(req, res);
+  }
   if (req.method !== 'GET' && req.method !== 'POST') { res.setHeader('Allow', 'GET, POST'); return sendJson(res, 405, { error: 'method', message: 'Use GET or POST.' }); }
   if (!A.syncConfigured()) return sendJson(res, 503, { error: 'not_configured', message: 'Sync is not set up on this server.' });
   const me = await A.authed(req);
   if (!me) return sendJson(res, 401, { error: 'auth', message: 'Please sign in again.', reason: req.authFail || 'unknown' });
   try {
     await db.ensure();
-    const url = new URL(req.url, 'http://x');
     if (req.method === 'GET') {
-      const what = url.searchParams.get('what');
+      const what = route.searchParams.get('what');
       if (what === 'plans') {
-        const limit = Math.min(Math.max(parseInt(url.searchParams.get('limit'), 10) || 60, 1), 100);
+        const limit = Math.min(Math.max(parseInt(route.searchParams.get('limit'), 10) || 60, 1), 100);
         const rows = await db.query('select id, data, updated_at, deleted from plans where user_id = $1 order by updated_at desc limit ' + limit, [me.uid]);
         return sendJson(res, 200, rows.map((r) => ({ id: r.id, data: r.data, updated_at: Number(r.updated_at), deleted: !!r.deleted })));
       }
