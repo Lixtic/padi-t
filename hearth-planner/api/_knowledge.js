@@ -45,6 +45,7 @@ function normalizeCode(value) {
   const code = String(value || '').trim().toUpperCase();
   return /^(?:B[1-9]|SHS[1-3])(?:\.\d+){2,5}$/.test(code) ? code : '';
 }
+const DOCUMENT_TYPES = Object.freeze(['curriculum', 'teacher_guide', 'approved_textbook', 'approved_supplementary', 'teacher_resource']);
 function sourceTrust() {
   return 'reviewed_resource';
 }
@@ -60,8 +61,7 @@ function validateSource(input) {
   try { url = new URL(sourceUrl); } catch (e) { throw new Error('A valid HTTPS source URL is required.'); }
   if (url.protocol !== 'https:') throw new Error('Only HTTPS source URLs are accepted.');
   if (!title || !publisher || !subject) throw new Error('Title, publisher and subject are required.');
-  const allowedKinds = ['curriculum', 'teacher_guide', 'approved_textbook', 'approved_supplementary', 'teacher_resource'];
-  if (!allowedKinds.includes(documentType)) throw new Error('Unsupported document type.');
+  if (!DOCUMENT_TYPES.includes(documentType)) throw new Error('Unsupported document type.');
   const approvalReference = cleanText(input.approvalReference, 240);
   if ((documentType === 'approved_textbook' || documentType === 'approved_supplementary') && !approvalReference) throw new Error('Provide the NaCCA approval-register reference for approved materials.');
   return {
@@ -219,4 +219,4 @@ async function retrieve(params) {
   ].join('\n\n') : '';
   return { chunks, context, sourceCount: new Set(chunks.map(c => c.source.id)).size, status: chunks.length ? 'retrieved' : 'no_matching_sources' };
 }
-module.exports = { validateSource, splitText, prepareChunks, requestQuery, retrieve, ingest, reviewSource, trustAfterReview, TRUSTED_HOSTS, isTrustedHost, subjectsFor, queryTerms, toTsQuery, enoughOverlap };
+module.exports = { DOCUMENT_TYPES, validateSource, splitText, prepareChunks, requestQuery, retrieve, ingest, reviewSource, trustAfterReview, TRUSTED_HOSTS, isTrustedHost, subjectsFor, queryTerms, toTsQuery, enoughOverlap };

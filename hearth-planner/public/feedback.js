@@ -317,19 +317,34 @@
   }
   function setupKnowledge() {
     var form = $('#kbForm'); if (!form) return;
-    var fileEl = $('#kbFile'), state = $('#kbState');
+    var fileEl = $('#kbFile'), state = $('#kbState'), unsupportedPreparedType = false;
+    function updateApprovalReference() {
+      var required = $('#kbType').value === 'approved_textbook' || $('#kbType').value === 'approved_supplementary';
+      var row = $('#kbApprovalRow'), input = $('#kbApprovalReference');
+      row.hidden = !required; input.required = required; input.disabled = !required;
+    }
+    $('#kbType').addEventListener('change', function () { unsupportedPreparedType = false; updateApprovalReference(); });
+    updateApprovalReference();
     function fill(id, v) { var e = $(id); if (e && !e.value && v) e.value = v; }
     fileEl.addEventListener('change', function () {
+      unsupportedPreparedType = false;
       var f = fileEl.files[0]; if (!f || !/\.json$/i.test(f.name)) return;
       readKnowledgeFile(f).then(function (j) {
         fill('#kbTitle', j.title); fill('#kbPublisher', j.publisher); fill('#kbUrl', j.sourceUrl); fill('#kbSubject', j.subject);
-        fill('#kbClasses', (j.classes || []).join(', ')); fill('#kbLicense', j.license);
-        if (j.documentType && $('#kbType').querySelector('option[value="' + j.documentType + '"]')) $('#kbType').value = j.documentType;
-        state.textContent = 'Read ' + j.segments.length + ' pages. Check the details, then add it.';
+        fill('#kbClasses', (j.classes || []).join(', ')); fill('#kbLicense', j.license); fill('#kbApprovalReference', j.approvalReference);
+        if (j.documentType) {
+          if ($('#kbType').querySelector('option[value="' + j.documentType + '"]')) $('#kbType').value = j.documentType;
+          else unsupportedPreparedType = true;
+        }
+        updateApprovalReference();
+        state.textContent = unsupportedPreparedType
+          ? 'Read ' + j.segments.length + ' pages. This file uses unsupported document type “' + j.documentType + '”. Choose the correct supported kind before adding it.'
+          : 'Read ' + j.segments.length + ' pages. Check the details, then add it.';
       }, function (e) { state.textContent = e.message; });
     });
     form.addEventListener('submit', function (e) {
       e.preventDefault();
+      if (unsupportedPreparedType) { state.textContent = 'Choose a supported document kind before adding this file.'; return; }
       var f = fileEl.files[0]; if (!f) return;
       var btn = $('#kbAdd'); btn.disabled = true; state.textContent = 'Reading the file…';
       readKnowledgeFile(f).then(function (doc) {
@@ -337,14 +352,15 @@
           title: $('#kbTitle').value.trim() || doc.title, publisher: $('#kbPublisher').value.trim() || doc.publisher,
           sourceUrl: $('#kbUrl').value.trim() || doc.sourceUrl, subject: $('#kbSubject').value.trim() || doc.subject,
           classes: $('#kbClasses').value.trim() ? $('#kbClasses').value.split(',').map(function (x) { return x.trim(); }).filter(Boolean) : (doc.classes || []),
-          documentType: $('#kbType').value, license: $('#kbLicense').value.trim() || doc.license || ''
+          documentType: $('#kbType').value, license: $('#kbLicense').value.trim() || doc.license || '',
+          approvalReference: $('#kbApprovalReference').value.trim() || doc.approvalReference || ''
         });
         state.textContent = 'Adding ' + body.segments.length + ' pages…';
         return post('knowledge', body);
       }).then(function (r) {
         if (r && r.ok) {
           state.textContent = r.duplicate ? 'That document is already here (' + (KB_STATUS[r.status] || r.status) + ').' : 'Added ' + r.chunks + ' passages. Approve it in the list above to start using it.';
-          form.reset(); loadKnowledge(); loadLog();
+          form.reset(); updateApprovalReference(); loadKnowledge(); loadLog();
         } else state.textContent = (r && r.message) || 'Could not add the document.';
       }).catch(function (err) { state.textContent = err.message || 'Could not add the document.'; }).then(function () { btn.disabled = false; });
     });
