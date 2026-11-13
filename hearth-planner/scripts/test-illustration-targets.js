@@ -1,0 +1,13 @@
+'use strict';
+const assert = require('node:assert/strict');
+const Targets = require('../public/illustration-targets');
+const notes = ['## Study Notes','### Parts of a computer system','A computer system is made up of different parts that work together.','- **Monitor:** A monitor displays text, pictures and videos from the computer.','- **Keyboard:** The keyboard is used to type letters and numbers.','- **Mouse:** A mouse helps the user point, click and select items.','- **System unit:** The system unit contains important internal components.','## BECE Practice','- **Printer:** This distractor must not be selected.'].join('\n');
+const targets = Targets.extract(notes, 8);
+assert.deepEqual(targets.map(x => x.concept), ['Monitor','Keyboard','Mouse','System unit']);
+assert.equal(targets[0].anchorLine.includes('displays text'), true);
+assert.equal(targets[0].lineIndex, 3);
+const older = Targets.extract(['## Study Notes','Examples of input devices include the keyboard, mouse, and scanner.','## Assessment Rubric'].join('\n'), 8);
+assert.deepEqual(older.map(x => x.concept), ['keyboard','mouse','scanner']);
+assert.deepEqual(Targets.extract('## BECE Practice\n- **Keyboard:** not notes', 8), []);
+assert.deepEqual(Targets.extract('## Study Notes\n- **Definition:** A computer is...', 8), []);
+process.stdout.write('Example-aware illustration target tests passed.\n');
