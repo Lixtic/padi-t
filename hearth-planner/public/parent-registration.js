@@ -138,9 +138,9 @@
     try { pending = JSON.parse(localStorage.getItem(pendingKey) || 'null'); } catch (e) { pending = null; }
     if (!pending || (email && pending.email !== String(email).toLowerCase())) return;
     try {
-      await P.setAccountProfile(pending.data);
+      var saved = await P.setAccountProfile(pending.data);
       localStorage.removeItem(pendingKey);
-      window.dispatchEvent(new CustomEvent('guided:account-profile-saved', { detail: pending.data }));
+      window.dispatchEvent(new CustomEvent('guided:account-profile-saved', { detail: saved && saved.profile ? saved.profile : pending.data }));
     } catch (e) {
       console.warn('[GuidEd account profile] setup will be retried after sign-in:', e && e.message);
       throw new Error('Your account was created, but we could not save your role and child details. Please try signing in again to finish setup.');
