@@ -161,6 +161,7 @@ function firstMessage(p) {
       : 'Generate the 2-lesson weekly package.';
   const lines = [
     task,
+    ...(p.mode === 'parent' ? ['Parent resource type: ' + (p.resourceType || 'Study notes')] : []),
     'Subject: ' + p.subject,
     'Class: ' + p.cls,
     ...(levelLine(p.cls)),
