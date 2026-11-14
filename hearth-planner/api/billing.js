@@ -117,6 +117,7 @@ module.exports = async (req, res) => {
     if (!E.enabled()) return sendJson(res, 404, { error: 'not_configured', message: 'Plans are not set up on this server.' });
     if (req.method !== 'POST') return sendJson(res, 405, { error: 'method', message: 'Use POST.' });
     if (!me || !me.uid) return sendJson(res, 401, { error: 'session', message: 'Please sign in first.' });
+    if (await require('./_quota').limited(res, 'billing:' + me.uid, 40, 10 * 60 * 1000)) return;
     if (action === 'reward_start' || action === 'reward_claim') {
       const ent = await E.resolve(me, clientIp(req));
       const b = await readJson(req);

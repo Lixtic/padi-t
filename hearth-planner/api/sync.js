@@ -20,6 +20,7 @@ module.exports = async (req, res) => {
   if (!A.syncConfigured()) return sendJson(res, 503, { error: 'not_configured', message: 'Sync is not set up on this server.' });
   const me = await A.authed(req);
   if (!me) return sendJson(res, 401, { error: 'auth', message: 'Please sign in again.', reason: req.authFail || 'unknown' });
+  if (await require('./_quota').limited(res, 'sync:' + me.uid, 1200, 10 * 60 * 1000)) return;   // about two a second: far above normal use
   try {
     await db.ensure();
     if (req.method === 'GET') {

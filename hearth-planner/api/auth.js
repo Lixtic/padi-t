@@ -1,6 +1,6 @@
 'use strict';
 const crypto = require('crypto');
-const { sendJson, clientIp, rateLimit, readJson } = require('./_lib');
+const { sendJson, clientIp, readJson } = require('./_lib');
 const db = require('./_db');
 const A = require('./_auth');
 
@@ -17,8 +17,7 @@ module.exports = async (req, res) => {
   const email = String(body.email || '').trim().toLowerCase();
   if (!EMAIL.test(email) || email.length > 120) return sendJson(res, 400, { error: 'bad_request', message: 'Enter a valid email address.' });
 
-  const ip = rateLimit('auth:' + clientIp(req), 20, 10 * 60 * 1000);
-  if (!ip.ok) return sendJson(res, 429, { error: 'rate', message: 'Too many attempts. Please wait a few minutes.' });
+  if (await require('./_quota').limited(res, 'auth:' + clientIp(req), 20, 10 * 60 * 1000, 'Too many attempts. Please wait a few minutes.')) return;
 
   try {
     await db.ensure();

@@ -6,7 +6,7 @@
 //   POST /api/feedback?action=status         Admin only. { id, status: 'new' | 'done' }
 //   POST /api/feedback?action=delete         Admin only. { id }
 const crypto = require('crypto');
-const { sendJson, clientIp, readJson, rateLimit } = require('./_lib');
+const { sendJson, clientIp, readJson } = require('./_lib');
 const A = require('./_auth');
 const db = require('./_db');
 
@@ -58,8 +58,7 @@ module.exports = async (req, res) => {
 
     // Sending feedback: open to everyone, but limited so the form cannot be used to flood the inbox.
     const who = (me && me.uid) || clientIp(req);
-    const rl = rateLimit('feedback:' + who, 5, 60 * 60 * 1000);
-    if (!rl.ok) return sendJson(res, 429, { error: 'rate_limited', message: 'You have sent a few messages already. Please try again later.' }, { 'Retry-After': String(rl.retryAfter) });
+    if (await require('./_quota').limited(res, 'feedback:' + who, 5, 60 * 60 * 1000, 'You have sent a few messages already. Please try again later.')) return;
     const kind = KINDS.includes(body.kind) ? body.kind : 'other';
     const message = clip(body.message, 2000);
     if (message.length < 5) return sendJson(res, 400, { error: 'bad_request', message: 'Please write a little more so we can understand.' });
