@@ -2389,6 +2389,31 @@
     sheet.syncNow.disabled = true; sheet.result.textContent = 'Syncing…';
     try { await syncAndReport(false); } finally { sheet.syncNow.disabled = false; }
   });
+  /* Delete account: a confirm sheet that needs the word DELETE, then the server erases the account and this device signs out. */
+  const del = { sheet: $('#delSheet'), input: $('#dlConfirm'), go: $('#dlGo'), err: $('#dlErr'), local: $('#dlLocal') };
+  const delClose = () => { if (del.sheet.open) del.sheet.close(); };
+  $('#asDelete').addEventListener('click', () => {
+    del.input.value = ''; del.go.disabled = true; del.err.hidden = true; del.local.checked = true;
+    closeSheet(); if (!del.sheet.open) del.sheet.showModal(); del.input.focus();
+  });
+  $('#dlClose').addEventListener('click', delClose);
+  $('#dlCancel').addEventListener('click', delClose);
+  del.input.addEventListener('input', () => { del.go.disabled = del.input.value.trim() !== 'DELETE'; });
+  del.go.addEventListener('click', async () => {
+    if (del.input.value.trim() !== 'DELETE') return;
+    del.go.disabled = true; del.err.hidden = true; del.go.firstElementChild.textContent = 'Deleting…';
+    try {
+      const r = await window.PadiSync.deleteAccount('DELETE');
+      if (del.local.checked) { try { Object.keys(localStorage).filter((k) => /^(schoolpadi|guided)[.]/.test(k)).forEach((k) => localStorage.removeItem(k)); } catch (e) { /* the server copy is already gone */ } }
+      if (stopLive) { stopLive(); stopLive = null; }
+      lastSync = 0; problemKind = ''; acctStatus(''); refreshAcct(); acctMsg(''); delClose();
+      toast(r && r.identityRemoved === false ? 'Your data is deleted. Your sign-in record could not be removed automatically, so please contact us to finish.' : 'Your account has been deleted.');
+      if (del.local.checked) setTimeout(() => location.reload(), 1200); else refreshPlans();
+    } catch (e) {
+      del.err.textContent = e && e.offline ? 'You appear to be offline. Try again when you are connected.' : ((e && e.message) || 'Could not delete the account. Please try again.');
+      del.err.hidden = false; del.go.disabled = false;
+    } finally { del.go.firstElementChild.textContent = 'Delete my account'; }
+  });
   sheet.signOut.addEventListener('click', async () => {
     await window.PadiSync.signOut();
     if (stopLive) { stopLive(); stopLive = null; }

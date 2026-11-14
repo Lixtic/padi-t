@@ -363,3 +363,12 @@ body.on-dashboard .v2-tabbar { display: none !important; }
 .act-chip { min-height: 32px; padding: 0 12px; border-radius: 999px; border: 1px solid var(--card-line); background: var(--card); color: var(--text); font: 500 13px var(--font-ui); cursor: pointer; }
 .act-chip[aria-pressed="true"] { background: var(--accent); border-color: var(--accent); color: var(--on-accent); }
 .act-chip:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+/* Account deletion */
+.as-delete { display: block; margin: 14px auto 0; font-size: 13px; color: var(--muted); text-decoration: underline; text-underline-offset: 3px; }
+.as-delete:hover { color: var(--del, #b3261e); }
+.dl-list { margin: 0 0 12px; padding-left: 18px; color: var(--muted); font-size: 13.5px; line-height: 1.5; }
+.dl-check { display: flex; gap: 8px; align-items: flex-start; margin: 4px 0 14px; font-size: 14px; }
+.dl-check input { margin-top: 3px; }
+.as-danger-solid { background: var(--del, #b3261e); color: #fff; }
+.as-danger-solid:disabled { opacity: .45; cursor: not-allowed; }
