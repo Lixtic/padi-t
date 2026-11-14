@@ -1,7 +1,7 @@
 /* GuidEd Parent Dashboard: child management, home learning and progress. */
 (function () {
   'use strict';
-  var state = { root: null, profile: null, records: [], loaded: false, loading: false, tab: 'overview', task: 'lesson', editingChild: '', busy: false, error: '', result: null };
+  var state = { root: null, profile: null, records: [], loaded: false, loading: false, tab: 'overview', task: 'lesson', lessonStep: 0, lessonDraft: {}, editingChild: '', busy: false, error: '', result: null };
   var $ = function (selector, root) { return (root || state.root).querySelector(selector); };
   var esc = function (value) { return String(value == null ? '' : value).replace(/[&<>"']/g, function (ch) { return ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[ch]; }); };
   var uid = function () { return 'pl-' + Math.random().toString(36).slice(2, 10) + Date.now().toString(36).slice(-5); };
@@ -68,10 +68,32 @@
   }
 
   function renderTaskForm() {
+    if (state.task === 'lesson') return renderLessonWizard();
     var list = children(), child = selectedChild();
     var subjects = child && child.subjects && child.subjects.length ? child.subjects : subjectsFor(child && child.class || 'Basic 7');
-    var weekOptions = Array.from({ length: 14 }, function (_, i) { return '<option value="' + (i + 1) + '">' + (i + 1) + '</option>'; }).join('');
-    return '<form class="pd-form pd-task-form" id="pdTaskForm"><div class="pd-form-grid"><label>Choose your child<select name="childId" required>' + list.map(function (item) { return '<option value="' + esc(item.id) + '"' + (child && item.id === child.id ? ' selected' : '') + '>' + esc(item.name) + ' · ' + esc(item.class) + '</option>'; }).join('') + '</select></label><label>Subject<select name="subject">' + subjects.map(function (subject) { return '<option>' + esc(subject) + '</option>'; }).join('') + '</select></label></div><label>Topic or area to learn<input name="topic" maxlength="180" placeholder="e.g. Parts of a computer" required></label><div class="pd-form-grid"><label>Term<select name="term"><option value="1">Term 1</option><option value="2">Term 2</option><option value="3">Term 3</option></select></label><label>Week<select name="week">' + weekOptions + '</select></label></div><label>Anything you want the AI to focus on (optional)<textarea name="notes" rows="2" maxlength="160" placeholder="e.g. Explain it using examples from our home or community."></textarea></label><button class="pd-primary" type="submit"' + (state.busy ? ' disabled' : '') + '>' + (state.busy ? 'Preparing…' : 'Create ' + esc(labels[state.task]).toLowerCase()) + '</button></form>';
+    var weeks = Array.from({ length: 14 }, function (_, i) { return '<option value="' + (i + 1) + '">' + (i + 1) + '</option>'; }).join('');
+    return '<form class="pd-form pd-task-form" id="pdTaskForm"><div class="pd-form-grid"><label>Choose your child<select name="childId" required>' + list.map(function (item) { return '<option value="' + esc(item.id) + '"' + (child && item.id === child.id ? ' selected' : '') + '>' + esc(item.name) + ' · ' + esc(item.class) + '</option>'; }).join('') + '</select></label><label>Subject<select name="subject">' + subjects.map(function (subject) { return '<option>' + esc(subject) + '</option>'; }).join('') + '</select></label></div><label>Topic or area to learn<input name="topic" maxlength="180" placeholder="e.g. Parts of a computer" required></label><div class="pd-form-grid"><label>Term<select name="term"><option value="1">Term 1</option><option value="2">Term 2</option><option value="3">Term 3</option></select></label><label>Week<select name="week">' + weeks + '</select></label></div><label>Anything you want the AI to focus on (optional)<textarea name="notes" rows="2" maxlength="160"></textarea></label><button class="pd-primary" type="submit"' + (state.busy ? ' disabled' : '') + '>' + (state.busy ? 'Preparing…' : 'Create ' + esc(labels[state.task]).toLowerCase()) + '</button></form>';
+  }
+
+  function renderLessonWizard() {
+    var d = state.lessonDraft || {}, child = children().find(function (c) { return c.id === d.childId; }) || selectedChild();
+    var subjects = child && child.subjects && child.subjects.length ? child.subjects : subjectsFor(child && child.class || 'Basic 7');
+    var step = Math.max(0, Math.min(3, state.lessonStep || 0));
+    var titles = ['Choose your child', 'Choose a topic', 'Set up the lesson', 'Review your lesson'];
+    var hints = ['Who will be learning today?', 'What would you like to learn together?', 'A few details help us prepare the right activity.', 'Check the details before creating the lesson.'];
+    var icons = ['users', 'book', 'sliders', 'check'];
+    var dots = titles.map(function (_, i) { return '<span class="pd-step-dot ' + (i < step ? 'is-done' : i === step ? 'is-current' : '') + '">' + (i < step ? icon('check') : i + 1) + '</span>'; }).join('');
+    var content = '';
+    if (step === 0) {
+      content = '<div class="pd-wizard-field"><label>Choose your child</label><select name="childId" required>' + children().map(function (c) { return '<option value="' + esc(c.id) + '"' + (child && c.id === child.id ? ' selected' : '') + '>' + esc(c.name) + ' · ' + esc(c.class) + '</option>'; }).join('') + '</select><small>We’ll use their class and learning level to shape the lesson.</small></div><div class="pd-wizard-field"><label>Subject</label><select name="subject">' + subjects.map(function (s) { return '<option' + (s === (d.subject || subjects[0]) ? ' selected' : '') + '>' + esc(s) + '</option>'; }).join('') + '</select></div>';
+    } else if (step === 1) {
+      content = '<div class="pd-wizard-context">' + icon('user') + '<span>Learning with <strong>' + esc(child && child.name || 'your child') + '</strong> · ' + esc(child && child.class || '') + '</span></div><div class="pd-wizard-field"><label>What topic should your child learn?</label><input name="topic" maxlength="180" required value="' + esc(d.topic || '') + '" placeholder="e.g. Parts of a computer"><small>Choose a school topic or something your child finds difficult.</small></div><div class="pd-topic-examples"><span>Examples</span><button type="button" data-topic-example="Parts of a computer">Parts of a computer</button><button type="button" data-topic-example="Fractions">Fractions</button><button type="button" data-topic-example="The water cycle">The water cycle</button></div>';
+    } else if (step === 2) {
+      content = '<div class="pd-wizard-field"><label>School term</label><select name="term">' + [1,2,3].map(function(n){return '<option value="'+n+'"'+(Number(d.term||1)===n?' selected':'')+'>Term '+n+'</option>';}).join('') + '</select></div><div class="pd-wizard-field"><label>Curriculum week</label><select name="week">' + Array.from({length:14},function(_,i){var n=i+1;return '<option value="'+n+'"'+(Number(d.week||1)===n?' selected':'')+'>Week '+n+'</option>';}).join('') + '</select></div><div class="pd-wizard-field"><label>Anything we should focus on? <span>(optional)</span></label><textarea name="notes" rows="3" maxlength="160" placeholder="For example: Use examples from our home or community.">' + esc(d.notes || '') + '</textarea></div><p class="pd-wizard-tip">' + icon('lightbulb') + ' Designed for ' + esc(child && child.minutes || 30) + ' minutes of daily learning.</p>';
+    } else {
+      content = '<div class="pd-review-list"><div><span>Child</span><strong>' + esc(child && child.name || '—') + ' · ' + esc(child && child.class || '') + '</strong></div><div><span>Subject</span><strong>' + esc(d.subject || subjects[0] || '—') + '</strong></div><div><span>Topic</span><strong>' + esc(d.topic || '—') + '</strong></div><div><span>Schedule</span><strong>Term ' + esc(d.term || 1) + ' · Week ' + esc(d.week || 1) + '</strong></div></div><input type="hidden" name="childId" value="' + esc(d.childId || child && child.id || '') + '"><input type="hidden" name="subject" value="' + esc(d.subject || subjects[0] || '') + '"><input type="hidden" name="topic" value="' + esc(d.topic || '') + '"><input type="hidden" name="term" value="' + esc(d.term || 1) + '"><input type="hidden" name="week" value="' + esc(d.week || 1) + '"><input type="hidden" name="notes" value="' + esc(d.notes || '') + '"><p class="pd-wizard-tip">' + icon('book') + ' GuidEd will prepare the parent guide, child-friendly explanation, practical activity and questions.</p>';
+    }
+    return '<form class="pd-form pd-task-form pd-lesson-wizard" id="pdTaskForm" data-step="' + step + '"><div class="pd-wizard-progress"><div><span>STEP ' + (step+1) + ' OF 4</span><strong>' + titles[step] + '</strong></div><div class="pd-wizard-progress-track">' + dots + '</div></div><section class="pd-wizard-card"><span class="pd-wizard-icon">' + icon(icons[step]) + '</span><h3>' + titles[step] + '</h3><p class="pd-wizard-hint">' + hints[step] + '</p>' + content + '</section><div class="pd-wizard-actions">' + (step ? '<button type="button" class="pd-secondary" data-lesson-back>Back</button>' : '<span></span>') + (step < 3 ? '<button type="button" class="pd-primary" data-lesson-next>Continue ' + icon('arrow-right') + '</button>' : '<button type="submit" class="pd-primary"' + (state.busy ? ' disabled' : '') + '>' + (state.busy ? 'Preparing lesson…' : 'Create home lesson ' + icon('arrow-right')) + '</button>') + '</div></form>';
   }
 
   function renderActivity(record) {
@@ -109,10 +131,20 @@
     state.root.dataset.parentWired = '1';
     state.root.addEventListener('click', function (event) {
       var tab = event.target.closest('[data-parent-tab]');
-      if (tab) { state.tab = tab.dataset.parentTab; state.result = null; render(); return; }
+      if (tab) { if (tab.dataset.parentTab === 'lesson' && state.tab !== 'lesson') { state.lessonStep = 0; state.lessonDraft = {}; } state.tab = tab.dataset.parentTab; state.result = null; render(); return; }
       var open = event.target.closest('[data-open-task]');
-      if (open) { state.tab = open.dataset.openTask; state.task = open.dataset.openTask; state.result = null; render(); return; }
+      if (open) { state.tab = open.dataset.openTask; state.task = open.dataset.openTask; if (state.task === 'lesson') { state.lessonStep = 0; state.lessonDraft = {}; } state.result = null; render(); return; }
       if (event.target.closest('#pdBack')) { document.dispatchEvent(new CustomEvent('guided:parent-back')); return; }
+      var example = event.target.closest('[data-topic-example]');
+      if (example) { var topic = state.root.querySelector('[name="topic"]'); if (topic) topic.value = example.dataset.topicExample; return; }
+      if (event.target.closest('[data-lesson-back]')) { state.lessonStep = Math.max(0, state.lessonStep - 1); state.error = ''; render(); return; }
+      if (event.target.closest('[data-lesson-next]')) {
+        var wizard = event.target.closest('#pdTaskForm'), step = Number(wizard && wizard.dataset.step || 0), values = new FormData(wizard), draft = Object.assign({}, state.lessonDraft);
+        values.forEach(function(value,key){draft[key]=value;});
+        if (step === 0 && (!draft.childId || !draft.subject)) { state.error = 'Choose your child and a subject to continue.'; render(); return; }
+        if (step === 1 && !String(draft.topic || '').trim()) { state.error = 'Enter a topic before continuing.'; render(); return; }
+        state.lessonDraft = draft; state.lessonStep = Math.min(3, step + 1); state.error = ''; render(); return;
+      }
       var edit = event.target.closest('[data-edit-child]');
       if (edit) { state.editingChild = edit.dataset.editChild; state.tab = 'children'; render(); return; }
       if (event.target.closest('[data-cancel-edit]')) { state.editingChild = ''; render(); return; }
@@ -148,6 +180,11 @@
         var cls = event.target.value;
         var box = event.target.form.querySelector('.pd-subject-grid');
         if (box) box.innerHTML = subjectsFor(cls).map(function (subject, i) { return '<label class="pd-check"><input type="checkbox" name="childSubjects" value="' + esc(subject) + '"' + (i < 3 ? ' checked' : '') + '><span>' + esc(subject) + '</span></label>'; }).join('');
+      }
+      if (event.target.name === 'childId' && event.target.form && event.target.form.id === 'pdTaskForm' && event.target.form.dataset.step === '0') {
+        var picked = children().find(function(c){return c.id===event.target.value;});
+        var subject = event.target.form.querySelector('[name="subject"]');
+        if (picked && subject) { var opts = picked.subjects && picked.subjects.length ? picked.subjects : subjectsFor(picked.class); subject.innerHTML = opts.map(function(s){return '<option>'+esc(s)+'</option>';}).join(''); state.lessonDraft = Object.assign({},state.lessonDraft,{childId:picked.id,subject:opts[0]||''}); }
       }
       if (event.target.name === 'childId' && event.target.form && event.target.form.id === 'pdTaskForm') {
         var child = children().find(function (item) { return item.id === event.target.value; });
