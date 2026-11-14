@@ -422,7 +422,7 @@
   function updateTopbar() {
     const s = current();
     if (!s) return;
-    { const pg = pageOpen(); if (pg) { topTitle.textContent = pg[0] === 'dashboard' && accountRole === 'parent' ? 'Parent Dashboard' : pg[1]; return; } }
+    { const pg = pageOpen(); if (pg) { topTitle.textContent = pg[0] === 'dashboard' && window.GuidedAccountRole === 'parent' ? 'Parent Dashboard' : pg[1]; return; } }
     topTitle.textContent = s.messages.length ? s.title : 'New plan';
     document.title = (s.messages.length ? s.title + ' · ' : '') + 'GuidEd';
     let st = statusOf(s);
@@ -2507,6 +2507,7 @@
     accountProfileRequest = window.PadiSync.getAccountProfile().then((profile) => {
       accountProfile = profile || null;
       accountRole = profile && (profile.primaryRole || (Array.isArray(profile.roles) ? profile.roles[0] : '')) || '';
+      window.GuidedAccountRole = accountRole;
       accountProfileLoaded = true;
       accountProfileError = false;
       const link = $('#dashboardLink');
@@ -2532,7 +2533,7 @@
   window.addEventListener('guided:account', () => {
     if (window.PadiSync && window.PadiSync.user && window.PadiSync.user()) refreshAccountProfile();
     else {
-      accountRole = ''; accountProfile = null; accountProfileLoaded = false; accountProfileError = false;
+      accountRole = ''; accountProfile = null; window.GuidedAccountRole = ''; accountProfileLoaded = false; accountProfileError = false;
       const link = $('#dashboardLink');
       if (link) { const label = link.querySelector('span'); if (label) label.textContent = 'Teacher Dashboard'; }
     }
