@@ -41,8 +41,8 @@ module.exports = async (req, res) => {
 
     let children = [];
     if (roles.includes('parent')) {
-      if (!Array.isArray(input.children) || !input.children.length) {
-        return sendJson(res, 400, { error: 'bad_request', message: 'Add at least one child to complete parent setup.' });
+      if (!Array.isArray(input.children)) {
+        return sendJson(res, 400, { error: 'bad_request', message: 'Provide the children linked to this parent account.' });
       }
       children = input.children.slice(0, 10).map((child) => {
         const name = cleanText(child && child.name, 80);
@@ -54,7 +54,7 @@ module.exports = async (req, res) => {
         if (!name || !BASIC_CLASS.test(cls) || !subjects.length) return null;
         return { id: cleanText(child.id, 64) || require('crypto').randomUUID(), name, class: cls, subjects, minutes };
       }).filter(Boolean);
-      if (!children.length) return sendJson(res, 400, { error: 'bad_request', message: 'Check the child name, class and selected subjects.' });
+      if (input.children.length && !children.length) return sendJson(res, 400, { error: 'bad_request', message: 'Check the child name, class and selected subjects.' });
     }
 
     const data = { roles, primaryRole, displayName, children };
@@ -63,6 +63,8 @@ module.exports = async (req, res) => {
       'insert into account_profiles (user_id, data, updated_at) values ($1, $2::jsonb, $3) on conflict (user_id) do update set data = excluded.data, updated_at = excluded.updated_at',
       [me.uid, JSON.stringify(data), updatedAt]
     );
+    const retainedChildIds = children.map((child) => child.id);
+    await db.query('delete from parent_learning where user_id = $1 and not (data->>\'childId\' = any($2::text[]))', [me.uid, retainedChildIds]);
     return sendJson(res, 200, { ok: true, profile: { ...data, updatedAt } });
   } catch (e) {
     console.error('account profile failed:', e && e.message);
