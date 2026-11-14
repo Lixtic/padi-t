@@ -104,6 +104,51 @@
   }
   function lessonStageIndex(title) { var t = title.toLowerCase(); if (/learn|goal|objective|material|prepare|parent/.test(t)) return 0; if (/explain|everyday|example|concept|meaning|key term/.test(t)) return 1; if (/try|together|activity|demonstrat|explor|step/.test(t)) return 2; if (/ask|question|check|understand/.test(t)) return 3; if (/answer|practice|worksheet|exercise|quiz/.test(t)) return 4; if (/encourage|review|summary|reflect|record|celebrat/.test(t)) return 5; return 1; }
   function lessonTextHtml(text) { return String(text || '').split(/\n{2,}/).map(function (paragraph) { var clean = paragraph.trim(); if (!clean) return ''; var lines = clean.split('\n'); if (lines.every(function (line) { return /^\s*[-*•]\s+/.test(line); })) return '<ul>' + lines.map(function (line) { return '<li>' + esc(line.replace(/^\s*[-*•]\s+/, '')) + '</li>'; }).join('') + '</ul>'; return '<p>' + lines.map(function (line) { return esc(line).replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>'); }).join('<br>') + '</p>'; }).join(''); }
+  function worksheetInline(text) {
+    return esc(text).replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>').replace(/\*(.+?)\*/g, '<em>$1</em>');
+  }
+  function worksheetHtml(markdown) {
+    var lines = String(markdown || '').replace(/\r/g, '').split('\n'), out = [], i = 0;
+    while (i < lines.length) {
+      var line = lines[i], trimmed = line.trim();
+      if (!trimmed) { i++; continue; }
+      var h = trimmed.match(/^#{1,3}\s+(.+)$/);
+      if (h) {
+        var title = h[1].replace(/\s*#*$/, '');
+        if (/^Part\s+[A-C]\s*:/i.test(title)) out.push('<h3 class="pd-worksheet-part">' + worksheetInline(title) + '</h3>');
+        else if (/learner worksheet/i.test(title)) out.push('<h2 class="pd-worksheet-title">' + worksheetInline(title) + '</h2>');
+        else out.push('<h4 class="pd-worksheet-heading">' + worksheetInline(title) + '</h4>');
+        i++; continue;
+      }
+      if (/^\*\*(Instructions|Word bank):\*\*/i.test(trimmed)) {
+        out.push('<div class="pd-worksheet-callout">' + worksheetInline(trimmed) + '</div>'); i++; continue;
+      }
+      if (/^\|.*\|$/.test(trimmed)) {
+        var rows = [];
+        while (i < lines.length && /^\s*\|.*\|\s*$/.test(lines[i])) {
+          var cells = lines[i].trim().replace(/^\||\|$/g, '').split('|').map(function(x){return x.trim();});
+          if (!cells.every(function(x){return /^:?-{3,}:?$/.test(x);})) rows.push(cells);
+          i++;
+        }
+        if (rows.length) out.push('<div class="pd-worksheet-table-wrap"><table class="pd-worksheet-table"><tbody>' + rows.map(function(row,ri){return '<tr>' + row.map(function(cell){return ri===0?'<th>'+worksheetInline(cell)+'</th>':'<td>'+worksheetInline(cell)+'</td>';}).join('') + '</tr>';}).join('') + '</tbody></table></div>');
+        continue;
+      }
+      var ordered = trimmed.match(/^\d+[.)]\s+(.+)$/), unordered = trimmed.match(/^[-*•]\s+(.+)$/);
+      if (ordered || unordered) {
+        var isOrdered = !!ordered, tag = isOrdered ? 'ol' : 'ul', items = [];
+        while (i < lines.length) {
+          var m = lines[i].trim().match(isOrdered ? /^\d+[.)]\s+(.+)$/ : /^[-*•]\s+(.+)$/);
+          if (!m) break; items.push('<li>' + worksheetInline(m[1]) + '</li>'); i++;
+        }
+        out.push('<' + tag + ' class="pd-worksheet-list">' + items.join('') + '</' + tag + '>'); continue;
+      }
+      if (/^_{8,}$/.test(trimmed)) { out.push('<div class="pd-worksheet-answer-line"></div>'); i++; continue; }
+      var para = [trimmed]; i++;
+      while (i < lines.length && lines[i].trim() && !/^#{1,3}\s|^\*\*(Instructions|Word bank):\*\*|^\|.*\|$|^\d+[.)]\s|^[-*•]\s/.test(lines[i].trim())) { para.push(lines[i].trim()); i++; }
+      out.push('<p>' + para.map(worksheetInline).join('<br>') + '</p>');
+    }
+    return '<div class="pd-worksheet">' + out.join('') + '</div>';
+  }
   function renderLessonRoom(record) {
     var data = record.data || {}, stages = [['Get ready','Know what your child will learn and gather what you need','book'],['Learn together','Explain the idea using simple, familiar examples','spark'],['Explore and try','Do a practical activity together','users'],['Check understanding','Ask questions and listen to your child','message'],['Practice','Let your child try, then reveal the answers','clipboard'],['Review and celebrate','Reflect on the learning and record progress','check']];
     var buckets = [[],[],[],[],[],[]]; lessonSections(data.content).forEach(function (section) { buckets[lessonStageIndex(section.title)].push(section); });
@@ -135,7 +180,7 @@
     else if (['lesson', 'explanation', 'practice'].includes(state.tab)) {
       state.task = state.tab;
       var activeLesson = state.task === 'lesson' && state.lessonRoom && state.records.find(function (item) { return item.id === state.lessonRoom; });
-      body = activeLesson ? renderLessonRoom(activeLesson) : '<div class="pd-section-head"><div><span class="pd-kicker">CURRICULUM-GUIDED HOME LEARNING</span><h2>' + esc(labels[state.task]) + '</h2><p>' + (state.task === 'lesson' ? 'A complete activity for you and your child to work through together.' : state.task === 'explanation' ? 'A clear explanation you can use when your child gets stuck.' : 'Age-appropriate questions with an answer key and explanations.') + '</p></div></div>' + (list.length ? renderTaskForm() : '<div class="pd-empty">Add a child profile before creating a home-learning activity.</div><button type="button" class="pd-primary" data-parent-tab="children">Add a child</button>') + (state.result ? '<section class="pd-result" aria-live="polite"><div class="pd-section-head"><div><span class="pd-kicker">READY FOR YOU AND YOUR CHILD</span><h3>' + esc(state.result.title) + '</h3></div><button type="button" class="pd-text-button" data-clear-result>Close</button></div><pre>' + esc(state.result.content) + '</pre></section>' : '');
+      body = activeLesson ? renderLessonRoom(activeLesson) : '<div class="pd-section-head"><div><span class="pd-kicker">CURRICULUM-GUIDED HOME LEARNING</span><h2>' + esc(labels[state.task]) + '</h2><p>' + (state.task === 'lesson' ? 'A complete activity for you and your child to work through together.' : state.task === 'explanation' ? 'A clear explanation you can use when your child gets stuck.' : 'Age-appropriate questions with an answer key and explanations.') + '</p></div></div>' + (list.length ? renderTaskForm() : '<div class="pd-empty">Add a child profile before creating a home-learning activity.</div><button type="button" class="pd-primary" data-parent-tab="children">Add a child</button>') + (state.result ? '<section class="pd-result" aria-live="polite"><div class="pd-section-head"><div><span class="pd-kicker">READY FOR YOU AND YOUR CHILD</span><h3>' + esc(state.result.title) + '</h3></div><button type="button" class="pd-text-button" data-clear-result>Close</button></div>' + (state.result.kind === 'practice' ? worksheetHtml(state.result.content) : '<pre>' + esc(state.result.content) + '</pre>') + '</section>' : '');
     } else {
       body = '<div class="pd-section-head"><div><span class="pd-kicker">MY CHILD’S LEARNING JOURNEY</span><h2>Learning Progress</h2><p>Keep track of activities your child has completed.</p></div></div><div class="pd-progress-summary"><strong>' + state.records.filter(function (r) { return r.data && r.data.status === 'completed'; }).length + '</strong><span>completed activities</span></div><div class="pd-activity-list">' + (state.records.length ? state.records.map(renderActivity).join('') : '<div class="pd-empty">No learning activities yet. Create a home lesson to get started.</div>') + '</div>';
     }
@@ -186,7 +231,7 @@
       var view = event.target.closest('[data-view-record]');
       if (view) {
         var saved = state.records.find(function (item) { return item.id === view.dataset.viewRecord; });
-        if (saved) { state.tab = saved.kind || 'progress'; state.task = saved.kind || 'lesson'; if (saved.kind === 'lesson') { state.lessonRoom = saved.id; state.result = null; } else { state.result = { title: (saved.data || {}).title || 'Saved learning activity', content: (saved.data || {}).content || 'This saved activity does not contain a preview.' }; } render(); }
+        if (saved) { state.tab = saved.kind || 'progress'; state.task = saved.kind || 'lesson'; if (saved.kind === 'lesson') { state.lessonRoom = saved.id; state.result = null; } else { state.result = { title: (saved.data || {}).title || 'Saved learning activity', content: (saved.data || {}).content || 'This saved activity does not contain a preview.', kind: saved.kind || '' }; } render(); }
         return;
       }
       if (event.target.closest('[data-clear-result]')) { state.result = null; render(); return; }
@@ -297,7 +342,7 @@
       var title = labels[task] + ': ' + topic;
       var record = { id: uid(), kind: task, data: { childId: child.id, childName: child.name, class: child.class, dailyGoal: child.minutes, subject: values.subject, topic: topic, title: title, content: output, week: Number(values.week), term: Number(values.term), status: 'saved', lessonStage: 0, createdAt: Date.now() } };
       await saveRecord(record);
-      if (task === 'lesson') { state.lessonRoom = record.id; state.result = null; } else state.result = { title: title, content: output };
+      if (task === 'lesson') { state.lessonRoom = record.id; state.result = null; } else state.result = { title: title, content: output, kind: task };
       state.error = '';
     } catch (error) {
       state.error = error.message || 'Something went wrong. Please try again.';
