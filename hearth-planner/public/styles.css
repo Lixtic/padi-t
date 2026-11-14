@@ -1501,3 +1501,7 @@ main[data-view="chat"] .notice-bar { display: none; }
  .pd-child-actions button { flex:1; }
  .pd-exit { padding:8px 10px; font-size:.75rem; }
 }
+
+.pd-complete-wrap { display:flex; align-items:flex-end; gap:8px; flex-wrap:wrap; }
+.pd-score { display:grid; gap:4px; color:var(--muted); font-size:.72rem; font-weight:700; }
+.pd-score input { width:86px; padding:7px 8px; border:1px solid var(--line, #d8dee6); border-radius:8px; background:var(--bg, #fff); color:var(--text, #17202a); font:inherit; }
