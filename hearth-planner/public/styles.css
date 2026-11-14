@@ -1693,3 +1693,131 @@ main[data-view="chat"] .notice-bar { display: none; }
   .pd-room-actions button { flex: 1; }
   .pd-room-card { border-radius: 16px; }
 }
+
+
+
+/* Parent dashboard: mobile-first layout refinements */
+.parent-dashboard-content,
+.parent-dashboard-content * { box-sizing: border-box; }
+.parent-dashboard-content { min-width: 0; width: 100%; max-width: 1120px; overflow-x: clip; }
+.parent-dashboard-content .pd-main,
+.parent-dashboard-content .pd-header,
+.parent-dashboard-content .pd-intro,
+.parent-dashboard-content .pd-tabs { min-width: 0; }
+.parent-dashboard-content button,
+.parent-dashboard-content input,
+.parent-dashboard-content select,
+.parent-dashboard-content textarea { touch-action: manipulation; }
+.parent-dashboard-content button { -webkit-tap-highlight-color: transparent; }
+.parent-dashboard-content :is(button,input,select,textarea):focus-visible { outline: 3px solid color-mix(in srgb,var(--accent) 42%,transparent); outline-offset: 2px; }
+
+@media (max-width: 700px) {
+  .parent-dashboard-content { padding-left: 0; padding-right: 0; }
+  .parent-dashboard-content .pd-header { align-items: center; gap: 10px; padding: 8px 0 13px; }
+  .parent-dashboard-content .pd-brand { font-size: 1.08rem; }
+  .parent-dashboard-content .pd-account { margin-top: 3px; font-size: .62rem; letter-spacing: .07em; }
+  .parent-dashboard-content .pd-exit { min-height: 42px; padding: 8px 10px; white-space: nowrap; }
+  .parent-dashboard-content .pd-exit span { font-size: .74rem; }
+  .parent-dashboard-content .pd-intro { padding: 18px 0 8px; }
+  .parent-dashboard-content .pd-intro h1 { font-size: clamp(1.45rem,6vw,1.8rem); }
+  .parent-dashboard-content .pd-intro p { font-size: .88rem; }
+  .parent-dashboard-content .pd-tabs {
+    position: relative; display: flex; flex-wrap: nowrap; gap: 7px;
+    margin: 0 -2px; padding: 9px 2px 12px; overflow-x: auto; overflow-y: hidden;
+    overscroll-behavior-x: contain; -webkit-overflow-scrolling: touch;
+    scrollbar-width: none; scroll-snap-type: x proximity;
+  }
+  .parent-dashboard-content .pd-tabs::-webkit-scrollbar { display: none; }
+  .parent-dashboard-content .pd-tabs button {
+    flex: 0 0 auto; min-height: 43px; padding: 9px 12px;
+    gap: 6px; font-size: .76rem; scroll-snap-align: start;
+  }
+  .parent-dashboard-content .pd-tabs button .pd-icon { width: 16px; height: 16px; }
+  .parent-dashboard-content .pd-main { padding: 14px 0 max(28px,env(safe-area-inset-bottom)); }
+  .parent-dashboard-content .pd-welcome { display: flex; flex-direction: column; gap: 13px; padding: 18px; border-radius: 16px; }
+  .parent-dashboard-content .pd-welcome h2 { font-size: 1.35rem; line-height: 1.2; }
+  .parent-dashboard-content .pd-welcome p { font-size: .9rem; }
+  .parent-dashboard-content .pd-welcome-action { width: 100%; min-height: 48px; }
+  .parent-dashboard-content .pd-stats { grid-template-columns: repeat(3,minmax(0,1fr)); gap: 7px; margin: 10px 0 18px; }
+  .parent-dashboard-content .pd-stats article { min-width: 0; min-height: 82px; padding: 10px 8px; border-radius: 12px; }
+  .parent-dashboard-content .pd-stats strong { font-size: 1.25rem; line-height: 1.1; }
+  .parent-dashboard-content .pd-stats span { font-size: .68rem; line-height: 1.25; overflow-wrap: anywhere; }
+  .parent-dashboard-content .pd-stat-icon { width: 27px; height: 27px; margin-bottom: 5px; }
+  .parent-dashboard-content .pd-quick-grid { grid-template-columns: repeat(2,minmax(0,1fr)); gap: 9px; margin: 14px 0 22px; }
+  .parent-dashboard-content .pd-quick-grid button { min-width: 0; min-height: 122px; padding: 12px; border-radius: 14px; gap: 7px; }
+  .parent-dashboard-content .pd-quick-grid strong { font-size: .84rem; line-height: 1.25; }
+  .parent-dashboard-content .pd-quick-grid button > span:last-child { font-size: .74rem; line-height: 1.4; }
+  .parent-dashboard-content .pd-quick-icon { width: 34px; height: 34px; flex: 0 0 34px; }
+  .parent-dashboard-content .pd-section-head { gap: 9px; flex-wrap: wrap; margin-bottom: 12px; }
+  .parent-dashboard-content .pd-section-head h2 { font-size: 1.12rem; }
+  .parent-dashboard-content .pd-section-head p { font-size: .82rem; }
+  .parent-dashboard-content .pd-count { font-size: .75rem; }
+  .parent-dashboard-content .pd-child-card,
+  .parent-dashboard-content .pd-activity { min-width: 0; align-items: flex-start; flex-wrap: wrap; gap: 10px; padding: 13px; border-radius: 13px; }
+  .parent-dashboard-content .pd-child-card > div:not(.pd-child-actions),
+  .parent-dashboard-content .pd-activity-copy { flex: 1 1 calc(100% - 54px); min-width: 0; overflow-wrap: anywhere; }
+  .parent-dashboard-content .pd-child-card p,
+  .parent-dashboard-content .pd-activity p { overflow-wrap: anywhere; }
+  .parent-dashboard-content .pd-child-actions,
+  .parent-dashboard-content .pd-activity-actions { display: flex; width: 100%; margin: 0; gap: 8px; flex-wrap: wrap; }
+  .parent-dashboard-content .pd-child-actions button,
+  .parent-dashboard-content .pd-activity-actions > button,
+  .parent-dashboard-content .pd-activity-actions .pd-complete-wrap { flex: 1 1 130px; min-width: 0; }
+  .parent-dashboard-content .pd-activity-actions { align-items: stretch; }
+  .parent-dashboard-content .pd-complete-wrap { align-items: flex-end; }
+  .parent-dashboard-content .pd-form { gap: 13px; margin: 14px 0; padding: 14px; border-radius: 15px; }
+  .parent-dashboard-content .pd-form-grid { grid-template-columns: minmax(0,1fr); gap: 12px; }
+  .parent-dashboard-content .pd-form input,
+  .parent-dashboard-content .pd-form select,
+  .parent-dashboard-content .pd-form textarea,
+  .parent-dashboard-content .pd-wizard-field input,
+  .parent-dashboard-content .pd-wizard-field select,
+  .parent-dashboard-content .pd-wizard-field textarea { min-height: 48px; font-size: 16px; }
+  .parent-dashboard-content .pd-form textarea,
+  .parent-dashboard-content .pd-wizard-field textarea { min-height: 96px; }
+  .parent-dashboard-content .pd-subject-grid { grid-template-columns: repeat(2,minmax(0,1fr)); }
+  .parent-dashboard-content .pd-check { min-width: 0; min-height: 42px; padding: 9px; }
+  .parent-dashboard-content .pd-check span { overflow-wrap: anywhere; }
+  .parent-dashboard-content .pd-form-actions { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); }
+  .parent-dashboard-content .pd-form-actions button { min-height: 46px; }
+  .parent-dashboard-content .pd-primary,
+  .parent-dashboard-content .pd-secondary { min-height: 46px; }
+  .parent-dashboard-content .pd-result { padding: 14px; overflow-wrap: anywhere; }
+  .parent-dashboard-content .pd-result pre { font-size: .88rem; line-height: 1.65; }
+  .parent-dashboard-content .pd-progress-summary { min-width: 0; width: 100%; }
+  .parent-dashboard-content .pd-lesson-room { gap: 13px; }
+  .parent-dashboard-content .pd-room-top h2 { font-size: 1.45rem; overflow-wrap: anywhere; }
+  .parent-dashboard-content .pd-room-progress { padding: 13px; border-radius: 14px; }
+  .parent-dashboard-content .pd-room-progress > div:first-child { align-items: flex-start; flex-direction: column; gap: 5px; }
+  .parent-dashboard-content .pd-room-card { gap: 12px; padding: 16px; border-radius: 15px; }
+  .parent-dashboard-content .pd-room-card h3 { font-size: 1.18rem; }
+  .parent-dashboard-content .pd-room-section p,
+  .parent-dashboard-content .pd-room-section ul { font-size: .92rem; line-height: 1.7; }
+  .parent-dashboard-content .pd-room-actions { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 9px; }
+  .parent-dashboard-content .pd-room-actions button { width: 100%; min-height: 48px; padding: 10px; }
+  .parent-dashboard-content .pd-room-save { font-size: .72rem; line-height: 1.45; }
+  .parent-dashboard-content .pd-wizard-progress { padding: 13px; gap: 12px; }
+  .parent-dashboard-content .pd-wizard-progress-track { width: 100%; justify-content: space-between; }
+  .parent-dashboard-content .pd-step-dot { width: 29px; height: 29px; flex: 0 0 29px; }
+  .parent-dashboard-content .pd-wizard-card { padding: 16px; border-radius: 16px; }
+  .parent-dashboard-content .pd-wizard-actions { gap: 9px; }
+  .parent-dashboard-content .pd-wizard-actions button { flex: 1 1 0; min-width: 0; min-height: 48px; padding: 10px; }
+  .parent-dashboard-content .pd-review-list > div { gap: 5px; padding: 12px; }
+  .parent-dashboard-content .pd-review-list strong { overflow-wrap: anywhere; }
+}
+
+@media (max-width: 380px) {
+  .parent-dashboard-content .pd-header { align-items: flex-start; }
+  .parent-dashboard-content .pd-exit { max-width: 132px; white-space: normal; line-height: 1.2; }
+  .parent-dashboard-content .pd-exit span { text-align: left; }
+  .parent-dashboard-content .pd-quick-grid { grid-template-columns: minmax(0,1fr); }
+  .parent-dashboard-content .pd-quick-grid button { min-height: 92px; }
+  .parent-dashboard-content .pd-stats article { padding: 9px 6px; }
+  .parent-dashboard-content .pd-stats span { font-size: .64rem; }
+  .parent-dashboard-content .pd-room-actions { grid-template-columns: minmax(0,1fr); }
+  .parent-dashboard-content .pd-form-actions { grid-template-columns: minmax(0,1fr); }
+}
+
+@media (min-width: 701px) {
+  .parent-dashboard-content .pd-tabs { flex-wrap: wrap; }
+}
