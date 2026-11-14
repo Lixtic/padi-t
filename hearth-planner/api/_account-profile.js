@@ -18,6 +18,7 @@ module.exports = async (req, res) => {
   if (!A.syncConfigured()) return sendJson(res, 503, { error: 'not_configured', message: 'Accounts are not configured on this server.' });
   const me = await A.authed(req);
   if (!me) return sendJson(res, 401, { error: 'auth', message: 'Please sign in again.' });
+  if (await require('./_quota').limited(res, 'profile:' + me.uid, 120, 10 * 60 * 1000)) return;
 
   try {
     await db.ensure();

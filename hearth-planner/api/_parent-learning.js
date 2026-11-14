@@ -14,6 +14,7 @@ module.exports = async (req, res) => {
   if (!A.syncConfigured()) return sendJson(res, 503, { error: 'not_configured', message: 'Parent learning storage is not configured.' });
   const me = await A.authed(req);
   if (!me) return sendJson(res, 401, { error: 'auth', message: 'Please sign in again.' });
+  if (await require('./_quota').limited(res, 'parent:' + me.uid, 600, 10 * 60 * 1000)) return;
 
   try {
     await db.ensure();

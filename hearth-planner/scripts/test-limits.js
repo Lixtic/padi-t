@@ -64,6 +64,18 @@ const hammer = async (n, fn) => { let last; for (let i = 0; i < n; i++) last = a
   r = await send('4.4.4.4');
   assert.equal(r.code, 429);
 
+  // Parent routes: learning records 600 and the account profile 120 per user per 10 minutes.
+  global.__PADI_SQL__.profile = { primaryRole: 'parent', children: [] };
+  const parentRoute = (what) => run(sync, { method: 'GET', url: '/api/sync?what=' + what, user: { id: 'parent-9', email: 'p@x.co' } });
+  r = await hammer(120, () => parentRoute('account-profile'));
+  assert.notEqual(r.code, 429, 'the 120th profile request is allowed');
+  r = await parentRoute('account-profile');
+  assert.equal(r.code, 429, 'the profile route is limited');
+  r = await hammer(600, () => parentRoute('parent-learning'));
+  assert.notEqual(r.code, 429, 'the 600th learning request is allowed');
+  r = await parentRoute('parent-learning');
+  assert.equal(r.code, 429, 'the learning route is limited');
+
   // If the limiter itself breaks, people are let through (these endpoints need the database anyway).
   limiterDown = true;
   r = await pay(ada, '5.5.5.5');
