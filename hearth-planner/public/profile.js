@@ -12,7 +12,11 @@
   // on another device, resolve it from the authenticated account profile.
   window.addEventListener('guided:account-profile-saved', function (event) {
     var data = event && event.detail;
-    if (data && (data.primaryRole === 'parent' || data.primaryRole === 'teacher')) accountRole = data.primaryRole;
+    if (data && (data.primaryRole === 'parent' || data.primaryRole === 'teacher')) {
+      accountRole = data.primaryRole;
+      welcomed = false;
+      P.afterSync();
+    }
   });
 
   async function resolveAccountRole() {
@@ -92,6 +96,11 @@
       var role = '';
       try { role = await resolveAccountRole(); }
       catch (e) { return; }
+      // A first sync can finish before a fresh signup's role profile is written.
+      // Do not mistake that temporary empty result for a legacy teacher account.
+      if (!role) {
+        try { if (localStorage.getItem('guided.pending-account-profile')) return; } catch (e) { return; }
+      }
       if (role === 'parent') { welcomed = true; return; }
       if (role && role !== 'teacher') return;
       welcomed = true;
