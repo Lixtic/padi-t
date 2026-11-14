@@ -1,7 +1,7 @@
 /* GuidEd Parent Dashboard: child management, home learning and progress. */
 (function () {
   'use strict';
-  var state = { root: null, profile: null, records: [], loaded: false, loading: false, tab: 'overview', task: 'lesson', lessonStep: 0, lessonDraft: {}, lessonRoom: null, editingChild: '', busy: false, error: '', result: null };
+  var state = { root: null, profile: null, records: [], loaded: false, loading: false, tab: 'overview', task: 'lesson', lessonStep: 0, lessonDraft: {}, lessonRoom: null, stageSaving: false, editingChild: '', busy: false, error: '', result: null };
   var $ = function (selector, root) { return (root || state.root).querySelector(selector); };
   var esc = function (value) { return String(value == null ? '' : value).replace(/[&<>"']/g, function (ch) { return ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[ch]; }); };
   var uid = function () { return 'pl-' + Math.random().toString(36).slice(2, 10) + Date.now().toString(36).slice(-5); };
@@ -108,7 +108,7 @@
     var buckets = [[],[],[],[],[],[]]; lessonSections(data.content).forEach(function (section) { buckets[lessonStageIndex(section.title)].push(section); });
     var stage = Math.max(0, Math.min(5, Number(data.lessonStage) || 0)), parts = buckets[stage];
     var body = parts.length ? parts.map(function (part) { var isAnswer = /answer|marking guide/i.test(part.title); return '<section class="pd-room-section"><h4>' + esc(part.title) + '</h4>' + (isAnswer ? '<div class="pd-answer-content" hidden>' + lessonTextHtml(part.body.join('\n')) + '</div><button type="button" class="pd-secondary pd-small" data-reveal-answer>Show answers</button>' : lessonTextHtml(part.body.join('\n'))) + '</section>'; }).join('') : '<p class="pd-room-empty">Use this stage to talk through the activity together.</p>';
-    return '<section class="pd-lesson-room" aria-live="polite"><div class="pd-room-top"><button type="button" class="pd-text-button" data-exit-lesson>← Back to home lessons</button><span class="pd-kicker">YOUR GUIDED LESSON</span><h2>' + esc(data.topic || data.title || 'Home lesson') + '</h2><p>' + esc(data.childName || 'Your child') + ' · ' + esc(data.class || '') + ' · ' + esc(data.subject || '') + '</p></div><div class="pd-room-progress"><div><span>STAGE ' + (stage + 1) + ' OF 6</span><strong>' + esc(stages[stage][0]) + '</strong></div><div class="pd-room-track"><span style="width:' + (((stage + 1) / 6) * 100) + '%"></span></div></div><article class="pd-room-card"><span class="pd-room-icon">' + icon(stages[stage][2]) + '</span><h3>' + esc(stages[stage][0]) + '</h3><p class="pd-room-hint">' + esc(stages[stage][1]) + '</p>' + body + '</article><div class="pd-room-actions">' + (stage ? '<button type="button" class="pd-secondary" data-lesson-stage="' + (stage - 1) + '">Previous</button>' : '<span></span>') + (stage < 5 ? '<button type="button" class="pd-primary" data-lesson-stage="' + (stage + 1) + '">Next stage ' + icon('chevron') + '</button>' : '<button type="button" class="pd-primary" data-finish-lesson>Finish lesson ' + icon('check') + '</button>') + '</div><p class="pd-room-save">Your place is saved automatically. You can return to this lesson later.</p></section>';
+    return '<section class="pd-lesson-room" aria-live="polite"><div class="pd-room-top"><button type="button" class="pd-text-button" data-exit-lesson>← Back to home lessons</button><span class="pd-kicker">YOUR GUIDED LESSON</span><h2>' + esc(data.topic || data.title || 'Home lesson') + '</h2><p>' + esc(data.childName || 'Your child') + ' · ' + esc(data.class || '') + ' · ' + esc(data.subject || '') + '</p></div><div class="pd-room-progress"><div><span>STAGE ' + (stage + 1) + ' OF 6</span><strong>' + esc(stages[stage][0]) + '</strong></div><div class="pd-room-track"><span style="width:' + (((stage + 1) / 6) * 100) + '%"></span></div></div><article class="pd-room-card"><span class="pd-room-icon">' + icon(stages[stage][2]) + '</span><h3>' + esc(stages[stage][0]) + '</h3><p class="pd-room-hint">' + esc(stages[stage][1]) + '</p>' + body + '</article><div class="pd-room-actions">' + (stage ? '<button type="button" class="pd-secondary" data-lesson-stage="' + (stage - 1) + '"' + (state.stageSaving ? ' disabled' : '') + '>Previous</button>' : '<span></span>') + (stage < 5 ? '<button type="button" class="pd-primary" data-lesson-stage="' + (stage + 1) + '"' + (state.stageSaving ? ' disabled' : '') + '>' + (state.stageSaving ? 'Saving…' : 'Next stage ' + icon('chevron')) + '</button>' : '<button type="button" class="pd-primary" data-finish-lesson' + (state.stageSaving ? ' disabled' : '') + '>Finish lesson ' + icon('check') + '</button>') + '</div><p class="pd-room-save">' + (state.stageSaving ? 'Saving your place…' : 'Your place is saved automatically. You can return to this lesson later.') + '</p></section>';
   }
   function renderActivity(record) {
     var data = record.data || {};
@@ -191,7 +191,29 @@
       if (event.target.closest('[data-clear-result]')) { state.result = null; render(); return; }
       if (event.target.closest('[data-exit-lesson]')) { state.lessonRoom = null; state.result = null; state.tab = 'progress'; render(); return; }
       var stageButton = event.target.closest('[data-lesson-stage]');
-      if (stageButton && state.lessonRoom) { var roomRecord = state.records.find(function (item) { return item.id === state.lessonRoom; }); if (roomRecord) { var roomData = Object.assign({}, roomRecord.data, { lessonStage: Number(stageButton.dataset.lessonStage) }); saveRecord({ id: roomRecord.id, kind: roomRecord.kind, data: roomData }).then(render).catch(function (error) { state.error = error.message; render(); }); } return; }
+      if (stageButton && state.lessonRoom) {
+        if (state.stageSaving) return;
+        var roomRecord = state.records.find(function (item) { return item.id === state.lessonRoom; });
+        if (!roomRecord) { state.error = 'This lesson could not be found. Reopen it from Learning Progress.'; render(); return; }
+        var previousStage = Number(roomRecord.data.lessonStage) || 0;
+        var nextStage = Math.max(0, Math.min(5, Number(stageButton.dataset.lessonStage)));
+        if (nextStage === previousStage) return;
+        var roomData = Object.assign({}, roomRecord.data, { lessonStage: nextStage });
+        roomRecord.data = roomData;
+        state.stageSaving = true;
+        render();
+        saveRecord({ id: roomRecord.id, kind: roomRecord.kind, data: roomData }).then(function () {
+          state.stageSaving = false;
+          render();
+        }).catch(function (error) {
+          var current = state.records.find(function (item) { return item.id === roomRecord.id; });
+          if (current) current.data = Object.assign({}, current.data, { lessonStage: previousStage });
+          state.stageSaving = false;
+          state.error = error.message || 'Could not save your lesson position. Please try again.';
+          render();
+        });
+        return;
+      }
       var reveal = event.target.closest('[data-reveal-answer]'); if (reveal) { var answer = reveal.parentNode.querySelector('.pd-answer-content'); if (answer) { answer.hidden = false; reveal.hidden = true; } return; }
       if (event.target.closest('[data-finish-lesson]')) { var finished = state.records.find(function (item) { return item.id === state.lessonRoom; }); if (finished) { var finishedData = Object.assign({}, finished.data, { status: 'completed', completedAt: Date.now(), lessonStage: 5 }); saveRecord({ id: finished.id, kind: finished.kind, data: finishedData }).then(function () { state.lessonRoom = null; state.tab = 'progress'; render(); }).catch(function (error) { state.error = error.message; render(); }); } return; }
     });
