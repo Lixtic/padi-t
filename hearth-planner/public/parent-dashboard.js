@@ -1,7 +1,7 @@
 /* GuidEd Parent Dashboard: child management, home learning and progress. */
 (function () {
   'use strict';
-  var state = { root: null, profile: null, records: [], loaded: false, loading: false, tab: 'overview', task: 'lesson', lessonStep: 0, lessonDraft: {}, editingChild: '', busy: false, error: '', result: null };
+  var state = { root: null, profile: null, records: [], loaded: false, loading: false, tab: 'overview', task: 'lesson', lessonStep: 0, lessonDraft: {}, lessonRoom: null, editingChild: '', busy: false, error: '', result: null };
   var $ = function (selector, root) { return (root || state.root).querySelector(selector); };
   var esc = function (value) { return String(value == null ? '' : value).replace(/[&<>"']/g, function (ch) { return ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[ch]; }); };
   var uid = function () { return 'pl-' + Math.random().toString(36).slice(2, 10) + Date.now().toString(36).slice(-5); };
@@ -96,6 +96,20 @@
     return '<form class="pd-form pd-task-form pd-lesson-wizard" id="pdTaskForm" data-step="' + step + '"><div class="pd-wizard-progress"><div><span>STEP ' + (step+1) + ' OF 4</span><strong>' + titles[step] + '</strong></div><div class="pd-wizard-progress-track">' + dots + '</div></div><section class="pd-wizard-card"><span class="pd-wizard-icon">' + icon(icons[step]) + '</span><h3>' + titles[step] + '</h3><p class="pd-wizard-hint">' + hints[step] + '</p>' + content + '</section><div class="pd-wizard-actions">' + (step ? '<button type="button" class="pd-secondary" data-lesson-back>Back</button>' : '<span></span>') + (step < 3 ? '<button type="button" class="pd-primary" data-lesson-next>Continue ' + icon('chevron') + '</button>' : '<button type="submit" class="pd-primary"' + (state.busy ? ' disabled' : '') + '>' + (state.busy ? 'Preparing lesson…' : 'Create home lesson ' + icon('chevron')) + '</button>') + '</div></form>';
   }
 
+  function lessonSections(content) {
+    var lines = String(content || '').split(/\r?\n/), sections = [], current = { title: 'Lesson guide', body: [] };
+    lines.forEach(function (line) { var heading = line.match(/^\s{0,3}#{1,4}\s+(.+?)\s*#*\s*$/) || line.match(/^\s*\*\*(.+?)\*\*\s*$/); if (heading) { if (current.body.length) sections.push(current); current = { title: heading[1].replace(/\*\*/g, '').trim(), body: [] }; } else current.body.push(line); });
+    if (current.body.length) sections.push(current); return sections.filter(function (section) { return section.body.join('').trim(); });
+  }
+  function lessonStageIndex(title) { var t = title.toLowerCase(); if (/learn|goal|objective|material|prepare|parent/.test(t)) return 0; if (/explain|everyday|example|concept|meaning|key term/.test(t)) return 1; if (/try|together|activity|demonstrat|explor|step/.test(t)) return 2; if (/ask|question|check|understand/.test(t)) return 3; if (/answer|practice|worksheet|exercise|quiz/.test(t)) return 4; if (/encourage|review|summary|reflect|record|celebrat/.test(t)) return 5; return 1; }
+  function lessonTextHtml(text) { return String(text || '').split(/\n{2,}/).map(function (paragraph) { var clean = paragraph.trim(); if (!clean) return ''; var lines = clean.split('\n'); if (lines.every(function (line) { return /^\s*[-*•]\s+/.test(line); })) return '<ul>' + lines.map(function (line) { return '<li>' + esc(line.replace(/^\s*[-*•]\s+/, '')) + '</li>'; }).join('') + '</ul>'; return '<p>' + lines.map(function (line) { return esc(line).replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>'); }).join('<br>') + '</p>'; }).join(''); }
+  function renderLessonRoom(record) {
+    var data = record.data || {}, stages = [['Get ready','Know what your child will learn and gather what you need','book'],['Learn together','Explain the idea using simple, familiar examples','spark'],['Explore and try','Do a practical activity together','users'],['Check understanding','Ask questions and listen to your child','message'],['Practice','Let your child try, then reveal the answers','clipboard'],['Review and celebrate','Reflect on the learning and record progress','check']];
+    var buckets = [[],[],[],[],[],[]]; lessonSections(data.content).forEach(function (section) { buckets[lessonStageIndex(section.title)].push(section); });
+    var stage = Math.max(0, Math.min(5, Number(data.lessonStage) || 0)), parts = buckets[stage];
+    var body = parts.length ? parts.map(function (part) { var isAnswer = /answer|marking guide/i.test(part.title); return '<section class="pd-room-section"><h4>' + esc(part.title) + '</h4>' + (isAnswer ? '<div class="pd-answer-content" hidden>' + lessonTextHtml(part.body.join('\n')) + '</div><button type="button" class="pd-secondary pd-small" data-reveal-answer>Show answers</button>' : lessonTextHtml(part.body.join('\n'))) + '</section>'; }).join('') : '<p class="pd-room-empty">Use this stage to talk through the activity together.</p>';
+    return '<section class="pd-lesson-room" aria-live="polite"><div class="pd-room-top"><button type="button" class="pd-text-button" data-exit-lesson>← Back to home lessons</button><span class="pd-kicker">YOUR GUIDED LESSON</span><h2>' + esc(data.topic || data.title || 'Home lesson') + '</h2><p>' + esc(data.childName || 'Your child') + ' · ' + esc(data.class || '') + ' · ' + esc(data.subject || '') + '</p></div><div class="pd-room-progress"><div><span>STAGE ' + (stage + 1) + ' OF 6</span><strong>' + esc(stages[stage][0]) + '</strong></div><div class="pd-room-track"><span style="width:' + (((stage + 1) / 6) * 100) + '%"></span></div></div><article class="pd-room-card"><span class="pd-room-icon">' + icon(stages[stage][2]) + '</span><h3>' + esc(stages[stage][0]) + '</h3><p class="pd-room-hint">' + esc(stages[stage][1]) + '</p>' + body + '</article><div class="pd-room-actions">' + (stage ? '<button type="button" class="pd-secondary" data-lesson-stage="' + (stage - 1) + '">Previous</button>' : '<span></span>') + (stage < 5 ? '<button type="button" class="pd-primary" data-lesson-stage="' + (stage + 1) + '">Next stage ' + icon('chevron') + '</button>' : '<button type="button" class="pd-primary" data-finish-lesson>Finish lesson ' + icon('check') + '</button>') + '</div><p class="pd-room-save">Your place is saved automatically. You can return to this lesson later.</p></section>';
+  }
   function renderActivity(record) {
     var data = record.data || {};
     var child = children().find(function (item) { return item.id === data.childId; });
@@ -119,7 +133,8 @@
     } else if (state.tab === 'children') body = renderChildren();
     else if (['lesson', 'explanation', 'practice'].includes(state.tab)) {
       state.task = state.tab;
-      body = '<div class="pd-section-head"><div><span class="pd-kicker">CURRICULUM-GUIDED HOME LEARNING</span><h2>' + esc(labels[state.task]) + '</h2><p>' + (state.task === 'lesson' ? 'A complete activity for you and your child to work through together.' : state.task === 'explanation' ? 'A clear explanation you can use when your child gets stuck.' : 'Age-appropriate questions with an answer key and explanations.') + '</p></div></div>' + (list.length ? renderTaskForm() : '<div class="pd-empty">Add a child profile before creating a home-learning activity.</div><button type="button" class="pd-primary" data-parent-tab="children">Add a child</button>') + (state.result ? '<section class="pd-result" aria-live="polite"><div class="pd-section-head"><div><span class="pd-kicker">READY FOR YOU AND YOUR CHILD</span><h3>' + esc(state.result.title) + '</h3></div><button type="button" class="pd-text-button" data-clear-result>Close</button></div><pre>' + esc(state.result.content) + '</pre></section>' : '');
+      var activeLesson = state.task === 'lesson' && state.lessonRoom && state.records.find(function (item) { return item.id === state.lessonRoom; });
+      body = activeLesson ? renderLessonRoom(activeLesson) : '<div class="pd-section-head"><div><span class="pd-kicker">CURRICULUM-GUIDED HOME LEARNING</span><h2>' + esc(labels[state.task]) + '</h2><p>' + (state.task === 'lesson' ? 'A complete activity for you and your child to work through together.' : state.task === 'explanation' ? 'A clear explanation you can use when your child gets stuck.' : 'Age-appropriate questions with an answer key and explanations.') + '</p></div></div>' + (list.length ? renderTaskForm() : '<div class="pd-empty">Add a child profile before creating a home-learning activity.</div><button type="button" class="pd-primary" data-parent-tab="children">Add a child</button>') + (state.result ? '<section class="pd-result" aria-live="polite"><div class="pd-section-head"><div><span class="pd-kicker">READY FOR YOU AND YOUR CHILD</span><h3>' + esc(state.result.title) + '</h3></div><button type="button" class="pd-text-button" data-clear-result>Close</button></div><pre>' + esc(state.result.content) + '</pre></section>' : '');
     } else {
       body = '<div class="pd-section-head"><div><span class="pd-kicker">MY CHILD’S LEARNING JOURNEY</span><h2>Learning Progress</h2><p>Keep track of activities your child has completed.</p></div></div><div class="pd-progress-summary"><strong>' + state.records.filter(function (r) { return r.data && r.data.status === 'completed'; }).length + '</strong><span>completed activities</span></div><div class="pd-activity-list">' + (state.records.length ? state.records.map(renderActivity).join('') : '<div class="pd-empty">No learning activities yet. Create a home lesson to get started.</div>') + '</div>';
     }
@@ -170,10 +185,15 @@
       var view = event.target.closest('[data-view-record]');
       if (view) {
         var saved = state.records.find(function (item) { return item.id === view.dataset.viewRecord; });
-        if (saved) { state.tab = saved.kind || 'progress'; state.task = saved.kind || 'lesson'; state.result = { title: (saved.data || {}).title || 'Saved learning activity', content: (saved.data || {}).content || 'This saved activity does not contain a preview.' }; render(); }
+        if (saved) { state.tab = saved.kind || 'progress'; state.task = saved.kind || 'lesson'; if (saved.kind === 'lesson') { state.lessonRoom = saved.id; state.result = null; } else { state.result = { title: (saved.data || {}).title || 'Saved learning activity', content: (saved.data || {}).content || 'This saved activity does not contain a preview.' }; } render(); }
         return;
       }
-      if (event.target.closest('[data-clear-result]')) { state.result = null; render(); }
+      if (event.target.closest('[data-clear-result]')) { state.result = null; render(); return; }
+      if (event.target.closest('[data-exit-lesson]')) { state.lessonRoom = null; state.result = null; state.tab = 'progress'; render(); return; }
+      var stageButton = event.target.closest('[data-lesson-stage]');
+      if (stageButton && state.lessonRoom) { var roomRecord = state.records.find(function (item) { return item.id === state.lessonRoom; }); if (roomRecord) { var roomData = Object.assign({}, roomRecord.data, { lessonStage: Number(stageButton.dataset.lessonStage) }); saveRecord({ id: roomRecord.id, kind: roomRecord.kind, data: roomData }).then(render).catch(function (error) { state.error = error.message; render(); }); } return; }
+      var reveal = event.target.closest('[data-reveal-answer]'); if (reveal) { var answer = reveal.parentNode.querySelector('.pd-answer-content'); if (answer) { answer.hidden = false; reveal.hidden = true; } return; }
+      if (event.target.closest('[data-finish-lesson]')) { var finished = state.records.find(function (item) { return item.id === state.lessonRoom; }); if (finished) { var finishedData = Object.assign({}, finished.data, { status: 'completed', completedAt: Date.now(), lessonStage: 5 }); saveRecord({ id: finished.id, kind: finished.kind, data: finishedData }).then(function () { state.lessonRoom = null; state.tab = 'progress'; render(); }).catch(function (error) { state.error = error.message; render(); }); } return; }
     });
     state.root.addEventListener('change', function (event) {
       if (event.target.name === 'class' && event.target.form && event.target.form.id === 'pdChildForm') {
@@ -246,9 +266,9 @@
       if (marker >= 0) { var detail = output.slice(marker + 21).trim(); output = output.slice(0, marker).trim(); if (!output) throw new Error(detail || 'The resource could not be completed.'); }
       if (!output.trim()) throw new Error('The AI returned an empty learning activity. Please try again.');
       var title = labels[task] + ': ' + topic;
-      var record = { id: uid(), kind: task, data: { childId: child.id, childName: child.name, class: child.class, dailyGoal: child.minutes, subject: values.subject, topic: topic, title: title, content: output, week: Number(values.week), term: Number(values.term), status: 'saved', createdAt: Date.now() } };
+      var record = { id: uid(), kind: task, data: { childId: child.id, childName: child.name, class: child.class, dailyGoal: child.minutes, subject: values.subject, topic: topic, title: title, content: output, week: Number(values.week), term: Number(values.term), status: 'saved', lessonStage: 0, createdAt: Date.now() } };
       await saveRecord(record);
-      state.result = { title: title, content: output };
+      if (task === 'lesson') { state.lessonRoom = record.id; state.result = null; } else state.result = { title: title, content: output };
       state.error = '';
     } catch (error) {
       state.error = error.message || 'Something went wrong. Please try again.';
