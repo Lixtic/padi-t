@@ -1577,3 +1577,38 @@ main[data-view="chat"] .notice-bar { display: none; }
 @media(prefers-reduced-motion:reduce) {
   .parent-dashboard-content *, .parent-dashboard-content *::before, .parent-dashboard-content *::after { scroll-behavior:auto!important; transition:none!important; }
 }
+
+
+/* Parent dashboard icon system: one consistent, accessible outline style. */
+.parent-dashboard-content .pd-icon { width:20px; height:20px; stroke-width:1.85; }
+.parent-dashboard-content .pd-tabs button { display:inline-flex; align-items:center; justify-content:center; gap:8px; }
+.parent-dashboard-content .pd-tabs button .pd-icon { width:17px; height:17px; opacity:.86; }
+.parent-dashboard-content .pd-tabs button.is-active .pd-icon { opacity:1; }
+.parent-dashboard-content .pd-account { display:flex; align-items:center; gap:6px; }
+.parent-dashboard-content .pd-account .pd-icon { width:14px; height:14px; }
+.parent-dashboard-content .pd-exit { display:inline-flex; align-items:center; gap:8px; }
+.parent-dashboard-content .pd-exit .pd-icon { width:16px; height:16px; }
+.parent-dashboard-content .pd-welcome-mark,.parent-dashboard-content .pd-stat-icon,.parent-dashboard-content .pd-quick-icon,.parent-dashboard-content .pd-child-avatar,.parent-dashboard-content .pd-activity-icon { display:inline-flex; align-items:center; justify-content:center; color:var(--accent); background:color-mix(in srgb,var(--accent) 10%,var(--card)); border-radius:13px; }
+.parent-dashboard-content .pd-welcome-mark { width:42px; height:42px; margin-bottom:12px; border-radius:14px; }
+.parent-dashboard-content .pd-welcome-mark .pd-icon { width:23px; height:23px; }
+.parent-dashboard-content .pd-stats article { position:relative; }
+.parent-dashboard-content .pd-stat-icon { width:30px; height:30px; margin-bottom:7px; border-radius:10px; }
+.parent-dashboard-content .pd-stat-icon .pd-icon { width:17px; height:17px; }
+.parent-dashboard-content .pd-quick-grid button { display:flex; align-items:flex-start; text-align:left; gap:8px; }
+.parent-dashboard-content .pd-quick-icon { width:38px; height:38px; margin-bottom:3px; border-radius:12px; }
+.parent-dashboard-content .pd-quick-icon .pd-icon { width:21px; height:21px; }
+.parent-dashboard-content .pd-child-card { display:flex; align-items:center; gap:14px; }
+.parent-dashboard-content .pd-child-card > div { flex:1; min-width:0; }
+.parent-dashboard-content .pd-child-avatar,.parent-dashboard-content .pd-activity-icon { width:42px; height:42px; flex:none; border-radius:13px; }
+.parent-dashboard-content .pd-child-avatar .pd-icon,.parent-dashboard-content .pd-activity-icon .pd-icon { width:21px; height:21px; }
+.parent-dashboard-content .pd-activity { display:flex; align-items:center; gap:14px; }
+.parent-dashboard-content .pd-activity-copy { flex:1; }
+.parent-dashboard-content .pd-activity-actions { flex:none; }
+@media(max-width:700px) {
+  .parent-dashboard-content .pd-tabs button { gap:6px; }
+  .parent-dashboard-content .pd-tabs button .pd-icon { width:16px; height:16px; }
+  .parent-dashboard-content .pd-child-card { align-items:flex-start; }
+  .parent-dashboard-content .pd-activity { align-items:flex-start; flex-wrap:wrap; }
+  .parent-dashboard-content .pd-activity-copy { flex:1 1 calc(100% - 58px); }
+  .parent-dashboard-content .pd-activity-actions { margin-left:56px; }
+}
