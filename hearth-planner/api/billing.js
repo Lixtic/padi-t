@@ -33,7 +33,7 @@ async function rawBody(req) {
 // Adds the paid days to the teacher's Pro period. Safe to call twice for one payment: only the first call counts.
 async function grant(reference, paidAt) {
   await db.ensure();
-  const rows = await db.query("update payments set status = 'success', paid_at = $2 where reference = $1 and status <> 'success' returning user_id, plan", [reference, paidAt || Date.now()]);
+  const rows = await db.query("update payments set status = 'success', paid_at = $2 where reference = $1 and status <> 'success' and user_id <> 'deleted' returning user_id, plan", [reference, paidAt || Date.now()]);
   if (!rows.length) return { already: true };
   const { user_id: uid, plan } = rows[0];
   const days = (E.cfg().plans[plan] || { days: 30 }).days;
@@ -49,6 +49,7 @@ async function settle(reference, onlyFor) {
   const rows = await db.query('select user_id, amount, currency, status from payments where reference = $1', [reference]);
   if (!rows.length) return { ok: false, code: 'unknown', message: 'We do not recognise that payment.' };
   const row = rows[0];
+  if (row.user_id === 'deleted') return { ok: false, code: 'unknown', message: 'We do not recognise that payment.' };   // account erased (see _erase.js)
   if (onlyFor && row.user_id !== onlyFor) return { ok: false, code: 'forbidden', message: 'That payment belongs to another account.' };
   if (row.status === 'success') return { ok: true, already: true };
   const data = await paystack('/transaction/verify/' + encodeURIComponent(reference));

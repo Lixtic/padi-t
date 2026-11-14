@@ -128,7 +128,7 @@
 
   function inline(s) {
     return esc(s)
-      .replace(/\[([^\]]+)\]\((https:\/\/[^)\s]+)\)/g, '<a href="$2" target="_blank" rel="noopener noreferrer">$1</a>')
+      .replace(/\[([^\]]+)\]\((https:\/\/[^)\s]+)\)/g, (m, label, url) => '<a href="' + url.replace(/"/g, '%22').replace(/'/g, '%27') + '" target="_blank" rel="noopener noreferrer">' + label + '</a>')
       .replace(/`([^`]+)`/g, '<code>$1</code>')
       .replace(/\*\*([^*]+?)\*\*/g, '<strong>$1</strong>')
       .replace(/(^|[^*\w])\*([^*\s][^*]*?)\*(?![*\w])/g, '$1<em>$2</em>');
