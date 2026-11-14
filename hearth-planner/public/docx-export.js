@@ -327,17 +327,28 @@
   }
 
   // Fetches and rasterizes markdown illustrations so they are embedded in the Word file, not left as URLs.
+  // Bound the work: provider image URLs are external and may be slow, oversized or malformed.
   async function imageAssets(content) {
     var matches = String(content || '').match(/^!\[[^\]]*\]\((https:\/\/[^)\s]+)\)$/gm) || [];
     var urls = matches.map(function (line) { return line.match(/\((https:\/\/[^)\s]+)\)$/)[1]; });
-    var unique = Array.from(new Set(urls)), assets = Object.create(null);
+    var unique = Array.from(new Set(urls)).slice(0, 8), assets = Object.create(null);
+    var totalBytes = 0, maxImageBytes = 4 * 1024 * 1024, maxTotalBytes = 16 * 1024 * 1024;
     if (typeof fetch !== 'function' || typeof document === 'undefined') return assets;
     await Promise.all(unique.map(async function (url) {
+      var controller = typeof AbortController === 'function' ? new AbortController() : null;
+      var timeout = controller ? setTimeout(function () { controller.abort(); }, 8000) : null;
+      var bitmap = null;
       try {
-        var response = await fetch(url, { mode: 'cors', credentials: 'omit' });
+        var response = await fetch(url, {
+          mode: 'cors', credentials: 'omit',
+          signal: controller ? controller.signal : undefined
+        });
         if (!response.ok) return;
+        var type = String(response.headers && response.headers.get('content-type') || '').toLowerCase();
+        if (type && type.indexOf('image/') !== 0) return;
         var blob = await response.blob();
-        var bitmap;
+        if (!blob || !blob.size || blob.size > maxImageBytes || totalBytes + blob.size > maxTotalBytes) return;
+        totalBytes += blob.size;
         if (typeof createImageBitmap === 'function') bitmap = await createImageBitmap(blob);
         else bitmap = await new Promise(function (resolve, reject) {
           var objectUrl = URL.createObjectURL(blob), img = new Image();
@@ -345,17 +356,24 @@
           img.onerror = function () { URL.revokeObjectURL(objectUrl); reject(new Error('Image decode failed')); };
           img.src = objectUrl;
         });
+        if (!bitmap.width || !bitmap.height || bitmap.width > 8000 || bitmap.height > 8000 ||
+            bitmap.width * bitmap.height > 32000000) return;
         var scale = Math.min(1, 920 / bitmap.width, 620 / bitmap.height);
         var width = Math.max(1, Math.round(bitmap.width * scale));
         var height = Math.max(1, Math.round(bitmap.height * scale));
         var canvas = document.createElement('canvas');
         canvas.width = width; canvas.height = height;
-        canvas.getContext('2d').drawImage(bitmap, 0, 0, width, height);
-        if (bitmap.close) bitmap.close();
+        var context = canvas.getContext('2d');
+        if (!context) return;
+        context.drawImage(bitmap, 0, 0, width, height);
         var png = await new Promise(function (resolve) { canvas.toBlob(resolve, 'image/png'); });
         if (!png) return;
         assets[url] = { data: new Uint8Array(await png.arrayBuffer()), width: width, height: height };
-      } catch (e) { /* CORS, unsupported format or a missing image: keep the alt text in Word. */ }
+      } catch (e) { /* CORS, timeout, unsupported format or a missing image: keep the alt text in Word. */ }
+      finally {
+        if (timeout) clearTimeout(timeout);
+        if (bitmap && typeof bitmap.close === 'function') bitmap.close();
+      }
     }));
     return assets;
   }
