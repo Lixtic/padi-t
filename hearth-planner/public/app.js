@@ -2052,7 +2052,7 @@
   function refreshAcct() {
     const P = window.PadiSync, ok = !!(P && P.authConfigured());      // no account screen at all if sign-in is not set up on this site
     acct.root.hidden = !ok; acct.top.hidden = !ok;
-    if (!ok) return;
+    if (!ok) { window.dispatchEvent(new Event('guided:account')); return; }
     const u = P.user();
     acct.out.hidden = !!u; acct.inn.hidden = !u;
     window.dispatchEvent(new Event('guided:account'));
@@ -2494,11 +2494,20 @@
   });
 
   /* Account role controls which dashboard is shown. Resolve it from the signed-in account. */
-  let accountRole = '';
+  let accountRole = (() => { try { return localStorage.getItem('guided.role') === 'parent' ? 'parent' : ''; } catch (e) { return ''; } })();   // cached, so a parent never sees the studio flash up
   let accountProfile = null;
   let accountProfileRequest = null;
   let accountProfileLoaded = false;
   let accountProfileError = false;
+  /* A parent account never sees the Teaching Studio: its home is the Parent Dashboard. The role is cached so the right
+     screen shows on the first paint, before the profile has been fetched. */
+  function applyRoleUi() {
+    const parent = accountRole === 'parent';
+    document.body.classList.toggle('role-parent', parent);
+    const label = $('#newSession span');
+    if (label) label.textContent = parent ? 'New Home Lesson' : 'New Plan';
+    try { if (accountRole) localStorage.setItem('guided.role', accountRole); else localStorage.removeItem('guided.role'); } catch (e) { /* storage blocked */ }
+  }
   async function refreshAccountProfile() {
     if (!window.PadiSync || !window.PadiSync.user || !window.PadiSync.user() || !window.PadiSync.getAccountProfile) {
       accountRole = ''; accountProfile = null; return null;
@@ -2510,6 +2519,8 @@
       window.GuidedAccountRole = accountRole;
       accountProfileLoaded = true;
       accountProfileError = false;
+      applyRoleUi();
+      if (accountRole === 'parent' && !pageOpen()) showPage(null);   // a parent lands on the dashboard, not the studio
       const link = $('#dashboardLink');
       if (link) {
         const label = link.querySelector('span');
@@ -2531,14 +2542,17 @@
     return accountProfileRequest;
   }
   window.addEventListener('guided:account-profile-saved', (event) => {
-    if (event && event.detail) { accountProfile = event.detail; accountRole = event.detail.primaryRole || (event.detail.roles || [])[0] || accountRole; window.GuidedAccountRole = accountRole; accountProfileLoaded = true; }
+    if (event && event.detail) { accountProfile = event.detail; accountRole = event.detail.primaryRole || (event.detail.roles || [])[0] || accountRole; window.GuidedAccountRole = accountRole; applyRoleUi(); if (accountRole === 'parent' && !pageOpen()) showPage(null); accountProfileLoaded = true; }
     if (pageOpen() && pageOpen()[0] === 'dashboard' && accountRole === 'parent') renderParentDashboard();
   });
   document.addEventListener('guided:parent-back', () => showPage(null));
   window.addEventListener('guided:account', () => {
     if (window.PadiSync && window.PadiSync.user && window.PadiSync.user()) refreshAccountProfile();
     else {
+      const wasParent = accountRole === 'parent';
       accountRole = ''; accountProfile = null; window.GuidedAccountRole = ''; accountProfileLoaded = false; accountProfileError = false;
+      applyRoleUi();
+      if (wasParent && pageOpen() && pageOpen()[0] === 'dashboard') showPage(null);   // signed out (or an old cached role): back to the normal studio
       const link = $('#dashboardLink');
       if (link) { const label = link.querySelector('span'); if (label) label.textContent = 'Teacher Dashboard'; }
     }
@@ -2548,6 +2562,7 @@
   const PAGES = [['settings', 'Settings', $('#settingsPage'), $('#settingsLink')], ['dashboard', 'Teacher Dashboard', $('#dashboardPage'), $('#dashboardLink')], ['library', 'My Library', $('#libraryPage'), $('#libraryLink')]];
   const pageOpen = () => PAGES.find((x) => x[2] && !x[2].hidden);
   function showPage(name) {
+    if (!name && accountRole === 'parent') name = 'dashboard';   // "back to planning" means the parent's home
     PAGES.forEach(([key, title, el, link]) => {
       if (!el) return;
       const on = key === name;
@@ -2567,9 +2582,13 @@
   // Anything that goes back to planning leaves the page first.
   document.addEventListener('click', (e) => {
     if (!pageOpen()) return;
-    if (e.target.closest('#newSession, #brand, .sb-list, .f-add') || (e.target.closest('.v2-tabbar') && !e.target.closest('[data-tab="library"]'))) showPage(null);
+    if (e.target.closest('#newSession, #brand, .sb-list, .f-add') || (e.target.closest('.v2-tabbar') && !e.target.closest('[data-tab="library"]'))) {
+      showPage(null);
+      if (accountRole === 'parent' && e.target.closest('#newSession') && window.GuidedParentDashboard) window.GuidedParentDashboard.open('lesson');
+    }
   }, true);
   document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && pageOpen() && !document.querySelector('dialog[open]')) showPage(null); });
+  if (accountRole === 'parent') { applyRoleUi(); showPage(null); }   // returning parent: straight to the dashboard (refreshAcct undoes this if they are not signed in)
 
   /* Parent Dashboard: account-backed child profile, separate from teacher planning. */
   function renderParentDashboard() {

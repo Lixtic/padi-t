@@ -372,3 +372,7 @@ body.on-dashboard .v2-tabbar { display: none !important; }
 .dl-check input { margin-top: 3px; }
 .as-danger-solid { background: var(--del, #b3261e); color: #fff; }
 .as-danger-solid:disabled { opacity: .45; cursor: not-allowed; }
+
+/* Parent accounts have no Teaching Studio: no plan history, plan library, search or studio tab bar. Their home is the Parent Dashboard. */
+body.role-parent .stage, body.role-parent .pro-banner, body.role-parent .v2-tabbar,
+body.role-parent .sb-list, body.role-parent .sb-list-head, body.role-parent #libraryLink, body.role-parent #searchToggle, body.role-parent #searchWrap { display: none !important; }
