@@ -1821,3 +1821,81 @@ main[data-view="chat"] .notice-bar { display: none; }
 @media (min-width: 701px) {
   .parent-dashboard-content .pd-tabs { flex-wrap: wrap; }
 }
+
+
+/* Keep recent-learning actions inside each card on phone screens. */
+@media (max-width: 700px) {
+  .parent-dashboard-content .pd-activity {
+    display: grid;
+    grid-template-columns: 40px minmax(0, 1fr);
+    align-items: start;
+    justify-content: initial;
+    gap: 10px;
+  }
+  .parent-dashboard-content .pd-activity-icon {
+    grid-column: 1;
+    grid-row: 1;
+    width: 40px;
+    height: 40px;
+  }
+  .parent-dashboard-content .pd-activity-copy {
+    grid-column: 2;
+    grid-row: 1;
+    width: 100%;
+    min-width: 0;
+    flex: initial;
+  }
+  .parent-dashboard-content .pd-activity-actions {
+    grid-column: 1 / -1;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    align-items: stretch;
+    justify-content: stretch;
+    width: 100%;
+    min-width: 0;
+    gap: 9px;
+  }
+  .parent-dashboard-content .pd-activity-actions > button {
+    width: 100%;
+    min-width: 0;
+    min-height: 46px;
+    flex: initial;
+  }
+  .parent-dashboard-content .pd-activity-actions .pd-complete-wrap {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.25fr);
+    align-items: end;
+    width: 100%;
+    min-width: 0;
+    gap: 9px;
+    flex: initial;
+  }
+  .parent-dashboard-content .pd-complete-wrap .pd-score {
+    display: grid;
+    min-width: 0;
+    width: 100%;
+  }
+  .parent-dashboard-content .pd-complete-wrap .pd-score input {
+    width: 100%;
+    min-width: 0;
+    min-height: 44px;
+    font-size: 16px;
+  }
+  .parent-dashboard-content .pd-complete-wrap button {
+    width: 100%;
+    min-width: 0;
+    min-height: 46px;
+    padding-inline: 10px;
+    white-space: normal;
+    line-height: 1.25;
+  }
+  .parent-dashboard-content .pd-activity-actions .pd-done {
+    justify-self: start;
+    align-self: center;
+  }
+}
+@media (max-width: 380px) {
+  .parent-dashboard-content .pd-activity-actions .pd-complete-wrap {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
