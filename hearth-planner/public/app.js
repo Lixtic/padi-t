@@ -2504,10 +2504,37 @@
   function applyRoleUi() {
     const parent = accountRole === 'parent';
     document.body.classList.toggle('role-parent', parent);
+    updateRoleButton();
     const label = $('#newSession span');
     if (label) label.textContent = parent ? 'New Home Lesson' : 'New Plan';
     try { if (accountRole) localStorage.setItem('guided.role', accountRole); else localStorage.removeItem('guided.role'); } catch (e) { /* storage blocked */ }
   }
+  // Switching between teacher and parent views, or adding the other role to this account.
+  function updateRoleButton() {
+    const b = $('#asRole'); if (!b) return;
+    const roles = accountProfile && Array.isArray(accountProfile.roles) ? accountProfile.roles : [];
+    if (!roles.length || !accountRole) { b.hidden = true; return; }
+    const other = accountRole === 'parent' ? 'teacher' : 'parent';
+    b.hidden = false;
+    b.dataset.role = other;
+    b.dataset.add = roles.includes(other) ? '' : '1';
+    b.textContent = roles.includes(other) ? 'Switch to ' + (other === 'parent' ? 'Parent' : 'Teacher') + ' view' : 'I am also a ' + other + ': add ' + (other === 'parent' ? 'Parent' : 'Teacher') + ' view';
+  }
+  async function switchRole(role, add) {
+    if (!accountProfile || !window.PadiSync || !window.PadiSync.setAccountProfile) return;
+    const roles = [...new Set([...(accountProfile.roles || []), role])];
+    const next = Object.assign({}, accountProfile, { roles, primaryRole: role });
+    delete next.updatedAt;
+    if (role === 'parent' && !Array.isArray(next.children)) next.children = [];
+    try {
+      const res = await window.PadiSync.setAccountProfile(next);
+      const saved = res && res.profile ? res.profile : next;
+      window.dispatchEvent(new CustomEvent('guided:account-profile-saved', { detail: saved }));
+      if (role === 'teacher') showPage(null); else showPage('dashboard');
+      try { const d = $('#acctSheet'); if (d && d.close) d.close(); } catch (e) { /* ignore */ }
+    } catch (e) { toast(e && e.message || 'Could not switch view. Please try again.'); }
+  }
+  { const b = $('#asRole'); if (b) b.addEventListener('click', () => switchRole(b.dataset.role, !!b.dataset.add)); }
   async function refreshAccountProfile() {
     if (!window.PadiSync || !window.PadiSync.user || !window.PadiSync.user() || !window.PadiSync.getAccountProfile) {
       accountRole = ''; accountProfile = null; return null;

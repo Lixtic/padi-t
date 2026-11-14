@@ -63,6 +63,7 @@
     }).join('');
     return '<div class="pd-section-head"><div><span class="pd-kicker">FAMILY LEARNING</span><h2>My Children</h2><p>Manage the children whose learning you support.</p></div><span class="pd-count">' + list.length + ' / 10</span></div>' +
       '<div class="pd-child-list">' + (cards || '<div class="pd-empty">Add your child to start planning learning activities.</div>') + '</div>' +
+      '<label class="pd-check pd-reminder"><input type="checkbox" id="pdReminders"' + (state.profile && state.profile.familyReminders === false ? '' : ' checked') + '><span>Email me a short learning idea every Sunday evening</span></label>' +
       (list.length >= 10 && !child ? '<p class="pd-note">You can add up to 10 children to one parent account.</p>' :
       '<form class="pd-form pd-child-form" id="pdChildForm"><h3>' + (child ? 'Update child details' : 'Add a child') + '</h3><label>Child’s name<input name="name" maxlength="80" required value="' + esc(child && child.name || '') + '" placeholder="Child’s name"></label><div class="pd-form-grid"><label>Class<select name="class">' + Array.from({ length: 9 }, function (_, i) { var value = 'Basic ' + (i + 1); return '<option' + (value === cls ? ' selected' : '') + '>' + value + '</option>'; }).join('') + '</select></label><label>Daily learning time<select name="minutes">' + [15, 30, 45, 60].map(function (n) { return '<option value="' + n + '"' + (Number(child && child.minutes || 30) === n ? ' selected' : '') + '>' + n + ' minutes</option>'; }).join('') + '</select></label></div><fieldset><legend>Subjects</legend><div class="pd-subject-grid">' + subjectOptions + '</div></fieldset><div class="pd-form-actions"><button class="pd-primary" type="submit">' + (child ? 'Save changes' : 'Add child') + '</button>' + (child ? '<button type="button" class="pd-secondary" data-cancel-edit>Cancel</button>' : '') + '</div></form>');
   }
@@ -218,6 +219,11 @@
       if (event.target.closest('[data-finish-lesson]')) { var finished = state.records.find(function (item) { return item.id === state.lessonRoom; }); if (finished) { var finishedData = Object.assign({}, finished.data, { status: 'completed', completedAt: Date.now(), lessonStage: 5 }); saveRecord({ id: finished.id, kind: finished.kind, data: finishedData }).then(function () { state.lessonRoom = null; state.tab = 'progress'; render(); }).catch(function (error) { state.error = error.message; render(); }); } return; }
     });
     state.root.addEventListener('change', function (event) {
+      if (event.target.id === 'pdReminders') {
+        var on = event.target.checked;
+        saveProfile(Object.assign({}, state.profile, { familyReminders: on })).catch(function (error) { state.error = error.message; render(); });
+        return;
+      }
       if (event.target.name === 'class' && event.target.form && event.target.form.id === 'pdChildForm') {
         var cls = event.target.value;
         var box = event.target.form.querySelector('.pd-subject-grid');
@@ -277,6 +283,7 @@
       });
       if (!response.ok) {
         var errorBody = {}; try { errorBody = await response.json(); } catch (ignore) {}
+        if (response.status === 402 && errorBody.error === 'limit' && window.GuidedPlans && window.GuidedPlans.openUpgrade) window.GuidedPlans.openUpgrade(errorBody.reason || 'parent', errorBody.message || '');
         throw new Error(errorBody.message || 'Could not generate this learning activity (' + response.status + ').');
       }
       var output = '';

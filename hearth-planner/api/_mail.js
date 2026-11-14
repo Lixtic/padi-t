@@ -27,11 +27,11 @@ function layout(parts) {
     <tr><td style="padding:20px 8px 0;font-size:12.5px;line-height:1.6;color:#8a8a84;text-align:center">
       GuidEd · Lesson plans for Ghanaian teachers<br>
       <a href="${site}/about" style="color:#8a8a84">About</a> &nbsp;·&nbsp; <a href="${site}/privacy" style="color:#8a8a84">Privacy</a> &nbsp;·&nbsp; <a href="${site}/refunds" style="color:#8a8a84">Refunds</a> &nbsp;·&nbsp; <a href="mailto:hello@guidedgh.site" style="color:#8a8a84">hello@guidedgh.site</a><br>
-      You are receiving this because you have a GuidEd account.
+      You are receiving this because you have a GuidEd account.${p.unsubscribe ? ` <a href="${esc(p.unsubscribe)}" style="color:#8a8a84">Unsubscribe from weekly reminders</a>` : ''}
     </td></tr>
   </table>
 </td></tr></table></body></html>`;
-  const text = [p.title, '', p.intro, p.intro ? '' : null, ...(p.facts || []).map((f) => f[0] + ': ' + f[1]), (p.facts || []).length ? '' : null, ...(p.paragraphs || []).flatMap((t) => [t, '']), p.button ? p.button.label + ': ' + p.button.url : null, p.button ? '' : null, p.closing, '', '—', 'GuidEd · ' + site, 'Questions? hello@guidedgh.site'].filter((x) => x !== null && x !== undefined).join('\n');
+  const text = [p.title, '', p.intro, p.intro ? '' : null, ...(p.facts || []).map((f) => f[0] + ': ' + f[1]), (p.facts || []).length ? '' : null, ...(p.paragraphs || []).flatMap((t) => [t, '']), p.button ? p.button.label + ': ' + p.button.url : null, p.button ? '' : null, p.closing, '', p.unsubscribe ? 'Stop these emails: ' + p.unsubscribe : null, '—', 'GuidEd · ' + site, 'Questions? hello@guidedgh.site'].filter((x) => x !== null && x !== undefined).join('\n');
   return { html, text };
 }
 
@@ -61,6 +61,24 @@ function proEnding(left, expiresAt) {
   };
 }
 
+function familyWeekly(o) {
+  const site = SITE();
+  const kids = o.children || [];
+  return {
+    subject: 'This week at home with GuidEd',
+    ...layout({
+      preheader: 'A short activity for each child, ready on your phone.',
+      title: 'Your week of learning at home',
+      intro: o.done ? 'Last week you finished ' + o.done + ' home ' + (o.done === 1 ? 'activity' : 'activities') + '. Well done.' : 'A little time at home goes a long way. Here is an idea for each child this week.',
+      facts: kids.map((k) => [k.name, k.subject + ' (' + k.class + ', about ' + k.minutes + ' minutes)']),
+      paragraphs: ['Open My Children, pick the suggested subject and GuidEd will guide you through a short lesson step by step.'],
+      button: { label: 'Start this week', url: site + '/' },
+      closing: 'You can stop these emails any time with the link below.',
+      unsubscribe: o.unsubscribeUrl,
+    }),
+  };
+}
+
 function welcome() {
   return {
     subject: 'Welcome to GuidEd',
@@ -76,4 +94,4 @@ function welcome() {
   };
 }
 
-module.exports = { layout, proEnding, welcome, fmtDate, SITE };
+module.exports = { layout, proEnding, familyWeekly, welcome, fmtDate, SITE };
