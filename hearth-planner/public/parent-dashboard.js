@@ -28,8 +28,7 @@
       state.loaded = true; state.error = ''; render();
     }).catch(function (error) {
       state.error = error.message || 'Could not load your learning activities.';
-      render();
-    }).finally(function () { state.loading = false; });
+    }).finally(function () { state.loading = false; render(); });
   }
   function saveProfile(next) {
     return window.PadiSync.setAccountProfile(next).then(function (result) {
