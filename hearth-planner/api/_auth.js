@@ -71,7 +71,13 @@ async function authed(req) {
   } else {
     req.authFail = 'no Authorization header was sent';
   }
-  return legacyAuthed(req);
+  const who = legacyAuthed(req);
+  if (!who) return null;
+  // These tokens last 90 days and cannot be recalled, so a deleted account must stop working here.
+  try {
+    await db.ensure();
+    return (await db.query('select 1 from users where id = $1', [who.uid])).length ? who : null;
+  } catch (e) { console.error('legacy token check failed', e && e.message); return null; }
 }
 
 const hashCode = (email, code) => crypto.createHash('sha256').update(email + ':' + code + ':' + secret()).digest('hex');

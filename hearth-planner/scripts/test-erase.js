@@ -7,7 +7,9 @@ const log = [];
 let failAuthDelete = null;
 global.__PADI_SQL__ = { query: async (text, params) => {
   if (/neon_auth/.test(text) && failAuthDelete) throw new Error(failAuthDelete);
-  log.push({ text: text.replace(/\s+/g, ' ').trim(), params }); return [];
+  log.push({ text: text.replace(/\s+/g, ' ').trim(), params });
+  if (/^select 1 from users where id/i.test(text.trim())) return [{ ok: 1 }];   // the signed-in token's account still exists
+  return [];
 } };
 process.env.DATABASE_URL = 'test';
 process.env.SMTP_URL = 'smtp://test';
