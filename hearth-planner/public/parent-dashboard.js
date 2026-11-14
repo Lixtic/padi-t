@@ -131,7 +131,7 @@
     state.root.dataset.parentWired = '1';
     state.root.addEventListener('click', function (event) {
       var tab = event.target.closest('[data-parent-tab]');
-      if (tab) { if (tab.dataset.parentTab === 'lesson' && state.tab !== 'lesson') { state.lessonStep = 0; state.lessonDraft = {}; } state.tab = tab.dataset.parentTab; state.result = null; render(); return; }
+      if (tab) { if (tab.dataset.parentTab === 'lesson') { state.lessonStep = 0; state.lessonDraft = {}; } state.tab = tab.dataset.parentTab; state.result = null; render(); return; }
       var open = event.target.closest('[data-open-task]');
       if (open) { state.tab = open.dataset.openTask; state.task = open.dataset.openTask; if (state.task === 'lesson') { state.lessonStep = 0; state.lessonDraft = {}; } state.result = null; render(); return; }
       if (event.target.closest('#pdBack')) { document.dispatchEvent(new CustomEvent('guided:parent-back')); return; }
