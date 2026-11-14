@@ -64,6 +64,7 @@ module.exports = async (req, res) => {
       title: clean(data.title, 240),
       content: clean(data.content, 120000),
       status: data.status === 'completed' ? 'completed' : 'saved',
+      lessonStage: Math.max(0, Math.min(5, Math.floor(Number(data.lessonStage)) || 0)),   // where the parent is in a guided lesson (0-5)
       score: data.score == null || data.score === '' ? null : Math.max(0, Math.min(100, Number(data.score) || 0)),
       notes: clean(data.notes, 2000),
       createdAt: Number(data.createdAt) > 0 ? Number(data.createdAt) : Date.now(),
