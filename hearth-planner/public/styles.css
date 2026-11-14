@@ -1660,3 +1660,36 @@ main[data-view="chat"] .notice-bar { display: none; }
  .pd-review-list strong { text-align:left; }
  .pd-wizard-actions button { flex:1; }
 }
+
+
+/* Parent guided lesson room */
+.pd-lesson-room { display: grid; gap: 18px; }
+.pd-room-top { display: grid; gap: 7px; }
+.pd-room-top .pd-text-button { justify-self: start; margin-bottom: 5px; }
+.pd-room-top h2 { margin: 0; font-size: clamp(23px, 4vw, 31px); line-height: 1.2; }
+.pd-room-top p { margin: 0; color: var(--muted); font-size: 13px; }
+.pd-room-progress { display: grid; gap: 10px; padding: 15px 17px; border: 1px solid var(--card-line); border-radius: 16px; background: var(--card); }
+.pd-room-progress > div:first-child { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.pd-room-progress span { color: var(--muted); font-size: 11px; font-weight: 750; letter-spacing: .08em; }
+.pd-room-progress strong { font-size: 14px; }
+.pd-room-track { height: 7px; overflow: hidden; border-radius: 20px; background: var(--line); }
+.pd-room-track span { display: block; height: 100%; border-radius: inherit; background: var(--accent); transition: width .2s ease; }
+.pd-room-card { display: grid; gap: 13px; padding: clamp(18px, 4vw, 28px); border: 1px solid var(--card-line); border-radius: 20px; background: var(--card); box-shadow: var(--shadow); }
+.pd-room-icon { display: grid; place-items: center; width: 44px; height: 44px; border-radius: 14px; background: var(--sb); color: var(--accent); }
+.pd-room-icon .ico { width: 23px; height: 23px; }
+.pd-room-card h3 { margin: 0; font-size: 21px; }
+.pd-room-hint { margin: -7px 0 3px; color: var(--muted); font-size: 14px; }
+.pd-room-section { padding-top: 15px; border-top: 1px solid var(--card-line); }
+.pd-room-section h4 { margin: 0 0 9px; font-size: 15px; }
+.pd-room-section p { margin: 0 0 10px; line-height: 1.7; font-size: 14px; }
+.pd-room-section ul { margin: 0 0 12px; padding-left: 21px; line-height: 1.7; font-size: 14px; }
+.pd-room-section li + li { margin-top: 5px; }
+.pd-room-section [hidden] { display: none !important; }
+.pd-room-actions { display: flex; justify-content: space-between; gap: 12px; }
+.pd-room-actions button { min-height: 46px; }
+.pd-room-save, .pd-room-empty { margin: 0; color: var(--muted); font-size: 12px; text-align: center; }
+@media (max-width: 560px) {
+  .pd-room-progress > div:first-child { align-items: flex-start; flex-direction: column; gap: 4px; }
+  .pd-room-actions button { flex: 1; }
+  .pd-room-card { border-radius: 16px; }
+}
