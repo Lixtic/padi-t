@@ -57134,6 +57134,1861 @@
     }
    },
    "source": "SHS Integrated Science Curriculum Indicators"
+  },
+  "Physical Education and Health": {
+   "classes": {
+    "Basic 7": {
+     "1": [
+      {
+       "weeks": [
+        1
+       ],
+       "type": "revision",
+       "strand": "Revision",
+       "substrand": "",
+       "standard": "",
+       "indicators": []
+      },
+      {
+       "weeks": [
+        2
+       ],
+       "type": "teach",
+       "strand": "Health Education",
+       "substrand": "Nutrition And Physical Activity",
+       "standard": "B7.1.1.1. Demonstrate understanding of various food nutrients required for sports and physical activity.",
+       "indicators": [
+        "B7.1.1.1.1 Discuss food nutrients that influence sports and physical activity participation"
+       ],
+       "part": [
+        1,
+        3
+       ]
+      },
+      {
+       "weeks": [
+        3
+       ],
+       "type": "teach",
+       "strand": "Health Education",
+       "substrand": "Nutrition And Physical Activity",
+       "standard": "B7.1.1.1. Demonstrate understanding of various food nutrients required for sports and physical activity.",
+       "indicators": [
+        "B7.1.1.1.1 Discuss food nutrients that influence sports and physical activity participation"
+       ],
+       "part": [
+        2,
+        3
+       ]
+      },
+      {
+       "weeks": [
+        4
+       ],
+       "type": "teach",
+       "strand": "Health Education",
+       "substrand": "Nutrition And Physical Activity",
+       "standard": "B7.1.1.1. Demonstrate understanding of various food nutrients required for sports and physical activity.",
+       "indicators": [
+        "B7.1.1.1.1 Discuss food nutrients that influence sports and physical activity participation"
+       ],
+       "part": [
+        3,
+        3
+       ]
+      },
+      {
+       "weeks": [
+        5
+       ],
+       "type": "teach",
+       "strand": "Health Education",
+       "substrand": "Disease Prevention And Management",
+       "standard": "B7.1.2.1. Demonstrate understanding of common diseases associated with sedentary behaviours and physical inactivity",
+       "indicators": [
+        "B7.1.2.1.1 Research common diseases associated with sedentary behaviours and physical inactivity"
+       ],
+       "part": [
+        1,
+        2
+       ]
+      },
+      {
+       "weeks": [
+        6
+       ],
+       "type": "teach",
+       "strand": "Health Education",
+       "substrand": "Disease Prevention And Management",
+       "standard": "B7.1.2.1. Demonstrate understanding of common diseases associated with sedentary behaviours and physical inactivity",
+       "indicators": [
+        "B7.1.2.1.1 Research common diseases associated with sedentary behaviours and physical inactivity"
+       ],
+       "part": [
+        2,
+        2
+       ]
+      },
+      {
+       "weeks": [
+        7
+       ],
+       "type": "teach",
+       "strand": "Health Education",
+       "substrand": "First Aid, Injury Prevention And Management",
+       "standard": "B7.1.3.1. Demonstrate understanding of first aid, causes, prevention and management of common injuries in sports and physical activity.",
+       "indicators": [
+        "B7.1.3.1.1 Describe first aid and evaluate causes of common injuries related to sports and physical activity."
+       ],
+       "part": [
+        1,
+        2
+       ]
+      },
+      {
+       "weeks": [
+        8
+       ],
+       "type": "teach",
+       "strand": "Health Education",
+       "substrand": "First Aid, Injury Prevention And Management",
+       "standard": "B7.1.3.1. Demonstrate understanding of first aid, causes, prevention and management of common injuries in sports and physical activity.",
+       "indicators": [
+        "B7.1.3.1.1 Describe first aid and evaluate causes of common injuries related to sports and physical activity."
+       ],
+       "part": [
+        2,
+        2
+       ]
+      },
+      {
+       "weeks": [
+        9
+       ],
+       "type": "teach",
+       "strand": "Health Education",
+       "substrand": "First Aid, Injury Prevention And Management",
+       "standard": "B7.1.3.1. Demonstrate understanding of first aid, causes, prevention and management of common injuries in sports and physical activity.",
+       "indicators": [
+        "B7.1.3.1.2 Demonstrate understanding of preventive management measures for common injuries associated with sports and physical activity."
+       ],
+       "part": [
+        1,
+        2
+       ]
+      },
+      {
+       "weeks": [
+        10
+       ],
+       "type": "teach",
+       "strand": "Health Education",
+       "substrand": "First Aid, Injury Prevention And Management",
+       "standard": "B7.1.3.1. Demonstrate understanding of first aid, causes, prevention and management of common injuries in sports and physical activity.",
+       "indicators": [
+        "B7.1.3.1.2 Demonstrate understanding of preventive management measures for common injuries associated with sports and physical activity."
+       ],
+       "part": [
+        2,
+        2
+       ]
+      },
+      {
+       "weeks": [
+        11
+       ],
+       "type": "teach",
+       "strand": "Physical Activity Education",
+       "substrand": "Traditional Rhythmic Gymnastics, Games And Dance",
+       "standard": "B7.2.1.1. Demonstrate understanding of the varieties of traditional games and adaptations for inclusivity and cultural identity (e.g., conceptual and cooperative games, etc.)",
+       "indicators": [
+        "B7.2.1.1.1 Identify and demonstrate the various conceptual and cooperative traditional games (e.g., otoosa or ampe, kokrokoo, mitu mituo, ozimzim, etc.) for critical thinking, decision-making, inclusivity, and cultural identity"
+       ],
+       "part": [
+        1,
+        2
+       ]
+      },
+      {
+       "weeks": [
+        12
+       ],
+       "type": "teach",
+       "strand": "Physical Activity Education",
+       "substrand": "Traditional Rhythmic Gymnastics, Games And Dance",
+       "standard": "B7.2.1.1. Demonstrate understanding of the varieties of traditional games and adaptations for inclusivity and cultural identity (e.g., conceptual and cooperative games, etc.)",
+       "indicators": [
+        "B7.2.1.1.1 Identify and demonstrate the various conceptual and cooperative traditional games (e.g., otoosa or ampe, kokrokoo, mitu mituo, ozimzim, etc.) for critical thinking, decision-making, inclusivity, and cultural identity"
+       ],
+       "part": [
+        2,
+        2
+       ]
+      },
+      {
+       "weeks": [
+        13
+       ],
+       "type": "revision",
+       "strand": "Revision",
+       "substrand": "",
+       "standard": "",
+       "indicators": []
+      },
+      {
+       "weeks": [
+        14,
+        15
+       ],
+       "type": "exam",
+       "strand": "Examination",
+       "substrand": "",
+       "standard": "",
+       "indicators": []
+      }
+     ],
+     "2": [
+      {
+       "weeks": [
+        1
+       ],
+       "type": "revision",
+       "strand": "Revision",
+       "substrand": "",
+       "standard": "",
+       "indicators": []
+      },
+      {
+       "weeks": [
+        2
+       ],
+       "type": "teach",
+       "strand": "Physical Activity Education",
+       "substrand": "Traditional Rhythmic Gymnastics, Games And Dance",
+       "standard": "B7.2.1.2. Demonstrate understanding of the varieties of traditional dances and adaptations for inclusivity and cultural identity (e.g., individual and group dances, etc.)",
+       "indicators": [
+        "B7.2.1.2.1 Explore and perform a variety of individual and group traditional dance movements and adaptation for the recognition and appreciation of culture (e.g., adowa, kpo dada, dugu, takai, etc.)."
+       ],
+       "part": [
+        1,
+        2
+       ]
+      },
+      {
+       "weeks": [
+        3
+       ],
+       "type": "teach",
+       "strand": "Physical Activity Education",
+       "substrand": "Traditional Rhythmic Gymnastics, Games And Dance",
+       "standard": "B7.2.1.2. Demonstrate understanding of the varieties of traditional dances and adaptations for inclusivity and cultural identity (e.g., individual and group dances, etc.)",
+       "indicators": [
+        "B7.2.1.2.1 Explore and perform a variety of individual and group traditional dance movements and adaptation for the recognition and appreciation of culture (e.g., adowa, kpo dada, dugu, takai, etc.)."
+       ],
+       "part": [
+        2,
+        2
+       ]
+      },
+      {
+       "weeks": [
+        4
+       ],
+       "type": "teach",
+       "strand": "Physical Activity Education",
+       "substrand": "Traditional Rhythmic Gymnastics, Games And Dance",
+       "standard": "B7.2.1.3. Demonstrate understanding and apply skills and movement techniques in global and traditional rhythmic gymnastics and adaptations for global awareness and cultural sensitivity",
+       "indicators": [
+        "B7.2.1.3.1 Explore and perform a variety of global and traditional rhythmic gymnastics (e.g., synchronised adowa, agbadza, etc.) and adaptation for creativity, communication, and cultural identity"
+       ],
+       "part": [
+        1,
+        2
+       ]
+      },
+      {
+       "weeks": [
+        5
+       ],
+       "type": "teach",
+       "strand": "Physical Activity Education",
+       "substrand": "Traditional Rhythmic Gymnastics, Games And Dance",
+       "standard": "B7.2.1.3. Demonstrate understanding and apply skills and movement techniques in global and traditional rhythmic gymnastics and adaptations for global awareness and cultural sensitivity",
+       "indicators": [
+        "B7.2.1.3.1 Explore and perform a variety of global and traditional rhythmic gymnastics (e.g., synchronised adowa, agbadza, etc.) and adaptation for creativity, communication, and cultural identity"
+       ],
+       "part": [
+        2,
+        2
+       ]
+      },
+      {
+       "weeks": [
+        6
+       ],
+       "type": "teach",
+       "strand": "Physical Activity Education",
+       "substrand": "Physical Fitness",
+       "standard": "B7.2.2.1. Demonstrate the ability to participate in a variety of internationally benchmarked physical fitness indicators (e.g., muscular strength and endurance, cardiorespiratory strength and endurance, flexibility and balance fitness indicators)",
+       "indicators": [
+        "B7.2.2.1.1 Participate in internationally benchmarked fitness indicators (e.g., cardiorespiratory strength and endurance, muscular strength and endurance, flexibility, and balance indicators.) for personal fitness development, decision-making and goal setting"
+       ],
+       "part": [
+        1,
+        2
+       ]
+      },
+      {
+       "weeks": [
+        7
+       ],
+       "type": "teach",
+       "strand": "Physical Activity Education",
+       "substrand": "Physical Fitness",
+       "standard": "B7.2.2.1. Demonstrate the ability to participate in a variety of internationally benchmarked physical fitness indicators (e.g., muscular strength and endurance, cardiorespiratory strength and endurance, flexibility and balance fitness indicators)",
+       "indicators": [
+        "B7.2.2.1.1 Participate in internationally benchmarked fitness indicators (e.g., cardiorespiratory strength and endurance, muscular strength and endurance, flexibility, and balance indicators.) for personal fitness development, decision-making and goal setting"
+       ],
+       "part": [
+        2,
+        2
+       ]
+      },
+      {
+       "weeks": [
+        8
+       ],
+       "type": "teach",
+       "strand": "Physical Activity Education",
+       "substrand": "Physical Fitness",
+       "standard": "B7.2.2.2. Demonstrate the ability to participate in a variety of traditional and global cardiorespiratory activities",
+       "indicators": [
+        "B7.2.2.2.1 Perform a variety of traditional and global activities for personal fitness development/improvement, cardiorespiratory fitness, decision-making and goal setting"
+       ],
+       "part": [
+        1,
+        2
+       ]
+      },
+      {
+       "weeks": [
+        9
+       ],
+       "type": "teach",
+       "strand": "Physical Activity Education",
+       "substrand": "Physical Fitness",
+       "standard": "B7.2.2.2. Demonstrate the ability to participate in a variety of traditional and global cardiorespiratory activities",
+       "indicators": [
+        "B7.2.2.2.1 Perform a variety of traditional and global activities for personal fitness development/improvement, cardiorespiratory fitness, decision-making and goal setting"
+       ],
+       "part": [
+        2,
+        2
+       ]
+      },
+      {
+       "weeks": [
+        10
+       ],
+       "type": "teach",
+       "strand": "Physical Activity Education",
+       "substrand": "Physical Fitness",
+       "standard": "B7.2.2.3. Demonstrate the ability to participate in a variety of muscular strength and endurance activities",
+       "indicators": [
+        "B7.2.2.3.1 Perform a variety of muscular strength and endurance activities for personal fitness development/improvement, muscular fitness, decision-making and goal setting"
+       ],
+       "part": [
+        1,
+        2
+       ]
+      },
+      {
+       "weeks": [
+        11
+       ],
+       "type": "teach",
+       "strand": "Physical Activity Education",
+       "substrand": "Physical Fitness",
+       "standard": "B7.2.2.3. Demonstrate the ability to participate in a variety of muscular strength and endurance activities",
+       "indicators": [
+        "B7.2.2.3.1 Perform a variety of muscular strength and endurance activities for personal fitness development/improvement, muscular fitness, decision-making and goal setting"
+       ],
+       "part": [
+        2,
+        2
+       ]
+      },
+      {
+       "weeks": [
+        12
+       ],
+       "type": "teach",
+       "strand": "Physical Activity Education",
+       "substrand": "Physical Fitness",
+       "standard": "B7.2.2.4. Demonstrate the ability to participate in a variety of flexibility and balance activities",
+       "indicators": [
+        "B7.2.2.4.1 Perform a variety of flexibility and balance activities for personal fitness and health development/improvement, decisionmaking and goal setting"
+       ]
+      },
+      {
+       "weeks": [
+        13
+       ],
+       "type": "revision",
+       "strand": "Revision",
+       "substrand": "",
+       "standard": "",
+       "indicators": []
+      },
+      {
+       "weeks": [
+        14,
+        15
+       ],
+       "type": "exam",
+       "strand": "Examination",
+       "substrand": "",
+       "standard": "",
+       "indicators": []
+      }
+     ],
+     "3": [
+      {
+       "weeks": [
+        1
+       ],
+       "type": "revision",
+       "strand": "Revision",
+       "substrand": "",
+       "standard": "",
+       "indicators": []
+      },
+      {
+       "weeks": [
+        2
+       ],
+       "type": "teach",
+       "strand": "Physical Activity Education",
+       "substrand": "Organised Sports And Physical Activity Participation",
+       "standard": "B7.2.3.1. Demonstrate the ability to apply movement concepts, principles and strategies in performing non–contact sports (e.g., ball and racket, athletics, and individual and target sports) to develop creativity, innovation, communication and collaboration",
+       "indicators": [
+        "B7.2.3.1.2 Apply movement concepts, principles and strategies in performing beginning level athletics (e.g., sprinting, jumping and throwing events) to develop communication and collaboration."
+       ],
+       "part": [
+        1,
+        3
+       ]
+      },
+      {
+       "weeks": [
+        3
+       ],
+       "type": "teach",
+       "strand": "Physical Activity Education",
+       "substrand": "Organised Sports And Physical Activity Participation",
+       "standard": "B7.2.3.1. Demonstrate the ability to apply movement concepts, principles and strategies in performing non–contact sports (e.g., ball and racket, athletics, and individual and target sports) to develop creativity, innovation, communication and collaboration",
+       "indicators": [
+        "B7.2.3.1.2 Apply movement concepts, principles and strategies in performing beginning level athletics (e.g., sprinting, jumping and throwing events) to develop communication and collaboration."
+       ],
+       "part": [
+        2,
+        3
+       ]
+      },
+      {
+       "weeks": [
+        4
+       ],
+       "type": "teach",
+       "strand": "Physical Activity Education",
+       "substrand": "Organised Sports And Physical Activity Participation",
+       "standard": "B7.2.3.1. Demonstrate the ability to apply movement concepts, principles and strategies in performing non–contact sports (e.g., ball and racket, athletics, and individual and target sports) to develop creativity, innovation, communication and collaboration",
+       "indicators": [
+        "B7.2.3.1.2 Apply movement concepts, principles and strategies in performing beginning level athletics (e.g., sprinting, jumping and throwing events) to develop communication and collaboration."
+       ],
+       "part": [
+        3,
+        3
+       ]
+      },
+      {
+       "weeks": [
+        5
+       ],
+       "type": "teach",
+       "strand": "Physical Activity Education",
+       "substrand": "Organised Sports And Physical Activity Participation",
+       "standard": "B7.2.3.2",
+       "indicators": [
+        "B7.2.3.2.1 Apply movement concepts, principles and strategies in Critical Thinking and Problem performing beginning level stick and ball sports (e.g., cricket, tsasikele, Solving. (CP), Communication and softball, baseball, and rounders) Collaboration (CC)"
+       ],
+       "part": [
+        1,
+        2
+       ]
+      },
+      {
+       "weeks": [
+        6
+       ],
+       "type": "teach",
+       "strand": "Physical Activity Education",
+       "substrand": "Organised Sports And Physical Activity Participation",
+       "standard": "B7.2.3.2",
+       "indicators": [
+        "B7.2.3.2.1 Apply movement concepts, principles and strategies in Critical Thinking and Problem performing beginning level stick and ball sports (e.g., cricket, tsasikele, Solving. (CP), Communication and softball, baseball, and rounders) Collaboration (CC)"
+       ],
+       "part": [
+        2,
+        2
+       ]
+      },
+      {
+       "weeks": [
+        7
+       ],
+       "type": "teach",
+       "strand": "Physical Activity Education",
+       "substrand": "Organised Sports And Physical Activity Participation",
+       "standard": "B7.2.3.2",
+       "indicators": [
+        "B7.2.3.2.2 Apply movement concepts, principles, and strategies to perform beginning level hand and ball sports (e.g., volleyball, netball, etc.) to develop communication and collaboration"
+       ],
+       "part": [
+        1,
+        2
+       ]
+      },
+      {
+       "weeks": [
+        8
+       ],
+       "type": "teach",
+       "strand": "Physical Activity Education",
+       "substrand": "Organised Sports And Physical Activity Participation",
+       "standard": "B7.2.3.2",
+       "indicators": [
+        "B7.2.3.2.2 Apply movement concepts, principles, and strategies to perform beginning level hand and ball sports (e.g., volleyball, netball, etc.) to develop communication and collaboration"
+       ],
+       "part": [
+        2,
+        2
+       ]
+      },
+      {
+       "weeks": [
+        9
+       ],
+       "type": "teach",
+       "strand": "Physical Activity Education",
+       "substrand": "Organised Sports And Physical Activity Participation",
+       "standard": "B7.2.3.3",
+       "indicators": [
+        "B7.2.3.3.1 Apply movement concepts, principles, and strategies in performing beginning level invasion sports (e.g., football, basketball, field hockey, etc.) to develop critical thinking and decision-making"
+       ],
+       "part": [
+        1,
+        2
+       ]
+      },
+      {
+       "weeks": [
+        10
+       ],
+       "type": "teach",
+       "strand": "Physical Activity Education",
+       "substrand": "Organised Sports And Physical Activity Participation",
+       "standard": "B7.2.3.3",
+       "indicators": [
+        "B7.2.3.3.1 Apply movement concepts, principles, and strategies in performing beginning level invasion sports (e.g., football, basketball, field hockey, etc.) to develop critical thinking and decision-making"
+       ],
+       "part": [
+        2,
+        2
+       ]
+      },
+      {
+       "weeks": [
+        11
+       ],
+       "type": "teach",
+       "strand": "Physical Activity Education",
+       "substrand": "Organised Sports And Physical Activity Participation",
+       "standard": "B7.2.3.3",
+       "indicators": [
+        "B7.2.3.3.2 Apply movement concepts, principles and strategies in performing beginning level martial art (e.g., judo, taekwondo, and karate) to develop critical thinking and decision-making"
+       ],
+       "part": [
+        1,
+        2
+       ]
+      },
+      {
+       "weeks": [
+        12
+       ],
+       "type": "teach",
+       "strand": "Physical Activity Education",
+       "substrand": "Organised Sports And Physical Activity Participation",
+       "standard": "B7.2.3.3",
+       "indicators": [
+        "B7.2.3.3.2 Apply movement concepts, principles and strategies in performing beginning level martial art (e.g., judo, taekwondo, and karate) to develop critical thinking and decision-making"
+       ],
+       "part": [
+        2,
+        2
+       ]
+      },
+      {
+       "weeks": [
+        13
+       ],
+       "type": "revision",
+       "strand": "Revision",
+       "substrand": "",
+       "standard": "",
+       "indicators": []
+      },
+      {
+       "weeks": [
+        14,
+        15
+       ],
+       "type": "exam",
+       "strand": "Examination",
+       "substrand": "",
+       "standard": "",
+       "indicators": []
+      }
+     ]
+    },
+    "Basic 8": {
+     "1": [
+      {
+       "weeks": [
+        1
+       ],
+       "type": "revision",
+       "strand": "Revision",
+       "substrand": "",
+       "standard": "",
+       "indicators": []
+      },
+      {
+       "weeks": [
+        2
+       ],
+       "type": "teach",
+       "strand": "Health Education",
+       "substrand": "Nutrition And Physical Activity",
+       "standard": "B8.1.1.1. Demonstrate understanding of the factors that influence the choice of food and feeding habits in relation to participation in sports and physical activity",
+       "indicators": [
+        "B8.1.1.1.1 Examine the factors that influence the choice of food and eating habits in relation to participation in physical activity"
+       ],
+       "part": [
+        1,
+        2
+       ]
+      },
+      {
+       "weeks": [
+        3
+       ],
+       "type": "teach",
+       "strand": "Health Education",
+       "substrand": "Nutrition And Physical Activity",
+       "standard": "B8.1.1.1. Demonstrate understanding of the factors that influence the choice of food and feeding habits in relation to participation in sports and physical activity",
+       "indicators": [
+        "B8.1.1.1.1 Examine the factors that influence the choice of food and eating habits in relation to participation in physical activity"
+       ],
+       "part": [
+        2,
+        2
+       ]
+      },
+      {
+       "weeks": [
+        4
+       ],
+       "type": "teach",
+       "strand": "Health Education",
+       "substrand": "Disease Prevention And Management",
+       "standard": "B8.1.2.1. Develop awareness of behaviours that promote regular participation in sports and physical activity",
+       "indicators": [
+        "B8.1.2.1.1 Explore and catalogue several ways of getting active in different contexts including home school, community, etc."
+       ],
+       "part": [
+        1,
+        2
+       ]
+      },
+      {
+       "weeks": [
+        5
+       ],
+       "type": "teach",
+       "strand": "Health Education",
+       "substrand": "Disease Prevention And Management",
+       "standard": "B8.1.2.1. Develop awareness of behaviours that promote regular participation in sports and physical activity",
+       "indicators": [
+        "B8.1.2.1.1 Explore and catalogue several ways of getting active in different contexts including home school, community, etc."
+       ],
+       "part": [
+        2,
+        2
+       ]
+      },
+      {
+       "weeks": [
+        6
+       ],
+       "type": "teach",
+       "strand": "Health Education",
+       "substrand": "First Aid, Injury Prevention And Management",
+       "standard": "B8.1.3.1. Apply the principles of first aid in a variety of sports and physical activity settings to support environmental and personal safety",
+       "indicators": [
+        "B8.1.3.1.1 Discuss the concepts and principles of first aid and how to apply them to ensure environmental and personal safety"
+       ],
+       "part": [
+        1,
+        2
+       ]
+      },
+      {
+       "weeks": [
+        7
+       ],
+       "type": "teach",
+       "strand": "Health Education",
+       "substrand": "First Aid, Injury Prevention And Management",
+       "standard": "B8.1.3.1. Apply the principles of first aid in a variety of sports and physical activity settings to support environmental and personal safety",
+       "indicators": [
+        "B8.1.3.1.1 Discuss the concepts and principles of first aid and how to apply them to ensure environmental and personal safety"
+       ],
+       "part": [
+        2,
+        2
+       ]
+      },
+      {
+       "weeks": [
+        8
+       ],
+       "type": "teach",
+       "strand": "Health Education",
+       "substrand": "First Aid, Injury Prevention And Management",
+       "standard": "B8.1.3.1. Apply the principles of first aid in a variety of sports and physical activity settings to support environmental and personal safety",
+       "indicators": [
+        "B8.1.3.1.2 Apply the principles of first aid in a variety of sports and physical activity settings to develop or create a safe environment for performance"
+       ],
+       "part": [
+        1,
+        2
+       ]
+      },
+      {
+       "weeks": [
+        9
+       ],
+       "type": "teach",
+       "strand": "Health Education",
+       "substrand": "First Aid, Injury Prevention And Management",
+       "standard": "B8.1.3.1. Apply the principles of first aid in a variety of sports and physical activity settings to support environmental and personal safety",
+       "indicators": [
+        "B8.1.3.1.2 Apply the principles of first aid in a variety of sports and physical activity settings to develop or create a safe environment for performance"
+       ],
+       "part": [
+        2,
+        2
+       ]
+      },
+      {
+       "weeks": [
+        10
+       ],
+       "type": "teach",
+       "strand": "Physical Activity Education",
+       "substrand": "Traditional Rhythmic Gymnastics, Games And Dance",
+       "standard": "B8.2.1.1. Perform a variety of traditional games and adaptations for inclusivity and cultural awareness, sensitivity, and appreciation of other cultures (e.g., socio-relational games). Refer to Mathematics CS B7.4.1.1. for cross-referencing",
+       "indicators": [
+        "B8.2.1.1.1 Classify and perform socio-relational traditional games (e.g., agblatsetse, kwanikwani, etc.) and adaptations for cultural awareness, sensitivity, and appreciation of other cultures."
+       ],
+       "part": [
+        1,
+        2
+       ]
+      },
+      {
+       "weeks": [
+        11
+       ],
+       "type": "teach",
+       "strand": "Physical Activity Education",
+       "substrand": "Traditional Rhythmic Gymnastics, Games And Dance",
+       "standard": "B8.2.1.1. Perform a variety of traditional games and adaptations for inclusivity and cultural awareness, sensitivity, and appreciation of other cultures (e.g., socio-relational games). Refer to Mathematics CS B7.4.1.1. for cross-referencing",
+       "indicators": [
+        "B8.2.1.1.1 Classify and perform socio-relational traditional games (e.g., agblatsetse, kwanikwani, etc.) and adaptations for cultural awareness, sensitivity, and appreciation of other cultures."
+       ],
+       "part": [
+        2,
+        2
+       ]
+      },
+      {
+       "weeks": [
+        12
+       ],
+       "type": "teach",
+       "strand": "Physical Activity Education",
+       "substrand": "Traditional Rhythmic Gymnastics, Games And Dance",
+       "standard": "B8.2.1.2. Perform a variety of traditional dances and adaptations for inclusivity and cultural awareness (e.g., individual and group dance movements) for personal development and communication",
+       "indicators": [
+        "B8.2.1.2.1 Classify and perform individual and group traditional dance movements and adaptations in the different regions for personal development, communication, inclusivity, and cultural identity (e.g., kpanlogo, wan tiadoone, nwemboaba, etc.)"
+       ]
+      },
+      {
+       "weeks": [
+        13
+       ],
+       "type": "revision",
+       "strand": "Revision",
+       "substrand": "",
+       "standard": "",
+       "indicators": []
+      },
+      {
+       "weeks": [
+        14,
+        15
+       ],
+       "type": "exam",
+       "strand": "Examination",
+       "substrand": "",
+       "standard": "",
+       "indicators": []
+      }
+     ],
+     "2": [
+      {
+       "weeks": [
+        1
+       ],
+       "type": "revision",
+       "strand": "Revision",
+       "substrand": "",
+       "standard": "",
+       "indicators": []
+      },
+      {
+       "weeks": [
+        2
+       ],
+       "type": "teach",
+       "strand": "Physical Activity Education",
+       "substrand": "Traditional Rhythmic Gymnastics, Games And Dance",
+       "standard": "B8.2.1.3. Demonstrate understanding and apply skills and movement techniques in global and traditional rhythmic gymnastics movements and adaptations for coordination and appreciation of global cultures",
+       "indicators": [
+        "B8.2.1.3.1 Classify and perform global and traditional rhythmic gymnastics movements (e.g., group dance movements- nobabie, hoolondoreho! etc.) and adaptation for creativity, communication and cultural identity"
+       ],
+       "part": [
+        1,
+        2
+       ]
+      },
+      {
+       "weeks": [
+        3
+       ],
+       "type": "teach",
+       "strand": "Physical Activity Education",
+       "substrand": "Traditional Rhythmic Gymnastics, Games And Dance",
+       "standard": "B8.2.1.3. Demonstrate understanding and apply skills and movement techniques in global and traditional rhythmic gymnastics movements and adaptations for coordination and appreciation of global cultures",
+       "indicators": [
+        "B8.2.1.3.1 Classify and perform global and traditional rhythmic gymnastics movements (e.g., group dance movements- nobabie, hoolondoreho! etc.) and adaptation for creativity, communication and cultural identity"
+       ],
+       "part": [
+        2,
+        2
+       ]
+      },
+      {
+       "weeks": [
+        4
+       ],
+       "type": "teach",
+       "strand": "Physical Activity Education",
+       "substrand": "Physical Fitness",
+       "standard": "B8.2.2.1. Demonstrate the ability to increase the level of participation in a variety of muscular strength and endurance activities",
+       "indicators": [
+        "B8.2.2.1.1 Participate in muscular strength and endurance activities at varying levels of challenge/difficulty for leisure and personal development"
+       ],
+       "part": [
+        1,
+        2
+       ]
+      },
+      {
+       "weeks": [
+        5
+       ],
+       "type": "teach",
+       "strand": "Physical Activity Education",
+       "substrand": "Physical Fitness",
+       "standard": "B8.2.2.1. Demonstrate the ability to increase the level of participation in a variety of muscular strength and endurance activities",
+       "indicators": [
+        "B8.2.2.1.1 Participate in muscular strength and endurance activities at varying levels of challenge/difficulty for leisure and personal development"
+       ],
+       "part": [
+        2,
+        2
+       ]
+      },
+      {
+       "weeks": [
+        6
+       ],
+       "type": "teach",
+       "strand": "Physical Activity Education",
+       "substrand": "Physical Fitness",
+       "standard": "B8.2.2.2. Demonstrate the ability to increase the level of participation in a variety of cardiorespiratory activities",
+       "indicators": [
+        "B8.2.2.2.1 Participate in cardiorespiratory activities at varying levels of challenge or difficulty for personal development and leisure"
+       ],
+       "part": [
+        1,
+        2
+       ]
+      },
+      {
+       "weeks": [
+        7
+       ],
+       "type": "teach",
+       "strand": "Physical Activity Education",
+       "substrand": "Physical Fitness",
+       "standard": "B8.2.2.2. Demonstrate the ability to increase the level of participation in a variety of cardiorespiratory activities",
+       "indicators": [
+        "B8.2.2.2.1 Participate in cardiorespiratory activities at varying levels of challenge or difficulty for personal development and leisure"
+       ],
+       "part": [
+        2,
+        2
+       ]
+      },
+      {
+       "weeks": [
+        8
+       ],
+       "type": "teach",
+       "strand": "Physical Activity Education",
+       "substrand": "Physical Fitness",
+       "standard": "B8.2.2.3. Demonstrate the ability to increase the level of participation in a variety of flexibility and balance activities",
+       "indicators": [
+        "B8.2.2.3.1 Participate in flexibility and balance activities at varying levels of challenge or difficulty"
+       ],
+       "part": [
+        1,
+        2
+       ]
+      },
+      {
+       "weeks": [
+        9
+       ],
+       "type": "teach",
+       "strand": "Physical Activity Education",
+       "substrand": "Physical Fitness",
+       "standard": "B8.2.2.3. Demonstrate the ability to increase the level of participation in a variety of flexibility and balance activities",
+       "indicators": [
+        "B8.2.2.3.1 Participate in flexibility and balance activities at varying levels of challenge or difficulty"
+       ],
+       "part": [
+        2,
+        2
+       ]
+      },
+      {
+       "weeks": [
+        10
+       ],
+       "type": "teach",
+       "strand": "Physical Activity Education",
+       "substrand": "Organised Sports And Physical Activity Participation",
+       "standard": "B8.2.3.1. Demonstrate the ability to apply movement concepts, principles, and strategies in performing non–contact sports (e.g., ball and racket, athletics, and, individual and target sports)",
+       "indicators": [
+        "B8.2.3.1.1 Apply movement concepts, principles, and strategies to perform beginning-intermediate level ball and racket sports (e.g., badminton, tennis and table tennis, etc.)"
+       ]
+      },
+      {
+       "weeks": [
+        11
+       ],
+       "type": "teach",
+       "strand": "Physical Activity Education",
+       "substrand": "Organised Sports And Physical Activity Participation",
+       "standard": "B8.2.3.1. Demonstrate the ability to apply movement concepts, principles, and strategies in performing non–contact sports (e.g., ball and racket, athletics, and, individual and target sports)",
+       "indicators": [
+        "B8.2.3.1.2 Apply movement concepts, principles, and strategies to perform beginning-intermediate level athletics (e.g., middle distance, jumping and throwing)"
+       ]
+      },
+      {
+       "weeks": [
+        12
+       ],
+       "type": "teach",
+       "strand": "Physical Activity Education",
+       "substrand": "Organised Sports And Physical Activity Participation",
+       "standard": "B8.2.3.1. Demonstrate the ability to apply movement concepts, principles, and strategies in performing non–contact sports (e.g., ball and racket, athletics, and, individual and target sports)",
+       "indicators": [
+        "B8.2.3.1.3 Apply movement concepts, principles, and strategies to perform beginning-intermediate level individual and target sports (e.g., local archery.)"
+       ]
+      },
+      {
+       "weeks": [
+        13
+       ],
+       "type": "revision",
+       "strand": "Revision",
+       "substrand": "",
+       "standard": "",
+       "indicators": []
+      },
+      {
+       "weeks": [
+        14,
+        15
+       ],
+       "type": "exam",
+       "strand": "Examination",
+       "substrand": "",
+       "standard": "",
+       "indicators": []
+      }
+     ],
+     "3": [
+      {
+       "weeks": [
+        1
+       ],
+       "type": "revision",
+       "strand": "Revision",
+       "substrand": "",
+       "standard": "",
+       "indicators": []
+      },
+      {
+       "weeks": [
+        2
+       ],
+       "type": "teach",
+       "strand": "Physical Activity Education",
+       "substrand": "Organised Sports And Physical Activity Participation",
+       "standard": "B8.2.3.2. Demonstrate the ability to apply movement concepts, principles and strategies in performing limited–contact sports (e.g., stick and ball sports and hand and ball sports)",
+       "indicators": [
+        "B8.2.3.2.1 Apply movement concepts, principles and strategies to perform beginning-intermediate level stick and ball sports (e.g., cricket, rounders, chaskele etc.)"
+       ],
+       "part": [
+        1,
+        3
+       ]
+      },
+      {
+       "weeks": [
+        3
+       ],
+       "type": "teach",
+       "strand": "Physical Activity Education",
+       "substrand": "Organised Sports And Physical Activity Participation",
+       "standard": "B8.2.3.2. Demonstrate the ability to apply movement concepts, principles and strategies in performing limited–contact sports (e.g., stick and ball sports and hand and ball sports)",
+       "indicators": [
+        "B8.2.3.2.1 Apply movement concepts, principles and strategies to perform beginning-intermediate level stick and ball sports (e.g., cricket, rounders, chaskele etc.)"
+       ],
+       "part": [
+        2,
+        3
+       ]
+      },
+      {
+       "weeks": [
+        4
+       ],
+       "type": "teach",
+       "strand": "Physical Activity Education",
+       "substrand": "Organised Sports And Physical Activity Participation",
+       "standard": "B8.2.3.2. Demonstrate the ability to apply movement concepts, principles and strategies in performing limited–contact sports (e.g., stick and ball sports and hand and ball sports)",
+       "indicators": [
+        "B8.2.3.2.1 Apply movement concepts, principles and strategies to perform beginning-intermediate level stick and ball sports (e.g., cricket, rounders, chaskele etc.)"
+       ],
+       "part": [
+        3,
+        3
+       ]
+      },
+      {
+       "weeks": [
+        5
+       ],
+       "type": "teach",
+       "strand": "Physical Activity Education",
+       "substrand": "Organised Sports And Physical Activity Participation",
+       "standard": "B8.2.3.2. Demonstrate the ability to apply movement concepts, principles and strategies in performing limited–contact sports (e.g., stick and ball sports and hand and ball sports)",
+       "indicators": [
+        "B8.2.3.2.2 Apply movement concepts, principles, and strategies to perform beginning-intermediate level hand and ball sports (e.g., volleyball, netball, etc.)"
+       ],
+       "part": [
+        1,
+        2
+       ]
+      },
+      {
+       "weeks": [
+        6
+       ],
+       "type": "teach",
+       "strand": "Physical Activity Education",
+       "substrand": "Organised Sports And Physical Activity Participation",
+       "standard": "B8.2.3.2. Demonstrate the ability to apply movement concepts, principles and strategies in performing limited–contact sports (e.g., stick and ball sports and hand and ball sports)",
+       "indicators": [
+        "B8.2.3.2.2 Apply movement concepts, principles, and strategies to perform beginning-intermediate level hand and ball sports (e.g., volleyball, netball, etc.)"
+       ],
+       "part": [
+        2,
+        2
+       ]
+      },
+      {
+       "weeks": [
+        7
+       ],
+       "type": "teach",
+       "strand": "Physical Activity Education",
+       "substrand": "Organised Sports And Physical Activity Participation",
+       "standard": "B8.2.3.3. Demonstrate the ability to apply movement principles and strategies in performing full– contact sports (e.g., invasion sports, martial art, and traditional wrestling)",
+       "indicators": [
+        "B8.2.3.3.1 Apply movement concepts, principles and strategies in performing beginning-intermediate level of invasion sports (e.g., handball, basketball and football etc.)"
+       ],
+       "part": [
+        1,
+        2
+       ]
+      },
+      {
+       "weeks": [
+        8
+       ],
+       "type": "teach",
+       "strand": "Physical Activity Education",
+       "substrand": "Organised Sports And Physical Activity Participation",
+       "standard": "B8.2.3.3. Demonstrate the ability to apply movement principles and strategies in performing full– contact sports (e.g., invasion sports, martial art, and traditional wrestling)",
+       "indicators": [
+        "B8.2.3.3.1 Apply movement concepts, principles and strategies in performing beginning-intermediate level of invasion sports (e.g., handball, basketball and football etc.)"
+       ],
+       "part": [
+        2,
+        2
+       ]
+      },
+      {
+       "weeks": [
+        9
+       ],
+       "type": "teach",
+       "strand": "Physical Activity Education",
+       "substrand": "Organised Sports And Physical Activity Participation",
+       "standard": "B8.2.3.3. Demonstrate the ability to apply movement principles and strategies in performing full– contact sports (e.g., invasion sports, martial art, and traditional wrestling)",
+       "indicators": [
+        "B8.2.3.3.2 Apply movement concepts, principles, and strategies in performing beginning-intermediate level martial art (e.g., karate,judo, taekwondo, etc.)"
+       ],
+       "part": [
+        1,
+        2
+       ]
+      },
+      {
+       "weeks": [
+        10
+       ],
+       "type": "teach",
+       "strand": "Physical Activity Education",
+       "substrand": "Organised Sports And Physical Activity Participation",
+       "standard": "B8.2.3.3. Demonstrate the ability to apply movement principles and strategies in performing full– contact sports (e.g., invasion sports, martial art, and traditional wrestling)",
+       "indicators": [
+        "B8.2.3.3.2 Apply movement concepts, principles, and strategies in performing beginning-intermediate level martial art (e.g., karate,judo, taekwondo, etc.)"
+       ],
+       "part": [
+        2,
+        2
+       ]
+      },
+      {
+       "weeks": [
+        11
+       ],
+       "type": "teach",
+       "strand": "Physical Activity Education",
+       "substrand": "Organised Sports And Physical Activity Participation",
+       "standard": "B8.2.3.3. Demonstrate the ability to apply movement principles and strategies in performing full– contact sports (e.g., invasion sports, martial art, and traditional wrestling)",
+       "indicators": [
+        "B8.2.3.3.3 Apply movement concepts, principles, and strategies in performing beginning-intermediate level traditional wrestling (e.g., arm wrestling, abotri etc.)."
+       ],
+       "part": [
+        1,
+        2
+       ]
+      },
+      {
+       "weeks": [
+        12
+       ],
+       "type": "teach",
+       "strand": "Physical Activity Education",
+       "substrand": "Organised Sports And Physical Activity Participation",
+       "standard": "B8.2.3.3. Demonstrate the ability to apply movement principles and strategies in performing full– contact sports (e.g., invasion sports, martial art, and traditional wrestling)",
+       "indicators": [
+        "B8.2.3.3.3 Apply movement concepts, principles, and strategies in performing beginning-intermediate level traditional wrestling (e.g., arm wrestling, abotri etc.)."
+       ],
+       "part": [
+        2,
+        2
+       ]
+      },
+      {
+       "weeks": [
+        13
+       ],
+       "type": "revision",
+       "strand": "Revision",
+       "substrand": "",
+       "standard": "",
+       "indicators": []
+      },
+      {
+       "weeks": [
+        14,
+        15
+       ],
+       "type": "exam",
+       "strand": "Examination",
+       "substrand": "",
+       "standard": "",
+       "indicators": []
+      }
+     ]
+    },
+    "Basic 9": {
+     "1": [
+      {
+       "weeks": [
+        1
+       ],
+       "type": "revision",
+       "strand": "Revision",
+       "substrand": "",
+       "standard": "",
+       "indicators": []
+      },
+      {
+       "weeks": [
+        2
+       ],
+       "type": "teach",
+       "strand": "Health Education",
+       "substrand": "Nutrition And Physical Activity",
+       "standard": "B9.1.1.1. Demonstrate understanding of nutritional problems associated with participation in sports physical activities",
+       "indicators": [
+        "B9.1.1.1.1 Examine the problems associated with unbalanced or poor diet in relation to sports and physical activities"
+       ],
+       "part": [
+        1,
+        2
+       ]
+      },
+      {
+       "weeks": [
+        3
+       ],
+       "type": "teach",
+       "strand": "Health Education",
+       "substrand": "Nutrition And Physical Activity",
+       "standard": "B9.1.1.1. Demonstrate understanding of nutritional problems associated with participation in sports physical activities",
+       "indicators": [
+        "B9.1.1.1.1 Examine the problems associated with unbalanced or poor diet in relation to sports and physical activities"
+       ],
+       "part": [
+        2,
+        2
+       ]
+      },
+      {
+       "weeks": [
+        4
+       ],
+       "type": "teach",
+       "strand": "Health Education",
+       "substrand": "Nutrition And Physical Activity",
+       "standard": "B9.1.1.1. Demonstrate understanding of nutritional problems associated with participation in sports physical activities",
+       "indicators": [
+        "B9.1.1.1.2 Discuss the role of water in relation to nutrition and physical activity"
+       ],
+       "part": [
+        1,
+        2
+       ]
+      },
+      {
+       "weeks": [
+        5
+       ],
+       "type": "teach",
+       "strand": "Health Education",
+       "substrand": "Nutrition And Physical Activity",
+       "standard": "B9.1.1.1. Demonstrate understanding of nutritional problems associated with participation in sports physical activities",
+       "indicators": [
+        "B9.1.1.1.2 Discuss the role of water in relation to nutrition and physical activity"
+       ],
+       "part": [
+        2,
+        2
+       ]
+      },
+      {
+       "weeks": [
+        6
+       ],
+       "type": "teach",
+       "strand": "Health Education",
+       "substrand": "Disease Prevention And Management",
+       "standard": "B9.1.2.1. Discuss ways to prevent diseases associated with sedentary behaviours and physical inactivity",
+       "indicators": [
+        "B9.1.2.1.1 Create and perform physical activities to lower the risks associated with sedentary behaviours and physical inactivity"
+       ],
+       "part": [
+        1,
+        2
+       ]
+      },
+      {
+       "weeks": [
+        7
+       ],
+       "type": "teach",
+       "strand": "Health Education",
+       "substrand": "Disease Prevention And Management",
+       "standard": "B9.1.2.1. Discuss ways to prevent diseases associated with sedentary behaviours and physical inactivity",
+       "indicators": [
+        "B9.1.2.1.1 Create and perform physical activities to lower the risks associated with sedentary behaviours and physical inactivity"
+       ],
+       "part": [
+        2,
+        2
+       ]
+      },
+      {
+       "weeks": [
+        8
+       ],
+       "type": "teach",
+       "strand": "Health Education",
+       "substrand": "First Aid, Injury Prevention And Management",
+       "standard": "B9.1.3.1. Apply internationally accepted best practices for injury management in sports and physical activity settings",
+       "indicators": [
+        "B9.1.3.1.1 Demonstrate the effective procedures of injury management in sports and physical activity settings"
+       ],
+       "part": [
+        1,
+        2
+       ]
+      },
+      {
+       "weeks": [
+        9
+       ],
+       "type": "teach",
+       "strand": "Health Education",
+       "substrand": "First Aid, Injury Prevention And Management",
+       "standard": "B9.1.3.1. Apply internationally accepted best practices for injury management in sports and physical activity settings",
+       "indicators": [
+        "B9.1.3.1.1 Demonstrate the effective procedures of injury management in sports and physical activity settings"
+       ],
+       "part": [
+        2,
+        2
+       ]
+      },
+      {
+       "weeks": [
+        10
+       ],
+       "type": "teach",
+       "strand": "Physical Activity Education",
+       "substrand": "Traditional Rhythmic Gymnastics, Games And Dance",
+       "standard": "B9.2.1.1. Demonstrate understanding of performing a variety of traditional games and adaptations for inclusivity and cultural identity",
+       "indicators": [
+        "B9.2.1.1.1 Perform and classify a variety of traditional games (e.g., socio-relational games, self-directed games, etc.) and adaptation according to level of intensity (low, moderate, and vigorous intensity)"
+       ],
+       "part": [
+        1,
+        2
+       ]
+      },
+      {
+       "weeks": [
+        11
+       ],
+       "type": "teach",
+       "strand": "Physical Activity Education",
+       "substrand": "Traditional Rhythmic Gymnastics, Games And Dance",
+       "standard": "B9.2.1.1. Demonstrate understanding of performing a variety of traditional games and adaptations for inclusivity and cultural identity",
+       "indicators": [
+        "B9.2.1.1.1 Perform and classify a variety of traditional games (e.g., socio-relational games, self-directed games, etc.) and adaptation according to level of intensity (low, moderate, and vigorous intensity)"
+       ],
+       "part": [
+        2,
+        2
+       ]
+      },
+      {
+       "weeks": [
+        12
+       ],
+       "type": "teach",
+       "strand": "Physical Activity Education",
+       "substrand": "Traditional Rhythmic Gymnastics, Games And Dance",
+       "standard": "B9.2.1.2. Demonstrate understanding of performing a variety of traditional dances and adaptations for inclusivity and cultural identity",
+       "indicators": [
+        "B9.2.1.2.1 Create a list of various traditional dance movements and adaptations according to level of intensity (e.g., low, moderate and high intensity, etc.)"
+       ]
+      },
+      {
+       "weeks": [
+        13
+       ],
+       "type": "revision",
+       "strand": "Revision",
+       "substrand": "",
+       "standard": "",
+       "indicators": []
+      },
+      {
+       "weeks": [
+        14,
+        15
+       ],
+       "type": "exam",
+       "strand": "Examination",
+       "substrand": "",
+       "standard": "",
+       "indicators": []
+      }
+     ],
+     "2": [
+      {
+       "weeks": [
+        1
+       ],
+       "type": "revision",
+       "strand": "Revision",
+       "substrand": "",
+       "standard": "",
+       "indicators": []
+      },
+      {
+       "weeks": [
+        2
+       ],
+       "type": "teach",
+       "strand": "Physical Activity Education",
+       "substrand": "Traditional Rhythmic Gymnastics, Games And Dance",
+       "standard": "B9.2.1.3. Demonstrate understanding of performing a variety of traditional rhythmic gymnastics and adaptations for inclusivity and cultural identity",
+       "indicators": [
+        "B9.2.1.3.1 Create and classify a variety of traditional rhythmic gymnastics and adaptation according to level of intensity (e.g., low, moderate and high intensity)"
+       ],
+       "part": [
+        1,
+        3
+       ]
+      },
+      {
+       "weeks": [
+        3
+       ],
+       "type": "teach",
+       "strand": "Physical Activity Education",
+       "substrand": "Traditional Rhythmic Gymnastics, Games And Dance",
+       "standard": "B9.2.1.3. Demonstrate understanding of performing a variety of traditional rhythmic gymnastics and adaptations for inclusivity and cultural identity",
+       "indicators": [
+        "B9.2.1.3.1 Create and classify a variety of traditional rhythmic gymnastics and adaptation according to level of intensity (e.g., low, moderate and high intensity)"
+       ],
+       "part": [
+        2,
+        3
+       ]
+      },
+      {
+       "weeks": [
+        4
+       ],
+       "type": "teach",
+       "strand": "Physical Activity Education",
+       "substrand": "Traditional Rhythmic Gymnastics, Games And Dance",
+       "standard": "B9.2.1.3. Demonstrate understanding of performing a variety of traditional rhythmic gymnastics and adaptations for inclusivity and cultural identity",
+       "indicators": [
+        "B9.2.1.3.1 Create and classify a variety of traditional rhythmic gymnastics and adaptation according to level of intensity (e.g., low, moderate and high intensity)"
+       ],
+       "part": [
+        3,
+        3
+       ]
+      },
+      {
+       "weeks": [
+        5
+       ],
+       "type": "teach",
+       "strand": "Physical Activity Education",
+       "substrand": "Physical Fitness",
+       "standard": "B9.2.2.1. Demonstrate ability to maintain or improve the level of participation in a variety of muscular strength and endurance activities",
+       "indicators": [
+        "B9.2.2.1.1 Participate in muscular strength and endurance activities at varying levels of challenge or difficulty"
+       ],
+       "part": [
+        1,
+        3
+       ]
+      },
+      {
+       "weeks": [
+        6
+       ],
+       "type": "teach",
+       "strand": "Physical Activity Education",
+       "substrand": "Physical Fitness",
+       "standard": "B9.2.2.1. Demonstrate ability to maintain or improve the level of participation in a variety of muscular strength and endurance activities",
+       "indicators": [
+        "B9.2.2.1.1 Participate in muscular strength and endurance activities at varying levels of challenge or difficulty"
+       ],
+       "part": [
+        2,
+        3
+       ]
+      },
+      {
+       "weeks": [
+        7
+       ],
+       "type": "teach",
+       "strand": "Physical Activity Education",
+       "substrand": "Physical Fitness",
+       "standard": "B9.2.2.1. Demonstrate ability to maintain or improve the level of participation in a variety of muscular strength and endurance activities",
+       "indicators": [
+        "B9.2.2.1.1 Participate in muscular strength and endurance activities at varying levels of challenge or difficulty"
+       ],
+       "part": [
+        3,
+        3
+       ]
+      },
+      {
+       "weeks": [
+        8
+       ],
+       "type": "teach",
+       "strand": "Physical Activity Education",
+       "substrand": "Physical Fitness",
+       "standard": "B9.2.2.2. Demonstrate ability to maintain or improve the level of participation in a variety of cardiorespiratory strength and endurance activities",
+       "indicators": [
+        "B9.2.2.2.1 Participate in cardiorespiratory strength and endurance activities at varying levels of challenge or difficulty"
+       ],
+       "part": [
+        1,
+        3
+       ]
+      },
+      {
+       "weeks": [
+        9
+       ],
+       "type": "teach",
+       "strand": "Physical Activity Education",
+       "substrand": "Physical Fitness",
+       "standard": "B9.2.2.2. Demonstrate ability to maintain or improve the level of participation in a variety of cardiorespiratory strength and endurance activities",
+       "indicators": [
+        "B9.2.2.2.1 Participate in cardiorespiratory strength and endurance activities at varying levels of challenge or difficulty"
+       ],
+       "part": [
+        2,
+        3
+       ]
+      },
+      {
+       "weeks": [
+        10
+       ],
+       "type": "teach",
+       "strand": "Physical Activity Education",
+       "substrand": "Physical Fitness",
+       "standard": "B9.2.2.2. Demonstrate ability to maintain or improve the level of participation in a variety of cardiorespiratory strength and endurance activities",
+       "indicators": [
+        "B9.2.2.2.1 Participate in cardiorespiratory strength and endurance activities at varying levels of challenge or difficulty"
+       ],
+       "part": [
+        3,
+        3
+       ]
+      },
+      {
+       "weeks": [
+        11
+       ],
+       "type": "teach",
+       "strand": "Physical Activity Education",
+       "substrand": "Physical Fitness",
+       "standard": "B9.2.2.3. Demonstrate the ability to maintain or improve the level of participation in a variety of flexibility and balance activities",
+       "indicators": [
+        "B9.2.2.3.1 Participate in flexibility and balance activities at varying personal levels of challenge or difficulty"
+       ],
+       "part": [
+        1,
+        2
+       ]
+      },
+      {
+       "weeks": [
+        12
+       ],
+       "type": "teach",
+       "strand": "Physical Activity Education",
+       "substrand": "Physical Fitness",
+       "standard": "B9.2.2.3. Demonstrate the ability to maintain or improve the level of participation in a variety of flexibility and balance activities",
+       "indicators": [
+        "B9.2.2.3.1 Participate in flexibility and balance activities at varying personal levels of challenge or difficulty"
+       ],
+       "part": [
+        2,
+        2
+       ]
+      },
+      {
+       "weeks": [
+        13
+       ],
+       "type": "revision",
+       "strand": "Revision",
+       "substrand": "",
+       "standard": "",
+       "indicators": []
+      },
+      {
+       "weeks": [
+        14,
+        15
+       ],
+       "type": "exam",
+       "strand": "Examination",
+       "substrand": "",
+       "standard": "",
+       "indicators": []
+      }
+     ],
+     "3": [
+      {
+       "weeks": [
+        1
+       ],
+       "type": "revision",
+       "strand": "Revision",
+       "substrand": "",
+       "standard": "",
+       "indicators": []
+      },
+      {
+       "weeks": [
+        2
+       ],
+       "type": "teach",
+       "strand": "Physical Activity Education",
+       "substrand": "Organised Sports And Physical Activity Participation",
+       "standard": "B9.2.3.1. Demonstrate the ability to apply movement concepts, principles and strategies in performing non–contact sports (e.g., ball and racket, athletics, individual and target sports)",
+       "indicators": [
+        "B9.2.3.1.1 Apply movement concepts, principles and strategies to perform intermediate level ball and racket sports (e.g., table tennis, badminton etc.)"
+       ],
+       "part": [
+        1,
+        2
+       ]
+      },
+      {
+       "weeks": [
+        3
+       ],
+       "type": "teach",
+       "strand": "Physical Activity Education",
+       "substrand": "Organised Sports And Physical Activity Participation",
+       "standard": "B9.2.3.1. Demonstrate the ability to apply movement concepts, principles and strategies in performing non–contact sports (e.g., ball and racket, athletics, individual and target sports)",
+       "indicators": [
+        "B9.2.3.1.1 Apply movement concepts, principles and strategies to perform intermediate level ball and racket sports (e.g., table tennis, badminton etc.)"
+       ],
+       "part": [
+        2,
+        2
+       ]
+      },
+      {
+       "weeks": [
+        4
+       ],
+       "type": "teach",
+       "strand": "Physical Activity Education",
+       "substrand": "Organised Sports And Physical Activity Participation",
+       "standard": "B9.2.3.1. Demonstrate the ability to apply movement concepts, principles and strategies in performing non–contact sports (e.g., ball and racket, athletics, individual and target sports)",
+       "indicators": [
+        "B9.2.3.1.2 Apply movement concepts, principles and strategies to perform intermediate level athletics (e.g., throwing, jumping, etc.)"
+       ],
+       "part": [
+        1,
+        2
+       ]
+      },
+      {
+       "weeks": [
+        5
+       ],
+       "type": "teach",
+       "strand": "Physical Activity Education",
+       "substrand": "Organised Sports And Physical Activity Participation",
+       "standard": "B9.2.3.1. Demonstrate the ability to apply movement concepts, principles and strategies in performing non–contact sports (e.g., ball and racket, athletics, individual and target sports)",
+       "indicators": [
+        "B9.2.3.1.2 Apply movement concepts, principles and strategies to perform intermediate level athletics (e.g., throwing, jumping, etc.)"
+       ],
+       "part": [
+        2,
+        2
+       ]
+      },
+      {
+       "weeks": [
+        6
+       ],
+       "type": "teach",
+       "strand": "Physical Activity Education",
+       "substrand": "Organised Sports And Physical Activity Participation",
+       "standard": "B9.2.3.2. Demonstrate the ability to apply movement principles and strategies in performing limited– contact sports (e.g., ball and stick and hand and ball sports)",
+       "indicators": [
+        "B9.2.3.2.1 Apply movement concepts, principles, and strategies to perform intermediate level stick and ball sports (e.g., cricket, rounders, baseball, etc.)"
+       ],
+       "part": [
+        1,
+        2
+       ]
+      },
+      {
+       "weeks": [
+        7
+       ],
+       "type": "teach",
+       "strand": "Physical Activity Education",
+       "substrand": "Organised Sports And Physical Activity Participation",
+       "standard": "B9.2.3.2. Demonstrate the ability to apply movement principles and strategies in performing limited– contact sports (e.g., ball and stick and hand and ball sports)",
+       "indicators": [
+        "B9.2.3.2.1 Apply movement concepts, principles, and strategies to perform intermediate level stick and ball sports (e.g., cricket, rounders, baseball, etc.)"
+       ],
+       "part": [
+        2,
+        2
+       ]
+      },
+      {
+       "weeks": [
+        8
+       ],
+       "type": "teach",
+       "strand": "Physical Activity Education",
+       "substrand": "Organised Sports And Physical Activity Participation",
+       "standard": "B9.2.3.2. Demonstrate the ability to apply movement principles and strategies in performing limited– contact sports (e.g., ball and stick and hand and ball sports)",
+       "indicators": [
+        "B9.2.3.2.2 Apply movement concepts, principles, and strategies to perform intermediate level hand and ball sports (e.g., volleyball, netball, etc.)"
+       ],
+       "part": [
+        1,
+        2
+       ]
+      },
+      {
+       "weeks": [
+        9
+       ],
+       "type": "teach",
+       "strand": "Physical Activity Education",
+       "substrand": "Organised Sports And Physical Activity Participation",
+       "standard": "B9.2.3.2. Demonstrate the ability to apply movement principles and strategies in performing limited– contact sports (e.g., ball and stick and hand and ball sports)",
+       "indicators": [
+        "B9.2.3.2.2 Apply movement concepts, principles, and strategies to perform intermediate level hand and ball sports (e.g., volleyball, netball, etc.)"
+       ],
+       "part": [
+        2,
+        2
+       ]
+      },
+      {
+       "weeks": [
+        10
+       ],
+       "type": "teach",
+       "strand": "Physical Activity Education",
+       "substrand": "Organised Sports And Physical Activity Participation",
+       "standard": "B9.2.3.3. Demonstrate the ability to apply movement principles and strategies in performing full– contact sports (e.g., invasion, martial art, and traditional wrestling)",
+       "indicators": [
+        "B9.2.3.3.1 Apply movement concepts, principles, and strategies in performing intermediate level invasion sports (e.g., football, basketball, field hockey, etc.)"
+       ]
+      },
+      {
+       "weeks": [
+        11
+       ],
+       "type": "teach",
+       "strand": "Physical Activity Education",
+       "substrand": "Organised Sports And Physical Activity Participation",
+       "standard": "B9.2.3.3. Demonstrate the ability to apply movement principles and strategies in performing full– contact sports (e.g., invasion, martial art, and traditional wrestling)",
+       "indicators": [
+        "B9.2.3.3.2 Apply movement concepts, principles and strategies in performing intermediate level martial art (e.g., judo, karate, etc.)"
+       ]
+      },
+      {
+       "weeks": [
+        12
+       ],
+       "type": "teach",
+       "strand": "Physical Activity Education",
+       "substrand": "Organised Sports And Physical Activity Participation",
+       "standard": "B9.2.3.3. Demonstrate the ability to apply movement principles and strategies in performing full– contact sports (e.g., invasion, martial art, and traditional wrestling)",
+       "indicators": [
+        "B9.2.3.3.3 Apply movement concepts, principles and strategies in performing intermediate level traditional wrestling (e.g., abotri, arm wrestling, etc.)"
+       ]
+      },
+      {
+       "weeks": [
+        13
+       ],
+       "type": "revision",
+       "strand": "Revision",
+       "substrand": "",
+       "standard": "",
+       "indicators": []
+      },
+      {
+       "weeks": [
+        14,
+        15
+       ],
+       "type": "exam",
+       "strand": "Examination",
+       "substrand": "",
+       "standard": "",
+       "indicators": []
+      }
+     ]
+    }
+   }
   }
  }
 }
