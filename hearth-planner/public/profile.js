@@ -6,7 +6,22 @@
   var KEY = 'schoolpadi.profile';
   var GL = window.GuidedLevels;
   var $ = function (s) { return document.querySelector(s); };
-  var hooks = {}, welcomed = false;
+  var hooks = {}, welcomed = false, accountRole = '';
+
+  // The role is saved during registration. Keep it in memory for this session;
+  // on another device, resolve it from the authenticated account profile.
+  window.addEventListener('guided:account-profile-saved', function (event) {
+    var data = event && event.detail;
+    if (data && (data.primaryRole === 'parent' || data.primaryRole === 'teacher')) accountRole = data.primaryRole;
+  });
+
+  async function resolveAccountRole() {
+    if (accountRole) return accountRole;
+    if (!window.PadiSync || !window.PadiSync.getAccountProfile) return '';
+    var data = await window.PadiSync.getAccountProfile();
+    accountRole = data && (data.primaryRole || (Array.isArray(data.roles) ? data.roles[0] : '')) || '';
+    return accountRole;
+  }
 
   function read() { try { return JSON.parse(localStorage.getItem(KEY)) || {}; } catch (e) { return {}; } }
   function write(o) {
@@ -69,9 +84,16 @@
         ]);
       }
     },
-    // After the account has synced: a teacher with no profile yet is welcomed once and asked what they teach.
-    afterSync: function () {
+    // After sync, only teachers should see the teacher-profile welcome.
+    // A failed role lookup must not accidentally send a parent into teacher setup;
+    // the next sync can retry the lookup.
+    afterSync: async function () {
       if (welcomed || !signedIn() || read().setupDone) return;
+      var role = '';
+      try { role = await resolveAccountRole(); }
+      catch (e) { return; }
+      if (role === 'parent') { welcomed = true; return; }
+      if (role && role !== 'teacher') return;
       welcomed = true;
       var acct = $('#acctSheet');                                   // let the sign-in confirmation finish first
       if (acct && acct.open) acct.addEventListener('close', function () { setTimeout(function () { if (!read().setupDone) P.openSheet({ welcome: true }); }, 250); }, { once: true });
