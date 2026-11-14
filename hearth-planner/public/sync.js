@@ -216,7 +216,7 @@
     getProfile: async function () { var j = await call('/api/sync?what=profile', { auth: true }); return j && j.profile ? j.profile : null; },
     setProfile: function (data, updatedAt) { return call('/api/sync', { method: 'POST', auth: true, body: { what: 'profile', data: data, updated_at: updatedAt } }); },
     getAccountProfile: async function () { var j = await call('/api/account-profile', { auth: true }); return j && j.profile ? j.profile : null; },
-    setAccountProfile: function (data) { return call('/api/account-profile', { method: 'POST', auth: true, body: { data: data } }),
+    setAccountProfile: function (data) { return call('/api/account-profile', { method: 'POST', auth: true, body: { data: data } }); },
     listParentLearning: function (childId) { return call('/api/sync?what=parent-learning' + (childId ? '&childId=' + encodeURIComponent(childId) : ''), { auth: true }); },
     saveParentLearning: function (record) { return call('/api/sync?what=parent-learning', { method: 'POST', auth: true, body: record }); }; }
   };
