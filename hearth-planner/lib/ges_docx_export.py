@@ -514,7 +514,7 @@ def build_ges_lesson_docx(title, content, portrait=False, teacher='', school='')
 
     title = (title or 'GES Lesson Plan').strip()[:150] or 'GES Lesson Plan'
     content = join_plan_tables(clean_content(content))
-    is_worksheet = bool(re.search(r'#\\s*Learner Worksheet', content, re.I) or re.search(r'learner worksheet', title, re.I))
+    is_worksheet = bool(re.search(r'#\s*Learner Worksheet', content, re.I) or re.search(r'learner worksheet', title, re.I))
 
     document = Document()
     document.core_properties.title = title
@@ -605,7 +605,7 @@ def build_ges_lesson_docx(title, content, portrait=False, teacher='', school='')
                 last_heading = heading_text
                 wrote_content = True
                 continue
-            if is_worksheet and re.match(r'^Part\\s+[A-C]\\s*:', heading_text, re.I):
+            if is_worksheet and re.match(r'^Part\s+[A-C]\s*:', heading_text, re.I):
                 _worksheet_band(document, heading_text)
                 last_heading = heading_text
                 wrote_content = True
@@ -616,7 +616,7 @@ def build_ges_lesson_docx(title, content, portrait=False, teacher='', school='')
             wrote_content = True
             continue
 
-        if is_worksheet and re.match(r'^\\*\\*(Instructions|Word bank):\\*\\*', text, re.I):
+        if is_worksheet and re.match(r'^\*\*(Instructions|Word bank):\*\*', text, re.I):
             _worksheet_band(document, text, fill='EEF4FF', color=RGBColor(0x1B, 0x36, 0x5D), size=9.5)
         elif is_worksheet and re.fullmatch(r'_{8,}', text):
             p = document.add_paragraph()
