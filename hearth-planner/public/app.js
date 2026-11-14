@@ -2497,6 +2497,8 @@
   let accountRole = '';
   let accountProfile = null;
   let accountProfileRequest = null;
+  let accountProfileLoaded = false;
+  let accountProfileError = false;
   async function refreshAccountProfile() {
     if (!window.PadiSync || !window.PadiSync.user || !window.PadiSync.user() || !window.PadiSync.getAccountProfile) {
       accountRole = ''; accountProfile = null; return null;
@@ -2505,6 +2507,8 @@
     accountProfileRequest = window.PadiSync.getAccountProfile().then((profile) => {
       accountProfile = profile || null;
       accountRole = profile && (profile.primaryRole || (Array.isArray(profile.roles) ? profile.roles[0] : '')) || '';
+      accountProfileLoaded = true;
+      accountProfileError = false;
       const link = $('#dashboardLink');
       if (link) {
         const label = link.querySelector('span');
@@ -2519,6 +2523,8 @@
       return accountProfile;
     }).catch((error) => {
       console.warn('[GuidEd account profile] could not resolve dashboard role:', error && error.message);
+      accountProfileError = true;
+      if (pageOpen() && pageOpen()[0] === 'dashboard') renderDashboard();
       return null;
     }).finally(() => { accountProfileRequest = null; });
     return accountProfileRequest;
@@ -2526,7 +2532,7 @@
   window.addEventListener('guided:account', () => {
     if (window.PadiSync && window.PadiSync.user && window.PadiSync.user()) refreshAccountProfile();
     else {
-      accountRole = ''; accountProfile = null;
+      accountRole = ''; accountProfile = null; accountProfileLoaded = false; accountProfileError = false;
       const link = $('#dashboardLink');
       if (link) { const label = link.querySelector('span'); if (label) label.textContent = 'Teacher Dashboard'; }
     }
@@ -2590,6 +2596,26 @@
   /* Teacher Dashboard: an overview derived from the teacher's saved sessions. */
   function renderDashboard() {
     if (accountRole === 'parent') { renderParentDashboard(); return; }
+    if (window.PadiSync && window.PadiSync.user && window.PadiSync.user() && !accountProfileLoaded) {
+      const page = $('#dashboardPage');
+      const teacherContent = page && page.querySelector('.dash-inner');
+      if (teacherContent) teacherContent.hidden = true;
+      let panel = $('#parentDashboardContent');
+      if (!panel && page) {
+        panel = document.createElement('div'); panel.id = 'parentDashboardContent';
+        panel.className = 'sp-inner dash-inner parent-dashboard-content'; page.appendChild(panel);
+      }
+      if (panel) {
+        panel.hidden = false;
+        panel.innerHTML = accountProfileError
+          ? '<div class="sp-head"><h1>Dashboard unavailable</h1></div><p class="dash-intro">GuidEd could not verify your account type. Please check your connection and try again.</p><button type="button" class="as-second" id="retryAccountRole">Try again</button>'
+          : '<div class="sp-head"><h1>Loading your dashboard</h1></div><p class="dash-intro">Checking your account type…</p>';
+        const retry = $('#retryAccountRole');
+        if (retry) retry.addEventListener('click', () => { accountProfileError = false; refreshAccountProfile(); });
+      }
+      if (!accountProfileRequest && !accountProfileError) refreshAccountProfile();
+      return;
+    }
     const parentPanel = $('#parentDashboardContent');
     const teacherContent = $('#dashboardPage .dash-inner');
     if (parentPanel) parentPanel.hidden = true;
