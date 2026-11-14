@@ -12,6 +12,7 @@
     return level && Array.isArray(level.subjects) ? level.subjects : ['Mathematics', 'English Language', 'Science', 'Computing', 'Social Studies'];
   };
   var labels = { lesson: 'Plan a Home Lesson', explanation: 'Help Me Understand', practice: 'Practice Exercises' };
+  var icon = function (name, extra) { return '<svg class="ico pd-icon ' + (extra || '') + '" aria-hidden="true" focusable="false"><use href="#i-' + name + '"></use></svg>'; };
 
   function auth() {
     if (!window.PadiSync || !window.PadiSync.authHeader) return Promise.reject(new Error('Please sign in to use Parent Dashboard.'));
@@ -52,7 +53,7 @@
   function renderChildren() {
     var list = children();
     var cards = list.map(function (child) {
-      return '<article class="pd-child-card"><div><span class="pd-kicker">' + esc(child.class) + '</span><h3>' + esc(child.name) + '</h3><p>' + esc((child.subjects || []).join(' · ')) + '</p><small>' + esc(child.minutes || 30) + ' minutes daily</small></div><div class="pd-child-actions"><button type="button" data-edit-child="' + esc(child.id) + '">Edit</button><button type="button" class="pd-muted-action" data-remove-child="' + esc(child.id) + '">Remove</button></div></article>';
+      return '<article class="pd-child-card"><span class="pd-child-avatar">' + icon('user') + '</span><div><span class="pd-kicker">' + esc(child.class) + '</span><h3>' + esc(child.name) + '</h3><p>' + esc((child.subjects || []).join(' · ')) + '</p><small>' + esc(child.minutes || 30) + ' minutes daily</small></div><div class="pd-child-actions"><button type="button" data-edit-child="' + esc(child.id) + '">Edit</button><button type="button" class="pd-muted-action" data-remove-child="' + esc(child.id) + '">Remove</button></div></article>';
     }).join('');
     var child = list.find(function (item) { return item.id === state.editingChild; });
     var cls = child ? child.class : 'Basic 7';
@@ -75,25 +76,32 @@
 
   function renderActivity(record) {
     var data = record.data || {};
-    return '<article class="pd-activity" data-record="' + esc(record.id) + '"><div><span class="pd-kicker">' + esc(labels[record.kind] || 'Learning activity') + '</span><h3>' + esc(data.title || data.topic || 'Learning activity') + '</h3><p>' + esc([data.childName, data.subject, data.class].filter(Boolean).join(' · ')) + '</p><small>' + (data.status === 'completed' ? 'Completed' + (data.score == null ? '' : ' · Score: ' + data.score + '%') : 'Saved for learning') + '</small></div>' + (data.status === 'completed' ? '<span class="pd-done">Completed</span>' : '<div class="pd-complete-wrap"><label class="pd-score">Score (optional)<input type="number" min="0" max="100" step="1" data-score-input></label><button type="button" class="pd-primary pd-small" data-complete="' + esc(record.id) + '">Mark complete</button></div>') + '</article>';
+    var child = children().find(function (item) { return item.id === data.childId; });
+    var childName = data.childName || (child && child.name) || 'Child';
+    var childClass = data.class || (child && child.class) || '';
+    var meta = [childName, data.subject, childClass].filter(Boolean).join(' · ');
+    var status = data.status === 'completed'
+      ? '<span class="pd-done">Completed' + (data.score == null ? '' : ' · ' + esc(data.score) + '%') + '</span>'
+      : '<div class="pd-complete-wrap"><label class="pd-score">Score (optional)<input type="number" min="0" max="100" step="1" inputmode="numeric" data-score-input aria-label="Optional score out of 100"></label><button type="button" class="pd-primary pd-small" data-complete="' + esc(record.id) + '">Mark complete</button></div>';
+    return '<article class="pd-activity" data-record="' + esc(record.id) + '"><span class="pd-activity-icon">' + icon(record.kind === 'practice' ? 'clipboard' : record.kind === 'explanation' ? 'spark' : 'book') + '</span><div class="pd-activity-copy"><span class="pd-kicker">' + esc(labels[record.kind] || 'Learning activity') + '</span><h3>' + esc(data.title || data.topic || 'Learning activity') + '</h3><p>' + esc(meta) + '</p><small>' + (data.status === 'completed' ? 'Completed' : 'Saved for learning') + '</small></div><div class="pd-activity-actions"><button type="button" class="pd-secondary pd-small" data-view-record="' + esc(record.id) + '">Open activity</button>' + status + '</div></article>';
   }
 
   function render() {
     if (!state.root) return;
     var profile = state.profile || {}, list = children(), recent = state.records.slice(0, 4);
-    var tabs = [['overview', 'Overview'], ['children', 'My Children'], ['lesson', 'Plan a Home Lesson'], ['explanation', 'Help Me Understand'], ['practice', 'Practice Exercises'], ['progress', 'Learning Progress']];
-    var nav = tabs.map(function (item) { return '<button type="button" data-parent-tab="' + item[0] + '" class="' + (state.tab === item[0] ? 'is-active' : '') + '"' + (state.tab === item[0] ? ' aria-current="page"' : '') + '>' + item[1] + '</button>'; }).join('');
+    var tabs = [['overview', 'home', 'Overview'], ['children', 'users', 'My Children'], ['lesson', 'book', 'Home Lesson'], ['explanation', 'spark', 'Understand'], ['practice', 'clipboard', 'Exercises'], ['progress', 'chart', 'Progress']];
+    var nav = tabs.map(function (item) { return '<button type="button" role="tab" aria-selected="' + (state.tab === item[0] ? 'true' : 'false') + '" data-parent-tab="' + item[0] + '" class="' + (state.tab === item[0] ? 'is-active' : '') + '"' + (state.tab === item[0] ? ' aria-current="page"' : '') + '>' + icon(item[1]) + '<span>' + item[2] + '</span></button>'; }).join('');
     var body = '';
     if (state.tab === 'overview') {
-      body = '<div class="pd-welcome"><span class="pd-kicker">WELCOME TO YOUR FAMILY LEARNING SPACE</span><h2>Hello, ' + esc(profile.displayName || 'Parent') + '.</h2><p>Small learning moments at home can make a big difference. Choose a child and get started.</p></div><div class="pd-stats"><article><strong>' + list.length + '</strong><span>Children</span></article><article><strong>' + state.records.length + '</strong><span>Saved activities</span></article><article><strong>' + state.records.filter(function (r) { return r.data && r.data.status === 'completed'; }).length + '</strong><span>Completed</span></article></div><div class="pd-quick-grid"><button type="button" data-open-task="lesson"><strong>Plan a Home Lesson</strong><span>Create a guided activity to learn together.</span></button><button type="button" data-open-task="explanation"><strong>Help Me Understand</strong><span>Get a simple explanation of a difficult topic.</span></button><button type="button" data-open-task="practice"><strong>Practice Exercises</strong><span>Give your child questions with answers.</span></button><button type="button" data-parent-tab="progress"><strong>Learning Progress</strong><span>See saved and completed activities.</span></button></div><div class="pd-section-head"><div><h2>My Children</h2><p>Learning profiles linked to your account.</p></div><button type="button" class="pd-text-button" data-parent-tab="children">Manage children</button></div><div class="pd-child-list">' + (list.length ? list.map(function (child) { return '<article class="pd-child-card"><div><span class="pd-kicker">' + esc(child.class) + '</span><h3>' + esc(child.name) + '</h3><p>' + esc((child.subjects || []).join(' · ')) + '</p></div><button type="button" data-edit-child="' + esc(child.id) + '">Edit</button></article>'; }).join('') : '<div class="pd-empty">Add a child to begin.</div>') + '</div><div class="pd-section-head"><div><h2>Recent learning</h2><p>Your latest saved activities.</p></div><button type="button" class="pd-text-button" data-parent-tab="progress">View all</button></div><div class="pd-activity-list">' + (recent.length ? recent.map(renderActivity).join('') : '<div class="pd-empty">Your saved lessons, explanations and exercises will appear here.</div>') + '</div>';
+      body = '<section class="pd-welcome"><div class="pd-welcome-copy"><span class="pd-welcome-mark">' + icon('users') + '</span><span class="pd-kicker">YOUR FAMILY LEARNING SPACE</span><h2>Welcome, ' + esc(profile.displayName || 'Parent') + '.</h2><p>Every small learning moment counts. Choose a child, explore a topic and learn together at home.</p></div><button type="button" class="pd-primary pd-welcome-action" data-parent-tab="' + (list.length ? 'lesson' : 'children') + '">' + (list.length ? 'Plan a home lesson' : 'Add your child') + '</button></section><div class="pd-stats"><article><span class="pd-stat-icon">' + icon('users') + '</span><strong>' + list.length + '</strong><span>Children</span></article><article><span class="pd-stat-icon">' + icon('book') + '</span><strong>' + state.records.length + '</strong><span>Saved activities</span></article><article><span class="pd-stat-icon">' + icon('check') + '</span><strong>' + state.records.filter(function (r) { return r.data && r.data.status === 'completed'; }).length + '</strong><span>Completed</span></article></div><div class="pd-quick-grid"><button type="button" data-open-task="lesson"><span class="pd-quick-icon">' + icon('book') + '</span><strong>Plan a Home Lesson</strong><span>Create a guided activity to learn together.</span></button><button type="button" data-open-task="explanation"><span class="pd-quick-icon">' + icon('spark') + '</span><strong>Help Me Understand</strong><span>Get a simple explanation of a difficult topic.</span></button><button type="button" data-open-task="practice"><span class="pd-quick-icon">' + icon('clipboard') + '</span><strong>Practice Exercises</strong><span>Give your child questions with answers.</span></button><button type="button" data-parent-tab="progress"><span class="pd-quick-icon">' + icon('chart') + '</span><strong>Learning Progress</strong><span>See saved and completed activities.</span></button></div><div class="pd-section-head"><div><h2>My Children</h2><p>Learning profiles linked to your account.</p></div><button type="button" class="pd-text-button" data-parent-tab="children">Manage children</button></div><div class="pd-child-list">' + (list.length ? list.map(function (child) { return '<article class="pd-child-card"><span class="pd-child-avatar">' + icon('user') + '</span><div><span class="pd-kicker">' + esc(child.class) + '</span><h3>' + esc(child.name) + '</h3><p>' + esc((child.subjects || []).join(' · ')) + '</p></div><button type="button" data-edit-child="' + esc(child.id) + '">Edit</button></article>'; }).join('') : '<div class="pd-empty">Add a child to begin.</div>') + '</div><div class="pd-section-head"><div><h2>Recent learning</h2><p>Your latest saved activities.</p></div><button type="button" class="pd-text-button" data-parent-tab="progress">View all</button></div><div class="pd-activity-list">' + (recent.length ? recent.map(renderActivity).join('') : '<div class="pd-empty">Your saved lessons, explanations and exercises will appear here.</div>') + '</div>';
     } else if (state.tab === 'children') body = renderChildren();
     else if (['lesson', 'explanation', 'practice'].includes(state.tab)) {
       state.task = state.tab;
-      body = '<div class="pd-section-head"><div><span class="pd-kicker">CURRICULUM-GUIDED HOME LEARNING</span><h2>' + esc(labels[state.task]) + '</h2><p>' + (state.task === 'lesson' ? 'A complete activity for you and your child to work through together.' : state.task === 'explanation' ? 'A clear explanation you can use when your child gets stuck.' : 'Age-appropriate questions with an answer key and explanations.') + '</p></div></div>' + (list.length ? renderTaskForm() : '<div class="pd-empty">Add a child profile before creating a home-learning activity.</div><button type="button" class="pd-primary" data-parent-tab="children">Add a child</button>') + (state.result ? '<section class="pd-result"><div class="pd-section-head"><div><span class="pd-kicker">YOUR RESOURCE IS READY</span><h3>' + esc(state.result.title) + '</h3></div><button type="button" class="pd-text-button" data-clear-result>Close</button></div><pre>' + esc(state.result.content) + '</pre></section>' : '');
+      body = '<div class="pd-section-head"><div><span class="pd-kicker">CURRICULUM-GUIDED HOME LEARNING</span><h2>' + esc(labels[state.task]) + '</h2><p>' + (state.task === 'lesson' ? 'A complete activity for you and your child to work through together.' : state.task === 'explanation' ? 'A clear explanation you can use when your child gets stuck.' : 'Age-appropriate questions with an answer key and explanations.') + '</p></div></div>' + (list.length ? renderTaskForm() : '<div class="pd-empty">Add a child profile before creating a home-learning activity.</div><button type="button" class="pd-primary" data-parent-tab="children">Add a child</button>') + (state.result ? '<section class="pd-result" aria-live="polite"><div class="pd-section-head"><div><span class="pd-kicker">READY FOR YOU AND YOUR CHILD</span><h3>' + esc(state.result.title) + '</h3></div><button type="button" class="pd-text-button" data-clear-result>Close</button></div><pre>' + esc(state.result.content) + '</pre></section>' : '');
     } else {
       body = '<div class="pd-section-head"><div><span class="pd-kicker">MY CHILD’S LEARNING JOURNEY</span><h2>Learning Progress</h2><p>Keep track of activities your child has completed.</p></div></div><div class="pd-progress-summary"><strong>' + state.records.filter(function (r) { return r.data && r.data.status === 'completed'; }).length + '</strong><span>completed activities</span></div><div class="pd-activity-list">' + (state.records.length ? state.records.map(renderActivity).join('') : '<div class="pd-empty">No learning activities yet. Create a home lesson to get started.</div>') + '</div>';
     }
-    state.root.innerHTML = '<div class="pd-header"><div><span class="pd-brand">GuidEd <i>Family</i></span><span class="pd-account">Parent account</span></div><button type="button" class="pd-exit" id="pdBack">Back to workspace</button></div><div class="pd-intro"><h1>Parent Dashboard</h1><p>Support your child’s learning, one step at a time.</p></div><nav class="pd-tabs" aria-label="Parent dashboard">' + nav + '</nav><div class="pd-main">' + (state.error ? '<p class="pd-error" role="alert">' + esc(state.error) + '</p>' : '') + (state.loading ? '<p class="pd-note">Loading your saved learning activities…</p>' : '') + body + '</div>';
+    state.root.innerHTML = '<div class="pd-header"><div><span class="pd-brand">GuidEd <i>Family</i></span><span class="pd-account">' + icon('users') + ' Parent account</span></div><button type="button" class="pd-exit" id="pdBack">' + icon('home') + '<span>Back to workspace</span></button></div><div class="pd-intro"><h1>Parent Dashboard</h1><p>Support your child’s learning, one step at a time.</p></div><nav class="pd-tabs" aria-label="Parent dashboard">' + nav + '</nav><div class="pd-main">' + (state.error ? '<p class="pd-error" role="alert">' + esc(state.error) + '</p>' : '') + (state.loading ? '<p class="pd-note">Loading your saved learning activities…</p>' : '') + body + '</div>';
     if (state.root.dataset.parentWired !== '1') wire();
   }
 
@@ -127,6 +135,12 @@
         saveRecord({ id: record.id, kind: record.kind, data: data }).then(render).catch(function (error) { state.error = error.message; render(); });
         return;
       }
+      var view = event.target.closest('[data-view-record]');
+      if (view) {
+        var saved = state.records.find(function (item) { return item.id === view.dataset.viewRecord; });
+        if (saved) { state.tab = saved.kind || 'progress'; state.task = saved.kind || 'lesson'; state.result = { title: (saved.data || {}).title || 'Saved learning activity', content: (saved.data || {}).content || 'This saved activity does not contain a preview.' }; render(); }
+        return;
+      }
       if (event.target.closest('[data-clear-result]')) { state.result = null; render(); }
     });
     state.root.addEventListener('change', function (event) {
@@ -138,7 +152,7 @@
       if (event.target.name === 'childId' && event.target.form && event.target.form.id === 'pdTaskForm') {
         var child = children().find(function (item) { return item.id === event.target.value; });
         var subjectSelect = event.target.form.querySelector('[name="subject"]');
-        if (child && subjectSelect) subjectSelect.innerHTML = (child.subjects || []).map(function (subject) { return '<option>' + esc(subject) + '</option>'; }).join('');
+        if (child && subjectSelect) { state.selectedChild = child.id; subjectSelect.innerHTML = (child.subjects || []).map(function (subject) { return '<option>' + esc(subject) + '</option>'; }).join(''); }
       }
     });
     state.root.addEventListener('submit', function (event) {
@@ -152,7 +166,7 @@
         var next = Object.assign({}, state.profile, { children: editing ? children().map(function (item) { return item.id === editing.id ? child : item; }) : children().concat([child]) });
         if (!state.profile.roles || !state.profile.roles.includes('parent')) next.roles = ['parent'];
         next.primaryRole = 'parent';
-        saveProfile(next).then(function () { state.selectedChild = child.id; state.tab = 'children'; }).catch(function (error) { state.error = error.message; render(); });
+        saveProfile(next).then(function () { state.selectedChild = child.id; state.tab = 'children'; render(); }).catch(function (error) { state.error = error.message; render(); });
       }
       if (event.target.id === 'pdTaskForm') {
         event.preventDefault();
@@ -195,7 +209,7 @@
       if (marker >= 0) { var detail = output.slice(marker + 21).trim(); output = output.slice(0, marker).trim(); if (!output) throw new Error(detail || 'The resource could not be completed.'); }
       if (!output.trim()) throw new Error('The AI returned an empty learning activity. Please try again.');
       var title = labels[task] + ': ' + topic;
-      var record = { id: uid(), kind: task, data: { childId: child.id, subject: values.subject, topic: topic, title: title, content: output, week: Number(values.week), term: Number(values.term), status: 'saved', createdAt: Date.now() } };
+      var record = { id: uid(), kind: task, data: { childId: child.id, childName: child.name, class: child.class, dailyGoal: child.minutes, subject: values.subject, topic: topic, title: title, content: output, week: Number(values.week), term: Number(values.term), status: 'saved', createdAt: Date.now() } };
       await saveRecord(record);
       state.result = { title: title, content: output };
       state.error = '';

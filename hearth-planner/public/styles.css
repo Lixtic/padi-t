@@ -1505,3 +1505,110 @@ main[data-view="chat"] .notice-bar { display: none; }
 .pd-complete-wrap { display:flex; align-items:flex-end; gap:8px; flex-wrap:wrap; }
 .pd-score { display:grid; gap:4px; color:var(--muted); font-size:.72rem; font-weight:700; }
 .pd-score input { width:86px; padding:7px 8px; border:1px solid var(--line, #d8dee6); border-radius:8px; background:var(--bg, #fff); color:var(--text, #17202a); font:inherit; }
+
+
+/* Parent dashboard polish: clearer hierarchy, calm family-focused surfaces and touch-friendly controls. */
+.parent-dashboard-content { width:100%; padding-bottom:max(28px, env(safe-area-inset-bottom)); }
+.parent-dashboard-content .pd-header { padding:12px 0 16px; }
+.parent-dashboard-content .pd-brand { font-size:1.2rem; }
+.parent-dashboard-content .pd-intro { padding:24px 0 8px; }
+.parent-dashboard-content .pd-intro h1 { font-size:clamp(1.75rem,4vw,2.35rem); }
+.parent-dashboard-content .pd-tabs { position:sticky; top:0; z-index:5; margin-inline:-2px; padding:12px 2px; background:var(--bg); border-bottom:1px solid var(--line); scroll-padding-inline:12px; }
+.parent-dashboard-content .pd-tabs button { min-height:42px; transition:background .18s ease,border-color .18s ease,color .18s ease,transform .18s ease; }
+.parent-dashboard-content .pd-tabs button:hover { border-color:var(--accent); color:var(--accent); }
+.parent-dashboard-content .pd-tabs button.is-active { color:var(--on-accent); box-shadow:0 3px 10px rgba(0,0,0,.10); }
+.parent-dashboard-content :is(button,input,select,textarea):focus-visible { outline:3px solid color-mix(in srgb,var(--accent) 35%,transparent); outline-offset:2px; }
+.parent-dashboard-content .pd-welcome { display:flex; align-items:flex-end; justify-content:space-between; gap:22px; padding:clamp(20px,4vw,30px); border-color:color-mix(in srgb,var(--accent) 20%,var(--line)); background:linear-gradient(125deg,color-mix(in srgb,var(--accent) 10%,var(--card)),var(--card) 68%); }
+.parent-dashboard-content .pd-welcome-copy { max-width:650px; }
+.parent-dashboard-content .pd-welcome h2 { font-size:clamp(1.55rem,3vw,2rem); letter-spacing:-.035em; }
+.parent-dashboard-content .pd-welcome p { max-width:560px; }
+.parent-dashboard-content .pd-welcome-action { flex:0 0 auto; min-height:44px; }
+.parent-dashboard-content .pd-stats { gap:12px; margin:16px 0 26px; }
+.parent-dashboard-content .pd-stats article { min-height:92px; justify-content:center; padding:17px; }
+.parent-dashboard-content .pd-stats strong { font-size:1.75rem; letter-spacing:-.04em; }
+.parent-dashboard-content .pd-stats span { font-size:.82rem; }
+.parent-dashboard-content .pd-quick-grid { gap:12px; margin:18px 0 30px; }
+.parent-dashboard-content .pd-quick-grid button { position:relative; min-height:132px; justify-content:center; padding:19px; border-radius:17px; transition:transform .18s ease,border-color .18s ease,box-shadow .18s ease; }
+.parent-dashboard-content .pd-quick-grid button::after { content:"→"; position:absolute; right:16px; bottom:14px; color:var(--accent); font-size:1.1rem; font-weight:800; }
+.parent-dashboard-content .pd-quick-grid button:hover { transform:translateY(-2px); border-color:color-mix(in srgb,var(--accent) 45%,var(--line)); box-shadow:var(--shadow); }
+.parent-dashboard-content .pd-quick-grid strong { padding-right:20px; font-size:1rem; }
+.parent-dashboard-content .pd-section-head { align-items:center; margin-top:12px; }
+.parent-dashboard-content .pd-section-head h2 { font-size:1.35rem; letter-spacing:-.025em; }
+.parent-dashboard-content .pd-child-card,.parent-dashboard-content .pd-activity { border-radius:16px; transition:border-color .18s ease,box-shadow .18s ease; }
+.parent-dashboard-content .pd-child-card:hover,.parent-dashboard-content .pd-activity:hover { border-color:color-mix(in srgb,var(--accent) 35%,var(--line)); }
+.parent-dashboard-content .pd-child-card { padding:18px; }
+.parent-dashboard-content .pd-child-card h3,.parent-dashboard-content .pd-activity h3 { font-size:1.04rem; }
+.parent-dashboard-content .pd-child-actions button,.parent-dashboard-content .pd-exit,.parent-dashboard-content .pd-text-button { min-height:40px; }
+.parent-dashboard-content .pd-form { gap:15px; padding:clamp(16px,3vw,23px); border-radius:18px; }
+.parent-dashboard-content .pd-form input,.parent-dashboard-content .pd-form select,.parent-dashboard-content .pd-form textarea { min-height:44px; border-radius:11px; }
+.parent-dashboard-content .pd-form textarea { min-height:78px; resize:vertical; }
+.parent-dashboard-content .pd-primary,.parent-dashboard-content .pd-secondary { min-height:42px; transition:filter .18s ease,transform .18s ease; }
+.parent-dashboard-content .pd-primary:hover { filter:brightness(1.06); }
+.parent-dashboard-content .pd-primary:active,.parent-dashboard-content .pd-secondary:active { transform:translateY(1px); }
+.parent-dashboard-content button:disabled { opacity:.58; cursor:wait; }
+.parent-dashboard-content .pd-result { padding:clamp(16px,3vw,24px); border-radius:18px; }
+.parent-dashboard-content .pd-result pre { max-height:none; overflow-wrap:anywhere; font-size:.94rem; line-height:1.75; }
+.parent-dashboard-content .pd-activity-copy { min-width:0; flex:1 1 auto; }
+.parent-dashboard-content .pd-activity-actions { display:flex; align-items:flex-end; justify-content:flex-end; flex-wrap:wrap; gap:8px; }
+.parent-dashboard-content .pd-complete-wrap { align-items:flex-end; }
+.parent-dashboard-content .pd-score input { min-height:36px; }
+.parent-dashboard-content .pd-empty { padding:22px; background:color-mix(in srgb,var(--card) 72%,transparent); }
+@media(max-width:700px) {
+  .parent-dashboard-content .pd-welcome { align-items:flex-start; flex-direction:column; gap:16px; }
+  .parent-dashboard-content .pd-welcome-action { width:100%; }
+  .parent-dashboard-content .pd-stats { grid-template-columns:repeat(3,minmax(0,1fr)); gap:7px; }
+  .parent-dashboard-content .pd-stats article { min-height:82px; padding:10px; }
+  .parent-dashboard-content .pd-stats strong { font-size:1.35rem; }
+  .parent-dashboard-content .pd-stats span { font-size:.72rem; }
+  .parent-dashboard-content .pd-tabs { gap:6px; }
+  .parent-dashboard-content .pd-tabs button { padding:9px 12px; }
+  .parent-dashboard-content .pd-quick-grid { grid-template-columns:1fr 1fr; gap:8px; }
+  .parent-dashboard-content .pd-quick-grid button { min-height:128px; padding:14px; }
+  .parent-dashboard-content .pd-activity-actions { width:100%; justify-content:flex-start; }
+  .parent-dashboard-content .pd-activity-actions > button { flex:1 1 auto; }
+}
+@media(max-width:390px) {
+  .parent-dashboard-content .pd-stats { grid-template-columns:1fr 1fr 1fr; }
+  .parent-dashboard-content .pd-quick-grid { grid-template-columns:1fr; }
+  .parent-dashboard-content .pd-quick-grid button { min-height:96px; }
+  .parent-dashboard-content .pd-header { align-items:flex-start; }
+  .parent-dashboard-content .pd-exit { max-width:145px; }
+}
+@media(prefers-reduced-motion:reduce) {
+  .parent-dashboard-content *, .parent-dashboard-content *::before, .parent-dashboard-content *::after { scroll-behavior:auto!important; transition:none!important; }
+}
+
+
+/* Parent dashboard icon system: one consistent, accessible outline style. */
+.parent-dashboard-content .pd-icon { width:20px; height:20px; stroke-width:1.85; }
+.parent-dashboard-content .pd-tabs button { display:inline-flex; align-items:center; justify-content:center; gap:8px; }
+.parent-dashboard-content .pd-tabs button .pd-icon { width:17px; height:17px; opacity:.86; }
+.parent-dashboard-content .pd-tabs button.is-active .pd-icon { opacity:1; }
+.parent-dashboard-content .pd-account { display:flex; align-items:center; gap:6px; }
+.parent-dashboard-content .pd-account .pd-icon { width:14px; height:14px; }
+.parent-dashboard-content .pd-exit { display:inline-flex; align-items:center; gap:8px; }
+.parent-dashboard-content .pd-exit .pd-icon { width:16px; height:16px; }
+.parent-dashboard-content .pd-welcome-mark,.parent-dashboard-content .pd-stat-icon,.parent-dashboard-content .pd-quick-icon,.parent-dashboard-content .pd-child-avatar,.parent-dashboard-content .pd-activity-icon { display:inline-flex; align-items:center; justify-content:center; color:var(--accent); background:color-mix(in srgb,var(--accent) 10%,var(--card)); border-radius:13px; }
+.parent-dashboard-content .pd-welcome-mark { width:42px; height:42px; margin-bottom:12px; border-radius:14px; }
+.parent-dashboard-content .pd-welcome-mark .pd-icon { width:23px; height:23px; }
+.parent-dashboard-content .pd-stats article { position:relative; }
+.parent-dashboard-content .pd-stat-icon { width:30px; height:30px; margin-bottom:7px; border-radius:10px; }
+.parent-dashboard-content .pd-stat-icon .pd-icon { width:17px; height:17px; }
+.parent-dashboard-content .pd-quick-grid button { display:flex; align-items:flex-start; text-align:left; gap:8px; }
+.parent-dashboard-content .pd-quick-icon { width:38px; height:38px; margin-bottom:3px; border-radius:12px; }
+.parent-dashboard-content .pd-quick-icon .pd-icon { width:21px; height:21px; }
+.parent-dashboard-content .pd-child-card { display:flex; align-items:center; gap:14px; }
+.parent-dashboard-content .pd-child-card > div { flex:1; min-width:0; }
+.parent-dashboard-content .pd-child-avatar,.parent-dashboard-content .pd-activity-icon { width:42px; height:42px; flex:none; border-radius:13px; }
+.parent-dashboard-content .pd-child-avatar .pd-icon,.parent-dashboard-content .pd-activity-icon .pd-icon { width:21px; height:21px; }
+.parent-dashboard-content .pd-activity { display:flex; align-items:center; gap:14px; }
+.parent-dashboard-content .pd-activity-copy { flex:1; }
+.parent-dashboard-content .pd-activity-actions { flex:none; }
+@media(max-width:700px) {
+  .parent-dashboard-content .pd-tabs button { gap:6px; }
+  .parent-dashboard-content .pd-tabs button .pd-icon { width:16px; height:16px; }
+  .parent-dashboard-content .pd-child-card { align-items:flex-start; }
+  .parent-dashboard-content .pd-activity { align-items:flex-start; flex-wrap:wrap; }
+  .parent-dashboard-content .pd-activity-copy { flex:1 1 calc(100% - 58px); }
+  .parent-dashboard-content .pd-activity-actions { margin-left:56px; }
+}
