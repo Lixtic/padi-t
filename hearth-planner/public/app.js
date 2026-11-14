@@ -2530,6 +2530,11 @@
     }).finally(() => { accountProfileRequest = null; });
     return accountProfileRequest;
   }
+  window.addEventListener('guided:account-profile-saved', (event) => {
+    if (event && event.detail) { accountProfile = event.detail; accountRole = event.detail.primaryRole || (event.detail.roles || [])[0] || accountRole; window.GuidedAccountRole = accountRole; accountProfileLoaded = true; }
+    if (pageOpen() && pageOpen()[0] === 'dashboard' && accountRole === 'parent') renderParentDashboard();
+  });
+  document.addEventListener('guided:parent-back', () => showPage(null));
   window.addEventListener('guided:account', () => {
     if (window.PadiSync && window.PadiSync.user && window.PadiSync.user()) refreshAccountProfile();
     else {
@@ -2580,6 +2585,7 @@
       page.appendChild(panel);
     }
     panel.hidden = false;
+    if (window.GuidedParentDashboard) { window.GuidedParentDashboard.mount(panel, accountProfile); return; }
     const profile = accountProfile || {};
     const children = Array.isArray(profile.children) ? profile.children : [];
     const esc = (value) => String(value == null ? '' : value).replace(/[&<>"']/g, (ch) => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
