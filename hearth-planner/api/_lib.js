@@ -88,7 +88,7 @@ function validate(body) {
   const bece = p.bece !== false;
   const inc = Inclusive.normalise(p.inc, cls);
   const size = p.size === undefined || p.size === '' ? '' : String(p.size);
-  const mode = ['plan', 'resources', 'full'].includes(p.mode) ? p.mode : 'full';
+  const mode = ['plan', 'resources', 'parent', 'full'].includes(p.mode) ? p.mode : 'full';
   const resourceType = ['Study notes', 'Learner worksheet', 'Homework pack', 'BECE practice', 'Teaching slides'].includes(p.resourceType) ? p.resourceType : 'Study notes';
   if (size && !SIZES.includes(size)) return { error: 'Please choose a class size from the list.' };
 
@@ -152,13 +152,16 @@ function switchOn(p, resource, flag) {
 }
 
 function firstMessage(p) {
-  const task = p.mode === 'plan'
+  const task = p.mode === 'parent'
+    ? 'Generate ONLY a parent-guided home-learning resource. Do not write a teacher lesson plan. Make the content usable by a parent at home with simple, locally available materials.'
+    : p.mode === 'plan'
     ? 'Generate ONLY the two-lesson weekly lesson plan. Do not generate study notes, worksheets, homework, BECE questions or other resources.'
     : p.mode === 'resources'
       ? 'Generate ONLY this teaching resource: ' + (p.resourceType === 'BECE practice' ? examName(p.cls) + ' (the exam practice section for this level)' : (p.resourceType || 'Study notes')) + '. Do not generate a lesson plan.'
       : 'Generate the 2-lesson weekly package.';
   const lines = [
     task,
+    ...(p.mode === 'parent' ? ['Parent resource type: ' + (p.resourceType || 'Study notes')] : []),
     'Subject: ' + p.subject,
     'Class: ' + p.cls,
     ...(levelLine(p.cls)),
