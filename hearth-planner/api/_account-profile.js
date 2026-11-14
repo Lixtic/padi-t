@@ -59,6 +59,11 @@ module.exports = async (req, res) => {
     }
 
     const data = { roles, primaryRole, displayName, children };
+    if (typeof input.familyReminders === 'boolean') data.familyReminders = input.familyReminders;
+    else {
+      const [prev] = await db.query('select data from account_profiles where user_id = $1', [me.uid]);
+      if (prev && prev.data && typeof prev.data.familyReminders === 'boolean') data.familyReminders = prev.data.familyReminders;
+    }
     const updatedAt = Date.now();
     await db.query(
       'insert into account_profiles (user_id, data, updated_at) values ($1, $2::jsonb, $3) on conflict (user_id) do update set data = excluded.data, updated_at = excluded.updated_at',

@@ -17,6 +17,7 @@ const num = (name, dflt) => {
 const cfg = () => ({
   freePlansWeekly: num('FREE_PLANS_WEEKLY', 10),          // 0 = unlimited
   freeClasses: num('FREE_CLASSES', 3),                    // 0 = every class
+  freeParentWeekly: num('FREE_PARENT_WEEKLY', 5),         // home activities a free parent account may create each week, for the whole family (0 = unlimited)
   guestPreviewsDaily: num('GUEST_PREVIEWS_DAILY', 3),     // 0 = unlimited
   proTokenDaily: num('PRO_TOKEN_QUOTA_DAILY', 600000),
   previewMaxTokens: Math.max(500, num('PREVIEW_MAX_TOKENS', 2200)),
@@ -161,6 +162,15 @@ async function checkFree(ent, cls) {
   }
   return { ok: true, used, limit: c.freePlansWeekly };
 }
+// Parent accounts: home lessons, explanations and exercises. Counted per account (not per child) under their own subject so they never
+// touch a teacher's plan or class allowance when one account is both.
+const parentSubject = (ent) => ent.subject + ':parent';
+async function checkFreeParent(ent) {
+  const limit = cfg().freeParentWeekly;
+  const used = (await log(parentSubject(ent), weekKey())).reduce((n, r) => n + r.n, 0);
+  return limit && used >= limit ? { ok: false, reason: 'parent', used, limit, resetsAt: nextWeek() } : { ok: true, used, limit };
+}
+const countFreeParent = (ent) => { event('parent_free'); return bump(parentSubject(ent), weekKey(), '*'); };
 const countFree = async (ent, cls) => {
   if (ent.useBonus) { event('plan_bonus'); await db.query('update bonus set n = n - 1 where user_id = $1 and n > 0', [ent.uid]); return; }   // paid for with a bonus plan, not the weekly allowance
   event('plan_free'); return bump(ent.subject, weekKey(), cls);
@@ -181,6 +191,7 @@ const countGuest = (ent) => bump(ent.subject, dayKey(), '*');
 function message(kind, r) {
   const c = cfg();
   if (kind === 'guest') return 'You have used your ' + r.limit + ' free previews for today. Create a free account to write full plans, or come back tomorrow.';
+  if (r.reason === 'parent') return 'You have used your ' + r.limit + ' free home activities for this week. They come back on Monday, or upgrade to Pro for unlimited activities.';
   if (r.reason === 'classes') return 'The free plan covers ' + (c.freeClasses === 1 ? 'one class' : c.freeClasses + ' classes') + ' a week (' + r.classes.join(', ') + '). Upgrade to Pro to plan for every class.';
   return 'You have written your ' + r.limit + ' free plans for this week. They come back on Monday, or upgrade to Pro for unlimited plans.';
 }
@@ -199,6 +210,7 @@ async function status(me, ip) {
     else if (ent.tier === 'free') {
       const rows = await log(ent.subject, weekKey());
       out.free = { used: rows.reduce((n, r) => n + r.n, 0), limit: c.freePlansWeekly, classes: rows.map((r) => r.cls), classLimit: c.freeClasses, resetsAt: nextWeek() };
+      out.free.parent = { used: (await log(parentSubject(ent), weekKey())).reduce((n, r) => n + r.n, 0), limit: c.freeParentWeekly, resetsAt: nextWeek() };
       if (rewardOn()) {
         const done = await rewardsToday(ent.uid);
         out.free.bonus = await bonusLeft(ent.uid);
@@ -225,4 +237,4 @@ async function notice() {
 }
 const clearNoticeCache = () => { noticeCache = { at: 0, value: null }; };
 
-module.exports = { rewardStart, rewardClaim, rewardOn, notice, clearNoticeCache, event, isAdmin, cfg, enabled, resolve, checkFree, countFree, checkGuest, countGuest, message, status, weekKey, expiry };
+module.exports = { rewardStart, rewardClaim, rewardOn, notice, clearNoticeCache, event, isAdmin, cfg, enabled, resolve, checkFree, countFree, checkFreeParent, countFreeParent, checkGuest, countGuest, message, status, weekKey, expiry };

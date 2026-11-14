@@ -75,6 +75,7 @@ module.exports = async (req, res) => {
   if (ent && ent.blocked) return sendJson(res, 403, { error: 'blocked', message: 'This account has been paused. Please contact us if you think this is a mistake.' });
   const guest = !!ent && ent.tier === 'guest';
   const firstTurn = v.thread.length === 0;
+  const parentTurn = firstTurn && v.params.mode === 'parent';   // a home activity: has its own weekly allowance for free parents
   const planTurn = firstTurn && !['resources', 'parent'].includes(v.params.mode);   // a resource-only run (worksheet, notes...) is not a weekly plan: it never uses the free plan or class allowance
   if (guest && !firstTurn) {
     return sendJson(res, 402, { error: 'account', message: 'Create a free account to refine a plan, or to add study notes and BECE questions.' });
@@ -102,6 +103,14 @@ module.exports = async (req, res) => {
     if (!g.ok) return sendJson(res, 402, { error: 'limit', reason: g.reason, resetsAt: g.resetsAt, message: Entitle.message('free', g) });
   }
 
+  // Free parent accounts: this week's home activities.
+  if (ent && ent.tier === 'free' && parentTurn) {
+    let g = { ok: true };
+    try { g = await Entitle.checkFreeParent(ent); } catch (e) { console.error('[generate] parent allowance check failed', e && e.message); }
+    if (!g.ok) Entitle.event('free_limit_parent');
+    if (!g.ok) return sendJson(res, 402, { error: 'limit', reason: g.reason, used: g.used, limit: g.limit, resetsAt: g.resetsAt, message: Entitle.message('free', g) });
+  }
+
   // 1. A repeat of a recent request is served from the cache, at no token cost and with no quota used.
   //    "fresh" (the Regenerate button) skips the lookup and replaces the stored answer.
   const ck = Cache.keyFor({
@@ -116,6 +125,7 @@ module.exports = async (req, res) => {
       sendHeaders(hit.how);
       res.end(hit.text);
       if (ent && ent.tier === 'free' && planTurn) await Entitle.countFree(ent, v.params.cls).catch(() => {});
+      else if (ent && ent.tier === 'free' && parentTurn) await Entitle.countFreeParent(ent).catch(() => {});
       else if (ent && ent.tier === 'pro' && firstTurn) Entitle.event('plan_pro');
       else if (guest) Entitle.event('guest_preview');
       return;
@@ -196,6 +206,7 @@ module.exports = async (req, res) => {
   if (complete) tasks.push(Cache.store(ck, full, v.thread.length, used));
   if (guest && wroteText) { Entitle.event('guest_preview'); tasks.push(Entitle.countGuest(ent)); }                     // a taster that spent tokens
   else if (ent && ent.tier === 'free' && planTurn && !fresh && complete) tasks.push(Entitle.countFree(ent, v.params.cls));
+  else if (ent && ent.tier === 'free' && parentTurn && !fresh && complete) tasks.push(Entitle.countFreeParent(ent));
   else if (ent && ent.tier === 'pro' && firstTurn && !fresh && complete) Entitle.event('plan_pro');
   await Promise.all(tasks).catch(() => {});
 };

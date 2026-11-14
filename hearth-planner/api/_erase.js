@@ -20,6 +20,7 @@ async function eraseAccount(me) {
     'delete from profiles where user_id = $1',
     'delete from account_profiles where user_id = $1',
     'delete from parent_learning where user_id = $1',   // children's names, classes and saved lessons
+    'delete from reminder_log where user_id = $1',
     'delete from subscriptions where user_id = $1',
     'delete from bonus where user_id = $1',
     'delete from reward_tokens where user_id = $1',

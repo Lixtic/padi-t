@@ -107,6 +107,21 @@ module.exports = async (req, res) => {
       return sendJson(res, 200, await remindExpiring());
     }
 
+    if (action === 'family-reminders') {
+      const cs = process.env.CRON_SECRET || '';
+      if (!cs || req.headers.authorization !== 'Bearer ' + cs) return sendJson(res, 401, { error: 'unauthorized' });
+      return sendJson(res, 200, await require('./_family').remindFamilies());
+    }
+
+    // One-click unsubscribe from the weekly family email; the link is signed, so no sign-in is needed.
+    if (action === 'unsubscribe') {
+      const ok = await require('./_family').unsubscribe(url.searchParams.get('u'), url.searchParams.get('t')).catch(() => false);
+      res.statusCode = ok ? 200 : 400;
+      res.setHeader('Content-Type', 'text/html; charset=utf-8');
+      res.setHeader('Cache-Control', 'no-store');
+      return res.end('<!doctype html><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>GuidEd</title><body style="font-family:system-ui;max-width:30rem;margin:15vh auto;padding:0 1rem;line-height:1.5"><h1>' + (ok ? 'You are unsubscribed' : 'This link is not valid') + '</h1><p>' + (ok ? 'We will not send the weekly family email again. You can turn it back on in My Children.' : 'Open GuidEd and use the reminder setting in My Children instead.') + '</p><p><a href="/">Open GuidEd</a></p></body>');
+    }
+
     const me = req.headers.authorization ? await A.authed(req).catch(() => null) : null;
 
     if (action === 'status') {
