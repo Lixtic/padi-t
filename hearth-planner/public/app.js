@@ -422,7 +422,7 @@
   function updateTopbar() {
     const s = current();
     if (!s) return;
-    { const pg = pageOpen(); if (pg) { topTitle.textContent = pg[1]; return; } }
+    { const pg = pageOpen(); if (pg) { topTitle.textContent = pg[0] === 'dashboard' && window.GuidedAccountRole === 'parent' ? 'Parent Dashboard' : pg[1]; return; } }
     topTitle.textContent = s.messages.length ? s.title : 'New plan';
     document.title = (s.messages.length ? s.title + ' · ' : '') + 'GuidEd';
     let st = statusOf(s);
@@ -2493,6 +2493,52 @@
     try { if (localStorage.getItem(key) === '1') set(true, false); } catch (e) { /* ignore */ }
   });
 
+  /* Account role controls which dashboard is shown. Resolve it from the signed-in account. */
+  let accountRole = '';
+  let accountProfile = null;
+  let accountProfileRequest = null;
+  let accountProfileLoaded = false;
+  let accountProfileError = false;
+  async function refreshAccountProfile() {
+    if (!window.PadiSync || !window.PadiSync.user || !window.PadiSync.user() || !window.PadiSync.getAccountProfile) {
+      accountRole = ''; accountProfile = null; return null;
+    }
+    if (accountProfileRequest) return accountProfileRequest;
+    accountProfileRequest = window.PadiSync.getAccountProfile().then((profile) => {
+      accountProfile = profile || null;
+      accountRole = profile && (profile.primaryRole || (Array.isArray(profile.roles) ? profile.roles[0] : '')) || '';
+      window.GuidedAccountRole = accountRole;
+      accountProfileLoaded = true;
+      accountProfileError = false;
+      const link = $('#dashboardLink');
+      if (link) {
+        const label = link.querySelector('span');
+        if (label) label.textContent = accountRole === 'parent' ? 'Parent Dashboard' : 'Teacher Dashboard';
+        link.setAttribute('aria-label', accountRole === 'parent' ? 'Parent Dashboard' : 'Teacher Dashboard');
+      }
+      if (pageOpen() && pageOpen()[0] === 'dashboard') {
+        topTitle.textContent = accountRole === 'parent' ? 'Parent Dashboard' : 'Teacher Dashboard';
+        if (accountRole === 'parent') renderParentDashboard();
+        else renderDashboard();
+      }
+      return accountProfile;
+    }).catch((error) => {
+      console.warn('[GuidEd account profile] could not resolve dashboard role:', error && error.message);
+      accountProfileError = true;
+      if (pageOpen() && pageOpen()[0] === 'dashboard') renderDashboard();
+      return null;
+    }).finally(() => { accountProfileRequest = null; });
+    return accountProfileRequest;
+  }
+  window.addEventListener('guided:account', () => {
+    if (window.PadiSync && window.PadiSync.user && window.PadiSync.user()) refreshAccountProfile();
+    else {
+      accountRole = ''; accountProfile = null; window.GuidedAccountRole = ''; accountProfileLoaded = false; accountProfileError = false;
+      const link = $('#dashboardLink');
+      if (link) { const label = link.querySelector('span'); if (label) label.textContent = 'Teacher Dashboard'; }
+    }
+  });
+
   /* Settings and My Library are pages inside the main area; the sidebar keeps one link to each. */
   const PAGES = [['settings', 'Settings', $('#settingsPage'), $('#settingsLink')], ['dashboard', 'Teacher Dashboard', $('#dashboardPage'), $('#dashboardLink')], ['library', 'My Library', $('#libraryPage'), $('#libraryLink')]];
   const pageOpen = () => PAGES.find((x) => x[2] && !x[2].hidden);
@@ -2503,7 +2549,7 @@
       el.hidden = !on;
       if (link) link.setAttribute('aria-current', on ? 'page' : 'false');
       document.body.classList.toggle('on-' + key, on);
-      if (on) { if (isMobile()) setNav(false); el.scrollTop = 0; topTitle.textContent = title; document.title = title + ' · GuidEd'; }
+      if (on) { const pageTitle = key === 'dashboard' && accountRole === 'parent' ? 'Parent Dashboard' : title; if (isMobile()) setNav(false); el.scrollTop = 0; topTitle.textContent = pageTitle; document.title = pageTitle + ' · GuidEd'; }
     });
     document.body.classList.toggle('on-page', !!name);
     if (!name) updateTopbar();
@@ -2520,8 +2566,61 @@
   }, true);
   document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && pageOpen() && !document.querySelector('dialog[open]')) showPage(null); });
 
+  /* Parent Dashboard: account-backed child profile, separate from teacher planning. */
+  function renderParentDashboard() {
+    const page = $('#dashboardPage');
+    if (!page) return;
+    const teacherContent = page.querySelector('.dash-inner');
+    if (teacherContent) teacherContent.hidden = true;
+    let panel = $('#parentDashboardContent');
+    if (!panel) {
+      panel = document.createElement('div');
+      panel.id = 'parentDashboardContent';
+      panel.className = 'sp-inner dash-inner parent-dashboard-content';
+      page.appendChild(panel);
+    }
+    panel.hidden = false;
+    const profile = accountProfile || {};
+    const children = Array.isArray(profile.children) ? profile.children : [];
+    const esc = (value) => String(value == null ? '' : value).replace(/[&<>"']/g, (ch) => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
+    const childCards = children.map((child) => {
+      const subjects = Array.isArray(child.subjects) ? child.subjects : [];
+      return '<section class="dash-week parent-child-card"><div class="dash-section-head"><div><span class="dash-eyebrow">MY CHILD</span><h2>' + esc(child.name || 'Child') + '</h2></div><span class="dash-week-tag">' + esc(child.class || '') + '</span></div><p>Daily home-learning goal: <strong>' + esc(child.minutes || 30) + ' minutes</strong></p><div class="parent-subject-list">' + subjects.map((subject) => '<span class="lib-chip">' + esc(subject) + '</span>').join('') + '</div></section>';
+    }).join('');
+    panel.innerHTML = '<div class="sp-head"><button type="button" class="sp-back" id="parentDashboardBack"><svg class="ico"><use href="#i-chevron"/></svg><span>Back</span></button><h1>Parent Dashboard</h1></div><p class="dash-intro">A simple place to follow and support your child’s learning at home.</p>' +
+      (childCards || '<section class="dash-week"><h2>No child profile found</h2><p>Please sign out and sign in again, or contact support if your child’s details are missing.</p></section>') +
+      '<section class="dash-week"><span class="dash-eyebrow">YOUR NEXT STEP</span><h2>Home learning</h2><p>Your child’s class, subjects and daily learning time are saved to this account. Parent-specific home lessons, practice activities and progress tracking still need to be connected here.</p></section>';
+    const back = $('#parentDashboardBack');
+    if (back) back.addEventListener('click', () => showPage(null));
+  }
+
   /* Teacher Dashboard: an overview derived from the teacher's saved sessions. */
   function renderDashboard() {
+    if (accountRole === 'parent') { renderParentDashboard(); return; }
+    if (window.PadiSync && window.PadiSync.user && window.PadiSync.user() && !accountProfileLoaded) {
+      const page = $('#dashboardPage');
+      const teacherContent = page && page.querySelector('.dash-inner');
+      if (teacherContent) teacherContent.hidden = true;
+      let panel = $('#parentDashboardContent');
+      if (!panel && page) {
+        panel = document.createElement('div'); panel.id = 'parentDashboardContent';
+        panel.className = 'sp-inner dash-inner parent-dashboard-content'; page.appendChild(panel);
+      }
+      if (panel) {
+        panel.hidden = false;
+        panel.innerHTML = accountProfileError
+          ? '<div class="sp-head"><h1>Dashboard unavailable</h1></div><p class="dash-intro">GuidEd could not verify your account type. Please check your connection and try again.</p><button type="button" class="as-second" id="retryAccountRole">Try again</button>'
+          : '<div class="sp-head"><h1>Loading your dashboard</h1></div><p class="dash-intro">Checking your account type…</p>';
+        const retry = $('#retryAccountRole');
+        if (retry) retry.addEventListener('click', () => { accountProfileError = false; refreshAccountProfile(); });
+      }
+      if (!accountProfileRequest && !accountProfileError) refreshAccountProfile();
+      return;
+    }
+    const parentPanel = $('#parentDashboardContent');
+    const teacherContent = $('#dashboardPage .dash-inner');
+    if (parentPanel) parentPanel.hidden = true;
+    if (teacherContent) teacherContent.hidden = false;
     const all = state.sessions.filter((s) => s.messages.length).sort((a, b) => b.updatedAt - a.updatedAt);
     const plans = all.filter((s) => typeOf(s) === 'plan');
     const resources = all.length - plans.length;
