@@ -45,7 +45,7 @@ const ran = (re) => log.filter((l) => re.test(l.text));
   assert.equal(r.code, 200, JSON.stringify(r.body));
   assert.equal(r.body.ok, true);
   assert.equal(r.body.identityRemoved, true);
-  for (const t of ['plans', 'profiles', 'account_profiles', 'subscriptions', 'bonus', 'reward_tokens', 'feedback', 'accounts']) {
+  for (const t of ['plans', 'profiles', 'account_profiles', 'parent_learning', 'subscriptions', 'bonus', 'reward_tokens', 'feedback', 'accounts']) {
     const hit = ran(new RegExp('^delete from ' + t + ' where user_id')).filter((l) => l.params[0] === 'user-123');
     assert.equal(hit.length, 1, t + ' is cleared for this user');
   }
