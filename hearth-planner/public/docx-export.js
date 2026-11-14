@@ -35,6 +35,7 @@
     var USABLE = (portrait ? PAGE_H : PAGE_W) - 2 * MARGIN_X;
     title = String(title || 'GES Lesson Plan').trim().slice(0, 150) || 'GES Lesson Plan';
     content = clean(content);
+    var isWorksheet = /#\s*Learner Worksheet/i.test(content) || /learner worksheet/i.test(title);
     var Join = root.SchoolPadiJoin || (typeof require === 'function' ? require('./plan-join.js') : null);
     // A file can hold several plans (the term pack): each one is joined on its own, and each starts on a new page.
     if (Join) content = content.split(/\n(?=#+\s*Lesson Metadata)/i).map(function (part) { return Join.join(part); }).join('\n\n');
@@ -215,14 +216,23 @@
       });
     }
 
+    function worksheetBand(text) {
+      var line = { style: D.BorderStyle.SINGLE, size: 2, color: 'D5E2F2' };
+      return new D.Table({ width: { size: USABLE, type: D.WidthType.DXA }, columnWidths: [USABLE], layout: D.TableLayoutType.FIXED, alignment: D.AlignmentType.CENTER,
+        borders: { top: line, bottom: line, left: line, right: line, insideHorizontal: line, insideVertical: line },
+        rows: [new D.TableRow({ cantSplit: true, children: [new D.TableCell({ width: { size: USABLE, type: D.WidthType.DXA }, shading: { type: D.ShadingType.CLEAR, fill: '1B45A8', color: 'auto' }, margins: { top: 90, bottom: 90, left: 150, right: 120 }, children: paragraphs(text, { size: 20, bold: true, color: 'FFFFFF', after: 0 }) })] })]
+      });
+    }
+    function worksheetCallout(text) {
+      var line = { style: D.BorderStyle.SINGLE, size: 3, color: 'D5E2F2' };
+      return new D.Table({ width: { size: USABLE, type: D.WidthType.DXA }, columnWidths: [USABLE], layout: D.TableLayoutType.FIXED, alignment: D.AlignmentType.CENTER,
+        borders: { top: line, bottom: line, left: line, right: line, insideHorizontal: line, insideVertical: line },
+        rows: [new D.TableRow({ cantSplit: true, children: [new D.TableCell({ width: { size: USABLE, type: D.WidthType.DXA }, shading: { type: D.ShadingType.CLEAR, fill: 'EEF4FF', color: 'auto' }, margins: { top: 100, bottom: 100, left: 140, right: 140 }, children: paragraphs(text, { size: 19, after: 0 }) })] })]
+      });
+    }
     function heading(text, level, pageBreak) {
       var size = { 1: 26, 2: 23, 3: 21 }[level];
-      return new D.Paragraph({
-        pageBreakBefore: pageBreak || undefined,
-        keepNext: true,
-        spacing: { before: { 1: 240, 2: 200, 3: 160 }[level], after: 60 },
-        children: runs(text.replace(new RegExp(BR, 'g'), ' '), { size: size, bold: true, color: GREEN })
-      });
+      return new D.Paragraph({ pageBreakBefore: pageBreak || undefined, keepNext: true, spacing: { before: { 1: 240, 2: 200, 3: 160 }[level], after: 60 }, children: runs(text.replace(new RegExp(BR, 'g'), ' '), { size: size, bold: true, color: GREEN }) });
     }
 
     var children = [];
@@ -290,6 +300,8 @@
       else if (text.length < 100 && text === text.toUpperCase() && /[A-Z]/.test(text) && !/^[-•*]\s/.test(text)) { level = 2; ht = text; }
       if (ht !== null) {
         ht = ht.replace(/^[*_\s]+|[*_\s]+$/g, '');
+        if (isWorksheet && ht.toLowerCase() === 'learner worksheet') { lastHeading = ht; wrote = true; continue; }
+        if (isWorksheet && /^Part\s+[A-C]\s*:/i.test(ht)) { children.push(worksheetBand(ht)); lastHeading = ht; wrote = true; continue; }
         var newPlan = META_HEADING.test(ht) && level === 1 && metaSeen;
         if (META_HEADING.test(ht) && level === 1) metaSeen = true;
         // The Lesson Metadata heading stays hidden: the table is self-explanatory. A new plan in the same file still starts on a new page.
@@ -298,7 +310,9 @@
         lastHeading = ht; wrote = true;
         continue;
       }
-      paragraphs(text, { size: 19, after: 60 }).forEach(function (p) { children.push(p); });
+      if (isWorksheet && /^\*\*(?:Instructions|Word bank):\*\*/i.test(text)) children.push(worksheetCallout(text));
+      else if (isWorksheet && /^_{8,}$/.test(text)) children.push(new D.Paragraph({ spacing: { before: 20, after: 100 }, border: { bottom: { style: D.BorderStyle.SINGLE, size: 4, color: 'B8C7DA', space: 2 } }, children: [new D.TextRun({ text: ' ', size: 19 })] }));
+      else paragraphs(text, { size: 19, after: isWorksheet ? 8 : 60 }).forEach(function (p) { children.push(p); });
       wrote = true;
     }
 

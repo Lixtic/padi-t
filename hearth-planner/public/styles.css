@@ -489,6 +489,28 @@ a { color: inherit; }
 .tbl .li.num::before { content: none; }
 .tbl .li .n { position: absolute; left: 0; }
 
+/* ───────── Learner worksheet presentation ───────── */
+.md.worksheet { --worksheet-blue: #1B45A8; --worksheet-ink: #172B4D; }
+.md.worksheet > h2.h1 { margin: .2em 0 .75em; padding: 0 0 .55em; color: var(--worksheet-blue); font-family: var(--font-sans); font-size: 24px; font-weight: 800; letter-spacing: -.025em; border-bottom: 2px solid #DCE6F5; }
+.md.worksheet h3.h2 { margin: 1.25em 0 .65em; padding: 11px 14px; border-radius: 10px; background: var(--worksheet-blue); color: #fff; font-family: var(--font-sans); font-size: 15px; font-weight: 750; letter-spacing: 0; box-shadow: 0 2px 5px rgba(27,69,168,.12); }
+.md.worksheet h4.h3 { margin: 1em 0 .45em; color: var(--worksheet-ink); font-size: 14px; font-weight: 750; }
+.md.worksheet .tbl-wrap { overflow: hidden; margin: .65em 0 1em; border: 1px solid #D7E2F2; border-radius: 12px; background: #F7F9FE; box-shadow: 0 2px 8px rgba(23,43,77,.04); }
+.md.worksheet .tbl, .md.worksheet .tbl.kv { width: 100%; min-width: 0; font-size: 13px; }
+.md.worksheet .tbl td { padding: 10px 12px; border-color: #E1E8F2; }
+.md.worksheet .tbl td:first-child { font-weight: 650; color: var(--worksheet-ink); }
+.md.worksheet p:has(> strong:first-child) { margin: .65em 0; padding: 11px 13px; border: 1px solid #D7E2F2; border-left: 4px solid var(--worksheet-blue); border-radius: 9px; background: #F0F5FF; line-height: 1.55; }
+.md.worksheet ol { margin: .55em 0 1em; padding-left: 1.8em; }
+.md.worksheet ol li { margin: 0 0 .7em; padding: 8px 10px; border: 1px solid #E5EAF2; border-radius: 9px; background: var(--card); line-height: 1.55; }
+.md.worksheet ol li::marker { color: var(--worksheet-blue); font-weight: 800; }
+.md.worksheet p:has(> strong:first-child) + ol { margin-top: .35em; }
+.md.worksheet p:has(> strong:first-child) + p { margin-top: .35em; }
+@media (max-width: 560px) {
+  .md.worksheet > h2.h1 { font-size: 21px; }
+  .md.worksheet h3.h2 { padding: 10px 12px; font-size: 14px; }
+  .md.worksheet .tbl td { padding: 8px 9px; }
+  .md.worksheet ol li { padding: 8px; }
+}
+
 /* ───────── Responsive ───────── */
 @media (max-width: 820px) {
   .sidebar {

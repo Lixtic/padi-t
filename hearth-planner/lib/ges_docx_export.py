@@ -248,6 +248,19 @@ def _heading(document, text, level, page_break=False):
     _add_runs(paragraph, text.replace(BR, ' '), size, bold=True, color=GREEN)
 
 
+def _worksheet_band(document, text, fill='1B45A8', color=WHITE, size=11):
+    table = document.add_table(rows=1, cols=1)
+    table.alignment = WD_TABLE_ALIGNMENT.CENTER
+    table.autofit = False
+    _table_width(table, USABLE_W)
+    _table_borders(table)
+    _table_cell_margins(table, top=100, left=150, bottom=100, right=150)
+    cell = table.cell(0, 0)
+    _shade(cell, fill)
+    _render(cell, text, size, bold=(fill == '1B45A8'), color=color, reuse_first=True, after=0)
+    _spacer(document, 3)
+
+
 def _spacer(document, height_pt=6):
     paragraph = document.add_paragraph()
     fmt = paragraph.paragraph_format
@@ -501,6 +514,7 @@ def build_ges_lesson_docx(title, content, portrait=False, teacher='', school='')
 
     title = (title or 'GES Lesson Plan').strip()[:150] or 'GES Lesson Plan'
     content = join_plan_tables(clean_content(content))
+    is_worksheet = bool(re.search(r'#\s*Learner Worksheet', content, re.I) or re.search(r'learner worksheet', title, re.I))
 
     document = Document()
     document.core_properties.title = title
@@ -587,13 +601,39 @@ def build_ges_lesson_docx(title, content, portrait=False, teacher='', school='')
                 level, heading_text = 2, text
         if heading_text is not None:
             heading_text = heading_text.strip('*_ ').strip()
+            if is_worksheet and heading_text.lower() == 'learner worksheet':
+                last_heading = heading_text
+                wrote_content = True
+                continue
+            if is_worksheet and re.match(r'^Part\s+[A-C]\s*:', heading_text, re.I):
+                _worksheet_band(document, heading_text)
+                last_heading = heading_text
+                wrote_content = True
+                continue
             page_break = wrote_content and bool(_NEW_PAGE.match(heading_text))
             _heading(document, heading_text, level, page_break)
             last_heading = heading_text
             wrote_content = True
             continue
 
-        _render(document, text, BODY_PT, after=3)
+        if is_worksheet and re.match(r'^\*\*(Instructions|Word bank):\*\*', text, re.I):
+            _worksheet_band(document, text, fill='EEF4FF', color=RGBColor(0x1B, 0x36, 0x5D), size=9.5)
+        elif is_worksheet and re.fullmatch(r'_{8,}', text):
+            p = document.add_paragraph()
+            p.paragraph_format.space_after = Pt(8)
+            p.paragraph_format.left_indent = Cm(0.35)
+            _style_run(p.add_run(' '), 9, color=RGBColor(0xB8, 0xC7, 0xDA))
+            pPr = p._p.get_or_add_pPr()
+            borders = OxmlElement('w:pBdr')
+            bottom = OxmlElement('w:bottom')
+            bottom.set(qn('w:val'), 'single')
+            bottom.set(qn('w:sz'), '5')
+            bottom.set(qn('w:space'), '2')
+            bottom.set(qn('w:color'), 'B8C7DA')
+            borders.append(bottom)
+            pPr.append(borders)
+        else:
+            _render(document, text, BODY_PT, after=8 if is_worksheet else 3)
         wrote_content = True
 
     buffer = io.BytesIO()

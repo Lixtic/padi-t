@@ -637,7 +637,7 @@
       root, text: '', msg: null,
       get title() { return baseTitle + (kindTitle(kind, session.params && session.params.cls) || ''); },
       get kind() { return kind; },
-      setKind(k) { kind = KIND_TITLE[k] !== undefined ? k : 'plan'; titleEl.textContent = api.title; btnShare.hidden = kind !== 'plan' || !!(session.params && session.params.mode === 'resources'); },
+      setKind(k) { kind = KIND_TITLE[k] !== undefined ? k : 'plan'; titleEl.textContent = api.title; bodyEl.classList.toggle('worksheet', kind === 'worksheet' || !!(session.params && session.params.resourceType === 'Learner worksheet')); btnShare.hidden = kind !== 'plan' || !!(session.params && session.params.mode === 'resources'); },
       set(raw, final, msg) {
         api.text = raw;
         const pv = !!(msg && msg.preview);
