@@ -63,6 +63,8 @@ module.exports = async (req, res) => {
       'insert into account_profiles (user_id, data, updated_at) values ($1, $2::jsonb, $3) on conflict (user_id) do update set data = excluded.data, updated_at = excluded.updated_at',
       [me.uid, JSON.stringify(data), updatedAt]
     );
+    const retainedChildIds = children.map((child) => child.id);
+    await db.query('delete from parent_learning where user_id = $1 and not (data->>\'childId\' = any($2::text[]))', [me.uid, retainedChildIds]);
     return sendJson(res, 200, { ok: true, profile: { ...data, updatedAt } });
   } catch (e) {
     console.error('account profile failed:', e && e.message);
