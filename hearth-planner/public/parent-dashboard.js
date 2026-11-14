@@ -138,7 +138,7 @@
     } else {
       body = '<div class="pd-section-head"><div><span class="pd-kicker">MY CHILD’S LEARNING JOURNEY</span><h2>Learning Progress</h2><p>Keep track of activities your child has completed.</p></div></div><div class="pd-progress-summary"><strong>' + state.records.filter(function (r) { return r.data && r.data.status === 'completed'; }).length + '</strong><span>completed activities</span></div><div class="pd-activity-list">' + (state.records.length ? state.records.map(renderActivity).join('') : '<div class="pd-empty">No learning activities yet. Create a home lesson to get started.</div>') + '</div>';
     }
-    state.root.innerHTML = '<div class="pd-header"><div><span class="pd-brand">GuidEd <i>Family</i></span><span class="pd-account">' + icon('users') + ' Parent account</span></div><button type="button" class="pd-exit" id="pdBack">' + icon('home') + '<span>Back to workspace</span></button></div><div class="pd-intro"><h1>Parent Dashboard</h1><p>Support your child’s learning, one step at a time.</p></div><nav class="pd-tabs" aria-label="Parent dashboard">' + nav + '</nav><div class="pd-main">' + (state.error ? '<p class="pd-error" role="alert">' + esc(state.error) + '</p>' : '') + (state.loading ? '<p class="pd-note">Loading your saved learning activities…</p>' : '') + body + '</div>';
+    state.root.innerHTML = '<div class="pd-header"><div><span class="pd-brand">GuidEd <i>Family</i></span><span class="pd-account">' + icon('users') + ' Parent account</span></div></div><div class="pd-intro"><h1>Parent Dashboard</h1><p>Support your child’s learning, one step at a time.</p></div><nav class="pd-tabs" aria-label="Parent dashboard">' + nav + '</nav><div class="pd-main">' + (state.error ? '<p class="pd-error" role="alert">' + esc(state.error) + '</p>' : '') + (state.loading ? '<p class="pd-note">Loading your saved learning activities…</p>' : '') + body + '</div>';
     if (state.root.dataset.parentWired !== '1') wire();
   }
 
@@ -307,6 +307,13 @@
       if (!state.root.dataset.parentWired) wire();
       render();
       if (!state.loaded && !state.loading) loadRecords();
+    },
+    // Used by "New Home Lesson" in the sidebar: start a fresh home lesson.
+    open: function (tab) {
+      if (!state.root) return;
+      state.tab = tab || 'overview'; state.result = null; state.error = '';
+      if (state.tab === 'lesson') { state.lessonStep = 0; state.lessonDraft = {}; state.lessonRoom = null; }
+      render();
     }
   };
 })();
