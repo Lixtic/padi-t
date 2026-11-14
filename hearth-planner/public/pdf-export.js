@@ -30,6 +30,7 @@
     var USABLE = (portrait ? 595.28 : 841.89) - 2 * MX;
     title = String(title || 'GES Lesson Plan').trim().slice(0, 150) || 'GES Lesson Plan';
     content = clean(content);
+    var isWorksheet = /#\s*Learner Worksheet/i.test(content) || /learner worksheet/i.test(title);
     var Join = root.SchoolPadiJoin || (typeof require === 'function' ? require('./plan-join.js') : null);
     if (Join) content = content.split(/\n(?=#+\s*Lesson Metadata)/i).map(function (part) { return Join.join(part); }).join('\n\n');
 
@@ -190,6 +191,10 @@
       return out;
     }
 
+    function worksheetPanel(text, fill, color, fontSize) {
+      return tableNode([[cell(text, { size: fontSize, bold: fill === NAVY, color: color, after: 0, fill: fill })]], [USABLE], 0, false, false);
+    }
+
     function heading(text, level, pageBreak) {
       var size = { 1: 14, 2: 12, 3: 10.5 }[level];
       var node = { text: runs(text.replace(new RegExp(BR, 'g'), ' '), { bold: true }), fontSize: size, color: GREEN, margin: [0, { 1: 8, 2: 7, 3: 5 }[level], 0, 3], keepWithNext: true };
@@ -240,6 +245,7 @@
       else if (text.length < 100 && text === text.toUpperCase() && /[A-Z]/.test(text) && !/^[-•*]\s/.test(text)) { level = 2; ht = text; }
       if (ht !== null) {
         ht = ht.replace(/^[*_\s]+|[*_\s]+$/g, '');
+        if (isWorksheet && /^Part\s+[A-C]\s*:/i.test(ht)) { children.push(worksheetPanel(ht, NAVY, '#FFFFFF', 10.5)); lastHeading = ht; wrote = true; continue; }
         var newPlan = META_HEADING.test(ht) && level === 1 && metaSeen;
         if (META_HEADING.test(ht) && level === 1) metaSeen = true;
         // The Lesson Metadata heading stays hidden: the table is self-explanatory. A new plan in the same file still starts on a new page.
@@ -248,7 +254,8 @@
         lastHeading = ht; wrote = true;
         continue;
       }
-      paragraphs(text, { size: 9.5, after: 3 }).forEach(function (p) { children.push(p); });
+      if (isWorksheet && /^\*\*(?:Instructions|Word bank):\*\*/i.test(text)) children.push(worksheetPanel(text, '#EEF4FF', NAVY, 9.5));
+      else paragraphs(text, { size: 9.5, after: isWorksheet ? 7 : 3 }).forEach(function (p) { children.push(p); });
       wrote = true;
     }
 
