@@ -192,4 +192,16 @@ async function rateLimitShared(key, limit, windowMs) {
 }
 
 function clearMemory() { mem.clear(); reservations.clear(); localRate.clear(); }
-module.exports = { estimateTokens, subjectFor, reserve, settle, release, rateLimitShared, message, clearMemory, perSubject, siteCap, today };
+// For endpoints that need the database anyway (sign-in, sync, billing, feedback): sends the 429 and returns true when the caller is over
+// the limit. If the limiter itself fails it lets the request through (and logs), because blocking real teachers is worse than a short gap.
+// Generation does not use this: it fails closed because every request costs money.
+async function limited(res, key, limit, windowMs, message) {
+  let r;
+  try { r = await rateLimitShared(key, limit, windowMs); }
+  catch (e) { console.error('[rate] limiter failed, allowing', key.split(':')[0], e && e.message); return false; }
+  if (r.ok) return false;
+  require('./_lib').sendJson(res, 429, { error: 'rate_limited', message: message || 'Too many requests. Please wait a few minutes and try again.' }, { 'Retry-After': String(r.retryAfter) });
+  return true;
+}
+
+module.exports = { limited, estimateTokens, subjectFor, reserve, settle, release, rateLimitShared, message, clearMemory, perSubject, siteCap, today };
