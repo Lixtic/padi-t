@@ -300,6 +300,7 @@
       else if (text.length < 100 && text === text.toUpperCase() && /[A-Z]/.test(text) && !/^[-•*]\s/.test(text)) { level = 2; ht = text; }
       if (ht !== null) {
         ht = ht.replace(/^[*_\s]+|[*_\s]+$/g, '');
+        if (isWorksheet && ht.toLowerCase() === 'learner worksheet') { lastHeading = ht; wrote = true; continue; }
         if (isWorksheet && /^Part\s+[A-C]\s*:/i.test(ht)) { children.push(worksheetBand(ht)); lastHeading = ht; wrote = true; continue; }
         var newPlan = META_HEADING.test(ht) && level === 1 && metaSeen;
         if (META_HEADING.test(ht) && level === 1) metaSeen = true;
