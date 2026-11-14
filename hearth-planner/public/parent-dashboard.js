@@ -34,7 +34,8 @@
   function saveProfile(next) {
     return window.PadiSync.setAccountProfile(next).then(function (result) {
       state.profile = result && result.profile ? result.profile : next;
-      state.editingChild = '';
+      state.error = ''; state.editingChild = '';
+      window.dispatchEvent(new CustomEvent('guided:account-profile-saved', { detail: state.profile }));
       render();
       return state.profile;
     });
@@ -70,12 +71,12 @@
     var list = children(), child = selectedChild();
     var subjects = child && child.subjects && child.subjects.length ? child.subjects : subjectsFor(child && child.class || 'Basic 7');
     var weekOptions = Array.from({ length: 14 }, function (_, i) { return '<option value="' + (i + 1) + '">' + (i + 1) + '</option>'; }).join('');
-    return '<form class="pd-form pd-task-form" id="pdTaskForm"><div class="pd-form-grid"><label>Choose your child<select name="childId" required>' + list.map(function (item) { return '<option value="' + esc(item.id) + '"' + (child && item.id === child.id ? ' selected' : '') + '>' + esc(item.name) + ' · ' + esc(item.class) + '</option>'; }).join('') + '</select></label><label>Subject<select name="subject">' + subjects.map(function (subject) { return '<option>' + esc(subject) + '</option>'; }).join('') + '</select></label></div><label>Topic or area to learn<input name="topic" maxlength="240" placeholder="e.g. Parts of a computer" required></label><div class="pd-form-grid"><label>Term<select name="term"><option value="1">Term 1</option><option value="2">Term 2</option><option value="3">Term 3</option></select></label><label>Week<select name="week">' + weekOptions + '</select></label></div><label>Anything you want the AI to focus on (optional)<textarea name="notes" rows="2" maxlength="1000" placeholder="e.g. Explain it using examples from our home or community."></textarea></label><button class="pd-primary" type="submit"' + (state.busy ? ' disabled' : '') + '>' + (state.busy ? 'Preparing…' : 'Create ' + esc(labels[state.task]).toLowerCase()) + '</button></form>';
+    return '<form class="pd-form pd-task-form" id="pdTaskForm"><div class="pd-form-grid"><label>Choose your child<select name="childId" required>' + list.map(function (item) { return '<option value="' + esc(item.id) + '"' + (child && item.id === child.id ? ' selected' : '') + '>' + esc(item.name) + ' · ' + esc(item.class) + '</option>'; }).join('') + '</select></label><label>Subject<select name="subject">' + subjects.map(function (subject) { return '<option>' + esc(subject) + '</option>'; }).join('') + '</select></label></div><label>Topic or area to learn<input name="topic" maxlength="180" placeholder="e.g. Parts of a computer" required></label><div class="pd-form-grid"><label>Term<select name="term"><option value="1">Term 1</option><option value="2">Term 2</option><option value="3">Term 3</option></select></label><label>Week<select name="week">' + weekOptions + '</select></label></div><label>Anything you want the AI to focus on (optional)<textarea name="notes" rows="2" maxlength="160" placeholder="e.g. Explain it using examples from our home or community."></textarea></label><button class="pd-primary" type="submit"' + (state.busy ? ' disabled' : '') + '>' + (state.busy ? 'Preparing…' : 'Create ' + esc(labels[state.task]).toLowerCase()) + '</button></form>';
   }
 
   function renderActivity(record) {
     var data = record.data || {};
-    return '<article class="pd-activity" data-record="' + esc(record.id) + '"><div><span class="pd-kicker">' + esc(labels[record.kind] || 'Learning activity') + '</span><h3>' + esc(data.title || data.topic || 'Learning activity') + '</h3><p>' + esc([data.childName, data.subject, data.class].filter(Boolean).join(' · ')) + '</p><small>' + (data.status === 'completed' ? 'Completed' : 'Saved for learning') + '</small></div>' + (data.status === 'completed' ? '<span class="pd-done">Completed</span>' : '<button type="button" class="pd-primary pd-small" data-complete="' + esc(record.id) + '">Mark complete</button>') + '</article>';
+    return '<article class="pd-activity" data-record="' + esc(record.id) + '"><div><span class="pd-kicker">' + esc(labels[record.kind] || 'Learning activity') + '</span><h3>' + esc(data.title || data.topic || 'Learning activity') + '</h3><p>' + esc([data.childName, data.subject, data.class].filter(Boolean).join(' · ')) + '</p><small>' + (data.status === 'completed' ? 'Completed' + (data.score == null ? '' : ' · Score: ' + data.score + '%') : 'Saved for learning') + '</small></div>' + (data.status === 'completed' ? '<span class="pd-done">Completed</span>' : '<div class="pd-complete-wrap"><label class="pd-score">Score (optional)<input type="number" min="0" max="100" step="1" data-score-input></label><button type="button" class="pd-primary pd-small" data-complete="' + esc(record.id) + '">Mark complete</button></div>') + '</article>';
   }
 
   function render() {
@@ -119,7 +120,10 @@
       if (done) {
         var record = state.records.find(function (item) { return item.id === done.dataset.complete; });
         if (!record) return;
-        var data = Object.assign({}, record.data, { status: 'completed', completedAt: Date.now() });
+        var card = done.closest('[data-record]');
+        var scoreInput = card && card.querySelector('[data-score-input]');
+        var score = scoreInput && scoreInput.value !== '' ? Math.max(0, Math.min(100, Number(scoreInput.value))) : null;
+        var data = Object.assign({}, record.data, { status: 'completed', completedAt: Date.now(), score: score });
         done.disabled = true;
         saveRecord({ id: record.id, kind: record.kind, data: data }).then(render).catch(function (error) { state.error = error.message; render(); });
         return;
