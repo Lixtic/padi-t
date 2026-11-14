@@ -9,6 +9,7 @@ const systemFor = (cls, mode, resourceType, scheme, request, knowledgeContext) =
   const l = Levels.levelOfClass(cls);
   let system = l && LEVEL_PROMPTS[l.id] ? BASE_PROMPT + '\n\n' + LEVEL_PROMPTS[l.id] : BASE_PROMPT;
   if (mode === 'plan') system += '\n\n## Task mode override: lesson plan only\nReturn ONLY Lesson Metadata, Lesson 1, Lesson 2 and the Assessment Rubric. Do not include Study Notes, BECE Practice, worksheets, homework, slides or any other teaching resources. Keep the full lesson plan structure, curriculum alignment, learning objectives, lesson activities, assessment and resources column.';
+  if (mode === 'parent') system += '\n\n## Parent home-learning format (follow exactly)\nWrite for a Ghanaian parent or caregiver, not a trained teacher. Use simple, warm language and explain any educational term. Keep activities possible at home with ordinary, low-cost or reused materials; give an offline alternative and never assume a computer, electricity or internet. Begin with the curriculum topic and a short learning goal. For Study notes, use these sections: What your child will learn; A simple explanation for the parent; Explain it to your child (child-friendly wording); Everyday Ghanaian example; Materials at home; Try it together (numbered steps); Ask your child (questions); Check the answers (answers with brief explanations); Encourage your child. For Learner worksheet or Homework pack, give clear instructions, age-appropriate questions, a mix of question types, and a separate answer key with explanations. Keep the selected child class and subject appropriate. Do not claim an official curriculum standard unless the supplied scheme identifies it; distinguish scheme metadata from verified official source material.\n\n## Task mode override: parent home-learning only\nReturn only the parent home-learning resource described above. Do not include teacher lesson-plan tables, lesson phases, assessment rubrics, or teacher-only jargon.'
   if (mode === 'resources') system += '\n\n## Task mode override: teaching resource only\nReturn ONLY the requested teaching resource. Do not include lesson metadata, lesson-plan tables, lesson phases or an assessment rubric. Use the supplied class, subject, term, week and scheme information to keep the resource aligned to the topic. For worksheets and homework, include learner instructions and an answer key. For exam practice, include questions and a marking guide, written in the exam the request names: BECE at JHS, WASSCE at SHS (Section A objective questions with options A to D, Section B structured or essay questions with parts (a), (b), (c)), or a class exercise at primary. For teaching slides, provide a slide-by-slide outline with concise learner-facing content and teacher notes. For study notes, write clear, complete student notes with examples and key terms.';
   if (mode === 'resources' && resourceType === 'Teaching slides') system += '\n\n## Teaching slides format (follow exactly)\nWrite 8 to 12 slides for a Ghanaian classroom, readable from the back of a room. Start every slide with a heading in this exact form: `## Slide 1: Short title` (numbered in order). No text before Slide 1 and no title page heading. Under each heading write: 2 to 4 bullets starting with `- `, each 12 words or fewer, in learner-friendly language (the words learners will see on the board); then, only when it helps, one line starting `**Activity:**` or `**Ask the class:**` with a single task or question; then one line starting `**Teacher notes:**` with 1 to 3 sentences on what to say, local examples and likely misconceptions. Order: Slide 1 is the title slide (topic, class, one-line goal as the bullet). Then the learning objectives, a hook linked to daily life, the concept slides, a worked example, a group activity, a quick check for understanding, and a summary with an exit ticket as the last slide. Plain text only: no tables, no emojis, no images, no LaTeX; describe any diagram in words in the notes.';
   system += '\n\n' + Curriculum.buildInstruction(scheme, Object.assign({ mode, resourceType }, request || {}));
@@ -55,6 +56,17 @@ module.exports = async (req, res) => {
 
   // Who is asking: a signed-in teacher if a valid token came with the request, otherwise the network address.
   const me = req.headers.authorization ? await A.authed(req).catch(() => null) : null;
+  if (v.params.mode === 'parent') {
+    if (!me) return sendJson(res, 401, { error: 'auth', message: 'Please sign in to use Parent Dashboard learning tools.' });
+    try {
+      await require('./_db').ensure();
+      const [account] = await require('./_db').query('select data from account_profiles where user_id = $1', [me.uid]);
+      const profile = account && account.data;
+      if (!profile || profile.primaryRole !== 'parent' || !Array.isArray(profile.children) || !profile.children.length) {
+        return sendJson(res, 403, { error: 'parent_only', message: 'A completed parent profile is required to generate home-learning resources.' });
+      }
+    } catch (e) { return sendJson(res, 503, { error: 'profile_unavailable', message: 'Could not verify your parent profile. Please try again.' }); }
+  }
   const subject = Quota.subjectFor(me, clientIp(req));
 
   // Tiers (see _entitle.js). Visitors who are not signed in get a short taster of Lesson 1, never the full plan.
@@ -63,7 +75,7 @@ module.exports = async (req, res) => {
   if (ent && ent.blocked) return sendJson(res, 403, { error: 'blocked', message: 'This account has been paused. Please contact us if you think this is a mistake.' });
   const guest = !!ent && ent.tier === 'guest';
   const firstTurn = v.thread.length === 0;
-  const planTurn = firstTurn && v.params.mode !== 'resources';   // a resource-only run (worksheet, notes...) is not a weekly plan: it never uses the free plan or class allowance
+  const planTurn = firstTurn && !['resources', 'parent'].includes(v.params.mode);   // a resource-only run (worksheet, notes...) is not a weekly plan: it never uses the free plan or class allowance
   if (guest && !firstTurn) {
     return sendJson(res, 402, { error: 'account', message: 'Create a free account to refine a plan, or to add study notes and BECE questions.' });
   }
