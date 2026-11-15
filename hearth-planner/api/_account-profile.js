@@ -66,8 +66,8 @@ module.exports = async (req, res) => {
       ? cleanText(input.phoneNumber, 25)
       : cleanText(prev && prev.data && prev.data.phoneNumber, 25);
     if (phoneNumber) {
-      const digits = phoneNumber.replace(/\\D/g, '');
-      if (!/^\\+?[0-9\\s().-]{7,25}$/.test(phoneNumber) || digits.length < 7 || digits.length > 15) {
+      const digits = phoneNumber.replace(/\D/g, '');
+      if (!/^\+?[0-9\s().-]{7,25}$/.test(phoneNumber) || digits.length < 7 || digits.length > 15) {
         return sendJson(res, 400, { error: 'bad_request', message: 'Enter a valid phone number.' });
       }
     }
