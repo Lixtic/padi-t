@@ -173,7 +173,7 @@
     var P = window.GuidedPlans, info = P && P.info && P.info();
     if (!P || P.tier() !== 'free' || !info || !info.free || !info.free.parent || !info.free.parent.limit) return '';
     var a = info.free.parent, left = Math.max(0, a.limit - a.used);
-    return '<p class="pd-allowance' + (left ? '' : ' pd-allowance-out') + '" role="status">' + (left ? left + ' of ' + a.limit + ' free home activities left this week.' : 'You have used your ' + a.limit + ' free home activities this week. They return on Monday.') + ' <button type="button" class="pd-text-button" data-upgrade>Get unlimited with Pro</button></p>';
+    return '<p class="pd-allowance' + (left ? '' : ' pd-allowance-out') + '" role="status">' + (left ? left + ' of ' + a.limit + ' free home activities left this week.' : 'You have used your ' + a.limit + ' free home activities this week. Your allowance returns on Monday.') + '</p>';
   }
   function render() {
     if (!state.root) return;
@@ -201,7 +201,6 @@
     state.root.addEventListener('click', function (event) {
       var tab = event.target.closest('[data-parent-tab]');
       if (tab) { if (tab.dataset.parentTab === 'lesson') { state.lessonStep = 0; state.lessonDraft = {}; } state.tab = tab.dataset.parentTab; state.result = null; render(); return; }
-      if (event.target.closest('[data-upgrade]')) { if (window.GuidedPlans) window.GuidedPlans.openUpgrade('parent', ''); return; }
       var open = event.target.closest('[data-open-task]');
       if (open) { state.tab = open.dataset.openTask; state.task = open.dataset.openTask; if (state.task === 'lesson') { state.lessonStep = 0; state.lessonDraft = {}; } state.result = null; render(); return; }
       if (event.target.closest('#pdBack')) { document.dispatchEvent(new CustomEvent('guided:parent-back')); return; }
@@ -337,7 +336,7 @@
       });
       if (!response.ok) {
         var errorBody = {}; try { errorBody = await response.json(); } catch (ignore) {}
-        if (response.status === 402 && errorBody.error === 'limit' && window.GuidedPlans && window.GuidedPlans.openUpgrade) window.GuidedPlans.openUpgrade(errorBody.reason || 'parent', errorBody.message || '');
+        // Parent home-learning limits are separate from teacher Pro purchases; show the server message inline.
         throw new Error(errorBody.message || 'Could not generate this learning activity (' + response.status + ').');
       }
       var output = '';
