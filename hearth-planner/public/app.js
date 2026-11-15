@@ -146,7 +146,7 @@
   }
 
   function splitRow(line) {
-    let s = line.trim().replace(/\\\|/g, '\u0001');
+    let s = line.trim().replace(/\\|/g, '\u0001');
     if (s.startsWith('|')) s = s.slice(1);
     if (s.endsWith('|')) s = s.slice(0, -1);
     return s.split('|').map((c) => c.replace(/\u0001/g, '|').trim());
@@ -2418,8 +2418,8 @@
     const name = ep.name.value.trim();
     if (!name) { epMessage('Enter your full name before saving.', true); ep.name.focus(); return; }
     const phoneNumber = ep.phone.value.trim();
-    const phoneDigits = phoneNumber.replace(/\\D/g, '');
-    if (phoneNumber && (!/^\\+?[0-9\\s().-]{7,25}$/.test(phoneNumber) || phoneDigits.length < 7 || phoneDigits.length > 15)) {
+    const phoneDigits = phoneNumber.replace(/\D/g, '');
+    if (phoneNumber && (!/^\+?[0-9\s().-]{7,25}$/.test(phoneNumber) || phoneDigits.length < 7 || phoneDigits.length > 15)) {
       epMessage('Enter a valid phone number, including the country code where possible.', true);
       ep.phone.focus();
       return;
