@@ -3,7 +3,7 @@
    The server decides everything (see api/_entitle.js); this file only shows it and starts the payment. */
 (function () {
   'use strict';
-  var info = null, hooks = {}, listeners = [], demo = false, paying = false;
+  var info = null, hooks = {}, listeners = [], demo = false, paying = false, forcePage = false, watching = 0, lastRef = '';
   var REF_KEY = 'guided.payref';
   var $ = function (s) { return document.querySelector(s); };
   var el = {};
@@ -70,9 +70,11 @@
       el.reason.hidden = !message;
       el.msg.textContent = ''; el.msg.hidden = true;
       renderUpgrade(); renderBonus();
+      forcePage = false;
       if (!el.dlg.open) el.dlg.showModal();
+      prefillPhone();
     },
-    closeUpgrade: function () { if (el.dlg && el.dlg.open) el.dlg.close(); },
+    closeUpgrade: function () { watching++; if (el.prompt && !el.prompt.hidden) endPrompt(); if (el.dlg && el.dlg.open) el.dlg.close(); },
 
     // Starts a Paystack payment and sends the browser there.
     pay: async function (plan) {
@@ -85,6 +87,20 @@
       paying = true; setPayBusy(true);
       try {
         var h = await hooks.authHeader();
+        var digits = el.phone ? el.phone.value.replace(/\D/g, '') : '';
+        var mobile = !forcePage && digits.length >= 9;
+        if (mobile) {                                   // save the number, then send the payment prompt straight to the phone
+          var sv = await fetch('/api/billing?action=phone', { method: 'POST', headers: Object.assign({ 'content-type': 'application/json' }, h), body: JSON.stringify({ phone: el.phone.value, provider: el.provider.value }) });
+          var sj = {}; try { sj = await sv.json(); } catch (e) { /* not JSON */ }
+          if (!sv.ok) throw new Error(sj.message || 'Check your mobile money number.');
+          var mr = await fetch('/api/billing?action=checkout', { method: 'POST', headers: Object.assign({ 'content-type': 'application/json' }, h), body: JSON.stringify({ plan: plan, mobile: true }) });
+          var mj = {}; try { mj = await mr.json(); } catch (e) { /* not JSON */ }
+          if (!mr.ok || !mj.reference) throw new Error((mj.message || 'Could not send the prompt.') + ' You can pay on the Paystack page instead.');
+          paying = false; setPayBusy(false);
+          watchPayment(mj.reference, mj.status, mj.message);
+          return;
+        }
+        if (!digits.length && el.phone) await billingPost('phone', { phone: '' }).catch(function () {});   // an emptied field clears the saved number
         var r = await fetch('/api/billing?action=checkout', { method: 'POST', headers: Object.assign({ 'content-type': 'application/json' }, h), body: JSON.stringify({ plan: plan }) });
         var j = {}; try { j = await r.json(); } catch (e) { /* not JSON */ }
         if (!r.ok || !j.url) throw new Error(j.message || 'Could not start the payment. Please try again.');
@@ -299,6 +315,51 @@
   P.closePlan = function () { if (el.ps && el.ps.open) el.ps.close(); };
 
   /* ───────── Upgrade sheet ───────── */
+  /* ───────── Pay by prompt to the saved phone ───────── */
+  var PREFIX = { mtn: ['024', '025', '053', '054', '055', '059'], vod: ['020', '050'], atl: ['026', '027', '056', '057'] };
+  function guessProvider(v) {
+    var d = String(v || '').replace(/\D/g, ''); if (d.indexOf('233') === 0 && d.length > 9) d = '0' + d.slice(3); else if (d.length === 9) d = '0' + d;
+    return Object.keys(PREFIX).filter(function (k) { return PREFIX[k].indexOf(d.slice(0, 3)) >= 0; })[0] || '';
+  }
+  async function billingPost(action, body) {
+    var h = await hooks.authHeader();
+    var r = await fetch('/api/billing?action=' + action, { method: 'POST', headers: Object.assign({ 'content-type': 'application/json' }, h), body: JSON.stringify(body) });
+    var j = {}; try { j = await r.json(); } catch (e) { /* not JSON */ }
+    return { ok: r.ok, status: r.status, j: j };
+  }
+  function setPrompt(text, otp) {
+    el.prompt.hidden = false; el.promptText.textContent = text; el.otp.hidden = !otp;
+    el.table.hidden = true; el.phoneBox.hidden = true; el.buyBox.hidden = true; el.msg.hidden = true;
+  }
+  function endPrompt() { el.prompt.hidden = true; el.table.hidden = false; el.phoneBox.hidden = false; el.buyBox.hidden = false; watching++; }
+  async function checkOnce(ref) {
+    var v = await billingPost('verify', { reference: ref });
+    if (v.j.verified) {
+      watching++; info = v.j; emit(); P.closeUpgrade(); endPrompt();
+      toast('GuidEd Pro is on' + (v.j.pro && v.j.pro.expiresAt ? ' until ' + fmtDate(v.j.pro.expiresAt) : '') + '. Thank you!');
+      return 'done';
+    }
+    return v.status === 402 && /still being confirmed/.test(v.j.message || '') ? 'wait' : (v.j.message || 'The payment was not completed.');
+  }
+  async function watchPayment(ref, status, message) {
+    lastRef = ref; var mine = ++watching;
+    setPrompt(message || 'Check your phone and approve the payment.', status === 'send_otp');
+    if (status === 'send_otp') return;                 // wait for the code the user types
+    for (var i = 0; i < 40 && mine === watching; i++) {       // about 2.5 minutes
+      await new Promise(function (ok) { setTimeout(ok, 4000); });
+      if (mine !== watching) return;
+      try { var res = await checkOnce(ref); if (res === 'done') return; if (res !== 'wait') { setPrompt(res + ' You can try again.', false); return; } } catch (e) { /* keep waiting */ }
+    }
+    if (mine === watching) setPrompt('Still waiting. If you approved it on your phone, tap “I have approved it”. If no prompt came, dial *170# and check Approvals.', false);
+  }
+
+  async function prefillPhone() {
+    if (!el.phone || el.phone.value || !hooks.signedIn || !hooks.signedIn()) return;
+    try {
+      var g = await billingPost('phone', {});
+      if (g.ok && g.j.phone && !el.phone.value) { el.phone.value = g.j.phone; if (g.j.provider) el.provider.value = g.j.provider; }
+    } catch (e) { /* the field simply stays empty */ }
+  }
   function showMsg(t) { el.msg.textContent = t; el.msg.hidden = !t; }
   function setPayBusy(on) { el.buy.forEach(function (b) { b.disabled = on || b.dataset.off === '1'; b.classList.toggle('busy', on); }); }
   function renderUpgrade() {
@@ -361,6 +422,23 @@
     el.dlg = $('#upSheet');
     if (!el.dlg) return;
     el.title = $('#upTitle'); el.lead = $('#upLead'); el.reason = $('#upReason'); el.table = $('#upTable'); el.note = $('#upNote'); el.msg = $('#upMsg');
+    el.phoneBox = $('#upPhone'); el.phone = $('#upPhoneInput'); el.provider = $('#upProvider'); el.prompt = $('#upPrompt'); el.promptText = $('#upPromptText');
+    el.otp = $('#upOtp'); el.otpInput = $('#upOtpInput'); el.buyBox = document.querySelector('#upSheet .up-buy');
+    if (el.phone) {
+      var touched = false;
+      el.provider.addEventListener('change', function () { touched = true; });
+      el.phone.addEventListener('input', function () { var g = guessProvider(el.phone.value); if (g && !touched) el.provider.value = g; });
+      $('#upCheck').addEventListener('click', function () {
+        if (!lastRef) return; setPrompt('Checking…', false);
+        checkOnce(lastRef).then(function (res) { if (res === 'wait') watchPayment(lastRef, 'pay_offline', 'Still waiting for approval on your phone…'); else if (res !== 'done') setPrompt(res + ' You can try again.', false); }).catch(function () { setPrompt('Could not check just now. Try again in a moment.', false); });
+      });
+      $('#upPage').addEventListener('click', function () { forcePage = true; endPrompt(); showMsg('Choose a plan to continue on the Paystack page.'); });
+      $('#upOtpSend').addEventListener('click', async function () {
+        var o = await billingPost('otp', { reference: lastRef, otp: el.otpInput.value });
+        if (!o.ok) { setPrompt(o.j.message || 'That code did not work.', true); return; }
+        watchPayment(lastRef, 'pay_offline', o.j.message || 'Code accepted. Waiting for the payment to finish…');
+      });
+    }
     el.buyMonthly = $('#upBuyMonthly'); el.buyTerm = $('#upBuyTerm'); el.buy = [el.buyMonthly, el.buyTerm];
     $('#upClose').addEventListener('click', P.closeUpgrade);
     el.dlg.addEventListener('click', function (e) {

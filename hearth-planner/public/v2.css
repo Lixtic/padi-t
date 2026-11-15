@@ -389,3 +389,18 @@ body:not(.role-parent) .parent-only { display: none !important; }
 .dashboard-page .parent-dashboard-content .pd-header { padding: 2px 0 10px; }
 .dashboard-page .parent-dashboard-content .pd-tabs { padding: 8px 2px; }
 .dashboard-page .parent-dashboard-content .pd-main { padding-top: 12px; }
+
+/* Upgrade sheet: mobile money number and the approve-on-phone panel. */
+.up-phone { display: grid; gap: 6px; margin: 14px 0 4px; }
+.up-phone label { font-weight: 700; font-size: 14px; }
+.up-phone-row { display: grid; grid-template-columns: minmax(0, 1fr) minmax(104px, 34%); gap: 8px; }
+.up-phone input, .up-phone select { min-width: 0; width: 100%; box-sizing: border-box; }
+.up-phone { margin-bottom: 14px; }
+.up-phone input, .up-phone select, .up-otp input { min-height: 46px; padding: 0 12px; border: 1px solid var(--line); border-radius: 12px; background: var(--card); color: var(--text); font: inherit; font-size: 16px; }
+.up-phone small { color: var(--muted); font-size: 12.5px; line-height: 1.45; }
+.up-prompt { display: grid; gap: 10px; margin: 14px 0; padding: 14px; border: 1px solid var(--line); border-radius: 14px; background: var(--card); }
+.up-prompt[hidden], .up-otp[hidden] { display: none; }
+.up-otp { display: grid; grid-template-columns: 1fr auto; gap: 8px; }
+.up-prompt-actions { display: flex; flex-wrap: wrap; gap: 8px; }
+.up-prompt button { min-height: 42px; padding: 0 14px; border-radius: 12px; border: 1px solid var(--line); background: transparent; color: var(--text); font: inherit; font-weight: 600; cursor: pointer; }
+#upCheck, #upOtpSend { background: var(--accent); border-color: var(--accent); color: var(--on-accent, #fff); }

@@ -402,6 +402,19 @@
       <small id="upWatchNote"></small>
     </div>
     <div class="up-table" id="upTable" role="table" aria-label="Free and Pro compared"></div>
+    <div class="up-phone" id="upPhone">
+      <label for="upPhoneInput">Mobile money number</label>
+      <div class="up-phone-row">
+        <input id="upPhoneInput" type="tel" inputmode="tel" autocomplete="tel" placeholder="055 123 4987" maxlength="20">
+        <select id="upProvider" aria-label="Mobile money network"><option value="mtn">MTN</option><option value="vod">Telecel</option><option value="atl">AirtelTigo</option></select>
+      </div>
+      <small id="upPhoneHint">We save this number so the payment prompt goes straight to your phone next time. Leave it empty to pay on the Paystack page.</small>
+    </div>
+    <div class="up-prompt" id="upPrompt" role="status" hidden>
+      <strong id="upPromptText">Check your phone to approve the payment.</strong>
+      <div class="up-otp" id="upOtp" hidden><input id="upOtpInput" inputmode="numeric" autocomplete="one-time-code" placeholder="Code from the SMS" maxlength="10"><button type="button" id="upOtpSend">Send code</button></div>
+      <div class="up-prompt-actions"><button type="button" id="upCheck">I have approved it</button><button type="button" id="upPage">Pay on the Paystack page instead</button></div>
+    </div>
     <div class="up-buy">
       <button type="button" class="up-btn" id="upBuyMonthly"><span class="up-tag" hidden></span><span class="up-label"></span><span class="up-amount"></span><span class="up-days"></span></button>
       <button type="button" class="up-btn up-best" id="upBuyTerm"><span class="up-tag" hidden></span><span class="up-label"></span><span class="up-amount"></span><span class="up-days"></span></button>
