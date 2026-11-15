@@ -455,3 +455,7 @@ body:not(.role-parent) .parent-only { display: none !important; }
 .pd-delete-record, .pd-room-delete { font: 600 13px var(--font-ui, inherit); color: var(--del, #b42318); background: none; border: 0; padding: 8px 4px; min-height: 40px; cursor: pointer; text-decoration: underline; }
 .pd-room-top { position: relative; }
 .pd-room-delete { position: absolute; top: 0; right: 0; }
+
+/* My Children: "Add a child" is a button that opens the form */
+.pd-add-child { display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%; min-height: 48px; margin-top: 12px; }
+.pd-add-child .ico { width: 18px; height: 18px; }
