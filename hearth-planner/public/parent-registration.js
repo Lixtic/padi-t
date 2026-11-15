@@ -129,7 +129,7 @@
       if (!(error && (error.code === 'verify' || error.created))) localStorage.removeItem(pendingKey);
       throw error;
     }
-    await savePending(email);
+    await savePendingWithRetry(email);
     return user;
   };
 
@@ -143,8 +143,43 @@
       window.dispatchEvent(new CustomEvent('guided:account-profile-saved', { detail: saved && saved.profile ? saved.profile : pending.data }));
     } catch (e) {
       console.warn('[GuidEd account profile] setup will be retried after sign-in:', e && e.message);
-      throw new Error('Your account was created, but we could not save your role and child details. Please try signing in again to finish setup.');
+      var err = new Error(friendlySetupError(e));
+      err.setup = true;
+      throw err;
     }
+  }
+  // Plain explanation of why saving the role and children failed, and what to do about it.
+  function friendlySetupError(e) {
+    var msg = String(e && e.message || '');
+    var offline = (typeof navigator !== 'undefined' && navigator.onLine === false) || /failed to fetch|network|load failed/i.test(msg);
+    if (offline) return 'We could not reach GuidEd to save your details. Check your internet connection and tap Try again.';
+    if (/enter|choose|check|provide|select/i.test(msg) && msg.length < 120) return msg + ' Tap Try again after fixing it.';
+    return 'Your account is ready, but we could not save your role and child details yet. Tap Try again.';
+  }
+  // The account already exists at this point, so retry quietly a few times, then offer a Try again button instead of an error dead end.
+  async function savePendingWithRetry(email) {
+    var waits = [0, 1200, 3000];
+    for (var i = 0; i < waits.length; i++) {
+      if (waits[i]) await new Promise(function (r) { setTimeout(r, waits[i]); });
+      try { await savePending(email); hideSetupBanner(); return; }
+      catch (e) { if (i === waits.length - 1) showSetupBanner(email, e && e.message); }
+    }
+  }
+  var banner;
+  function hideSetupBanner() { if (banner) { banner.remove(); banner = null; } }
+  function showSetupBanner(email, message) {
+    hideSetupBanner();
+    banner = document.createElement('div');
+    banner.className = 'pr-setup-banner';
+    banner.setAttribute('role', 'alert');
+    var text = document.createElement('span'); text.textContent = message || 'We could not save your details yet.';
+    var btn = document.createElement('button'); btn.type = 'button'; btn.textContent = 'Try again';
+    btn.addEventListener('click', function () {
+      btn.disabled = true; btn.textContent = 'Saving…';
+      savePending(email).then(hideSetupBanner).catch(function (e) { btn.disabled = false; btn.textContent = 'Try again'; text.textContent = e && e.message || text.textContent; });
+    });
+    banner.appendChild(text); banner.appendChild(btn);
+    document.body.appendChild(banner);
   }
   var baseSignIn = P.signIn.bind(P);
   P.signIn = async function (email, password) {
@@ -163,7 +198,7 @@
 
   window.addEventListener('guided:account', function () {
     var user = P.user && P.user();
-    if (user) savePending(user.email).catch(function () {});
+    if (user) savePending(user.email).then(hideSetupBanner).catch(function (e) { if (localStorage.getItem(pendingKey)) showSetupBanner(user.email, e && e.message); });
   });
   showMode();
 })();

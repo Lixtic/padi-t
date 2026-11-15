@@ -18,3 +18,8 @@
 .guided-role-error { margin: -6px 0 12px; color: var(--del); font-size: 12.5px; }
 .guided-role-error[hidden], .guided-parent-fields[hidden], .guided-signup-only[hidden] { display: none !important; }
 @media (max-width: 380px) { .guided-role-group { gap: 7px; } .guided-role-card { padding: 10px; } }
+
+.pr-setup-banner{position:fixed;left:12px;right:12px;bottom:16px;z-index:9999;max-width:520px;margin:0 auto;display:flex;gap:12px;align-items:center;justify-content:space-between;padding:12px 14px;border-radius:14px;background:#1d1d1b;color:#fff;font-size:14px;line-height:1.4;box-shadow:0 8px 28px rgba(0,0,0,.28)}
+.pr-setup-banner button{flex:none;border:0;border-radius:10px;padding:9px 14px;background:#fff;color:#1d1d1b;font-weight:600;cursor:pointer}
+.pr-setup-banner button:disabled{opacity:.6}
+.pd-allowance{margin:0 0 14px;padding:10px 14px;border-radius:12px;background:#eef6f2;color:#14392c;font-size:14px}.pd-allowance-out{background:#fdf0e6;color:#5a2f06}

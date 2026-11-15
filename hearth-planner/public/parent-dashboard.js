@@ -168,6 +168,13 @@
     return '<article class="pd-activity" data-record="' + esc(record.id) + '"><span class="pd-activity-icon">' + icon(record.kind === 'practice' ? 'clipboard' : record.kind === 'explanation' ? 'spark' : 'book') + '</span><div class="pd-activity-copy"><span class="pd-kicker">' + esc(labels[record.kind] || 'Learning activity') + '</span><h3>' + esc(data.title || data.topic || 'Learning activity') + '</h3><p>' + esc(meta) + '</p><small>' + (data.status === 'completed' ? 'Completed' : 'Saved for learning') + '</small></div><div class="pd-activity-actions"><button type="button" class="pd-secondary pd-small" data-view-record="' + esc(record.id) + '">Open activity</button>' + status + '</div></article>';
   }
 
+  // "3 of 5 free home activities left this week", shown only to free accounts when plans are switched on.
+  function allowanceHtml() {
+    var P = window.GuidedPlans, info = P && P.info && P.info();
+    if (!P || P.tier() !== 'free' || !info || !info.free || !info.free.parent || !info.free.parent.limit) return '';
+    var a = info.free.parent, left = Math.max(0, a.limit - a.used);
+    return '<p class="pd-allowance' + (left ? '' : ' pd-allowance-out') + '" role="status">' + (left ? left + ' of ' + a.limit + ' free home activities left this week.' : 'You have used your ' + a.limit + ' free home activities this week. They return on Monday.') + ' <button type="button" class="pd-text-button" data-upgrade>Get unlimited with Pro</button></p>';
+  }
   function render() {
     if (!state.root) return;
     var profile = state.profile || {}, list = children(), recent = state.records.slice(0, 4);
@@ -184,6 +191,7 @@
     } else {
       body = '<div class="pd-section-head"><div><span class="pd-kicker">MY CHILD’S LEARNING JOURNEY</span><h2>Learning Progress</h2><p>Keep track of activities your child has completed.</p></div></div><div class="pd-progress-summary"><strong>' + state.records.filter(function (r) { return r.data && r.data.status === 'completed'; }).length + '</strong><span>completed activities</span></div><div class="pd-activity-list">' + (state.records.length ? state.records.map(renderActivity).join('') : '<div class="pd-empty">No learning activities yet. Create a home lesson to get started.</div>') + '</div>';
     }
+    if (['overview', 'lesson', 'explanation', 'practice'].indexOf(state.tab) >= 0) body = allowanceHtml() + body;
     state.root.innerHTML = '<div class="pd-header"><div><span class="pd-brand">GuidEd <i>Family</i></span><span class="pd-account">' + icon('users') + ' Parent account</span></div></div><div class="pd-intro"><h1>Parent Dashboard</h1><p>Support your child’s learning, one step at a time.</p></div><nav class="pd-tabs" aria-label="Parent dashboard">' + nav + '</nav><div class="pd-main">' + (state.error ? '<p class="pd-error" role="alert">' + esc(state.error) + '</p>' : '') + (state.loading ? '<p class="pd-note">Loading your saved learning activities…</p>' : '') + body + '</div>';
     if (state.root.dataset.parentWired !== '1') wire();
   }
@@ -193,6 +201,7 @@
     state.root.addEventListener('click', function (event) {
       var tab = event.target.closest('[data-parent-tab]');
       if (tab) { if (tab.dataset.parentTab === 'lesson') { state.lessonStep = 0; state.lessonDraft = {}; } state.tab = tab.dataset.parentTab; state.result = null; render(); return; }
+      if (event.target.closest('[data-upgrade]')) { if (window.GuidedPlans) window.GuidedPlans.openUpgrade('parent', ''); return; }
       var open = event.target.closest('[data-open-task]');
       if (open) { state.tab = open.dataset.openTask; state.task = open.dataset.openTask; if (state.task === 'lesson') { state.lessonStep = 0; state.lessonDraft = {}; } state.result = null; render(); return; }
       if (event.target.closest('#pdBack')) { document.dispatchEvent(new CustomEvent('guided:parent-back')); return; }
@@ -344,6 +353,7 @@
       await saveRecord(record);
       if (task === 'lesson') { state.lessonRoom = record.id; state.result = null; } else state.result = { title: title, content: output, kind: task };
       state.error = '';
+      if (window.GuidedPlans && window.GuidedPlans.load) window.GuidedPlans.load().catch(function () {});   // refresh the free-activities counter
     } catch (error) {
       state.error = error.message || 'Something went wrong. Please try again.';
     } finally {
@@ -355,6 +365,7 @@
     mount: function (root, profile) {
       state.root = root;
       state.profile = profile || state.profile || {};
+      if (!state.plansHooked && window.GuidedPlans && window.GuidedPlans.onChange) { state.plansHooked = true; window.GuidedPlans.onChange(function () { if (state.root && state.root.isConnected && !state.busy) render(); }); }
       if (!state.selectedChild && children().length) state.selectedChild = children()[0].id;
       if (!state.root.dataset.parentWired) wire();
       render();
