@@ -2364,7 +2364,7 @@
   // and child details remain in their existing profile areas.
   const ep = {
     dlg: $('#accountProfileSheet'), form: $('#epForm'), close: $('#epClose'),
-    name: $('#epName'), email: $('#epEmail'), role: $('#epRole'),
+    name: $('#epName'), email: $('#epEmail'), phone: $('#epPhone'), role: $('#epRole'),
     school: $('#epSchool'), schoolWrap: $('#epSchoolWrap'),
     status: $('#epStatus'), save: $('#epSave'),
   };
@@ -2384,6 +2384,7 @@
       const role = epAccount.primaryRole || roles[0] || 'teacher';
       ep.name.value = epAccount.displayName || user.name || '';
       ep.email.value = user.email || '';
+      ep.phone.value = epAccount.phoneNumber || '';
       ep.role.value = roles.length > 1 ? roles.map((x) => x === 'parent' ? 'Parent' : 'Teacher').join(' + ') : (role === 'parent' ? 'Parent' : 'Teacher');
       ep.schoolWrap.hidden = !roles.includes('teacher') && role !== 'teacher';
       ep.school.value = profile().school || '';
@@ -2416,6 +2417,13 @@
     if (ep.save.disabled) return;
     const name = ep.name.value.trim();
     if (!name) { epMessage('Enter your full name before saving.', true); ep.name.focus(); return; }
+    const phoneNumber = ep.phone.value.trim();
+    const phoneDigits = phoneNumber.replace(/\D/g, '');
+    if (phoneNumber && (!/^\+?[0-9\s().-]{7,25}$/.test(phoneNumber) || phoneDigits.length < 7 || phoneDigits.length > 15)) {
+      epMessage('Enter a valid phone number, including the country code where possible.', true);
+      ep.phone.focus();
+      return;
+    }
     const P = window.PadiSync;
     const roles = Array.isArray(epAccount && epAccount.roles) && epAccount.roles.length
       ? epAccount.roles.filter((x) => x === 'parent' || x === 'teacher') : ['teacher'];
@@ -2423,7 +2431,7 @@
     ep.save.disabled = true;
     epMessage('Saving your profile…');
     try {
-      const next = Object.assign({}, epAccount || {}, { roles, primaryRole, displayName: name });
+      const next = Object.assign({}, epAccount || {}, { roles, primaryRole, displayName: name, phoneNumber });
       if (roles.includes('parent')) next.children = Array.isArray(next.children) ? next.children : [];
       await P.setAccountProfile(next);
       if (roles.includes('teacher')) {
