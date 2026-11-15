@@ -5,7 +5,7 @@ const A = require('./_auth');
 const Levels = require('./_levels');
 
 const SUBJECTS = new Set(Levels.LEVELS.flatMap((level) => level.subjects));
-const BASIC_CLASS = /^Basic [1-9]$/;
+const BASIC_CLASS = /^(Basic [1-9]|KG [12])$/;
 const ROLES = new Set(['teacher', 'parent']);
 const cleanText = (value, max) => String(value || '').trim().slice(0, max);
 

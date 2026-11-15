@@ -60551,6 +60551,1353 @@
      ]
     }
    }
+  },
+  "Integrated Learning": {
+   "source": "NaCCA Kindergarten Curriculum (KG 1 and KG 2), September 2019",
+   "classes": {
+    "KG 1": {
+     "1": [
+      {
+       "weeks": [
+        1
+       ],
+       "type": "revision",
+       "strand": "",
+       "substrand": "",
+       "standard": "",
+       "indicators": [],
+       "focus": "Key ideas from last term that this class needs"
+      },
+      {
+       "weeks": [
+        2
+       ],
+       "type": "teach",
+       "strand": "All About Me",
+       "substrand": "1.1 I am a wonderful and unique creation",
+       "standard": "K1.1.1.1 Demonstrate the understanding that all learners are wonderful and have unique body features that make them different from other people and other God’s creation in the environment.",
+       "indicators": [
+        "K1.1.1.1.1 Identify and talk in simple sentences, about the features of our body that make us unique and different from other God’s creation. E.g. animals",
+        "K1.1.1.1.2 Sing an action song that helps learners name the parts of the body and point to them",
+        "K1.1.1.1.3 Recognize and talk about the different parts of book, (the front/ cover page of a book and back of a book) and relate the content of the text to our body parts.",
+        "K1.1.1.1.4 Use new and positive expressions/vocabulary related to the parts of the body",
+        "K1.1.1.1.7 Create sets of human parts that are similar and represent them with numbers up to 5."
+       ]
+      },
+      {
+       "weeks": [
+        3
+       ],
+       "type": "teach",
+       "strand": "All About Me",
+       "substrand": "1.2 The parts of the human body and their functions",
+       "standard": "K1.1.2.1",
+       "indicators": [
+        "K1.1.2.1.1 Using a conversation poster of body parts, learners talk about the functions of the parts of the human body that we can see.",
+        "K1.1.2.1.2 Use visual information to aid comprehension before, during and after reading a text on functions of the parts of the human body.",
+        "K1.1.2.1.4 Count the number of the names of the body parts in songs through clapping on the rhythm Learners sing three different songs, clap on the rhythm and count the number of parts they hear in the songs. E.g. My head, my shoulder, my knee. (3 names). Help them understand that the last number names is the number of object or items counted. CA2.1 LL1 LL2 LL3 LL4 LL5 LL3 CA 2.1 LL1 LL3 N1 N1.1 LL4 N5.1 CA 2.2 LL6 Communication and collaboration (CC) Critical thinking Personal Development and Leadership (PL)",
+        "K1.1.2.1.7 Compare lines and other shapes that are same and different"
+       ]
+      },
+      {
+       "weeks": [
+        4
+       ],
+       "type": "teach",
+       "strand": "All About Me",
+       "substrand": "1.3 Caring for the parts of my body",
+       "standard": "K1.1.3.1",
+       "indicators": [
+        "K1.1.3.1.1 Sing songs and recite rhymes about how we take care of each part of the body and demonstrate how to do it. e.g. This is the way we wash our face...",
+        "K1.1.3.1.2 Watch a short video clip and talk about how to care for the various parts of the body.",
+        "K1.1.3.1.4 Show and explain why learners’ books are open from right to left.",
+        "K1.1.3.1.5 Stress the words that show caring for the body as learners sing songs about personal care of the body parts and clap hands on the rhythm of the songs E.g. wash, brush, cut nails.",
+        "K1.1.3.1.6 Match the parts of the body to the tools we use in caring for the body and colour them with same colour. E.g. soap matched with the hand and brush with the teeth.",
+        "K1.1.3.1.7 Use number names to count, find out how many and match body parts with other part with same number (1- 5)",
+        "K1.1.3.1.8 Use number names to count, find out how many and match body parts with other part with same number (1- 5)"
+       ]
+      },
+      {
+       "weeks": [
+        5
+       ],
+       "type": "teach",
+       "strand": "All About Me",
+       "substrand": "1.4 Keeping my body healthy: good food and vaccination",
+       "standard": "K1.1.4.1 Demonstrate the understanding that eating good food and taking all my childhood vaccinations will keep me growing healthy and strong.",
+       "indicators": [
+        "K1.1.4.1.1 Learners talk about different types of food they eat at home and classify those that can make them grow healthy. (Body building food, energy giving food etc.)",
+        "K1.1.4.1.2 Tell their own short stories about pictures in the Big book to be read.",
+        "K1.1.4.1.3 Listen attentively, respond to an information text about foods we eat to keep healthy and use new content words learnt to create simple sentence (orally) on how to keep healthy.",
+        "K1.1.4.1.4 Count and clap the keywords in songs about types of food."
+       ],
+       "part": [
+        1,
+        2
+       ]
+      },
+      {
+       "weeks": [
+        6
+       ],
+       "type": "teach",
+       "strand": "All About Me",
+       "substrand": "1.4 Keeping my body healthy: good food and vaccination",
+       "standard": "K1.1.4.1 Demonstrate the understanding that eating good food and taking all my childhood vaccinations will keep me growing healthy and strong.",
+       "indicators": [
+        "K1.1.4.1.5 Sing Alphabet song about food and identify the beginning letter of the most common food item in season in the environment. E.g. Banana begins with /b/ LL3 LL5 LL1 LL3 N5.1 LL4 CA 3.1 LL5 LL5 LL1 LL4 N1.2 CA 5.1 LL5 N.2 LL5",
+        "K1.1.4.1.6 Draw a picture of any food item that has its name beginning with the letter B and write the letter underneath.",
+        "K1.1.4.1.7 Sort and classify different food items under the six food groups and sort the food items that keep the body healthy into shapes",
+        "K1.1.4.1.8 Sing and dance to traditional songs about foods"
+       ],
+       "part": [
+        2,
+        2
+       ]
+      },
+      {
+       "weeks": [
+        7
+       ],
+       "type": "teach",
+       "strand": "All About Me",
+       "substrand": "1.5 My environment and my health",
+       "standard": "K1.1.5.1 Demonstrate understanding of how keeping our home and school environment clean can keep us healthy and strong.",
+       "indicators": [
+        "K1.1.5.1.1 Talk about how we can keep our environment clean in order to avoid getting sick.",
+        "K1.1.5.1.2 Recognize that written symbols in books carry important information about the pictures.",
+        "K1.1.5.1.3 Listen attentively to the read aloud text and share what they have learnt about diseases we can get from dirty environments",
+        "K1.1.5.1.4 Compose their stories about pictures in the book to be read to enable them to understand that important messages are hidden in books.",
+        "K1.1.5.1.5 Sing alphabet songs that contain the letter of the week. LL3 LL4 LL2 LL1 LL2 CA3 .2 LL5 N4.2 LL4 LL1 LL3 LL6 Communication and collaboration (CC) Personal Development and Leadership (PL) Critical thinking and innovation (CI) Creativity",
+        "K1.1.5.1.6 Begin to write letters of the alphabet.",
+        "K1.1.5.1.7 Prepare posters with pictures cut from calendar and newspapers to post in the environment cautioning people not to make the place dirty.",
+        "K1.1.5.1.8 Describe the attributes of 3-D objects and draw them"
+       ]
+      },
+      {
+       "weeks": [
+        8
+       ],
+       "type": "teach",
+       "strand": "All About Me",
+       "substrand": "1.6 Protecting ourselves from accidents",
+       "standard": "K1.1.6.1 Demonstrate understanding of measures to take to keep safe (from accidents, hurts, and harms).",
+       "indicators": [
+        "K1.1.6.1.1 Talk about possible accidents we can have at home and at school and safety measures we can take to avoid them.",
+        "K1.1.6.1.2 Recognize that spoken words are represented in written language in books.",
+        "K1.1.6.1.3 Listen to and respond to a read aloud text about keeping safe in the environment.",
+        "K1.1.6.1.4 Clap and count syllables in longer words",
+        "K1.1.6.1.5 Use vocabulary learnt to express and demonstrate how to protect themselves from hurt, harm, strangers, sharp objects, electricity and water.",
+        "K1.1.6.1.6 Describe the attributes of 3-D objects and sort objects into planes and 3-D objects.",
+        "K1.1.6.1.7 Draw and colour five harmful objects that can cause accidents. LL1 LL4 CA2.1 N2.1 LL1 LL3 LL2 N3.1 CA4.2 N4 LL1 N4.1 CA4.1 LL6 Leadership (PL) Critical thinking and Problem Solving (CI) Creativity and innovation"
+       ]
+      },
+      {
+       "weeks": [
+        9
+       ],
+       "type": "teach",
+       "strand": "My Family",
+       "substrand": "2.1 Types and members of my family",
+       "standard": "K1.2.1.1 Demonstrate understanding of the importance, roles and responsibilities of family members.",
+       "indicators": [
+        "K1.2.1.1.1 Discuss different types of family they have at home, their roles and responsibilities",
+        "K1.2.1.1.2 Demonstrate that print matches with illustration in a book.",
+        "K1.2.1.1.3 Listen, interact actively in a read aloud session on a story about families, and use the new vocabulary learnt to describe the roles and responsibilities of their family members.",
+        "K1.2.1.1.4 Identify the names and words with similar beginning sounds.",
+        "K1.2.1.1.5 Talk about the basic concepts of writing, from left to right, and top to bottom",
+        "K1.2.1.1.6 Introduce the concept “more than” to learners and solve some word puzzles with the concept.",
+        "K1.2.1.1.7 Role-play the responsibilities of family members"
+       ]
+      },
+      {
+       "weeks": [
+        10
+       ],
+       "type": "teach",
+       "strand": "My Family",
+       "substrand": "2.2 Origin and history of my family",
+       "standard": "K1.2.2.1 Demonstrate knowledge of the origin and history of our families.",
+       "indicators": [
+        "K1.2.2.1.1 Listen and tell stories about origin and history of their family members",
+        "K1.2.2.1.2 Demonstrate that print matches with illustration in a book.",
+        "K1.2.2.1.3 Listen, interact actively in a read aloud session on a story about the origin and history of a child’s family.",
+        "K1.2.2.1.4 Identify the names and words with similar beginning sounds.",
+        "K1.2.2.1.5 Talk about the basic concepts of writing: write from left to right, and top to bottom",
+        "K1.2.2.1.6 Use comparative language/phrases “more than”, “less than”, or “same as” to describe relationship between quantities",
+        "K1.2.2.1.7 Draw a family tree that includes Grandpa and Grandma"
+       ]
+      },
+      {
+       "weeks": [
+        11
+       ],
+       "type": "teach",
+       "strand": "My Family",
+       "substrand": "2.3 Family celebrations and festivals",
+       "standard": "K1.2.3.1 Demonstrate the knowledge of celebrations and festivals that the individual families celebrate.",
+       "indicators": [
+        "K1.2.3.1.1 Talk about some special family days and activities e.g. birthdays, naming, festivals, etc.",
+        "K1.2.3.1.2 Demonstrate the proper way to handle a book",
+        "K1.2.3.1.3 Listen, interact actively in a read aloud session on a story about families, and use the new vocabulary learnt to describe the roles and responsibilities of their family members.",
+        "K1.2.3.1.4 Talk about the basic concepts of writing: from left to right, and top to bottom",
+        "K1.2.3.1.5 Use comparative language “more than”,” less than”, or “same as” to show relation between quantities/numbers",
+        "K1.2.3.1.6 Create special birthday cards for loved ones using different writing and drawing tools."
+       ]
+      },
+      {
+       "weeks": [
+        12
+       ],
+       "type": "teach",
+       "strand": "My Family",
+       "substrand": "2.4 My school family: rules and regulations",
+       "standard": "K1.2.4.1 Demonstrate understanding of the rules and regulations that governs the members of the school",
+       "indicators": [
+        "K1.2.4.1.1 Talk about the members of the school, activities they do and create rules and regulations that should govern their classroom.",
+        "K1.2.4.1.2 Demonstrate that print matches with illustration in a book.",
+        "K1.2.4.1.3 Use the vocabulary acquired in the read aloud session to prepare rules and regulations to govern your school. WP LL1 LL2 LL2 LL1 LL3 N1.2 CA3.2 LL3 Communication and collaboration (CC) Personal Development and Leadership (PL) Critical thinking and Problem Solving (CP) Creativity and innovation (CI)",
+        "K1.2.4.1.4 Identify and look for more rhyming words in different rhymes related to school.",
+        "K1.2.4.1.5 Recognize and identify the target letter name for the week in given words related to the school",
+        "K1.2.4.1.6 Solve story problems using comparative language “more than”, ”less than”, or “same as” to show relation between quantities/numbers"
+       ]
+      },
+      {
+       "weeks": [
+        13
+       ],
+       "type": "revision",
+       "strand": "",
+       "substrand": "",
+       "standard": "",
+       "indicators": [],
+       "focus": ""
+      },
+      {
+       "weeks": [
+        14
+       ],
+       "type": "exam",
+       "strand": "",
+       "substrand": "",
+       "standard": "",
+       "indicators": [],
+       "focus": ""
+      }
+     ],
+     "2": [
+      {
+       "weeks": [
+        1
+       ],
+       "type": "revision",
+       "strand": "",
+       "substrand": "",
+       "standard": "",
+       "indicators": [],
+       "focus": "Key ideas from last term that this class needs"
+      },
+      {
+       "weeks": [
+        2
+       ],
+       "type": "teach",
+       "strand": "Values and Beliefs",
+       "substrand": "3.1 Our family values",
+       "standard": "K1.3.1.1 Demonstrate understanding of the good manners that our families values and why they value them.",
+       "indicators": [
+        "K1.3.1.1.1 identify the good manners our families value and how it can change our personal likes and dislikes.",
+        "K1.3.1.1.2 Demonstrate that spoken words are represented in written words/print",
+        "K1.3.1.1.3 Listen to a story on importance of exhibiting good manners in our everyday life and role-play how to use simple daily greetings with different people in the society.",
+        "K1.3.1.1.4 Recognise that spoken words are made up of individual speech sounds and letters that can be written down"
+       ],
+       "part": [
+        1,
+        2
+       ]
+      },
+      {
+       "weeks": [
+        3
+       ],
+       "type": "teach",
+       "strand": "Values and Beliefs",
+       "substrand": "3.1 Our family values",
+       "standard": "K1.3.1.1 Demonstrate understanding of the good manners that our families values and why they value them.",
+       "indicators": [
+        "K1.3.1.1.5 Recognize details in shapes and height of the letter for the week and write it legibly and correctly",
+        "K1.3.1.1.6 Show the time of the day using clock faces.",
+        "K1.3.1.1.7 Draw clock faces and write down the given time under it."
+       ],
+       "part": [
+        2,
+        2
+       ]
+      },
+      {
+       "weeks": [
+        4
+       ],
+       "type": "teach",
+       "strand": "Values and Beliefs",
+       "substrand": "3.2 Our cultural and family values",
+       "standard": "K1.3.2.1",
+       "indicators": [
+        "K1.3.2.1.2 Recognize the basic components of a book using the Big Book on Showing respect.",
+        "K1.3.2.1.3 Use positive words learnt from the teacher-read-aloud of the Big Book to talk about how to show respect to teachers and peers at school. Exemplar: Do a picture walk through the text and let the learners predict what the story will be about looking at the pictures. Learners listen to the Teacher\u0002read-aloud the Big Book on a Girl who refused to listen to his parents and retell the story. Learners share what they learn from the story relating it to how good it is for a child to adopt their cultural values. Learners dramatize different ways to show respect to teachers and their peers at school and in the house. E.g. saying sorry, thank you, etc. Use vocabulary acquired from the text to create meaningful simple sentences. Have each learner count the number of words in their sentence and represent the number of words on a number line",
+        "K1.3.2.1.4 Identify the location of individual sounds in a given word (beginning or end of a word)",
+        "K1.3.2.1.5 Practice using the more than and less than concept and their signs to compare different items that learners like and don’t like."
+       ]
+      },
+      {
+       "weeks": [
+        5
+       ],
+       "type": "teach",
+       "strand": "Values and Beliefs",
+       "substrand": "3.3 Our religious values",
+       "standard": "K1.3.3.1 Demonstrate understanding of the religious and moral values and virtues we need to exhibit as good Christians and Muslims",
+       "indicators": [
+        "K1.3.3.1.1 Recite rhymes and talk about religious values and how to show it",
+        "K1.3.3.1.2 Handle books correctly and with care.",
+        "K1.3.3.1.3 Interact actively with peers during a teacher-read aloud session about religious and moral values, use visual information to understand the unfamiliar words when reading and use new vocabulary acquired to create short sentences."
+       ],
+       "part": [
+        1,
+        2
+       ]
+      },
+      {
+       "weeks": [
+        6
+       ],
+       "type": "teach",
+       "strand": "Values and Beliefs",
+       "substrand": "3.3 Our religious values",
+       "standard": "K1.3.3.1 Demonstrate understanding of the religious and moral values and virtues we need to exhibit as good Christians and Muslims",
+       "indicators": [
+        "K1.3.3.1.4 stretch and count the number of sounds in a word and blend them together.",
+        "K1.3.3.1.5 : Write letters legibly and boldly",
+        "K1.3.3.1.6 Write numeral 1 to 5 and represent them with different objects in the church, number of letters in a word etc."
+       ],
+       "part": [
+        2,
+        2
+       ]
+      },
+      {
+       "weeks": [
+        7
+       ],
+       "type": "teach",
+       "strand": "Values and Beliefs",
+       "substrand": "3.4 Our beliefs",
+       "standard": "K1.3.4.1 Demonstrate understanding of and relating well with people with different beliefs",
+       "indicators": [
+        "K1.3.4.1.1 Talk about God as the Creator of all things and discuss different ways that people worship him.",
+        "K1.3.4.1.2 Handle their religious scriptures (book) appropriately.",
+        "K1.3.4.1.3 Interact actively with peers during a teacher-read aloud session about religious beliefs, use visual information to understand the unfamiliar words when reading and use new vocabulary acquired to talk about their beliefs.",
+        "K1.3.4.1.4 Draw one activity that we do when worshipping God and label it with one or two words. CA5.3 LL5 LL1 LL3 LL5 CA.5.1 N1.1 N4.1 CA5 LL6 LL1 CA5.1 Communication and collaboration (CC) Personal Development and Leadership (PL) Personal development and Leadership (PL) Communication and collaboration (CC) Critical thinking and Problem Solving (CP) Creativity and innovation (CI)",
+        "K1.3.4.1.5 Play different musical instrument, sing religious songs and dance on the music."
+       ]
+      },
+      {
+       "weeks": [
+        8
+       ],
+       "type": "teach",
+       "strand": "My Local Community",
+       "substrand": "4.1 Special places in our local community",
+       "standard": "K1.4.1.1 Demonstrate understanding of the special places in our local communities .",
+       "indicators": [
+        "K1.4.1.1.1 Visit and talk about some special places in our community",
+        "K1.4.1.1.2 Use visual information (illustrations) when reading.",
+        "K1.4.1.1.3 Listen attentively and interact with peers during a teacher-read-aloud session about special places in our community.",
+        "K1.4.1.1.4 Find as many words in the community in which we can find the new letter-sound for the week.",
+        "K1.4.1.1.5 Colour nicely a scene from the community and label it.",
+        "K1.4.1.1.6 Demonstrate their understanding of the concept of addition by combining people and objects and finding how many altogether."
+       ]
+      },
+      {
+       "weeks": [
+        9
+       ],
+       "type": "teach",
+       "strand": "My Local Community",
+       "substrand": "4.2 Important people and occupations in our community",
+       "standard": "K1.4.2.1 Demonstrate knowledge of the people in the community and their occupation.",
+       "indicators": [
+        "K1.4.2.1.1 Talk about who the neighbours are, the work they do and how important their profession are in the community.",
+        "K1.4.2.1.3 Interact with resource people from different occupation",
+        "K1.4.2.1.4 Recognize the letter-sound learnt in the previous week in words LL1 LL3 LL4 LL3 LL1 LL2 LL3 CA4.1 LL4 LL5 LL1 LL2 LL3 LL5 Critical thinking",
+        "K1.4.2.1.5 Write boldly and legibly the target letter for the week and add a name of a friend to it."
+       ]
+      },
+      {
+       "weeks": [
+        10
+       ],
+       "type": "teach",
+       "strand": "My Local Community",
+       "substrand": "4.3 Special leaders in our community and country",
+       "standard": "K1.4.3.1 Demonstrate understanding and knowledge of the special leaders and their roles in our communities.",
+       "indicators": [
+        "K1.4.3.1.1 Talk about and describe the traditional and religious leaders in our community.",
+        "K1.4.3.1.2 Listen attentively to an informational read aloud text on who our special leaders are and respond by sharing what they have learnt about the different ways they support the community.",
+        "K1.4.3.1.3 Sing traditional songs, play rattle and shakers, clap and dance on the correct rhythm.",
+        "K1.4.3.1.5 Role play the various leaders and what they do in the community."
+       ]
+      },
+      {
+       "weeks": [
+        11
+       ],
+       "type": "teach",
+       "strand": "My Nation Ghana",
+       "substrand": "5.1 History and celebration of Ghana's independence",
+       "standard": "K1.5.1.1 Demonstrate knowledge of the history and independence of Ghana",
+       "indicators": [
+        "K1.5.1.1.1 locate their home regions on an outline map of Ghana and talk about the history behind their festivals.",
+        "K1.5.1.1.2 : Show peers that sentences are made of words and that words are separated in print.",
+        "K1.5.1.1.3 Listen attentively and interact with peers during a teacher-read-aloud session about the Independence Day of Ghana",
+        "K1.5.1.1.4 Demonstrate respect for the symbols and songs of our nation."
+       ],
+       "part": [
+        1,
+        2
+       ]
+      },
+      {
+       "weeks": [
+        12
+       ],
+       "type": "teach",
+       "strand": "My Nation Ghana",
+       "substrand": "5.1 History and celebration of Ghana's independence",
+       "standard": "K1.5.1.1 Demonstrate knowledge of the history and independence of Ghana",
+       "indicators": [
+        "K1.5.1.1.5 Sing Alphabet song and point to the letters of the alphabet in the classroom.",
+        "K1.5.1.1.6 Create and perform dance movements and music inspired by Ghanaian history and other cultures",
+        "K1.5.1.1.7 Compose and decompose numbers up to ten"
+       ],
+       "part": [
+        2,
+        2
+       ]
+      },
+      {
+       "weeks": [
+        13
+       ],
+       "type": "revision",
+       "strand": "",
+       "substrand": "",
+       "standard": "",
+       "indicators": [],
+       "focus": ""
+      },
+      {
+       "weeks": [
+        14
+       ],
+       "type": "exam",
+       "strand": "",
+       "substrand": "",
+       "standard": "",
+       "indicators": [],
+       "focus": ""
+      }
+     ],
+     "3": [
+      {
+       "weeks": [
+        1
+       ],
+       "type": "revision",
+       "strand": "",
+       "substrand": "",
+       "standard": "",
+       "indicators": [],
+       "focus": "Key ideas from last term that this class needs"
+      },
+      {
+       "weeks": [
+        2
+       ],
+       "type": "teach",
+       "strand": "All Around Us",
+       "substrand": "6.1 Living and non-living things",
+       "standard": "K1.6.1.1 Demonstrate understanding of living and non-living things.",
+       "indicators": [
+        "K1.6.1.1.1 Talk about different types of things around us and classify them into living things and non-living things",
+        "K1.6.1.1.2 Participate actively in an Interactive Read Aloud story about living and non-living things",
+        "K1.6.1.1.3 Blend letter sounds to form words related to the theme.",
+        "K1.6.1.1.4 Identify and write initial sounds of the objects.",
+        "K1.6.1.1.5 Identify and describe objects by colour names and size"
+       ]
+      },
+      {
+       "weeks": [
+        3
+       ],
+       "type": "teach",
+       "strand": "All Around Us",
+       "substrand": "6.2 Living things: domestic and wild animals",
+       "standard": "K1.6.2.1 Demonstrate understanding of domestic and wild animals. K1.6.2.1.1Sing and talk about different kinds of animals, what they eat, the sound they make and put them into groups.",
+       "indicators": [
+        "K1.6.2.1.3 Tap or clap and count the syllables of the names of animals and identify the initial sound of the animal names",
+        "K1.6.2.1.4 Review list of letter sounds learnt and use letter sounds to list and match the pictures of domestic animals.",
+        "K1.6.2.1.5 Identify and describe objects by colour names and size.",
+        "K1.6.2.1.6 Recognise, sort, classify, describe and extend non\u0002numerical patterns."
+       ]
+      },
+      {
+       "weeks": [
+        4
+       ],
+       "type": "teach",
+       "strand": "All Around Us",
+       "substrand": "6.3 Water",
+       "standard": "K1.6.3.1 Demonstrate understanding of sources of water and its uses.",
+       "indicators": [
+        "K1.6.3.1.1 Talk about where we get water from and its uses.",
+        "K1.6.3.1.2 Listen and interact with teacher and peers as they listen to a read aloud text on the uses.",
+        "K1.6.3.1.3 Recognise letter sounds and names which begin words that describe how human beings and animals use water."
+       ],
+       "part": [
+        1,
+        2
+       ]
+      },
+      {
+       "weeks": [
+        5
+       ],
+       "type": "teach",
+       "strand": "All Around Us",
+       "substrand": "6.3 Water",
+       "standard": "K1.6.3.1 Demonstrate understanding of sources of water and its uses.",
+       "indicators": [
+        "K1.6.3.1.4 and K1.6.3.1.5. Extend the activities to include other objects/items CA2.2 LL1 LL2 LL6 N4.3 N4 LL1 LL2 LL3 N4.3",
+        "K1.6.3.1.5 Design, make, exhibit, and respond to own or others art works (2-dimensional and 3-dimensional).",
+        "K1.6.3.1.6 Describe the position of objects."
+       ],
+       "part": [
+        2,
+        2
+       ]
+      },
+      {
+       "weeks": [
+        6
+       ],
+       "type": "teach",
+       "strand": "All Around Us",
+       "substrand": "6.4 Air",
+       "standard": "K1.6.4.1 Demonstrate understanding of the presence of air and tell its importance.",
+       "indicators": [
+        "K1.6.4.1.1 Share their understanding and describe the presence of air through experimentation.",
+        "K1.6.4.1.2 Use visual information to help them understand the text they read.",
+        "K1.6.4.1.3 Recognize the position of the target sounds in words either at the initial, middle or the ending of the words related to the theme.",
+        "K1.6.4.1.4 Use a variety of new vocabulary learnt about importance of air to make simple sentence orally.",
+        "K1.6.4.1.5 Derive meaning and make judgment about artworks using the senses according to its beauty.",
+        "K1.6.4.1.6 Describe the position of objects."
+       ]
+      },
+      {
+       "weeks": [
+        7
+       ],
+       "type": "teach",
+       "strand": "All Around Us",
+       "substrand": "6.5 Plants 1",
+       "standard": "K1.6.5.1 Demonstrate understanding of the parts of plants and their functions.",
+       "indicators": [
+        "K1.6.5.1.1 Sing and talk about parts of a plants and their functions",
+        "K1.6.5.1.2 Talk about the cover page of the book and point to individual words while listening to the teacher read aloud.",
+        "K1.6.5.1.3 Blend individual sounds and decode simple words which relates to the theme.",
+        "K1.6.5.1.4 Use a variety of new vocabulary learnt about plants to make simple sentences, draw and write the initial letter sounds.",
+        "K1.6.5.1.5 Make art works with the elements of art",
+        "K1.6.5.1.6 Describing the position and motion of objects in relation to others."
+       ]
+      },
+      {
+       "weeks": [
+        8
+       ],
+       "type": "teach",
+       "strand": "All Around Us",
+       "substrand": "6.6 Plants 2",
+       "standard": "K1.6.6.1 Demonstrate understanding of how plants grow",
+       "indicators": [
+        "K1.6.6.1.1 Talk about and discuss how plants and what human should do to enhance the growth process",
+        "K1.6.6.1.2 Talk about the cover page and identify how plants grow in a read aloud story",
+        "K1.6.6.1.3 Identify the initial and ending letter sounds of objects and blend letter sounds to form words.",
+        "K1.6.6.1.4 Use vocabulary learnt to form simple meaningful sentences",
+        "K1.6.6.1.5 Identify, observe and talk about art in the immediate",
+        "K1.6.6.1.6 Classify objects and count the number of objects in each category up to 9."
+       ]
+      },
+      {
+       "weeks": [
+        9
+       ],
+       "type": "teach",
+       "strand": "All Around Us",
+       "substrand": "6.7 Gardening",
+       "standard": "K1.6.7.1 Demonstrate understanding of the types of soil.",
+       "indicators": [
+        "K1.6.7.1.1 Talk about different types of soil and which one is best used for gardening.",
+        "K1.6.7.1.2 Point to individual words to track reading.",
+        "K1.6.7.1.3 Use a variety of new vocabulary learnt about soil to make simple sentences about it.",
+        "K1.6.7.1.4 Recognise and create words with given sounds and make art works with the elements of art",
+        "K1.6.7.1.5 Classify objects and count the number of objects in each category up to 9 LL5 CA4 LL1 LL2 LL4 LL5 CA4.2 N5.1 N5 LL1"
+       ]
+      },
+      {
+       "weeks": [
+        10
+       ],
+       "type": "teach",
+       "strand": "All Around Us",
+       "substrand": "6.8 Light: day and night",
+       "standard": "K1.6.8.1 Demonstrate understanding of the sources of light for day and night.",
+       "indicators": [
+        "K1.6.8.1.1 Recite rhymes/poems and talk about the different sources of light.",
+        "K1.6.8.1.2 Use pictures and other text features to aid understanding as they listen to a read aloud informational text on sources light.",
+        "K1.6.8.1.3 Recognise the beginning sound of the letters in relation to the types of light and write in their books.",
+        "K1.6.8.1.4 Use a variety of new vocabulary learnt about light to form sentences orally.",
+        "K1.6.8.1.5 Identify, observe and talk about art in the immediate natural and manmade environment.",
+        "K1.6.8.1.6 1 Use number names, counting sequences and how to count to find out “how many”? (up to 9)"
+       ]
+      },
+      {
+       "weeks": [
+        11
+       ],
+       "type": "teach",
+       "strand": "All Around Us",
+       "substrand": "6.9 Changing weather conditions",
+       "standard": "K1.6.9.1 Demonstrate understanding of changing weather conditions and seasons.",
+       "indicators": [
+        "K1.6.9.1.1 Sing and talk about the weather condition in Ghana.",
+        "K1.6.9.1.2 Identify the cover page and illustrations and listen to and respond to a read aloud text on changes in the weather condition.",
+        "K1.6.9.1.3 Identify initial letter-sounds of weather and write them under the appropriate pictures.",
+        "K1.6.9.1.4 Use the vocabulary learnt to talk about the weather",
+        "K1.6.9.1.5 Identify, observe and talk about art in the immediate"
+       ]
+      },
+      {
+       "weeks": [
+        12
+       ],
+       "type": "teach",
+       "strand": "My Global Community",
+       "substrand": "7.1 Connecting and communicating with the global community",
+       "standard": "K1.7.1.1 Demonstrate understanding of different ways we connect and communicate with the global world.",
+       "indicators": [
+        "K1.7.1.1.1 Using pictures, talk about the various means by which we connect with the international community-Transportation.",
+        "K1.7.1.1.2 talk about the various means by which we connect with the international community-Trade",
+        "K1.7.1.1.3 Identify and cover and back page of a book and read aloud a simple sentence.",
+        "K1.7.1.1.4 Blend individual sounds to decode words which relates to the theme and write the words in their books.",
+        "K1.7.1.1.5 Use vocabulary leant to form simple sentences in real life situation."
+       ]
+      },
+      {
+       "weeks": [
+        13
+       ],
+       "type": "revision",
+       "strand": "",
+       "substrand": "",
+       "standard": "",
+       "indicators": [],
+       "focus": ""
+      },
+      {
+       "weeks": [
+        14
+       ],
+       "type": "exam",
+       "strand": "",
+       "substrand": "",
+       "standard": "",
+       "indicators": [],
+       "focus": ""
+      }
+     ]
+    },
+    "KG 2": {
+     "1": [
+      {
+       "weeks": [
+        1
+       ],
+       "type": "revision",
+       "strand": "",
+       "substrand": "",
+       "standard": "",
+       "indicators": [],
+       "focus": "Key ideas from last term that this class needs"
+      },
+      {
+       "weeks": [
+        2
+       ],
+       "type": "teach",
+       "strand": "All About Me",
+       "substrand": "1.1 I am a wonderful and unique creation",
+       "standard": "K2.1.1.1",
+       "indicators": [
+        "K2.1.1.1.1 ) and discuss the theme for the week. Talk about the members of the school family, e.g. The head, teachers and classmates, and the rules that governs us to live at peace with each other in the classroom and the school as good friends and family members.  Learners through the observation of the conversational poster come up with simple rules to help them become law abiding and respectful learners in the school. WP LL1 LL2 Communication and collaboration (CC) Personal Development and Leadership (PL) Communication and Collaboration (CC) Personal development and leadership (PL)",
+        "K2.1.1.1.2 Recognize and describe the different parts of book, (the front/ cover page of a book and back of a book) and relate the content of the text to our body parts.",
+        "K2.1.1.1.3 Use positive words learnt from the Shared reading of the Big Book to talk about how wonderful and unique they are",
+        "K2.1.1.1.6 Draw any two parts of the body that you like and write the names underneath",
+        "K2.1.1.1.7 Create sets of human parts that have same number and represent them with numbers up to 5."
+       ]
+      },
+      {
+       "weeks": [
+        3
+       ],
+       "type": "teach",
+       "strand": "All About Me",
+       "substrand": "1.2 Parts of the body we can see and cannot see, and their functions",
+       "standard": "K2.1.2.1 Demonstrate the knowledge of appropriate names of the parts of the internal body that we cannot see and their functions K2.1.2.1. 4 Identify and recognize individual letter-sound in words related to the theme and write the words in their books.",
+       "indicators": [
+        "K2.1.2.1.1 Using a conversational poster of body parts, learners talk about the parts of the human body that we can see and cannot see.",
+        "K2.1.2.1.2 , also appendix 1),  Learners first say what they know about plants(K), ask questions on what they want to know, listen to the text and answer their own questions during the reading and share what they have learnt about the parts of a plant and their uses after the reading. LL4 LL5 Personal Development and Leadership (PL) Communication and Collaboration (CC) Personal Development and Leadership (PL) Creativity and Innovation",
+        "K2.1.2.1.3 Apply new words acquired from the read aloud text to own life.",
+        "K2.1.2.1.5 Sing an action song that helps you name the parts of the body and point to them",
+        "K2.1.2.1.6 Draw themselves and label the parts of the body",
+        "K2.1.2.1.7 Compare objects and numerals between 1 to 20"
+       ]
+      },
+      {
+       "weeks": [
+        4
+       ],
+       "type": "teach",
+       "strand": "All About Me",
+       "substrand": "1.3 Personal hygiene and caring for the parts of the body",
+       "standard": "K2.1.3.1",
+       "indicators": [
+        "K2.1.3.1.1 Learners use simple language to describe and engage in conversation about how to care for different part of their bodies.",
+        "K2.1.3.1.2 Talk about the visual information on the cover page and respond to a read aloud text about caring of the human body.",
+        "K2.1.3.1.3 Identify the rhyming sounds at the end of words and create more rhyming end of words",
+        "K2.1.3.1.4 Begin to learn the letter of the alphabet, randomly recognize the individual letters in their names and match it with another pair.",
+        "K2.1.3.1.5 Begin to learn and Identify individual letter-sound of the alphabet in key words related to the theme and write the letters and key words legibly in their books.",
+        "K2.1.3.1.6 Draw and colour items we use in caring for parts of the body and copy their functions boldly and legibly underneath the drawing."
+       ]
+      },
+      {
+       "weeks": [
+        5
+       ],
+       "type": "teach",
+       "strand": "All About Me",
+       "substrand": "1.4 Keeping my body healthy: good food and vaccination",
+       "standard": "K2.1.4.1 Demonstrate the understanding and knowledge of how . K2.1.4.1.3 Break the sound in a multi-syllabic word and clap out the syllables and blend them again as one word.",
+       "indicators": [
+        "K2.1.4.1.1 Talk about how to keep our bodies healthy by eating balanced meal and visiting the hospital for our vaccinations.",
+        "K2.1.4.1.2 Answer questions during and after listening to the interactive read aloud on the theme and show how the visual information help readers understand print.",
+        "K2.1.4.1.4 Identify and use more sight words found in the text of the six killer diseases and write simple sentences with them in their books.",
+        "K2.1.4.1.5 Identify the letter-sound learnt for the week in words related to the theme and write the letter and key word boldly and legibly in their books.",
+        "K2.1.4.1.6 Draw and colour different food items that keep our body healthy and label them using invented spelling.",
+        "K2.1.4.1.7 Compare the sizes and weight of different food items that we can eat to keep us healthy."
+       ]
+      },
+      {
+       "weeks": [
+        6
+       ],
+       "type": "teach",
+       "strand": "All About Me",
+       "substrand": "1.5 My environment and my health",
+       "standard": "K2.1.5.1",
+       "indicators": [
+        "K2.1.5.1.1 Take a walk in the environment, discuss and point to things that are safe and unsafe to play with.",
+        "K2.1.5.1.2 Learners ask questions and find answers to them as they listen attentively to the text read aloud to them.",
+        "K2.1.5.1.3 Identify the initial and ending sounds of names of objects in the environment; clap the syllables on selected words related to harmful objects around us.",
+        "K2.1.5.1.4 Blend letter-sounds learnt to form simple words related to the topic and copy the word in their books.",
+        "K2.1.5.1.5 Draw and label some dangerous objects in the environment.",
+        "K2.1.5.1.6 Classify objects according to their shape and colour."
+       ]
+      },
+      {
+       "weeks": [
+        7
+       ],
+       "type": "teach",
+       "strand": "All About Me",
+       "substrand": "1.6 Protecting ourselves from road accidents and harmful strangers",
+       "standard": "K2.1.6.1 Demonstrate understanding of how to be safe and identify strangers.",
+       "indicators": [
+        "K2.1.6.1.1 Role-play, sing songs and discuss some of the safety measures to protect ourselves in the environment.",
+        "K2.1.6.1.2 Identify the basic components, show and explain why learners’ books are open from right to left and respond to a shared reading of a book related to the theme. Protect ourselves from harm, hurt, sharp objects, electricity and water and strangers. WP LL1 LL2 Communication and collaboration (CC) Personal Development and Leadership (PL) Communication and Collaboration (CC) Personal development and Leadership (PL) Communication and Collaboration (CC)",
+        "K2.1.6.1.4 Identify the letter-sound learnt for the week in words related to the theme and write the letter and key word boldly and legibly in their books.",
+        "K2.1.6.1.5 Draw and colour an object that can hurt, harm, have a sharp edge, etc. and legibly write/scribe the name under it.",
+        "K2.1.6.1.6 Sort out objects by their length, colours and shapes and compare their numbers using words such as more than, less than, equal to."
+       ]
+      },
+      {
+       "weeks": [
+        8
+       ],
+       "type": "teach",
+       "strand": "My Family",
+       "substrand": "2.1 Types and members of my family",
+       "standard": "K2.2.1.1 K2.2.1. Demonstrate understanding of the rights, roles and responsibilities of family members",
+       "indicators": [
+        "K2.2.1.1.1 Say a poem about the family, talk about and discuss the rights and roles of the members.",
+        "K2.2.1.1.2 Talk about the important roles and responsibilities of every family member and practice proper way of opening books from right to left.",
+        "K2.2.1.1.3 Identify the initial sounds in the name of every family member and clap the syllables in the names of the family members and other key words.",
+        "K2.2.1.1.4 Identify the letter-sound learnt for the week in words related to the theme and write the letter and key word boldly and legibly in their books.",
+        "K2.2.1.1.5 Design a collage or family tree using pictures and follow basic concepts of writing, from left to right and top to bottom to write the names of family members",
+        "K2.2.1.1.6 Solve word problems related to family using the concept of addition to find sums up to 10."
+       ]
+      },
+      {
+       "weeks": [
+        9
+       ],
+       "type": "teach",
+       "strand": "My Family",
+       "substrand": "2.2 Origin and history of my family",
+       "standard": "K2.2.2.1 Demonstrate understanding of the virtues, good manners and behaviour patterns our community values and why.",
+       "indicators": [
+        "K2.2.2.1.1 Recognize and use appropriate facial expressions, gestures and body language that convey meaning to accompany greetings.",
+        "K2.2.2.1.2 Identify who an author, illustrator and title is and answer “wh” questions during and after listening to the read aloud text on the history of a family to learners.",
+        "K2.2.2.1.3 focus on another five sight words for the week, practise until they become automatic by the end of the week and then they can have a spelling check on Friday.",
+        "K2.2.2.1.4 Say and clap syllables of the various tribes and languages."
+       ],
+       "part": [
+        1,
+        2
+       ]
+      },
+      {
+       "weeks": [
+        10
+       ],
+       "type": "teach",
+       "strand": "My Family",
+       "substrand": "2.2 Origin and history of my family",
+       "standard": "K2.2.2.1 Demonstrate understanding of the virtues, good manners and behaviour patterns our community values and why.",
+       "indicators": [
+        "K2.2.2.1.5 Identify the letter-sound learnt for the week in words related to the theme and write the letter and key word boldly and legibly in their books.",
+        "K2.2.2.1.6 Tell a story and dramatize the history of different families",
+        "K2.2.2.1.7 Comparing length and distance from their school to their homes and hometowns using non-standard and standardised measures."
+       ],
+       "part": [
+        2,
+        2
+       ]
+      },
+      {
+       "weeks": [
+        11
+       ],
+       "type": "teach",
+       "strand": "My Family",
+       "substrand": "2.3 Family celebrations and festivals",
+       "standard": "K2.2.3.1 Demonstrate understanding of importance of the activities that we engage in during festivals and family celebrations.",
+       "indicators": [
+        "K2.2.3.1.1 discuss importance of activities we engage in during festivals and family celebrations and sing folk tunes and religious songs.",
+        "K2.2.3.1.2 Use the cover page and title to predict what happens in a story, listen and answer simple “wh” questions on the read aloud text about the theme (The story of Easter and Eid\u0002al Fitr)",
+        "K2.2.3.1.3 Read level appropriate sight words relating to celebration and festival of a family automatically.",
+        "K2.2.3.1.4 Identify the initial sounds, clap and count the number of syllables in different words related to festivals and celebrations",
+        "K2.2.3.1.5 Identify the letter-sound learnt for the week in words related to the theme and write the letter and key word boldly and legibly in their books.",
+        "K2.2.3.1.6 Recognize and create paper and rubber beads according to simple patterns in the environment",
+        "K2.2.3.1.7 Prepare a shopping list, use money to shop for ingredients for the festival special meal. LL6 LLLL4 LL7 LL6 WP CA Communication and collaboration (CC) Personal Development and Leadership (PL) Cultural identity and Global citizenship (CG) Creativity and Innovation (CI) Problem solving and Critical (PC)"
+       ]
+      },
+      {
+       "weeks": [
+        12
+       ],
+       "type": "teach",
+       "strand": "My Family",
+       "substrand": "2.4 My school family: rules for learners and teachers",
+       "standard": "K2.2.4.1",
+       "indicators": [
+        "K2.2.4.1.1 Talk about and discuss the rules and regulations that guide us to live as good friends in the school family",
+        "K2.2.4.1.2 Use visual information (illustrations) and title of Big book to make predictions and answer simple “wh” questions about the text.",
+        "K2.2.4.1.3 Use vocabulary acquired to form sentences related to the theme.",
+        "K2.2.4.1.4 Identify the letter-sound learnt for the week in words related to the theme and write the letter and key word boldly and legibly in their books.",
+        "K2.2.4.1.5 Trace, colour and label a picture of an object in the school which communicates rules."
+       ]
+      },
+      {
+       "weeks": [
+        13
+       ],
+       "type": "revision",
+       "strand": "",
+       "substrand": "",
+       "standard": "",
+       "indicators": [],
+       "focus": ""
+      },
+      {
+       "weeks": [
+        14
+       ],
+       "type": "exam",
+       "strand": "",
+       "substrand": "",
+       "standard": "",
+       "indicators": [],
+       "focus": ""
+      }
+     ],
+     "2": [
+      {
+       "weeks": [
+        1
+       ],
+       "type": "revision",
+       "strand": "",
+       "substrand": "",
+       "standard": "",
+       "indicators": [],
+       "focus": "Key ideas from last term that this class needs"
+      },
+      {
+       "weeks": [
+        2
+       ],
+       "type": "teach",
+       "strand": "Values and Beliefs",
+       "substrand": "3.1 Our personal values",
+       "standard": "K2.3.1.1 Demonstrate understanding of their personal value in relation to their likes and dislikes.",
+       "indicators": [
+        "K2.3.1.1.1 Engage in a conversation about what we like and don’t like with our friends and discuss more cultural values that should influence the way we live among people.",
+        "K2.3.1.1.2 Use illustrations on the cover page and title of Big book to make predictions and answer simple “wh” questions about the text.",
+        "K2.3.1.1.3 Randomly identify letters of the alphabet and recognize them in words and names related to the theme and clap the syllables,"
+       ],
+       "part": [
+        1,
+        2
+       ]
+      },
+      {
+       "weeks": [
+        3
+       ],
+       "type": "teach",
+       "strand": "Values and Beliefs",
+       "substrand": "3.1 Our personal values",
+       "standard": "K2.3.1.1 Demonstrate understanding of their personal value in relation to their likes and dislikes.",
+       "indicators": [
+        "K2.3.1.1.4 Write or copy words related to the theme in a self\u0002dictionary or journal.",
+        "K2.3.1.1.5 Explore with simple tools and materials to create and communicate ideas.",
+        "K2.3.1.1.6 Compose and decompose numbers up to 10 using concrete materials"
+       ],
+       "part": [
+        2,
+        2
+       ]
+      },
+      {
+       "weeks": [
+        4
+       ],
+       "type": "teach",
+       "strand": "Values and Beliefs",
+       "substrand": "3.2 Our cultural values",
+       "standard": "K2.3.2.1 Demonstrate understanding of the virtues, good manners and behaviour patterns our community values and why.",
+       "indicators": [
+        "K2.3.2.1.1 Randomly identify letters of the alphabet and recognize them in words and names related to the theme and clap the syllables.",
+        "K2.3.2.1.3 ). Learners answer the story map questions. E.g. What is the setting of the story? who are the characters? what is the problem in the story? what did the character(s) do to solve the problem? How was the problem solved? Focus on what we can learn from the biblical character.  Write level appropriate words in the air, sand, on their arms and in their ruled books and read.",
+        "K2.3.2.1.4 Read, use and copy daily greetings and some culturally appropriate and polite language in their self-dictionary/note book.",
+        "K2.3.2.1.5 Talk about how others make their art work to project good manners in the society."
+       ]
+      },
+      {
+       "weeks": [
+        5
+       ],
+       "type": "teach",
+       "strand": "Values and Beliefs",
+       "substrand": "3.3 Our national and civic values",
+       "standard": "K2.3.3.1 Demonstrate understanding of the values and virtues we need to exhibit as Ghanaian learners.",
+       "indicators": [
+        "K2.3.3.1.2 Use illustrations on the cover page and title of Big book to make predictions and answer simple story map questions about the text.",
+        "K2.3.3.1.3 Use new vocabulary acquired to create their own drama on how to show themselves as patriotic citizens of their country.",
+        "K2.3.3.1.4 Identify the letter-sound learnt for the week in words related to the theme and write the letter and key word boldly and legibly in their books.",
+        "K2.3.3.1.5 Recognize and talk about some national art works of our country.",
+        "K2.3.3.1.6 Recognize and describe some simple repeating non\u0002numerical patterns (up to a repetition of 3, 1, 2 pattern)."
+       ]
+      },
+      {
+       "weeks": [
+        6
+       ],
+       "type": "teach",
+       "strand": "Values and Beliefs",
+       "substrand": "3.4 Our beliefs",
+       "standard": "K2.3.4.1 Demonstrate understanding of relating well with people with different beliefs.",
+       "indicators": [
+        "K2.3.4.1.1 Describe why and how to relate well with everyone regardless of their culture, language or belief.",
+        "K2.3.4.1.2 Use illustrations in a Big book to make predictions and answer simple story map questions about the text.",
+        "K2.3.4.1.3 Read level-appropriate sight words from the big book"
+       ],
+       "part": [
+        1,
+        2
+       ]
+      },
+      {
+       "weeks": [
+        7
+       ],
+       "type": "teach",
+       "strand": "Values and Beliefs",
+       "substrand": "3.4 Our beliefs",
+       "standard": "K2.3.4.1 Demonstrate understanding of relating well with people with different beliefs.",
+       "indicators": [
+        "K2.3.4.1.4 Connect spoken words and sounds to letters in a playful way. LL2 LL3 LL5 Communication and Collaboration (CC) Creativity and Innovation (CI) Critical Thinking and Problem Solving (CP)",
+        "K2.3.4.1.5 Play different musical instruments and dance to religious songs",
+        "K2.3.4.1.6 Recognise and describe some simple repeating non\u0002numerical patterns (up to a repetition of 3, 1, 2 pattern)"
+       ],
+       "part": [
+        2,
+        2
+       ]
+      },
+      {
+       "weeks": [
+        8
+       ],
+       "type": "teach",
+       "strand": "My Local Community",
+       "substrand": "4.1 Special places in every community",
+       "standard": "K2.4.1.1 Demonstrate understanding the special places in our local community K2.4.1.1. 5 Identify the letter-sound learnt for the week in words related to the theme and write the letter and key word boldly and legibly in their books.",
+       "indicators": [
+        "K2.4.1.1.1 Talk about familiar, places, things and events with prompting and support.",
+        "K2.4.1.1.2 Listen attentively to a read aloud of an informational text about special places and participate actively in the KWL reading technique asking and answering one’s own questions.",
+        "K2.4.1.1.3 Read level-appropriate sight words from the big book",
+        "K2.4.1.1.6 Talk about the ideas expressed in one’s own art and that of others.",
+        "K2.4.1.1.7 Create simple patterns with more than one shape, colour, size,"
+       ]
+      },
+      {
+       "weeks": [
+        9
+       ],
+       "type": "teach",
+       "strand": "My Local Community",
+       "substrand": "4.2 Important people and occupations in our community",
+       "standard": "K2.4.2.1 Demonstrate understanding of knowing the important people / occupation in our community.",
+       "indicators": [
+        "K2.4.2.1.1 Talk about and discuss the various occupations in our community.",
+        "K2.4.2.1.2 Listen attentively to the teacher-read-aloud of the big book which relates to the theme, track words and share lessons learnt on the theme of the week.",
+        "K2.4.2.1.3 Use vocabulary acquired from the week to compose oral composition about their future profession and write simple sentences which relates to the theme in their word bank.",
+        "K2.4.2.1.4 Identify the letter-sound learnt for the week in words related to the theme and write the letter and key word boldly and legibly in their books.",
+        "K2.4.2.1.6 Create simple patterns with more than one of shape, colour, size, sounds or movements."
+       ]
+      },
+      {
+       "weeks": [
+        10
+       ],
+       "type": "teach",
+       "strand": "My Local Community",
+       "substrand": "4.3 Special leaders in our community and country",
+       "standard": "K2.4.3.1 Demonstrate understanding and knowledge of the special leaders in our community",
+       "indicators": [
+        "K2.4.3.1.1 Talk about and describe the roles of the political, traditional and religious leaders in our community.",
+        "K2.4.3.1.2 Listen attentively to the teacher-read-aloud of the big book (The Chief) which relates to the theme, track words and share lessons learnt on the roles of the chiefs.",
+        "K2.4.3.1.3 Use key words about the theme to create meaningful sentences in real life situation."
+       ],
+       "part": [
+        1,
+        2
+       ]
+      },
+      {
+       "weeks": [
+        11
+       ],
+       "type": "teach",
+       "strand": "My Local Community",
+       "substrand": "4.3 Special leaders in our community and country",
+       "standard": "K2.4.3.1 Demonstrate understanding and knowledge of the special leaders in our community",
+       "indicators": [
+        "K2.4.3.1.4 -Blend individual letter-sound to form one syllabic words.",
+        "K2.4.3.1.5 Create art works inspired by places in our culture and country.",
+        "K2.4.3.1.6 Compare objects based on length and weight of various items and objects."
+       ],
+       "part": [
+        2,
+        2
+       ]
+      },
+      {
+       "weeks": [
+        12
+       ],
+       "type": "teach",
+       "strand": "My Nation Ghana",
+       "substrand": "5.1 History and celebrations of Ghana",
+       "standard": "K2.5.1.1 Learners talk about activities that are done during 6th March Celebration and listen to historical stories about Ghana`s Independence.",
+       "indicators": [
+        "K2.5.1.1.3 Use the new vocabulary learnt about the Independence Day celebration to construct simple sentences and copy them correctly into their journal or self-dictionary of pictures and words.",
+        "K2.5.1.1.4 Identify the beginning and ending rhyming sounds in words, delete and replace the rhyming sounds to get another rhyming pair.",
+        "K2.5.1.1.5 Connect letters to spoken words and identify letters in print",
+        "K2.5.1.1.6 Prepare an artwork related to the Independence Day and use it for the Kiddies Independence Day celebration.",
+        "K2.5.1.1.7 Identify Ghanaian coins and money by name and use it to buy and sell in the classroom store."
+       ]
+      },
+      {
+       "weeks": [
+        13
+       ],
+       "type": "revision",
+       "strand": "",
+       "substrand": "",
+       "standard": "",
+       "indicators": [],
+       "focus": ""
+      },
+      {
+       "weeks": [
+        14
+       ],
+       "type": "exam",
+       "strand": "",
+       "substrand": "",
+       "standard": "",
+       "indicators": [],
+       "focus": ""
+      }
+     ],
+     "3": [
+      {
+       "weeks": [
+        1
+       ],
+       "type": "revision",
+       "strand": "",
+       "substrand": "",
+       "standard": "",
+       "indicators": [],
+       "focus": "Key ideas from last term that this class needs"
+      },
+      {
+       "weeks": [
+        2
+       ],
+       "type": "teach",
+       "strand": "All Around Us",
+       "substrand": "6.1 Living and non-living things",
+       "standard": "K2.6.1.1 Demonstrate understanding of why some things are referred to as living and non- living things. .",
+       "indicators": [
+        "K2.6.1.1.1 Talk about different types of living and non-living things around us",
+        "K2.6.1.1.2 Participate actively in the shared reading of the big book which relates to the theme, and share more lessons learnt on the theme of the week. WP LL1 LL2 LL3 Communication and collaboration (CC) Personal Development and Leadership (PL) Communication and Collaboration (CC) Personal development and Leadership (PL) Personal Development and Leadership (PL)",
+        "K2.6.1.1.3 Keep record of sight words and new content vocabulary learnt from the reading text on the theme.",
+        "K2.6.1.1.4 Recognize at least 75% of letter sounds in words"
+       ],
+       "part": [
+        1,
+        2
+       ]
+      },
+      {
+       "weeks": [
+        3
+       ],
+       "type": "teach",
+       "strand": "All Around Us",
+       "substrand": "6.1 Living and non-living things",
+       "standard": "K2.6.1.1 Demonstrate understanding of why some things are referred to as living and non- living things. .",
+       "indicators": [
+        "K2.6.1.1.5 Identify the letter-sound learnt for the week in words related to the theme and write the letter and key word boldly and legibly in their books.",
+        "K2.6.1.1.6 Identify, draw and colour two items each under living and non-living things.",
+        "K2.6.1.1.7 Tell the position and motion of objects in space. Using words such as below, to the right, behind etc."
+       ],
+       "part": [
+        2,
+        2
+       ]
+      },
+      {
+       "weeks": [
+        4
+       ],
+       "type": "teach",
+       "strand": "All Around Us",
+       "substrand": "6.2 Living things: domestic and wild animals",
+       "standard": "K2.6.2.1 Demonstrate understanding of the importance of domestic and wild animals.",
+       "indicators": [
+        "K2.6.2.1.1 Talk about different types of animals that live at home and in the bush and how human being care for domestic animals.",
+        "K2.6.2.1.2 Listen to a shared reading on a traditional story on how some animals became domestic animals.",
+        "K2.6.2.1.3 Create an informational text on different types of animals using a variety of new vocabulary learnt from the conversational poster on domestic animals.",
+        "K2.6.2.1.4 Tap and clap and count the syllables of the names of animals and lines of the song.",
+        "K2.6.2.1.5 Identify the letter-sound learnt for the week in words related to the theme and write the letter and key word boldly and legibly in their books.",
+        "K2.6.2.1.6 Observe, identify and talk about images, items and performances in artworks of everyday life."
+       ]
+      },
+      {
+       "weeks": [
+        5
+       ],
+       "type": "teach",
+       "strand": "All Around Us",
+       "substrand": "6.3 Water",
+       "standard": "K2.6.3.1 Demonstrate understanding that water is an important natural resource that helps all living things, human, plants and animals",
+       "indicators": [
+        "K2.6.3.1.1 Discuss where we get water from, its importance to living things and how to care for water sources.",
+        "K2.6.3.1.3 Use a variety of new vocabulary learnt about the sources and importance of water to all living things to create a text for reading using LEA",
+        "K2.6.3.1.4 Blend the letter-sounds learn so far into syllables, read and write the syllables boldly and legibly in their books.",
+        "K2.6.3.1.5 Draw and colour different sources of water",
+        "K2.6.3.1.7 Measure, estimate and compare the capacity of different containers of water"
+       ]
+      },
+      {
+       "weeks": [
+        6
+       ],
+       "type": "teach",
+       "strand": "All Around Us",
+       "substrand": "6.4 Air",
+       "standard": "K2.6.4.1 Demonstrate understanding that air is all around us and it is an important and beneficial natural resource for all living things.",
+       "indicators": [
+        "K2.6.4.1.1 Share their ideas with teacher and peers about the presence and importance of air to human being, animals and plants as they listen to a read aloud using an informational text. e.g. we breathe, air makes things burn",
+        "K2.6.4.1.2 Use a variety of new vocabulary learnt about importance of air to create an informational text for reading using LEA",
+        "K2.6.4.1.3 Participate actively in the teacher-read-aloud of the text on Air, share lessons learnt on the theme of the week and demonstrate that words have spaces in a sentence. LL2 LL4 LL5 CA Personal Development and Leadership (PL) Communication and Collaboration (CC) Personal Development and Leadership (PL) Creativity and Innovation (CI)",
+        "K2.6.4.1.4 Recognise and read 25% of sight words instantly and automatically",
+        "K2.6.4.1.5 Blend the letter-sounds learnt so far into syllables, read and write the syllables boldly and legibly in their books.",
+        "K2.6.4.1.6 Prepare and fly kites and other paper aeroplanes outside the classroom.",
+        "K2.6.4.1.7 Classify objects in the environment according to those that have weight and heavy and those without weight and less heavy, count the number of objects in each category up to 20"
+       ]
+      },
+      {
+       "weeks": [
+        7
+       ],
+       "type": "teach",
+       "strand": "All Around Us",
+       "substrand": "6.5 Plants 1",
+       "standard": "K2.6.5.1 Demonstrate understanding of the knowledge that there are different parts of plants and are important sources of food and medicine for other living things",
+       "indicators": [
+        "K2.6.5.1.1 Talk freely about different parts of a plants and their uses",
+        "K2.6.5.1.2 Use a variety of new vocabulary learnt about plants to create an informational text for reading using LEA",
+        "K2.6.5.1.3 Participate actively in the teacher-read-aloud of the LEA text which relates to the theme, and share lessons learnt from the text.",
+        "K2.6.5.1.4 Recognise and read 25% of sight words instantly and automatically",
+        "K2.6.5.1.5 Blend the letter-sound learnt so far into syllables, read and write the syllables boldly and legibly in their books.",
+        "K2.6.5.1.6 Draw and label the parts of a plant",
+        "K2.6.5.1.7 Classify different food items into the parts of the plant from which we get it from."
+       ]
+      },
+      {
+       "weeks": [
+        8
+       ],
+       "type": "teach",
+       "strand": "All Around Us",
+       "substrand": "6.6 Plants 2",
+       "standard": "K2.6.6.1 Demonstrate understanding of how plants grow and how they prepare their food.",
+       "indicators": [
+        "K2.6.6.1.1 Share ideas about the things (Nutrients) plants need to grow well.",
+        "K2.6.6.1.2 Use a variety of new vocabulary learnt about plants to create an informational text for reading using LEA",
+        "K2.6.6.1.6 Create a leaf album using different types of leaves.",
+        "K2.6.6.1.7 Classify different types of food items according to categories and count the number of objects in each category up to 20."
+       ]
+      },
+      {
+       "weeks": [
+        9
+       ],
+       "type": "teach",
+       "strand": "All Around Us",
+       "substrand": "6.7 Types of soil and gardening",
+       "standard": "K2.6.7.1 Demonstrate understanding of types of soil we find around us and which one helps plant to grow well.",
+       "indicators": [
+        "K2.6.7.1.1 Talk about different types of soil we find around us and which one is best used for gardening.",
+        "K2.6.7.1.2 Participate actively in the teacher-read-aloud of the big book which relates to the theme, count words in a sentence and answer inferential questions on the text.",
+        "K2.6.7.1.3 Use a variety of new vocabulary learnt about soil to create an informational text for reading using LEA",
+        "K2.6.7.1.4 identify the beginning sounds in words and practise creating new words through phoneme substitution.",
+        "K2.6.7.1.5 Draw and colour at least four items that are made out of clay soil",
+        "K2.6.7.1.6 Prepare beds outside for Gardening by measuring the length and breadth of the land."
+       ]
+      },
+      {
+       "weeks": [
+        10
+       ],
+       "type": "teach",
+       "strand": "All Around Us",
+       "substrand": "6.8 Natural and man-made sources of light",
+       "standard": "K2.6.8.1 Demonstrate understanding of the knowledge that the different types of lights we use during the day or in the night can be classifies as of l into natural and manmade and its usefulness.",
+       "indicators": [
+        "K2.6.8.1.1 Talk about the natural and artificial sources of light and what each is best used for.",
+        "K2.6.8.1.3 Use a variety of new vocabulary learnt about the theme to create an informational text for reading using LEA",
+        "K2.6.8.1.4 Recognize instantly at least 75% of letter sounds in names of items in the environment by playing Letter Bingo games",
+        "K2.6.8.1.5 Use individual letter-sounds to form simple mono\u0002syllabic content and sight words.",
+        "K2.6.8.1.6 Identify and describe the elements of art in the environment and create their own artwork",
+        "K2.6.8.1.7 Tell the position and motion of objects in space. Using words such as below, to the right, behind etc."
+       ]
+      },
+      {
+       "weeks": [
+        11
+       ],
+       "type": "teach",
+       "strand": "All Around Us",
+       "substrand": "6.9 Changing weather conditions",
+       "standard": "K2.6.9.1 Demonstrate understanding of positive and negative effects of weather conditions.",
+       "indicators": [
+        "K2.6.9.1.1 Identify and describe the elements the different weather conditions.",
+        "K2.6.9.1.2 Participate actively in the shared reading of the big book which relates to the theme and answer simple questions on the text.",
+        "K2.6.9.1.3 Use a variety of new vocabulary learnt about the theme to create an informational text for reading using LEA",
+        "K2.6.9.1.4 Read level appropriate content sight words and use them to form sentences and also copy them in their books.",
+        "K2.6.9.1.5 Recognize and identify most letter names and their sounds in different names of people from other cultures.",
+        "K2.6.9.1.7 Collect and handle data on learner’s preference of weather conditions."
+       ]
+      },
+      {
+       "weeks": [
+        12
+       ],
+       "type": "teach",
+       "strand": "My Global Community",
+       "substrand": "7.1 Connecting and communicating with the global community; buying and selling",
+       "standard": "K2.7.1.1 Demonstrate understanding of the various ways we connect with the global community. t K2.7.1.1.1 Sing or recite poems about the theme and discuss the various ways new connect with the outside world",
+       "indicators": [
+        "K2.7.1.1.2 Participate actively in the shared reading of the big book which relates to the theme and answer simple questions on the text.",
+        "K2.7.1.1.3 Use a variety of new vocabulary learnt about the theme to create an informational text for reading using LEA",
+        "K2.7.1.1.4 Identify sounds of letters and be able to write them",
+        "K2.7.1.1.5 Identify letter-sounds in key words about the theme and be able to write them in their books.",
+        "K2.7.1.1.7 Talk about the colours of the flags of other countries and other art work and music that they have."
+       ]
+      },
+      {
+       "weeks": [
+        13
+       ],
+       "type": "revision",
+       "strand": "",
+       "substrand": "",
+       "standard": "",
+       "indicators": [],
+       "focus": ""
+      },
+      {
+       "weeks": [
+        14
+       ],
+       "type": "exam",
+       "strand": "",
+       "substrand": "",
+       "standard": "",
+       "indicators": [],
+       "focus": ""
+      }
+     ]
+    }
+   }
   }
  }
 }

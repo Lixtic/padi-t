@@ -93,7 +93,7 @@ function validate(body) {
   if (size && !SIZES.includes(size)) return { error: 'Please choose a class size from the list.' };
 
   if (!NAME_RE.test(subject)) return { error: 'Please choose a subject.' };
-  if (!CLASSES.includes(cls)) return { error: 'Please choose a class from Basic 1 to Basic 9, or SHS 1 to SHS 3.' };
+  if (!CLASSES.includes(cls)) return { error: 'Please choose a class from KG 1 to KG 2, Basic 1 to Basic 9, or SHS 1 to SHS 3.' };
   if (!Number.isInteger(week) || week < 1 || week > 20) return { error: 'Please choose a week between 1 and 20.' };
   if (notes.length > MAX_NOTES) return { error: 'Notes are too long (max ' + MAX_NOTES + ' characters).' };
 

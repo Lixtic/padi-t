@@ -1783,7 +1783,7 @@
   /* Inclusive teaching: learner support, gender-responsive grouping, a simple ICT step and the activities the teacher wants.
      Lower primary starts with support and grouping on; the teacher's own choice is kept with the plan. */
   const ACTS = [['group', 'Group discussion'], ['roleplay', 'Role play'], ['song', 'Song or rhyme'], ['game', 'Learning game'], ['make', 'Drawing or making'], ['talk', 'Resource person talk'], ['call', 'Voice call to a resource person']];
-  const incDefault = (cls) => { const lower = levelOf(cls).id === 'lower'; return { support: lower, gender: lower, ict: false, acts: [] }; };
+  const incDefault = (cls) => { const lower = ['lower', 'kg'].includes(levelOf(cls).id); return { support: lower, gender: lower, ict: false, acts: [] }; };
   const incOf = (p) => { const d = incDefault(p.cls), i = p.inc && typeof p.inc === 'object' ? p.inc : {}; return { support: i.support === undefined ? d.support : i.support === true, gender: i.gender === undefined ? d.gender : i.gender === true, ict: i.ict === undefined ? d.ict : i.ict === true, acts: Array.isArray(i.acts) ? i.acts.filter((a) => ACTS.some((x) => x[0] === a)) : d.acts }; };
   const incRows = { support: $('#incSupport'), gender: $('#incGender'), ict: $('#incIct') };
   const actsBox = $('#incActs');
@@ -1816,9 +1816,9 @@
     // The wording follows the level: BECE practice (JHS), class exercise (primary), WASSCE practice (SHS).
     const lv = levelOf(state.params.cls), ex = lv.exam;
     $('.dd-label', notesBtn).textContent = lv.notes.toggle;
-    $('small', notesBtn).textContent = lv.id === 'lower' ? 'Key ideas for you and a take-home activity' : 'Board copy and take-home notes';
-    $('.dd-label', beceBtn).textContent = ex.toggle + (lv.id === 'lower' || lv.id === 'upper' ? '' : ' questions');
-    $('small', beceBtn).textContent = lv.id === 'lower' ? 'Oral and written, with answers' : 'With a marking guide';
+    $('small', notesBtn).textContent = ['lower', 'kg'].includes(lv.id) ? 'Key ideas for you and a take-home activity' : 'Board copy and take-home notes';
+    $('.dd-label', beceBtn).textContent = ex.toggle + (['kg', 'lower', 'upper'].includes(lv.id) ? '' : ' questions');
+    $('small', beceBtn).textContent = lv.id === 'kg' ? 'Spoken tasks and a tick-list' : lv.id === 'lower' ? 'Oral and written, with answers' : 'With a marking guide';
     const beceOpt = $('#resourceType option[value="BECE practice"]'); if (beceOpt) beceOpt.textContent = ex.toggle;
     syncSummary();
   }
