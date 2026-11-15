@@ -156,3 +156,37 @@
 @media(max-width:700px){.parent-dashboard-content .pd-progress-hero{min-height:125px;padding:15px;gap:8px}.parent-dashboard-content .pd-progress-hero-art{flex-basis:100px;width:100px;max-height:92px}.parent-dashboard-content .pd-progress-stats{gap:7px}.parent-dashboard-content .pd-progress-stats article{padding:12px 10px}.parent-dashboard-content .pd-progress-stats strong{font-size:1.35rem}.parent-dashboard-content .pd-progress-stats span{font-size:.72rem}.parent-dashboard-content .pd-milestone-grid{grid-template-columns:1fr}.parent-dashboard-content .pd-milestone{flex-direction:row;align-items:center;gap:12px;padding:10px 12px}.parent-dashboard-content .pd-milestone-art{flex:0 0 66px;width:66px;min-height:58px}.parent-dashboard-content .pd-milestone-illustration{width:64px;max-height:54px}.parent-dashboard-content .pd-milestone-state{margin-left:auto;white-space:nowrap}}
 @media(max-width:390px){.parent-dashboard-content .pd-progress-hero{align-items:flex-start}.parent-dashboard-content .pd-progress-hero-art{flex-basis:82px;width:82px;margin-top:8px}.parent-dashboard-content .pd-progress-filter{align-items:flex-start;flex-direction:column}.parent-dashboard-content .pd-progress-filter select{width:100%}}
 @media(prefers-reduced-motion:reduce){.parent-dashboard-content .pd-milestone{transition:none}}
+
+
+/* Keep selected navigation readable on hover and give keyboard users the same clear affordance. */
+.parent-dashboard-content .pd-tabs button.is-active:hover {
+  border-color:var(--accent);
+  background:var(--accent);
+  color:var(--on-accent);
+}
+.parent-dashboard-content .pd-tabs button:focus-visible,
+.parent-dashboard-content .pd-quick-grid button:focus-visible,
+.parent-dashboard-content .pd-child-actions button:focus-visible {
+  outline:3px solid color-mix(in srgb,var(--accent) 42%,transparent);
+  outline-offset:3px;
+}
+.parent-dashboard-content .pd-quick-grid button:focus-visible {
+  border-color:color-mix(in srgb,var(--accent) 55%,var(--line));
+  box-shadow:0 0 0 3px color-mix(in srgb,var(--accent) 12%,transparent);
+}
+.parent-dashboard-content .pd-child-card,
+.parent-dashboard-content .pd-activity {
+  box-shadow:0 2px 8px rgba(38,54,74,.035);
+}
+.parent-dashboard-content .pd-child-card:hover,
+.parent-dashboard-content .pd-activity:hover {
+  box-shadow:0 8px 22px rgba(38,54,74,.075);
+}
+:root[data-theme="dark"] .parent-dashboard-content .pd-child-card,
+:root[data-theme="dark"] .parent-dashboard-content .pd-activity {
+  box-shadow:0 2px 10px rgba(0,0,0,.12);
+}
+@media(prefers-reduced-motion:reduce) {
+  .parent-dashboard-content .pd-child-card,
+  .parent-dashboard-content .pd-activity { box-shadow:none; }
+}
