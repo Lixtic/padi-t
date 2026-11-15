@@ -379,3 +379,7 @@ body.on-dashboard .v2-tabbar { display: none !important; }
 /* Parent accounts have no Teaching Studio: no plan history, plan library, search or studio tab bar. Their home is the Parent Dashboard. */
 body.role-parent .stage, body.role-parent .pro-banner, body.role-parent .v2-tabbar,
 body.role-parent .sb-list, body.role-parent .sb-list-head, body.role-parent #libraryLink, body.role-parent #searchToggle, body.role-parent #searchWrap { display: none !important; }
+
+/* Settings: teacher-only and parent-only rows follow the account role. */
+body.role-parent .teacher-only { display: none !important; }
+body:not(.role-parent) .parent-only { display: none !important; }

@@ -530,9 +530,16 @@
         <p class="acct-msg" id="acctMsg" role="status" aria-live="polite"></p>
       </div>
         </section>
-        <section class="sp-card" aria-label="Teacher"><h2>Teacher</h2>
+        <section class="sp-card" aria-label="Teacher" id="roleCard"><h2 id="roleCardTitle">Teacher</h2>
         <div class="foot-group" aria-label="Your tools">
-        <button type="button" class="foot-link" id="profileBtn">
+        <button type="button" class="foot-link parent-only" id="familyBtn" hidden>
+          <svg class="ico"><use href="#i-user"/></svg><span>My children</span>
+        </button>
+        <div class="set-row parent-only" id="reminderRow" hidden>
+          <span class="theme-label" id="reminderLabel">Sunday learning idea by email</span>
+          <button type="button" class="switch" id="reminderToggle" role="switch" aria-checked="true" aria-labelledby="reminderLabel"><span class="knob"></span></button>
+        </div>
+        <button type="button" class="foot-link teacher-only" id="profileBtn">
           <svg class="ico"><use href="#i-user"/></svg><span>My teacher profile</span>
         </button>
         <button type="button" class="foot-link" id="feedbackBtn">
@@ -560,7 +567,7 @@
         <button type="button" class="set-action" id="clearCacheBtn">
           <svg class="ico"><use href="#i-refresh"/></svg><span>Clear app cache</span>
       </button>
-        <p class="install-hint" id="clearCacheNote">Fixes a stuck or outdated app. Your saved plans are kept.</p>
+        <p class="install-hint" id="clearCacheNote">Fixes a stuck or outdated app. <span id="clearCacheKeep">Your saved plans are kept.</span></p>
 
         <p class="set-links"><a href="about">About</a><span aria-hidden="true">·</span><a href="terms">Terms</a><span aria-hidden="true">·</span><a href="privacy">Privacy</a><span aria-hidden="true">·</span><a href="refunds">Refunds</a><span aria-hidden="true">·</span><a href="ads-policy">Ads</a></p>
         </section>
