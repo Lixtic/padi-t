@@ -4,6 +4,7 @@ const db = require('./_db');
 const A = require('./_auth');
 
 const KINDS = new Set(['lesson', 'explanation', 'practice', 'progress']);
+const MAX_SAVED = 150;   // saved records per parent (the list endpoint returns up to 250)
 const clean = (v, n) => String(v == null ? '' : v).trim().slice(0, n);
 
 module.exports = async (req, res) => {
@@ -44,6 +45,10 @@ module.exports = async (req, res) => {
     catch (e) { return sendJson(res, e.status || 400, { error: 'bad_request', message: e.message }); }
     const id = clean(body && body.id, 64);
     if (!/^[\w-]{1,64}$/.test(id)) return sendJson(res, 400, { error: 'bad_request', message: 'A valid learning record ID is required.' });
+    if (body && body.delete === true) {   // remove one saved record (kept as a tombstone so other devices drop it too)
+      await db.query('update parent_learning set deleted = true, updated_at = $3 where user_id = $1 and id = $2', [me.uid, id, Date.now()]);
+      return sendJson(res, 200, { ok: true, deleted: id });
+    }
     const kind = clean(body && body.kind, 24);
     if (!KINDS.has(kind)) return sendJson(res, 400, { error: 'bad_request', message: 'Choose a valid learning record type.' });
     const data = body && body.data && typeof body.data === 'object' && !Array.isArray(body.data) ? body.data : {};
@@ -73,6 +78,13 @@ module.exports = async (req, res) => {
     });
     if (json.length > 140000) return sendJson(res, 413, { error: 'too_large', message: 'This learning resource is too large to save.' });
     const updatedAt = Date.now();
+    const [exists] = await db.query('select 1 as x from parent_learning where user_id = $1 and id = $2 and deleted = false', [me.uid, id]);
+    if (!exists) {   // a new record: respect the cap
+      const [count] = await db.query('select count(*)::int as n from parent_learning where user_id = $1 and deleted = false', [me.uid]);
+      if (count && Number(count.n) >= MAX_SAVED) {
+        return sendJson(res, 409, { error: 'cap', limit: MAX_SAVED, message: 'You have saved ' + MAX_SAVED + ' activities, which is the most we keep. Delete some you no longer need to add more.' });
+      }
+    }
     await db.query(
       'insert into parent_learning (user_id, id, kind, data, updated_at, deleted) values ($1, $2, $3, $4::jsonb, $5, false) on conflict (user_id, id) do update set kind = excluded.kind, data = excluded.data, updated_at = excluded.updated_at, deleted = false',
       [me.uid, id, kind, json, updatedAt]

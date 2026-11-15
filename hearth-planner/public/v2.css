@@ -450,3 +450,8 @@ body:not(.role-parent) .parent-only { display: none !important; }
   #adminSheet .ad-row:has(> button) > button { flex: 1 1 auto; }
 }
 #adminSheet h2:focus { outline: none; }
+
+/* Parents: delete a saved activity */
+.pd-delete-record, .pd-room-delete { font: 600 13px var(--font-ui, inherit); color: var(--del, #b42318); background: none; border: 0; padding: 8px 4px; min-height: 40px; cursor: pointer; text-decoration: underline; }
+.pd-room-top { position: relative; }
+.pd-room-delete { position: absolute; top: 0; right: 0; }
