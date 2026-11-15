@@ -18,13 +18,44 @@
       later.addEventListener('click', function () { bar.remove(); });
       bar.append(msg, go, later); document.body.appendChild(bar);
     };
-    navigator.serviceWorker.addEventListener('controllerchange', function () { if (hadController) showUpdate(); });
+    /* Update progress: a slim bar fills while the new version downloads, then it is applied automatically
+       when the app is being launched or brought back to the front. Updates found while someone is mid-task keep the prompt. */
+    var autoApply = false, autoTimer = 0, prog = null;
+    var progress = function (done, total) {
+      if (!prog) {
+        prog = document.createElement('div'); prog.className = 'update-progress'; prog.setAttribute('role', 'progressbar');
+        prog.setAttribute('aria-label', 'Updating GuidEd'); prog.setAttribute('aria-valuemin', '0'); prog.setAttribute('aria-valuemax', '100');
+        prog.innerHTML = '<span class="update-progress-fill"></span><b class="update-progress-label">Updating GuidEd\u2026</b>';
+        document.body.appendChild(prog);
+      }
+      var pct = Math.round(100 * done / Math.max(1, total));
+      prog.setAttribute('aria-valuenow', String(pct)); prog.firstChild.style.width = pct + '%';
+    };
+    var applyNow = function () {
+      var last = 0; try { last = +sessionStorage.getItem('guided.autoUpdate') || 0; } catch (e) {}
+      if (Date.now() - last < 30000) { showUpdate(); return; }            // never loop
+      try { sessionStorage.setItem('guided.autoUpdate', String(Date.now())); } catch (e) {}
+      if (prog) prog.firstChild.style.width = '100%';
+      location.reload();
+    };
+    navigator.serviceWorker.addEventListener('message', function (e) {
+      var d = e.data; if (!hadController || !d || d.type !== 'update-progress') return;
+      progress(d.done, d.total);
+    });
+    navigator.serviceWorker.addEventListener('controllerchange', function () {
+      if (!hadController) return;
+      if (autoApply) applyNow(); else { if (prog) prog.remove(); showUpdate(); }
+    });
     window.addEventListener('load', function () {
       navigator.serviceWorker.register('sw.js').then(function (reg) {
-        /* Phones keep the app open for days: look for a new version when it comes back to the front, and hourly. */
-        var check = function () { try { reg.update(); } catch (e) {} };
-        document.addEventListener('visibilitychange', function () { if (document.visibilityState === 'visible') check(); });
-        setInterval(check, 60 * 60 * 1000);
+        /* Launch and return-to-front both look for a new version and apply it; hourly checks only prompt. */
+        var check = function (auto) {
+          if (auto) { autoApply = true; clearTimeout(autoTimer); autoTimer = setTimeout(function () { autoApply = false; }, 60000); }
+          try { reg.update(); } catch (e) {}
+        };
+        check(true);
+        document.addEventListener('visibilitychange', function () { if (document.visibilityState === 'visible') check(true); });
+        setInterval(function () { check(false); }, 60 * 60 * 1000);
       }).catch(function () {});
     });
   }

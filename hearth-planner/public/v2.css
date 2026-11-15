@@ -426,3 +426,32 @@ body:not(.role-parent) .parent-only { display: none !important; }
 .aud-card small { color: var(--muted); font-size: 13px; line-height: 1.4; }
 .aud-card:hover, .aud-card:focus-visible { border-color: var(--accent); }
 .aud-skip { display: block; margin: 6px auto 0; padding: 8px; border: 0; background: none; color: var(--muted); font: inherit; font-size: 13px; text-decoration: underline; cursor: pointer; }
+
+/* Update progress bar (shown while a new version downloads, then applied automatically) */
+.update-progress{position:fixed;left:0;right:0;top:0;z-index:2000;height:22px;background:rgba(0,0,0,.08);pointer-events:none}
+.update-progress-fill{display:block;height:100%;width:0;background:var(--brand,#1f7a5c);transition:width .25s ease}
+.update-progress-label{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font:600 11px/1 system-ui,sans-serif;color:#fff;mix-blend-mode:normal;text-shadow:0 1px 2px rgba(0,0,0,.45)}
+/* Top-bar view switch for people who are both teacher and parent. */
+.role-chip { display: inline-flex; align-items: center; gap: 6px; min-height: 32px; padding: 0 11px; border: 1px solid var(--line); border-radius: 999px; background: var(--card); color: var(--text); font: inherit; font-size: 12.5px; font-weight: 700; cursor: pointer; }
+.role-chip[hidden] { display: none; }
+.role-chip .ico { width: 14px; height: 14px; }
+.set-select { max-width: 55%; min-height: 40px; padding: 0 10px; border: 1px solid var(--line); border-radius: 10px; background: var(--card); color: var(--text); font: inherit; font-size: 14px; }
+
+/* Admin sheet: heading clears the close button, announcement box shows its text, controls are easy to tap */
+#adminSheet h2 { padding-right: 52px; font-size: 22px; }
+#adminSheet .as-close:focus:not(:focus-visible) { outline: none; box-shadow: none; }
+#adminSheet .ad-notice textarea { min-height: 112px; line-height: 1.4; resize: vertical; }
+#adminSheet .ad-row > label:not(.kb-file) { display: flex; align-items: center; gap: 8px; }
+#adminSheet .ad-row select { font-size: 16px; padding: 9px 10px; min-height: 44px; }
+#adminSheet .ad-row .primary, #adminSheet .ad-row button { min-height: 44px; }
+@media (max-width: 520px) {
+  #adminSheet .ad-row > label:not(.kb-file) { flex: 1 1 100%; justify-content: space-between; }
+  #adminSheet .ad-row select { flex: 1 1 auto; max-width: 62%; }
+  #adminSheet .ad-row:has(> button) > button { flex: 1 1 auto; }
+}
+#adminSheet h2:focus { outline: none; }
+
+/* Parents: delete a saved activity */
+.pd-delete-record, .pd-room-delete { font: 600 13px var(--font-ui, inherit); color: var(--del, #b42318); background: none; border: 0; padding: 8px 4px; min-height: 40px; cursor: pointer; text-decoration: underline; }
+.pd-room-top { position: relative; }
+.pd-room-delete { position: absolute; top: 0; right: 0; }
