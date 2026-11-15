@@ -102,6 +102,7 @@
   <symbol id="i-layers" viewBox="0 0 24 24"><path d="M12 4l8.5 4.5L12 13 3.5 8.5z"/><path d="M3.5 12.5L12 17l8.5-4.5M3.5 16.5L12 21l8.5-4.5"/></symbol>
   <symbol id="i-cloud" viewBox="0 0 24 24"><path d="M7 18a4.5 4.5 0 0 1-.6-8.96A6 6 0 0 1 18 10.5a3.75 3.75 0 0 1-.5 7.5z"/></symbol>
   <symbol id="i-sliders" viewBox="0 0 24 24"><path d="M4 7h9M17 7h3M4 17h3M11 17h9"/><circle cx="15" cy="7" r="2"/><circle cx="9" cy="17" r="2"/></symbol>
+  <symbol id="i-swap" viewBox="0 0 24 24"><path d="M7 4 3.5 7.5 7 11M3.5 7.5H20M17 13l3.5 3.5L17 20M20.5 16.5H4"/></symbol>
   <symbol id="i-user" viewBox="0 0 24 24"><circle cx="12" cy="8.5" r="3.8"/><path d="M4.5 20c.7-3.8 3.7-6 7.5-6s6.8 2.2 7.5 6"/></symbol>
   <symbol id="i-key" viewBox="0 0 24 24"><circle cx="8.5" cy="14.5" r="4"/><path d="M11.5 11.5L20 3M16 7l3 3"/></symbol>
   <symbol id="i-clipboard" viewBox="0 0 24 24"><rect x="5" y="4.5" width="14" height="17" rx="2"/><path d="M9 4.5V3h6v1.5M8.5 10h7M8.5 14h7M8.5 18h4"/></symbol>
@@ -524,6 +525,7 @@
         <svg class="ico"><use href="#i-menu"/></svg>
       </button>
       <div class="tb-title" id="topTitle">New plan</div>
+      <button type="button" class="role-chip" id="roleChip" aria-label="Switch between Teacher and Parent view" hidden><span id="roleChipText"></span><svg class="ico" aria-hidden="true"><use href="#i-swap"/></svg></button>
       <button type="button" class="plan-badge" id="planBadge" data-tier="" aria-haspopup="dialog" aria-label="Your plan" hidden></button>
       <button type="button" class="icon-btn acct-top" id="acctTop" aria-label="Sign in or create account" aria-haspopup="dialog" data-state="out" hidden>
         <svg class="ico"><use href="#i-user"/></svg><span class="acct-initial" aria-hidden="true"></span><span class="acct-dot" aria-hidden="true"></span>
@@ -564,6 +566,10 @@
         <button type="button" class="foot-link parent-only" id="familyBtn" hidden>
           <svg class="ico"><use href="#i-user"/></svg><span>My children</span>
         </button>
+        <div class="set-row" id="startInRow" hidden>
+          <label class="theme-label" for="startInSelect">Open GuidEd in</label>
+          <select id="startInSelect" class="set-select"><option value="last">The view I used last</option><option value="teacher">Teacher view</option><option value="parent">Parent view</option></select>
+        </div>
         <div class="set-row parent-only" id="reminderRow" hidden>
           <span class="theme-label" id="reminderLabel">Sunday learning idea by email</span>
           <button type="button" class="switch" id="reminderToggle" role="switch" aria-checked="true" aria-labelledby="reminderLabel"><span class="knob"></span></button>
