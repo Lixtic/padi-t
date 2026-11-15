@@ -2359,6 +2359,87 @@
   acct.top.addEventListener('click', () => openSheet('signin'));
   acct.manage.addEventListener('click', () => openSheet());
   acct.now.addEventListener('click', () => syncNow(true));
+
+  // Shared profile editor for Parent and Teacher accounts. Role-specific teaching
+  // and child details remain in their existing profile areas.
+  const ep = {
+    dlg: $('#accountProfileSheet'), form: $('#epForm'), close: $('#epClose'),
+    name: $('#epName'), email: $('#epEmail'), role: $('#epRole'),
+    school: $('#epSchool'), schoolWrap: $('#epSchoolWrap'),
+    status: $('#epStatus'), save: $('#epSave'),
+  };
+  let epAccount = null;
+  function epMessage(message, bad) {
+    ep.status.textContent = message || '';
+    ep.status.classList.toggle('is-error', !!bad);
+  }
+  async function openAccountProfile() {
+    if (!signedIn()) return;
+    epMessage('');
+    ep.save.disabled = false;
+    try {
+      const P = window.PadiSync, user = P.user() || {};
+      epAccount = await P.getAccountProfile() || {};
+      const roles = Array.isArray(epAccount.roles) ? epAccount.roles : [];
+      const role = epAccount.primaryRole || roles[0] || 'teacher';
+      ep.name.value = epAccount.displayName || user.name || '';
+      ep.email.value = user.email || '';
+      ep.role.value = roles.length > 1 ? roles.map((x) => x === 'parent' ? 'Parent' : 'Teacher').join(' + ') : (role === 'parent' ? 'Parent' : 'Teacher');
+      ep.schoolWrap.hidden = !roles.includes('teacher') && role !== 'teacher';
+      ep.school.value = profile().school || '';
+      if (!ep.dlg.open) ep.dlg.showModal();
+      setTimeout(() => ep.name.focus(), 60);
+    } catch (err) {
+      toast((err && err.message) || 'Could not load your profile. Please try again.');
+    }
+  }
+  $('#asEditProfile').addEventListener('click', openAccountProfile);
+  $('#asResetPassword').addEventListener('click', async () => {
+    const P = window.PadiSync, user = P && P.user();
+    if (!user || !user.email) { sheet.result.textContent = 'We could not find the email address for this account.'; return; }
+    const button = $('#asResetPassword');
+    button.disabled = true;
+    try {
+      await P.requestReset(user.email);
+      sheet.result.textContent = 'Password reset instructions have been sent to ' + user.email + '. Check your inbox.';
+    } catch (err) {
+      sheet.result.textContent = (err && err.message) || 'Could not send the password reset email.';
+    } finally { button.disabled = false; }
+  });
+  ep.close.addEventListener('click', () => ep.dlg.close());
+  ep.dlg.addEventListener('click', (event) => {
+    const rect = ep.dlg.getBoundingClientRect();
+    if (event.clientX < rect.left || event.clientX > rect.right || event.clientY < rect.top || event.clientY > rect.bottom) ep.dlg.close();
+  });
+  ep.form.addEventListener('submit', async (event) => {
+    event.preventDefault();
+    if (ep.save.disabled) return;
+    const name = ep.name.value.trim();
+    if (!name) { epMessage('Enter your full name before saving.', true); ep.name.focus(); return; }
+    const P = window.PadiSync;
+    const roles = Array.isArray(epAccount && epAccount.roles) && epAccount.roles.length
+      ? epAccount.roles.filter((x) => x === 'parent' || x === 'teacher') : ['teacher'];
+    const primaryRole = roles.includes(epAccount && epAccount.primaryRole) ? epAccount.primaryRole : roles[0];
+    ep.save.disabled = true;
+    epMessage('Saving your profile…');
+    try {
+      const next = Object.assign({}, epAccount || {}, { roles, primaryRole, displayName: name });
+      if (roles.includes('parent')) next.children = Array.isArray(next.children) ? next.children : [];
+      await P.setAccountProfile(next);
+      if (roles.includes('teacher')) {
+        teacherInput.value = name;
+        schoolInput.value = ep.school.value.trim();
+        saveProfile();
+      }
+      epAccount = next;
+      epMessage('Your profile has been updated.');
+      setTimeout(() => { if (ep.dlg.open) ep.dlg.close(); }, 700);
+      sheet.result.textContent = 'Profile updated successfully.';
+      refreshAcct();
+    } catch (err) {
+      epMessage((err && err.message) || 'Could not save your profile. Please try again.', true);
+    } finally { ep.save.disabled = false; }
+  });
   sheet.close.addEventListener('click', closeSheet);
   sheet.dlg.addEventListener('click', (e) => {                           // a tap on the dimmed area outside the sheet closes it
     const r = sheet.dlg.getBoundingClientRect();

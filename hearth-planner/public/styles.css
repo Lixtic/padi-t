@@ -2079,3 +2079,24 @@ main[data-view="chat"] .notice-bar { display: none; }
     grid-template-columns: minmax(0, 1fr);
   }
 }
+
+
+/* Account profile editor */
+#accountProfileSheet .ep-content { width:min(100%,520px); }
+#accountProfileSheet .ep-kicker { display:inline-block; margin-bottom:8px; color:var(--accent); font-size:.7rem; font-weight:800; letter-spacing:.12em; }
+#accountProfileSheet h2 { margin:0 0 8px; }
+#accountProfileSheet .ep-content form { display:grid; gap:13px; margin:18px 0 14px; }
+#accountProfileSheet .as-field { display:grid; gap:6px; }
+#accountProfileSheet .as-field label { color:var(--text); font-size:.84rem; font-weight:750; }
+#accountProfileSheet .as-field input { width:100%; min-width:0; min-height:46px; padding:11px 13px; border:1px solid var(--line); border-radius:11px; background:var(--bg); color:var(--text); font:inherit; font-size:16px; box-sizing:border-box; }
+#accountProfileSheet .as-field input[readonly] { opacity:.72; }
+#accountProfileSheet .ep-help { display:block; margin:0; color:var(--muted); font-size:.76rem; line-height:1.5; }
+#accountProfileSheet .ep-status { min-height:1.2em; margin:0; color:var(--accent); font-size:.82rem; font-weight:650; }
+#accountProfileSheet .ep-status.is-error { color:var(--danger,#b42318); }
+#accountProfileSheet button:disabled { opacity:.6; }
+#acctSheet .as-actions { display:grid; gap:9px; }
+#acctSheet .as-actions > button { width:100%; min-height:46px; }
+@media (max-width: 520px) {
+  #accountProfileSheet { width:calc(100% - 24px); max-width:480px; padding:24px 18px; }
+  #accountProfileSheet .ep-content form { gap:11px; }
+}

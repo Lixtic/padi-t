@@ -166,6 +166,8 @@
         <span class="plan-cta" id="planRowCta"></span>
       </button>
     <div class="as-actions">
+      <button type="button" class="as-second" id="asEditProfile"><span>Edit profile</span></button>
+      <button type="button" class="as-second" id="asResetPassword"><span>Reset password</span></button>
       <button type="button" class="as-submit" id="asView"><span>View my plans</span></button>
       <button type="button" class="as-second" id="asSyncNow"><span>Sync now</span></button>
       <button type="button" class="as-second as-danger" id="asSignOut"><span>Sign out</span></button>
@@ -822,5 +824,38 @@
 
 <div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
 <noscript><p class="noscript">This app needs JavaScript to run.</p></noscript>
+
+<dialog class="acct-sheet up-sheet" id="accountProfileSheet" aria-labelledby="epTitle">
+  <button type="button" class="icon-btn as-close" id="epClose" aria-label="Close"><svg class="ico"><use href="#i-x"/></svg></button>
+  <section class="ep-content">
+    <span class="ep-kicker">ACCOUNT SETTINGS</span>
+    <h2 id="epTitle">Edit your profile</h2>
+    <p class="as-sub" id="epSub">Update the details shown on your GuidEd account.</p>
+    <form id="epForm">
+      <div class="as-field">
+        <label for="epName">Full name</label>
+        <input id="epName" name="name" type="text" maxlength="80" autocomplete="name" required placeholder="Your full name">
+      </div>
+      <div class="as-field">
+        <label for="epEmail">Email address</label>
+        <input id="epEmail" type="email" readonly aria-readonly="true">
+        <small class="ep-help">Your sign-in email cannot be changed here.</small>
+      </div>
+      <div class="as-field">
+        <label for="epRole">Account type</label>
+        <input id="epRole" type="text" readonly aria-readonly="true">
+      </div>
+      <div class="as-field" id="epSchoolWrap" hidden>
+        <label for="epSchool">School</label>
+        <input id="epSchool" type="text" maxlength="100" autocomplete="organization" placeholder="School name">
+        <small class="ep-help">This school name is used on your teaching documents.</small>
+      </div>
+      <p class="ep-status" id="epStatus" role="status" aria-live="polite"></p>
+      <button type="submit" class="as-submit" id="epSave"><span>Save changes</span></button>
+    </form>
+    <p class="ep-help">Parents can manage children under <strong>My Children</strong>. Teachers can edit classes, subjects and term dates under <strong>My teacher profile</strong>.</p>
+  </section>
+</dialog>
+
 </body>
 </html>
