@@ -142,6 +142,32 @@ module.exports = async (req, res) => {
     if (!secret()) return sendJson(res, 503, { error: 'not_configured', message: 'Payments are not set up yet. Please try again later.' });
     const body = await readJson(req);
 
+    // The saved mobile money number: read, save or clear. Only ever the signed-in owner's own.
+    if (action === 'phone') {
+      if (await require('./_quota').limited(res, 'phone:' + me.uid, 30, 10 * 60 * 1000)) return;
+      const Ph = require('./_phone');
+      if (body.phone === undefined) {                // no number sent: just read the saved one
+        const saved = await Ph.get(db, me.uid);
+        return sendJson(res, 200, { phone: saved ? saved.phone : '', provider: saved ? saved.provider : '', masked: saved ? Ph.mask(saved.phone) : '' });
+      }
+      if (!String(body.phone || '').trim()) { await Ph.clear(db, me.uid); return sendJson(res, 200, { phone: '', provider: '', masked: '' }); }
+      const phone = Ph.normalize(body.phone);
+      if (!phone) return sendJson(res, 400, { error: 'bad_phone', message: 'Enter a Ghana mobile money number, like 055 123 4987.' });
+      const provider = Ph.PROVIDERS.includes(body.provider) ? body.provider : Ph.providerOf(phone);
+      await Ph.save(db, me.uid, phone, provider);
+      return sendJson(res, 200, { phone, provider, masked: Ph.mask(phone) });
+    }
+
+    // Approve-by-phone: the OTP step some networks (Telecel) ask for after the prompt.
+    if (action === 'otp') {
+      const reference = String(body.reference || '').slice(0, 80), otp = String(body.otp || '').replace(/\D/g, '').slice(0, 10);
+      if (!reference || otp.length < 4) return sendJson(res, 400, { error: 'bad_request', message: 'Enter the code you received.' });
+      const [own] = await db.query('select 1 from payments where reference = $1 and user_id = $2', [reference, me.uid]);
+      if (!own) return sendJson(res, 403, { error: 'forbidden', message: 'That payment belongs to another account.' });
+      const d = await paystack('/charge/submit_otp', { method: 'POST', body: JSON.stringify({ otp, reference }) });
+      return sendJson(res, 200, { status: d.status, message: d.display_text || '' });
+    }
+
     if (action === 'checkout') {
       const key = String(body.plan || '');
       const plan = E.cfg().plans[key];
@@ -153,6 +179,18 @@ module.exports = async (req, res) => {
       await db.ensure();
       await db.query('insert into payments (reference, user_id, email, plan, amount, currency, status, created_at) values ($1, $2, $3, $4, $5, $6, \'pending\', $7)', [reference, me.uid, me.email, key, amount, currency, Date.now()]);
       const origin = String(req.headers.origin || '') || ('https://' + (req.headers['x-forwarded-host'] || req.headers.host));
+      if (body.mobile) {
+        // Send the payment prompt straight to the saved number instead of opening the Paystack page.
+        const saved = await require('./_phone').get(db, me.uid);
+        if (!saved) return sendJson(res, 400, { error: 'no_phone', message: 'Add your mobile money number first.' });
+        const c = await paystack('/charge', { method: 'POST', body: JSON.stringify({
+          email: me.email, amount, currency, reference,
+          mobile_money: { phone: saved.phone, provider: saved.provider },
+          metadata: { product: 'guided-pro', plan: key, user_id: me.uid },
+        }) });
+        E.event('checkout_started');
+        return sendJson(res, 200, { mode: 'mobile', reference, status: c.status, message: c.display_text || '' });
+      }
       const data = await paystack('/transaction/initialize', { method: 'POST', body: JSON.stringify({
         email: me.email, amount, currency, reference, callback_url: origin + '/',
         metadata: { product: 'guided-pro', plan: key, user_id: me.uid },

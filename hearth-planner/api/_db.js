@@ -55,6 +55,7 @@ const SCHEMA = [
   // Rewarded videos: one row per "start", marked claimed when the teacher finishes watching; bonus plans are a balance per teacher.
   "create table if not exists reward_tokens (id text primary key, user_id text not null, started_at bigint not null, claimed_at bigint, day text not null)",
   'create index if not exists reward_tokens_user on reward_tokens (user_id, day)',
+  'create table if not exists account_phones (user_id text primary key, phone text not null, provider text not null, updated_at bigint not null)',
   'create table if not exists reminder_log (user_id text not null, kind text not null, sent_on text not null, primary key (user_id, kind, sent_on))',
   'create table if not exists bonus (user_id text primary key, n int not null default 0)',
   'create table if not exists plan_log (subject text not null, period text not null, cls text not null, n int not null default 0, primary key (subject, period, cls))',
