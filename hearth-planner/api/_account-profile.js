@@ -73,6 +73,10 @@ module.exports = async (req, res) => {
     }
     data.phoneNumber = phoneNumber;
 
+    // Where the app opens for someone with both roles: the view used last (default) or a pinned one.
+    const START = ['last', 'teacher', 'parent'];
+    if (START.includes(input.startIn)) data.startIn = input.startIn;
+    else if (prev && prev.data && START.includes(prev.data.startIn)) data.startIn = prev.data.startIn;
     if (typeof input.familyReminders === 'boolean') data.familyReminders = input.familyReminders;
     else if (prev && prev.data && typeof prev.data.familyReminders === 'boolean') data.familyReminders = prev.data.familyReminders;
     const updatedAt = Date.now();

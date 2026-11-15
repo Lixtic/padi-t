@@ -2051,7 +2051,6 @@
       state.config = { loaded: true, demo: !!j.demo, provider: j.provider || null, accessRequired: !!j.accessRequired };
       if (window.GuidedAds) { window.GuidedAds.init(j.ads); showNotice(j.notice); updateView(); }
       initAccount(Object.assign({}, j.sync || {}, { enabled: !!(j.auth && j.auth.enabled), syncEnabled: !!j.sync, authUrl: j.auth && j.auth.url }));
-      setTimeout(maybeAskAudience, 1200);   // after the saved sign-in has had a moment to restore
     } catch (e) {
       state.config = { loaded: true, demo: true, provider: null, accessRequired: false };   // static preview, no server
     }
@@ -2222,6 +2221,7 @@
       if (signedIn() && window.PadiSync.syncAvailable()) { syncNow(); watchLive(); }
       openResetFromLink();
       refreshPlans();
+      setTimeout(maybeAskAudience, 400);   // only once the saved sign-in has been restored, so returning users are never asked
     }).catch((e) => acctMsg(e.message, true));
   }
 
@@ -2622,7 +2622,7 @@
   });
 
   /* Account role controls which dashboard is shown. Resolve it from the signed-in account. */
-  let accountRole = (() => { try { return localStorage.getItem('guided.role') === 'parent' ? 'parent' : ''; } catch (e) { return ''; } })();   // cached, so a parent never sees the studio flash up
+  let accountRole = (() => { try { const pin = localStorage.getItem('guided.startIn'); if (pin === 'parent' || pin === 'teacher') return pin === 'parent' ? 'parent' : ''; return localStorage.getItem('guided.role') === 'parent' ? 'parent' : ''; } catch (e) { return ''; } })();   // cached, so a parent never sees the studio flash up
   let accountProfile = null;
   let accountProfileRequest = null;
   let accountProfileLoaded = false;
@@ -2643,9 +2643,15 @@
     try { if (accountRole) localStorage.setItem('guided.role', accountRole); else localStorage.removeItem('guided.role'); } catch (e) { /* storage blocked */ }
   }
   // Switching between teacher and parent views, or adding the other role to this account.
+  let launchRoleApplied = false;
   function updateRoleButton() {
     const b = $('#asRole'); if (!b) return;
     const roles = accountProfile && Array.isArray(accountProfile.roles) ? accountProfile.roles : [];
+    const both = roles.includes('teacher') && roles.includes('parent');
+    const chip = $('#roleChip'), chipText = $('#roleChipText');
+    if (chip) { chip.hidden = !both || !accountRole; if (both) { const cur = accountRole === 'parent' ? 'Parent' : 'Teacher'; chipText.textContent = cur; chip.title = 'Viewing as ' + cur + '. Tap to switch.'; chip.dataset.role = accountRole === 'parent' ? 'teacher' : 'parent'; } }
+    const sr = $('#startInRow'), ss = $('#startInSelect');
+    if (sr) { sr.hidden = !both; if (ss && both) ss.value = ['teacher', 'parent'].includes(accountProfile && accountProfile.startIn) ? accountProfile.startIn : 'last'; }
     if (!roles.length || !accountRole) { b.hidden = true; return; }
     const other = accountRole === 'parent' ? 'teacher' : 'parent';
     b.hidden = false;
@@ -2663,6 +2669,7 @@
       const res = await window.PadiSync.setAccountProfile(next);
       const saved = res && res.profile ? res.profile : next;
       window.dispatchEvent(new CustomEvent('guided:account-profile-saved', { detail: saved }));
+      if (add) toast('Added. Use the switch in the top bar to change views, and pick where GuidEd opens in Settings.');
       if (role === 'teacher') showPage(null); else showPage('dashboard');
       try { const d = $('#acctSheet'); if (d && d.close) d.close(); } catch (e) { /* ignore */ }
     } catch (e) { toast(e && e.message || 'Could not switch view. Please try again.'); }
@@ -2679,6 +2686,19 @@
         window.dispatchEvent(new CustomEvent('guided:account-profile-saved', { detail: res && res.profile ? res.profile : next }));
       } catch (e) { rt.setAttribute('aria-checked', on ? 'false' : 'true'); toast('Could not save that. Please try again.'); }
     }); }
+  { const chip = $('#roleChip'); if (chip) chip.addEventListener('click', () => switchRole(chip.dataset.role, false)); }
+  { const ss = $('#startInSelect');
+    if (ss) ss.addEventListener('change', async () => {
+      if (!accountProfile || !window.PadiSync || !window.PadiSync.setAccountProfile) return;
+      const next = Object.assign({}, accountProfile, { startIn: ss.value }); delete next.updatedAt;
+      try {
+        const res = await window.PadiSync.setAccountProfile(next);
+        const saved = res && res.profile ? res.profile : next;
+        try { localStorage.setItem('guided.startIn', saved.startIn && saved.startIn !== 'last' ? saved.startIn : ''); } catch (e) { /* storage blocked */ }
+        window.dispatchEvent(new CustomEvent('guided:account-profile-saved', { detail: saved }));
+        toast(saved.startIn === 'last' ? 'GuidEd will open in the view you used last.' : 'GuidEd will open in ' + (saved.startIn === 'parent' ? 'Parent' : 'Teacher') + ' view.');
+      } catch (e) { toast('Could not save that. Please try again.'); updateRoleButton(); }
+    }); }
   { const b = $('#asRole'); if (b) b.addEventListener('click', () => switchRole(b.dataset.role, !!b.dataset.add)); }
   async function refreshAccountProfile() {
     if (!window.PadiSync || !window.PadiSync.user || !window.PadiSync.user() || !window.PadiSync.getAccountProfile) {
@@ -2688,6 +2708,10 @@
     accountProfileRequest = window.PadiSync.getAccountProfile().then((profile) => {
       accountProfile = profile || null;
       accountRole = profile && (profile.primaryRole || (Array.isArray(profile.roles) ? profile.roles[0] : '')) || '';
+      // A pinned "Open GuidEd in" applies once per launch, so switching view later in the session sticks.
+      if (!launchRoleApplied && profile && Array.isArray(profile.roles) && profile.roles.length > 1 && profile.roles.includes(profile.startIn)) accountRole = profile.startIn;
+      launchRoleApplied = true;
+      try { localStorage.setItem('guided.startIn', profile && profile.roles && profile.roles.length > 1 && profile.startIn && profile.startIn !== 'last' ? profile.startIn : ''); } catch (e) { /* storage blocked */ }
       window.GuidedAccountRole = accountRole;
       accountProfileLoaded = true;
       accountProfileError = false;
