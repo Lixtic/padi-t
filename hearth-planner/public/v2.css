@@ -404,3 +404,10 @@ body:not(.role-parent) .parent-only { display: none !important; }
 .up-prompt-actions { display: flex; flex-wrap: wrap; gap: 8px; }
 .up-prompt button { min-height: 42px; padding: 0 14px; border-radius: 12px; border: 1px solid var(--line); background: transparent; color: var(--text); font: inherit; font-weight: 600; cursor: pointer; }
 #upCheck, #upOtpSend { background: var(--accent); border-color: var(--accent); color: var(--on-accent, #fff); }
+
+/* New plan on short desktop windows: the start screen scrolls instead of clipping the form below the fold.
+   (Phones already did this. Reading a plan keeps its own scroll area.) */
+[data-view="landing"] .stage { overflow-y: auto; overscroll-behavior: contain; scrollbar-gutter: stable; padding-bottom: 8px; }
+[data-view="landing"] .stage > .hero,
+[data-view="landing"] .stage > .composer-zone,
+[data-view="landing"] .stage > .messages-wrap { flex-shrink: 0; }
