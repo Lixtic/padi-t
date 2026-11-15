@@ -9,6 +9,8 @@
   var el = {};
 
   function toast(t) { if (hooks.toast) hooks.toast(t); }
+  // Parent subscriptions unlock home-learning activities; the teacher Pro purchase UI is not relevant in Parent Dashboard.
+  function isParentAccount() { return window.GuidedAccountRole === 'parent' || document.body.classList.contains('role-parent'); }
   function fmtDate(ms) { try { return new Date(ms).toLocaleDateString(undefined, { day: 'numeric', month: 'short', year: 'numeric' }); } catch (e) { return ''; } }
   function money(n, cur) { return (cur === 'GHS' ? 'GH₵' : cur + ' ') + (Math.round(n * 100) / 100).toString(); }
   // Days left when a paid Pro period ends within a week (testers on PRO_EMAILS have no end date).
@@ -64,7 +66,7 @@
     },
 
     openUpgrade: function (reason, message) {
-      if (!el.dlg || !P.tier()) return;
+      if (isParentAccount() || !el.dlg || !P.tier()) return;
       el.reason.textContent = message || '';
       el.reason.hidden = !message;
       el.msg.textContent = ''; el.msg.hidden = true;
@@ -135,6 +137,13 @@
 
   /* ───────── Sidebar card ───────── */
   function render() {
+    if (isParentAccount()) {
+      if (el.row) el.row.hidden = true;
+      if (el.badge) el.badge.hidden = true;
+      var banner = document.getElementById('proBanner'); if (banner) banner.hidden = true;
+      document.documentElement.dataset.tier = '';
+      return;
+    }
     if (!el.row) return;
     var t = P.tier();
     el.row.hidden = !t;
@@ -165,6 +174,7 @@
   var NAMES = { guest: 'Guest', free: 'Free', pro: 'Pro' };
   function renderBadge() {
     if (!el.badge) return;
+    if (isParentAccount()) { el.badge.hidden = true; return; }
     var t = P.tier();
     el.badge.hidden = !t;
     var top = document.getElementById('acctTop');
@@ -266,7 +276,7 @@
     if (el.psHelp) el.psHelp.hidden = !(t === 'pro' && info.pro && !info.pro.vip);
   }
   P.openPlan = function () {
-    if (!el.ps || !P.tier()) return;
+    if (isParentAccount() || !el.ps || !P.tier()) return;
     renderPlan();
     if (!el.ps.open) el.ps.showModal();
   };
@@ -344,5 +354,9 @@
   }
 
   window.GuidedPlans = P;
+  window.addEventListener('guided:account-profile-saved', function (event) {
+    if (event && event.detail) { window.GuidedAccountRole = event.detail.primaryRole || (event.detail.roles || [])[0] || window.GuidedAccountRole || ''; emit(); }
+  });
+  window.addEventListener('guided:account', function () { setTimeout(emit, 0); });
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', build); else build();
 })();
