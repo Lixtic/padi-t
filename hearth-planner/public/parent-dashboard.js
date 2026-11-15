@@ -2,7 +2,7 @@
 (function () {
   'use strict';
   var CHILD_CLASSES = ['KG 1', 'KG 2'].concat(Array.from({ length: 9 }, function (_, i) { return 'Basic ' + (i + 1); }));   // kindergarten to JHS 3
-  var state = { root: null, profile: null, records: [], loaded: false, loading: false, tab: 'overview', task: 'lesson', lessonStep: 0, lessonDraft: {}, lessonRoom: null, stageSaving: false, editingChild: '', busy: false, error: '', result: null };
+  var state = { root: null, profile: null, records: [], loaded: false, loading: false, tab: 'overview', task: 'lesson', lessonStep: 0, lessonDraft: {}, lessonRoom: null, stageSaving: false, editingChild: '', addingChild: false, busy: false, error: '', result: null };
   var $ = function (selector, root) { return (root || state.root).querySelector(selector); };
   var esc = function (value) { return String(value == null ? '' : value).replace(/[&<>"']/g, function (ch) { return ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[ch]; }); };
   var uid = function () { return 'pl-' + Math.random().toString(36).slice(2, 10) + Date.now().toString(36).slice(-5); };
@@ -81,7 +81,7 @@
   function saveProfile(next) {
     return window.PadiSync.setAccountProfile(next).then(function (result) {
       state.profile = result && result.profile ? result.profile : next;
-      state.error = ''; state.editingChild = '';
+      state.error = ''; state.editingChild = ''; state.addingChild = false;
       window.dispatchEvent(new CustomEvent('guided:account-profile-saved', { detail: state.profile }));
       render();
       return state.profile;
@@ -112,7 +112,8 @@
       '<div class="pd-child-list">' + (cards || '<div class="pd-empty pd-empty-illustrated">' + familyArt('family-reading', 'pd-empty-art') + '<strong>Your family starts here.</strong><span>Add a child to start planning learning activities.</span></div>') + '</div>' +
       '<label class="pd-check pd-reminder"><input type="checkbox" id="pdReminders"' + (state.profile && state.profile.familyReminders === false ? '' : ' checked') + '><span>Email me a short learning idea every Sunday evening</span></label>' +
       (list.length >= 10 && !child ? '<p class="pd-note">You can add up to 10 children to one parent account.</p>' :
-      '<form class="pd-form pd-child-form" id="pdChildForm"><h3>' + (child ? 'Update child details' : 'Add a child') + '</h3><label>Child’s name<input name="name" maxlength="80" required value="' + esc(child && child.name || '') + '" placeholder="Child’s name"></label><div class="pd-form-grid"><label>Class<select name="class">' + CHILD_CLASSES.map(function (value) { return '<option' + (value === cls ? ' selected' : '') + '>' + value + '</option>'; }).join('') + '</select></label><label>Daily learning time<select name="minutes">' + [15, 30, 45, 60].map(function (n) { return '<option value="' + n + '"' + (Number(child && child.minutes || 30) === n ? ' selected' : '') + '>' + n + ' minutes</option>'; }).join('') + '</select></label></div><fieldset><legend>Subjects</legend><div class="pd-subject-grid">' + subjectOptions + '</div></fieldset><div class="pd-form-actions"><button class="pd-primary" type="submit">' + (child ? 'Save changes' : 'Add child') + '</button>' + (child ? '<button type="button" class="pd-secondary" data-cancel-edit>Cancel</button>' : '') + '</div></form>');
+      !child && !state.addingChild ? '<button type="button" class="pd-primary pd-add-child" data-add-child>' + icon('plus') + ' Add a child</button>' :
+      '<form class="pd-form pd-child-form" id="pdChildForm"><h3>' + (child ? 'Update child details' : 'Add a child') + '</h3><label>Child’s name<input name="name" maxlength="80" required value="' + esc(child && child.name || '') + '" placeholder="Child’s name"></label><div class="pd-form-grid"><label>Class<select name="class">' + CHILD_CLASSES.map(function (value) { return '<option' + (value === cls ? ' selected' : '') + '>' + value + '</option>'; }).join('') + '</select></label><label>Daily learning time<select name="minutes">' + [15, 30, 45, 60].map(function (n) { return '<option value="' + n + '"' + (Number(child && child.minutes || 30) === n ? ' selected' : '') + '>' + n + ' minutes</option>'; }).join('') + '</select></label></div><fieldset><legend>Subjects</legend><div class="pd-subject-grid">' + subjectOptions + '</div></fieldset><div class="pd-form-actions"><button class="pd-primary" type="submit">' + (child ? 'Save changes' : 'Add child') + '</button>' + '<button type="button" class="pd-secondary" data-cancel-edit>Cancel</button>' + '</div></form>');
   }
 
   function renderTaskForm() {
@@ -296,8 +297,9 @@
         state.lessonDraft = draft; state.lessonStep = Math.min(3, step + 1); state.error = ''; render(); return;
       }
       var edit = event.target.closest('[data-edit-child]');
-      if (edit) { state.editingChild = edit.dataset.editChild; state.tab = 'children'; render(); return; }
-      if (event.target.closest('[data-cancel-edit]')) { state.editingChild = ''; render(); return; }
+      if (edit) { state.editingChild = edit.dataset.editChild; state.addingChild = false; state.tab = 'children'; render(); return; }
+      if (event.target.closest('[data-add-child]')) { state.editingChild = ''; state.addingChild = true; state.error = ''; render(); var nameField = state.root.querySelector('#pdChildForm [name="name"]'); if (nameField) { nameField.focus(); nameField.scrollIntoView({ block: 'center', behavior: 'smooth' }); } return; }
+      if (event.target.closest('[data-cancel-edit]')) { state.editingChild = ''; state.addingChild = false; state.error = ''; render(); return; }
       var remove = event.target.closest('[data-remove-child]');
       if (remove) {
         if (!window.confirm('Remove this child and their saved learning history from your parent account?')) return;
@@ -405,7 +407,7 @@
         var next = Object.assign({}, state.profile, { children: editing ? children().map(function (item) { return item.id === editing.id ? child : item; }) : children().concat([child]) });
         if (!state.profile.roles || !state.profile.roles.includes('parent')) next.roles = ['parent'];
         next.primaryRole = 'parent';
-        saveProfile(next).then(function () { state.selectedChild = child.id; state.tab = 'children'; render(); }).catch(function (error) { state.error = error.message; render(); });
+        saveProfile(next).then(function () { state.selectedChild = child.id; state.tab = 'children'; state.addingChild = false; render(); }).catch(function (error) { state.error = error.message; render(); });
       }
       if (event.target.id === 'pdTaskForm') {
         event.preventDefault();
