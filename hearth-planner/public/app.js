@@ -2505,6 +2505,10 @@
     const parent = accountRole === 'parent';
     document.body.classList.toggle('role-parent', parent);
     updateRoleButton();
+    const t = $('#roleCardTitle'); if (t) t.textContent = parent ? 'Family' : 'Teacher';
+    const keep = $('#clearCacheKeep'); if (keep) keep.textContent = parent ? 'Your saved lessons are kept.' : 'Your saved plans are kept.';
+    const fb = $('#familyBtn'), rr = $('#reminderRow'); if (fb) fb.hidden = !parent; if (rr) rr.hidden = !parent;
+    const rt = $('#reminderToggle'); if (rt) rt.setAttribute('aria-checked', accountProfile && accountProfile.familyReminders === false ? 'false' : 'true');
     const label = $('#newSession span');
     if (label) label.textContent = parent ? 'New Home Lesson' : 'New Plan';
     try { if (accountRole) localStorage.setItem('guided.role', accountRole); else localStorage.removeItem('guided.role'); } catch (e) { /* storage blocked */ }
@@ -2534,6 +2538,18 @@
       try { const d = $('#acctSheet'); if (d && d.close) d.close(); } catch (e) { /* ignore */ }
     } catch (e) { toast(e && e.message || 'Could not switch view. Please try again.'); }
   }
+  { const fb = $('#familyBtn'); if (fb) fb.addEventListener('click', () => { showPage('dashboard'); if (window.GuidedParentDashboard) window.GuidedParentDashboard.open('children'); }); }
+  { const rt = $('#reminderToggle');
+    if (rt) rt.addEventListener('click', async () => {
+      if (!accountProfile || !window.PadiSync || !window.PadiSync.setAccountProfile) return;
+      const on = rt.getAttribute('aria-checked') !== 'true';
+      rt.setAttribute('aria-checked', on ? 'true' : 'false');
+      const next = Object.assign({}, accountProfile, { familyReminders: on }); delete next.updatedAt;
+      try {
+        const res = await window.PadiSync.setAccountProfile(next);
+        window.dispatchEvent(new CustomEvent('guided:account-profile-saved', { detail: res && res.profile ? res.profile : next }));
+      } catch (e) { rt.setAttribute('aria-checked', on ? 'false' : 'true'); toast('Could not save that. Please try again.'); }
+    }); }
   { const b = $('#asRole'); if (b) b.addEventListener('click', () => switchRole(b.dataset.role, !!b.dataset.add)); }
   async function refreshAccountProfile() {
     if (!window.PadiSync || !window.PadiSync.user || !window.PadiSync.user() || !window.PadiSync.getAccountProfile) {
