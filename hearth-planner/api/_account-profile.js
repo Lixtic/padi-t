@@ -58,12 +58,23 @@ module.exports = async (req, res) => {
       if (input.children.length && !children.length) return sendJson(res, 400, { error: 'bad_request', message: 'Check the child name, class and selected subjects.' });
     }
 
+    const [prev] = await db.query('select data from account_profiles where user_id = $1', [me.uid]);
     const data = { roles, primaryRole, displayName, children };
-    if (typeof input.familyReminders === 'boolean') data.familyReminders = input.familyReminders;
-    else {
-      const [prev] = await db.query('select data from account_profiles where user_id = $1', [me.uid]);
-      if (prev && prev.data && typeof prev.data.familyReminders === 'boolean') data.familyReminders = prev.data.familyReminders;
+
+    // Keep contact details when older profile-saving flows do not send them.
+    const phoneNumber = Object.prototype.hasOwnProperty.call(input, 'phoneNumber')
+      ? cleanText(input.phoneNumber, 25)
+      : cleanText(prev && prev.data && prev.data.phoneNumber, 25);
+    if (phoneNumber) {
+      const digits = phoneNumber.replace(/\\D/g, '');
+      if (!/^\\+?[0-9\\s().-]{7,25}$/.test(phoneNumber) || digits.length < 7 || digits.length > 15) {
+        return sendJson(res, 400, { error: 'bad_request', message: 'Enter a valid phone number.' });
+      }
     }
+    data.phoneNumber = phoneNumber;
+
+    if (typeof input.familyReminders === 'boolean') data.familyReminders = input.familyReminders;
+    else if (prev && prev.data && typeof prev.data.familyReminders === 'boolean') data.familyReminders = prev.data.familyReminders;
     const updatedAt = Date.now();
     await db.query(
       'insert into account_profiles (user_id, data, updated_at) values ($1, $2::jsonb, $3) on conflict (user_id) do update set data = excluded.data, updated_at = excluded.updated_at',
