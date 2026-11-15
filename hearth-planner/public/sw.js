@@ -1,11 +1,17 @@
 /* GuidEd service worker: caches the app shell so it opens instantly and works offline
    for reading saved plans. API calls (/api/*) are never cached. Bump VERSION to force an update. */
-const VERSION = 'schoolpadi-v125';
+const VERSION = 'schoolpadi-v127';
 const SHELL = ['./', 'index.html', 'styles.css', 'parent-registration.css', 'parent-registration.js', 'parent-dashboard.js', 'app.js', 'editor.js', 'schemes.js', 'sample.js', 'plan-join.js', 'sync.js', 'levels.js', 'plans.js', 'profile.js', 'ads.js', 'rewarded.js', 'feedback.js', 'docx-export.js', 'pdf-export.js', 'slides.js', 'v2.css', 'v2.js', 'icons/apple-touch-icon.png', 'theme-init.js', 'pwa.js',
   'about', 'terms', 'privacy', 'refunds', 'ads-policy', 'legal.css', 'legal-theme.js', 'favicon.svg', 'manifest.webmanifest', 'vendor/neon-realtime.js', 'icons/icon-192.png', 'icons/icon-512.png'];
 
 self.addEventListener('install', (e) => {
-  e.waitUntil(caches.open(VERSION).then((c) => c.addAll(SHELL)).then(() => self.skipWaiting()));
+  /* Cache the shell file by file so open pages can show a progress bar while the new version downloads. */
+  const tell = (m) => self.clients.matchAll({ includeUncontrolled: true }).then((cs) => cs.forEach((c) => c.postMessage(m)));
+  let done = 0; const total = SHELL.length;
+  e.waitUntil(tell({ type: 'update-progress', done: 0, total })
+    .then(() => caches.open(VERSION))
+    .then((c) => Promise.all(SHELL.map((u) => fetch(new Request(u, { cache: 'reload' })).then((r) => { if (!r.ok) throw new Error(u); return c.put(u, r); }).then(() => tell({ type: 'update-progress', done: ++done, total })))))
+    .then(() => self.skipWaiting()));
 });
 self.addEventListener('activate', (e) => {
   e.waitUntil(caches.keys().then((ks) => Promise.all(ks.filter((k) => k !== VERSION).map((k) => caches.delete(k)))).then(() => self.clients.claim()));
