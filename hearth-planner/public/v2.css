@@ -412,3 +412,9 @@ body:not(.role-parent) .parent-only { display: none !important; }
 .dashboard-page .parent-dashboard-content .pd-room-top .pd-text-button { min-height: 32px; padding: 5px 12px; margin-bottom: 4px; font-size: 13px; }
 .dashboard-page .parent-dashboard-content .pd-room-top h2 { font-size: clamp(20px, 3.4vw, 26px); }
 .dashboard-page .parent-dashboard-content .pd-room-top p { font-size: 12.5px; }
+/* New plan on short desktop windows: the start screen scrolls instead of clipping the form below the fold.
+   (Phones already did this. Reading a plan keeps its own scroll area.) */
+[data-view="landing"] .stage { overflow-y: auto; overscroll-behavior: contain; scrollbar-gutter: stable; padding-bottom: 8px; }
+[data-view="landing"] .stage > .hero,
+[data-view="landing"] .stage > .composer-zone,
+[data-view="landing"] .stage > .messages-wrap { flex-shrink: 0; }
