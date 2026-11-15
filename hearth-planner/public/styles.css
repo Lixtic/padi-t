@@ -2100,3 +2100,13 @@ main[data-view="chat"] .notice-bar { display: none; }
   #accountProfileSheet { width:calc(100% - 24px); max-width:480px; padding:24px 18px; }
   #accountProfileSheet .ep-content form { gap:11px; }
 }
+
+
+#accountProfileSheet .ep-optional {
+  color: var(--muted);
+  font-size: .72rem;
+  font-weight: 500;
+}
+#accountProfileSheet input[type="tel"] {
+  letter-spacing: .01em;
+}
