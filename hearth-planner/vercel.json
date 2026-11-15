@@ -74,6 +74,8 @@
     }
   ],
   "rewrites": [
+    { "source": "/parents", "destination": "/index.html" },
+    { "source": "/teachers", "destination": "/index.html" },
     {
       "source": "/api/export-docx",
       "destination": "/api/export_docx"

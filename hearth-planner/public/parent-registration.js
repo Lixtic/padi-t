@@ -71,6 +71,11 @@
     if (!up) { roleError.hidden = true; return; }
     parentFields.hidden = selectedRole() !== 'parent';
   }
+  // A /parents link or the first-visit choice asks for the Parent card to be ticked.
+  window.addEventListener('guided:preselect-role', function (e) {
+    var input = form.querySelector('input[name="guidedRole"][value="' + (e.detail === 'teacher' ? 'teacher' : 'parent') + '"]');
+    if (input && !input.checked) { input.checked = true; input.dispatchEvent(new Event('change', { bubbles: true })); }
+  });
   form.querySelectorAll('input[name="guidedRole"]').forEach(function (input) {
     input.addEventListener('change', function () { parentFields.hidden = input.value !== 'parent'; roleError.hidden = true; });
   });
