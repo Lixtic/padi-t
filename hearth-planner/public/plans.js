@@ -135,6 +135,18 @@
     },
   };
 
+  /* ───────── Parent wording ───────── */
+  // Parents are limited by home activities, not lesson plans, and have no classes or Word files, so their plan cards say that.
+  function isParent() { return document.body.classList.contains('role-parent'); }
+  function parentAllowance() {
+    var a = info && info.free && info.free.parent;
+    return a || { used: 0, limit: 0 };
+  }
+  function parentLeftText() {
+    var a = parentAllowance();
+    return a.limit ? Math.max(0, a.limit - a.used) + ' of ' + a.limit + ' home activities left this week' : 'Unlimited home activities';
+  }
+
   /* ───────── Sidebar card ───────── */
   function render() {
     if (isParentAccount()) {
@@ -157,7 +169,7 @@
     } else if (t === 'free') {
       var f = info.free || { used: 0, limit: 0 };
       title = 'Free plan';
-      sub = f.limit ? Math.max(0, f.limit - f.used) + ' of ' + f.limit + ' full plans left this week' : 'Full plans';
+      sub = isParent() ? parentLeftText() : f.limit ? Math.max(0, f.limit - f.used) + ' of ' + f.limit + ' full plans left this week' : 'Full plans';
       cta = 'Upgrade';
     } else {
       title = 'GuidEd Pro';
@@ -186,6 +198,17 @@
   }
   // [what, guest, free, pro, free-and-guest hint of what Pro adds]. ok=false shows a lock.
   function capabilities(t) {
+    if (isParent() && t !== 'guest') {
+      var pl = (info && info.free && info.free.parent && info.free.parent.limit) || 0;
+      var rowsP = [
+        ['Home activities', true, t === 'pro' ? 'Unlimited for every child' : pl ? pl + ' a week for your whole family' : 'Unlimited', 'Unlimited for every child'],
+        ['Lessons, explanations and practice', true, 'Included'],
+        ['Your children', true, 'Up to 10 children'],
+        ['Sync across your devices', true, 'Included'],
+      ];
+      if (window.GuidedAds && window.GuidedAds.enabled()) rowsP.push(t === 'pro' ? ['Ads', true, 'No ads'] : ['Ads', true, 'One small banner on the start screen', 'No ads with Pro']);
+      return rowsP;
+    }
     var lim = info.limits || {};
     var fp = lim.freePlansWeekly, fc = lim.freeClasses, gp = lim.guestPreviewsDaily;
     var freeClasses = fc === 1 ? '1 class a week' : fc ? fc + ' classes a week' : 'Every class';
@@ -222,7 +245,7 @@
   function renderBonus() {
     var box = document.getElementById('upBonus'); if (!box) return;
     var r = P.reward(), btn = document.getElementById('upWatch'), note = document.getElementById('upWatchNote');
-    if (!r || (!r.exhausted && !r.bonus)) { box.hidden = true; return; }
+    if (isParent() || !r || (!r.exhausted && !r.bonus)) { box.hidden = true; return; }
     box.hidden = false;
     if (r.bonus > 0) { btn.hidden = true; note.textContent = 'You have ' + r.bonus + ' bonus ' + (r.bonus === 1 ? 'plan' : 'plans') + ' ready. Close this and tap Generate again.'; return; }
     btn.hidden = false; btn.disabled = r.left < 1;
@@ -230,6 +253,7 @@
     note.textContent = r.left < 1 ? 'Video plans come back tomorrow. Pro has no limit.' : 'Your choice. It plays only after you tap. ' + r.left + ' of ' + r.perDay + ' left today.';
   }
   P.renderBonus = renderBonus;
+  P.rerender = function () { try { emit(); } catch (e) { /* not ready */ } };
   function daysLeft(ms) { return Math.max(0, Math.ceil((ms - Date.now()) / 86400000)); }
   function renderPlan() {
     var t = P.tier();
@@ -247,9 +271,10 @@
       var f = info.free || { used: 0, limit: 0 };
       el.psTitle.textContent = 'You are on the Free plan';
       sub = info.email ? 'Signed in as ' + info.email : 'Signed in';
-      if (f.limit) meter = { used: f.used, limit: f.limit, text: Math.max(0, f.limit - f.used) + ' of ' + f.limit + ' full plans left this week' + (f.resetsAt ? ' · renews Monday' : '') + (f.bonus ? ' · +' + f.bonus + ' bonus' : '') };
+      if (isParent()) { var pa = parentAllowance(); if (pa.limit) meter = { used: pa.used, limit: pa.limit, text: parentLeftText() + (pa.resetsAt ? ' · renews Monday' : '') }; }
+      else if (f.limit) meter = { used: f.used, limit: f.limit, text: Math.max(0, f.limit - f.used) + ' of ' + f.limit + ' full plans left this week' + (f.resetsAt ? ' · renews Monday' : '') + (f.bonus ? ' · +' + f.bonus + ' bonus' : '') };
       cta = 'Upgrade to Pro';
-      note = 'Pro is a one-time payment for a set time. It never renews by itself.';
+      note = isParent() ? 'Pro is a one-time payment for a set time. It never renews by itself, and one Pro also covers you if you teach.' : 'Pro is a one-time payment for a set time. It never renews by itself.';
     } else {
       var ex = info.pro && info.pro.expiresAt;
       el.psTitle.textContent = 'You have GuidEd Pro';
@@ -291,7 +316,10 @@
     var free = lim.freePlansWeekly ? lim.freePlansWeekly + ' a week' : 'Unlimited';
     var cls = lim.freeClasses === 1 ? '1 class' : lim.freeClasses ? lim.freeClasses + ' classes' : 'All classes';
     el.table.replaceChildren();
-    [['Full lesson plans', free, 'Unlimited'], ['Classes you plan for', cls, 'Every class, Basic 1 to SHS 3'], ['Word downloads', 'With a GuidEd footer', 'Clean, ready to print'], ['Study notes and BECE questions', 'Included', 'Included']].forEach(function (r) {
+    var pAllow = info.free && info.free.parent && info.free.parent.limit;
+    var rowsU = isParent() ? [['Home activities', pAllow ? pAllow + ' a week' : 'Unlimited', 'Unlimited'], ['Your children', 'Up to 10', 'Up to 10'], ['Lessons, explanations and practice', 'Included', 'Included']]
+      : [['Full lesson plans', free, 'Unlimited'], ['Classes you plan for', cls, 'Every class, Basic 1 to SHS 3'], ['Word downloads', 'With a GuidEd footer', 'Clean, ready to print'], ['Study notes and BECE questions', 'Included', 'Included']];
+    rowsU.forEach(function (r) {
       var row = document.createElement('div'); row.className = 'up-row';
       var a = document.createElement('span'); a.className = 'up-what'; a.textContent = r[0];
       var b = document.createElement('span'); b.className = 'up-free'; b.textContent = r[1];
@@ -312,7 +340,7 @@
     el.note.textContent = off ? 'Payments are not open yet. Please check back soon.' : 'Pay with MTN MoMo, Telecel Cash, AT Money or a bank card. It is a one-time payment with no automatic renewal.';
     var pro = info.tier === 'pro';
     el.title.textContent = pro ? 'Extend GuidEd Pro' : 'Go further with GuidEd Pro';
-    el.lead.textContent = pro ? (info.pro && info.pro.expiresAt ? 'Pro is active until ' + fmtDate(info.pro.expiresAt) + '. New time is added on top.' : 'Pro is active on your account.') : 'Plan every class, every week, and download clean Word files.';
+    el.lead.textContent = pro ? (info.pro && info.pro.expiresAt ? 'Pro is active until ' + fmtDate(info.pro.expiresAt) + '. New time is added on top.' : 'Pro is active on your account.') : (isParent() ? 'Unlimited home lessons, explanations and practice for every child. One Pro also covers you if you teach.' : 'Plan every class, every week, and download clean Word files.');
   }
 
   function build() {

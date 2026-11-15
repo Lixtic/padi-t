@@ -2505,6 +2505,7 @@
     const parent = accountRole === 'parent';
     document.body.classList.toggle('role-parent', parent);
     updateRoleButton();
+    if (window.GuidedPlans && window.GuidedPlans.rerender) window.GuidedPlans.rerender();
     const t = $('#roleCardTitle'); if (t) t.textContent = parent ? 'Family' : 'Teacher';
     const keep = $('#clearCacheKeep'); if (keep) keep.textContent = parent ? 'Your saved lessons are kept.' : 'Your saved plans are kept.';
     const fb = $('#familyBtn'), rr = $('#reminderRow'); if (fb) fb.hidden = !parent; if (rr) rr.hidden = !parent;
