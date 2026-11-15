@@ -2012,3 +2012,10 @@ main[data-view="chat"] .notice-bar { display: none; }
     grid-template-columns: minmax(0, 1fr);
   }
 }
+
+.pd-suggest { margin-top:12px; padding:12px; border:1px solid var(--pd-border,#dce5f2); border-radius:14px; background:var(--pd-surface,#fff); display:grid; gap:10px; }
+.pd-suggest-title { display:flex; align-items:center; gap:6px; font-size:.86rem; color:var(--pd-ink,#14243a); }
+.pd-suggest-group { display:flex; flex-wrap:wrap; align-items:center; gap:8px; }
+.pd-suggest-group > span { width:100%; color:var(--pd-muted,#64748b); font-size:.74rem; font-weight:700; text-transform:uppercase; letter-spacing:.04em; }
+.pd-suggest-group button { padding:8px 11px; border:1px solid var(--pd-border,#dce5f2); border-radius:999px; background:transparent; color:var(--pd-ink,#14243a); font-size:.82rem; cursor:pointer; text-align:left; }
+.pd-suggest-group button.is-picked { background:var(--accent,#1d4ed8); border-color:var(--accent,#1d4ed8); color:#fff; }

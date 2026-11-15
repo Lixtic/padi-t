@@ -11,6 +11,51 @@
     var level = window.GuidedLevels && window.GuidedLevels.levelOfClass(cls);
     return level && Array.isArray(level.subjects) ? level.subjects : ['Mathematics', 'English Language', 'Science', 'Computing', 'Social Studies'];
   };
+  /* Suggested topics: what the school scheme of learning covers for this child's class, around the current week. */
+  var plainName = function (text) { return String(text || '').replace(/^\s*\d+(?:\.\d+)*\.?\s+/, '').trim(); };   // "1.3 Fractions" -> "Fractions"
+  function currentWeek(cls) {
+    var S = window.SchoolPadiSchemes; if (!S) return null;
+    var term = S.currentTerm(undefined, cls), d = new Date(), day = d.getDay();
+    d.setDate(d.getDate() + (day === 6 ? 2 : day === 0 ? 1 : 0));   // the weekend looks ahead to Monday
+    var today = d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+    var n = S.weeksIn(cls);
+    for (var w = 1; w <= n; w++) { var we = S.weekEnding(term, w, { cls: cls }); if (we && we.iso >= today) return { term: term, week: w }; }
+    return { term: term, week: n };
+  }
+  function suggestionsFor(child, subject) {
+    var S = window.SchoolPadiSchemes; if (!S || !child || !subject) return null;
+    var cls = child.class, cw = currentWeek(cls);
+    if (!cw || !S.has(subject, cls, cw.term)) return null;
+    var picks = [], seen = {};
+    function add(group, w) {
+      if (w < 1) return;
+      var r = S.lookup(subject, cls, cw.term, w); if (!r) return;
+      var names = r.type === 'teach' ? [plainName(r.substrand || r.strand)] : r.type === 'revision' ? (r.topics || []).slice(0, 3).map(function (t) { return plainName(String(t).split('>').pop()); }) : [];
+      names.forEach(function (name) {
+        if (!name || seen[name]) return; seen[name] = 1;
+        picks.push({ group: r.type === 'revision' ? 'Revise' : group, name: name, standard: r.standard || '', term: cw.term, week: w });
+      });
+    }
+    add('This week', cw.week); add('Coming up', cw.week + 1); add('Coming up', cw.week + 2); add('Catch up', cw.week - 1); add('Catch up', cw.week - 2);
+    var areas = [], aseen = {};
+    for (var w = 1, max = S.span(subject, cls, cw.term); w <= max; w++) {
+      var row = S.lookup(subject, cls, cw.term, w), a = row && row.type === 'teach' ? plainName(row.strand) : '';
+      if (a && !aseen[a]) { aseen[a] = 1; areas.push(a); }
+    }
+    return { picks: picks, areas: areas.slice(0, 8), term: cw.term, week: cw.week };
+  }
+  function suggestHtml(child, subject) {
+    var sg = suggestionsFor(child, subject); if (!sg || !(sg.picks.length || sg.areas.length)) return '';
+    var html = '<div class="pd-suggest"><strong class="pd-suggest-title">' + icon('spark') + ' Suggested from ' + esc(child.name) + '’s school work</strong>';
+    ['This week', 'Coming up', 'Catch up', 'Revise'].forEach(function (group) {
+      var items = sg.picks.filter(function (x) { return x.group === group; }); if (!items.length) return;
+      html += '<div class="pd-suggest-group"><span>' + esc(group) + '</span>' + items.map(function (x) {
+        return '<button type="button" data-topic-example="' + esc(x.name) + '" data-term="' + x.term + '" data-week="' + x.week + '"' + (x.standard ? ' title="' + esc(x.standard) + '"' : '') + '>' + esc(x.name) + '</button>';
+      }).join('') + '</div>';
+    });
+    if (sg.areas.length) html += '<div class="pd-suggest-group"><span>Areas to learn this term</span>' + sg.areas.map(function (a) { return '<button type="button" data-topic-example="' + esc(a) + '" data-term="' + sg.term + '">' + esc(a) + '</button>'; }).join('') + '</div>';
+    return html + '</div>';
+  }
   var labels = { lesson: 'Plan a Home Lesson', explanation: 'Help Me Understand', practice: 'Practice Exercises' };
   var icon = function (name, extra) { return '<svg class="ico pd-icon ' + (extra || '') + '" aria-hidden="true" focusable="false"><use href="#i-' + name + '"></use></svg>'; };
 
@@ -73,7 +118,7 @@
     var list = children(), child = selectedChild();
     var subjects = child && child.subjects && child.subjects.length ? child.subjects : subjectsFor(child && child.class || 'Basic 7');
     var weeks = Array.from({ length: 14 }, function (_, i) { return '<option value="' + (i + 1) + '">' + (i + 1) + '</option>'; }).join('');
-    return '<form class="pd-form pd-task-form" id="pdTaskForm"><div class="pd-form-grid"><label>Choose your child<select name="childId" required>' + list.map(function (item) { return '<option value="' + esc(item.id) + '"' + (child && item.id === child.id ? ' selected' : '') + '>' + esc(item.name) + ' · ' + esc(item.class) + '</option>'; }).join('') + '</select></label><label>Subject<select name="subject">' + subjects.map(function (subject) { return '<option>' + esc(subject) + '</option>'; }).join('') + '</select></label></div><label>Topic or area to learn<input name="topic" maxlength="180" placeholder="e.g. Parts of a computer" required></label><div class="pd-form-grid"><label>Term<select name="term"><option value="1">Term 1</option><option value="2">Term 2</option><option value="3">Term 3</option></select></label><label>Week<select name="week">' + weeks + '</select></label></div><label>Anything you want the AI to focus on (optional)<textarea name="notes" rows="2" maxlength="160"></textarea></label><button class="pd-primary" type="submit"' + (state.busy ? ' disabled' : '') + '>' + (state.busy ? 'Preparing…' : 'Create ' + esc(labels[state.task]).toLowerCase()) + '</button></form>';
+    return '<form class="pd-form pd-task-form" id="pdTaskForm"><div class="pd-form-grid"><label>Choose your child<select name="childId" required>' + list.map(function (item) { return '<option value="' + esc(item.id) + '"' + (child && item.id === child.id ? ' selected' : '') + '>' + esc(item.name) + ' · ' + esc(item.class) + '</option>'; }).join('') + '</select></label><label>Subject<select name="subject">' + subjects.map(function (subject) { return '<option>' + esc(subject) + '</option>'; }).join('') + '</select></label></div><label>Topic or area to learn<input name="topic" maxlength="180" placeholder="e.g. Parts of a computer" required></label><div id="pdSuggestBox">' + suggestHtml(child, subjects[0]) + '</div><div class="pd-form-grid"><label>Term<select name="term"><option value="1">Term 1</option><option value="2">Term 2</option><option value="3">Term 3</option></select></label><label>Week<select name="week">' + weeks + '</select></label></div><label>Anything you want the AI to focus on (optional)<textarea name="notes" rows="2" maxlength="160"></textarea></label><button class="pd-primary" type="submit"' + (state.busy ? ' disabled' : '') + '>' + (state.busy ? 'Preparing…' : 'Create ' + esc(labels[state.task]).toLowerCase()) + '</button></form>';
   }
 
   function renderLessonWizard() {
@@ -88,9 +133,9 @@
     if (step === 0) {
       content = '<div class="pd-wizard-field"><label>Choose your child</label><select name="childId" required>' + children().map(function (c) { return '<option value="' + esc(c.id) + '"' + (child && c.id === child.id ? ' selected' : '') + '>' + esc(c.name) + ' · ' + esc(c.class) + '</option>'; }).join('') + '</select><small>We’ll use their class and learning level to shape the lesson.</small></div><div class="pd-wizard-field"><label>Subject</label><select name="subject">' + subjects.map(function (s) { return '<option' + (s === (d.subject || subjects[0]) ? ' selected' : '') + '>' + esc(s) + '</option>'; }).join('') + '</select></div>';
     } else if (step === 1) {
-      content = '<div class="pd-wizard-context">' + icon('user') + '<span>Learning with <strong>' + esc(child && child.name || 'your child') + '</strong> · ' + esc(child && child.class || '') + '</span></div><div class="pd-wizard-field"><label>What topic should your child learn?</label><input name="topic" maxlength="180" required value="' + esc(d.topic || '') + '" placeholder="e.g. Parts of a computer"><small>Choose a school topic or something your child finds difficult.</small></div><div class="pd-topic-examples"><span>Examples</span><button type="button" data-topic-example="Parts of a computer">Parts of a computer</button><button type="button" data-topic-example="Fractions">Fractions</button><button type="button" data-topic-example="The water cycle">The water cycle</button></div>';
+      content = '<div class="pd-wizard-context">' + icon('user') + '<span>Learning with <strong>' + esc(child && child.name || 'your child') + '</strong> · ' + esc(child && child.class || '') + '</span></div><div class="pd-wizard-field"><label>What topic should your child learn?</label><input name="topic" maxlength="180" required value="' + esc(d.topic || '') + '" placeholder="e.g. Parts of a computer"><small>Choose a school topic or something your child finds difficult.</small></div>' + (suggestHtml(child, d.subject || (child && child.subjects && child.subjects[0])) || '') + '<div class="pd-topic-examples"><span>Examples</span><button type="button" data-topic-example="Parts of a computer">Parts of a computer</button><button type="button" data-topic-example="Fractions">Fractions</button><button type="button" data-topic-example="The water cycle">The water cycle</button></div>';
     } else if (step === 2) {
-      content = '<div class="pd-wizard-field"><label>School term</label><select name="term">' + [1,2,3].map(function(n){return '<option value="'+n+'"'+(Number(d.term||1)===n?' selected':'')+'>Term '+n+'</option>';}).join('') + '</select></div><div class="pd-wizard-field"><label>Curriculum week</label><select name="week">' + Array.from({length:14},function(_,i){var n=i+1;return '<option value="'+n+'"'+(Number(d.week||1)===n?' selected':'')+'>Week '+n+'</option>';}).join('') + '</select></div><div class="pd-wizard-field"><label>Anything we should focus on? <span>(optional)</span></label><textarea name="notes" rows="3" maxlength="160" placeholder="For example: Use examples from our home or community.">' + esc(d.notes || '') + '</textarea></div><p class="pd-wizard-tip">' + icon('spark') + ' Designed for ' + esc(child && child.minutes || 30) + ' minutes of daily learning.</p>';
+      content = '<div class="pd-wizard-field"><label>School term</label><select name="term">' + [1,2,3].map(function(n){return '<option value="'+n+'"'+(Number(d.term||(currentWeek(child && child.class) || {}).term||1)===n?' selected':'')+'>Term '+n+'</option>';}).join('') + '</select></div><div class="pd-wizard-field"><label>Curriculum week</label><select name="week">' + Array.from({length:14},function(_,i){var n=i+1;return '<option value="'+n+'"'+(Number(d.week||(currentWeek(child && child.class) || {}).week||1)===n?' selected':'')+'>Week '+n+'</option>';}).join('') + '</select></div><div class="pd-wizard-field"><label>Anything we should focus on? <span>(optional)</span></label><textarea name="notes" rows="3" maxlength="160" placeholder="For example: Use examples from our home or community.">' + esc(d.notes || '') + '</textarea></div><p class="pd-wizard-tip">' + icon('spark') + ' Designed for ' + esc(child && child.minutes || 30) + ' minutes of daily learning.</p>';
     } else {
       content = '<div class="pd-review-list"><div><span>Child</span><strong>' + esc(child && child.name || '—') + ' · ' + esc(child && child.class || '') + '</strong></div><div><span>Subject</span><strong>' + esc(d.subject || subjects[0] || '—') + '</strong></div><div><span>Topic</span><strong>' + esc(d.topic || '—') + '</strong></div><div><span>Schedule</span><strong>Term ' + esc(d.term || 1) + ' · Week ' + esc(d.week || 1) + '</strong></div></div><input type="hidden" name="childId" value="' + esc(d.childId || child && child.id || '') + '"><input type="hidden" name="subject" value="' + esc(d.subject || subjects[0] || '') + '"><input type="hidden" name="topic" value="' + esc(d.topic || '') + '"><input type="hidden" name="term" value="' + esc(d.term || 1) + '"><input type="hidden" name="week" value="' + esc(d.week || 1) + '"><input type="hidden" name="notes" value="' + esc(d.notes || '') + '"><p class="pd-wizard-tip">' + icon('book') + ' GuidEd will prepare the parent guide, child-friendly explanation, practical activity and questions.</p>';
     }
@@ -206,7 +251,18 @@
       if (open) { state.tab = open.dataset.openTask; state.task = open.dataset.openTask; if (state.task === 'lesson') { state.lessonStep = 0; state.lessonDraft = {}; } state.result = null; render(); return; }
       if (event.target.closest('#pdBack')) { document.dispatchEvent(new CustomEvent('guided:parent-back')); return; }
       var example = event.target.closest('[data-topic-example]');
-      if (example) { var topic = state.root.querySelector('[name="topic"]'); if (topic) topic.value = example.dataset.topicExample; return; }
+      if (example) {
+        var topic = state.root.querySelector('[name="topic"]'); if (topic) topic.value = example.dataset.topicExample;
+        var tform = example.closest('form');
+        if (tform && example.dataset.term) {
+          var termSel = tform.querySelector('[name="term"]'), weekSel = tform.querySelector('[name="week"]');
+          if (termSel) termSel.value = example.dataset.term;
+          if (weekSel && example.dataset.week) weekSel.value = example.dataset.week;
+          if (tform.dataset.step) state.lessonDraft = Object.assign({}, state.lessonDraft, { term: example.dataset.term, week: example.dataset.week || state.lessonDraft.week });
+        }
+        state.root.querySelectorAll('[data-topic-example]').forEach(function (b) { b.classList.toggle('is-picked', b === example); });
+        return;
+      }
       if (event.target.closest('[data-lesson-back]')) { state.lessonStep = Math.max(0, state.lessonStep - 1); state.error = ''; render(); return; }
       if (event.target.closest('[data-lesson-next]')) {
         var wizard = event.target.closest('#pdTaskForm'), step = Number(wizard && wizard.dataset.step || 0), values = new FormData(wizard), draft = Object.assign({}, state.lessonDraft);
@@ -271,6 +327,14 @@
       }
       var reveal = event.target.closest('[data-reveal-answer]'); if (reveal) { var answer = reveal.parentNode.querySelector('.pd-answer-content'); if (answer) { answer.hidden = false; reveal.hidden = true; } return; }
       if (event.target.closest('[data-finish-lesson]')) { var finished = state.records.find(function (item) { return item.id === state.lessonRoom; }); if (finished) { var finishedData = Object.assign({}, finished.data, { status: 'completed', completedAt: Date.now(), lessonStage: 5 }); saveRecord({ id: finished.id, kind: finished.kind, data: finishedData }).then(function () { state.lessonRoom = null; state.tab = 'progress'; render(); }).catch(function (error) { state.error = error.message; render(); }); } return; }
+    });
+    state.root.addEventListener('change', function (event) {
+      var f = event.target.form;
+      if (f && f.id === 'pdTaskForm' && !f.dataset.step && (event.target.name === 'childId' || event.target.name === 'subject')) {
+        var box = state.root.querySelector('#pdSuggestBox');
+        var who = children().find(function (c) { return c.id === f.elements.childId.value; });
+        if (box) box.innerHTML = suggestHtml(who, f.elements.subject.value);
+      }
     });
     state.root.addEventListener('change', function (event) {
       if (event.target.id === 'pdReminders') {
