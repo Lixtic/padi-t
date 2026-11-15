@@ -427,6 +427,10 @@ body:not(.role-parent) .parent-only { display: none !important; }
 .aud-card:hover, .aud-card:focus-visible { border-color: var(--accent); }
 .aud-skip { display: block; margin: 6px auto 0; padding: 8px; border: 0; background: none; color: var(--muted); font: inherit; font-size: 13px; text-decoration: underline; cursor: pointer; }
 
+/* Update progress bar (shown while a new version downloads, then applied automatically) */
+.update-progress{position:fixed;left:0;right:0;top:0;z-index:2000;height:22px;background:rgba(0,0,0,.08);pointer-events:none}
+.update-progress-fill{display:block;height:100%;width:0;background:var(--brand,#1f7a5c);transition:width .25s ease}
+.update-progress-label{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font:600 11px/1 system-ui,sans-serif;color:#fff;mix-blend-mode:normal;text-shadow:0 1px 2px rgba(0,0,0,.45)}
 /* Top-bar view switch for people who are both teacher and parent. */
 .role-chip { display: inline-flex; align-items: center; gap: 6px; min-height: 32px; padding: 0 11px; border: 1px solid var(--line); border-radius: 999px; background: var(--card); color: var(--text); font: inherit; font-size: 12.5px; font-weight: 700; cursor: pointer; }
 .role-chip[hidden] { display: none; }
