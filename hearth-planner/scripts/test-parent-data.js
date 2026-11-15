@@ -10,7 +10,10 @@ global.__PADI_SQL__ = { query: async (text, p) => {
   if (/^select 1 from users/.test(t)) return [{ ok: 1 }];
   if (/from account_profiles where user_id/.test(t)) return p[0] === 'parent-1' ? [{ data: profile }] : [];
   if (/^insert into parent_learning/.test(t)) { rows.set(p[0] + '/' + p[1], { id: p[1], kind: p[2], data: JSON.parse(p[3]), updated_at: p[4] }); return []; }
-  if (/^select id, kind, data, updated_at, deleted from parent_learning/.test(t)) return [...rows.values()].filter((r) => true);
+  if (/^select id, kind, data, updated_at, deleted from parent_learning/.test(t)) return [...rows.values()].filter((r) => !r.deleted);
+  if (/^update parent_learning set deleted = true/.test(t)) { const k = p[0] + '/' + p[1]; if (rows.has(k)) rows.get(k).deleted = true; return []; }
+  if (/^select 1 as x from parent_learning/.test(t)) { const r = rows.get(p[0] + '/' + p[1]); return r && !r.deleted ? [{ x: 1 }] : []; }
+  if (/^select count\(\*\)::int as n from parent_learning/.test(t)) return [{ n: [...rows.values()].filter((r) => !r.deleted).length }];
   return [];
 } };
 Object.assign(process.env, { DATABASE_URL: 'test', SMTP_URL: 'smtp://t', AUTH_SECRET: 'test-secret-test-secret-test-secret' });
@@ -42,6 +45,21 @@ const rec = (extra) => ({ id: 'pl-1', kind: 'lesson', data: Object.assign({ chil
   assert.equal(r.code, 403, "cannot save for a child that isn't yours");
   r = await call('POST', { id: 'teacher-1', email: 't@x.co' }, rec());
   assert.equal(r.code, 403, 'teacher accounts have no parent records');
+  // delete one record
+  r = await call('POST', parent, { id: 'pl-1', delete: true });
+  assert.equal(r.code, 200); assert.equal(r.json.deleted, 'pl-1');
+  r = await call('GET', parent);
+  assert.equal(r.json.length, 0, 'a deleted record is gone from the list');
+  // the cap: the 151st new record is refused, but updating an existing one is not
+  rows.clear();
+  for (let i = 0; i < 150; i++) { r = await call('POST', parent, Object.assign(rec(), { id: 'cap-' + i })); assert.equal(r.code, 200, 'record ' + i); }
+  r = await call('POST', parent, Object.assign(rec(), { id: 'cap-new' }));
+  assert.equal(r.code, 409); assert.equal(r.json.error, 'cap');
+  r = await call('POST', parent, Object.assign(rec(), { id: 'cap-5' }));
+  assert.equal(r.code, 200, 'editing a saved record still works at the cap');
+  await call('POST', parent, { id: 'cap-0', delete: true });
+  r = await call('POST', parent, Object.assign(rec(), { id: 'cap-new' }));
+  assert.equal(r.code, 200, 'deleting one frees a slot');
   r = await call('POST', null, rec());
   assert.equal(r.code, 401);
   console.log('Parent data tests passed.');
