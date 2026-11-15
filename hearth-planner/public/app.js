@@ -146,7 +146,7 @@
   }
 
   function splitRow(line) {
-    let s = line.trim().replace(/\\|/g, '\u0001');
+    let s = line.trim().replace(/\\\|/g, '\u0001');
     if (s.startsWith('|')) s = s.slice(1);
     if (s.endsWith('|')) s = s.slice(0, -1);
     return s.split('|').map((c) => c.replace(/\u0001/g, '|').trim());
