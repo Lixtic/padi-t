@@ -76,3 +76,71 @@
 :root[data-theme="dark"] .parent-dashboard-content .pd-room-card { border-color:#414541; background:linear-gradient(160deg,#292a29,#2e302e); }
 :root[data-theme="dark"] .parent-dashboard-content .pd-empty-illustrated { border-color:#414541; background:linear-gradient(145deg,#292a29,#273342); }
 :root[data-theme="dark"] .parent-dashboard-content .pd-empty-illustrated strong { color:#f2ebdc; }
+
+
+/* The family dashboard's primary actions become illustrated destination cards. */
+.parent-dashboard-content .pd-quick-grid button {
+  min-height:174px; padding:14px; gap:7px; border-radius:18px;
+  align-items:flex-start; justify-content:flex-start; transition:transform .18s ease,border-color .18s ease,box-shadow .18s ease;
+}
+.parent-dashboard-content .pd-quick-grid button:active { transform:scale(.985); }
+.parent-dashboard-content .pd-quick-grid .pd-quick-art-wrap {
+  display:flex; align-items:center; justify-content:flex-start; width:100%; height:78px;
+  margin:0; padding:0; overflow:hidden; color:inherit; background:transparent;
+}
+.parent-dashboard-content .pd-quick-art { width:112px; height:78px; object-fit:contain; }
+.parent-dashboard-content .pd-quick-grid button strong { color:var(--text); line-height:1.25; }
+.parent-dashboard-content .pd-quick-grid button > span:last-child { color:var(--muted); }
+
+.parent-dashboard-content .pd-wizard-art-wrap {
+  display:flex; justify-content:center; align-items:center; width:100%;
+  min-height:112px; margin:-8px auto 10px; overflow:hidden;
+}
+.parent-dashboard-content .pd-wizard-art { width:min(100%,210px); max-height:132px; object-fit:contain; }
+.parent-dashboard-content .pd-wizard-icon { margin-bottom:10px; }
+.parent-dashboard-content .pd-wizard-progress { gap:12px; }
+.parent-dashboard-content .pd-wizard-progress-track { justify-content:flex-end; }
+
+.parent-dashboard-content .pd-child-avatar-art {
+  width:56px; height:56px; overflow:hidden; border-radius:17px;
+  background:#f9e8d5; color:transparent;
+}
+.parent-dashboard-content .pd-child-mini-art { width:145%; max-width:none; margin-left:-22%; }
+.parent-dashboard-content .pd-activity-art {
+  width:60px; height:60px; overflow:hidden; border-radius:16px;
+  background:#f4f0e8; color:transparent;
+}
+.parent-dashboard-content .pd-activity-mini-art { width:140%; max-width:none; margin-left:-20%; }
+.parent-dashboard-content .pd-task-art-head {
+  display:flex; align-items:center; gap:14px; padding:12px 15px;
+  border:1px solid #e9e1d8; border-radius:15px;
+  background:linear-gradient(110deg,#fff8ef,#f1f6ff);
+}
+.parent-dashboard-content .pd-task-art { flex:0 0 108px; width:108px; max-height:78px; object-fit:contain; }
+.parent-dashboard-content .pd-task-art-head p { margin:0; color:#536276; font-size:.88rem; line-height:1.55; }
+
+@media(max-width:700px) {
+  .parent-dashboard-content .pd-quick-grid button { min-height:158px; padding:12px; }
+  .parent-dashboard-content .pd-quick-grid .pd-quick-art-wrap { height:68px; }
+  .parent-dashboard-content .pd-quick-art { width:98px; height:68px; }
+  .parent-dashboard-content .pd-child-avatar-art { width:42px; height:42px; border-radius:13px; }
+  .parent-dashboard-content .pd-activity-art { width:48px; height:48px; border-radius:13px; }
+  .parent-dashboard-content .pd-wizard-art-wrap { min-height:90px; }
+  .parent-dashboard-content .pd-wizard-art { width:min(100%,175px); max-height:108px; }
+}
+@media(max-width:390px) {
+  .parent-dashboard-content .pd-quick-grid { gap:8px; }
+  .parent-dashboard-content .pd-quick-grid button { min-height:150px; padding:10px; }
+  .parent-dashboard-content .pd-quick-grid strong { font-size:.88rem; }
+  .parent-dashboard-content .pd-quick-grid button > span:last-child { font-size:.76rem; }
+  .parent-dashboard-content .pd-task-art-head { gap:8px; padding:10px; }
+  .parent-dashboard-content .pd-task-art { flex-basis:86px; width:86px; }
+}
+:root[data-theme="dark"] .parent-dashboard-content .pd-quick-grid button strong { color:#f2ebdc; }
+:root[data-theme="dark"] .parent-dashboard-content .pd-task-art-head { border-color:#414541; background:linear-gradient(110deg,#2d302f,#273342); }
+:root[data-theme="dark"] .parent-dashboard-content .pd-task-art-head p { color:#c2cbd3; }
+:root[data-theme="dark"] .parent-dashboard-content .pd-child-avatar-art { background:#3b342e; }
+:root[data-theme="dark"] .parent-dashboard-content .pd-activity-art { background:#30343a; }
+@media(prefers-reduced-motion:reduce) {
+  .parent-dashboard-content .pd-quick-grid button { transition:none; }
+}
