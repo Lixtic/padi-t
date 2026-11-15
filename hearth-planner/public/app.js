@@ -2647,6 +2647,7 @@
       panel.className = 'sp-inner dash-inner parent-dashboard-content';
       page.appendChild(panel);
     }
+    const adBox = $('#adSlotParent'); if (adBox && adBox.previousElementSibling !== panel) page.appendChild(adBox);   // the parent's banner sits under the dashboard
     panel.hidden = false;
     if (window.GuidedParentDashboard) { window.GuidedParentDashboard.mount(panel, accountProfile); return; }
     const profile = accountProfile || {};
