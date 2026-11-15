@@ -720,6 +720,44 @@
       h('ul', null, ...(session.params && session.params.mode === 'resources' ? ['Complete learner-ready content', 'Examples and answer guide where relevant', 'Word download, ready to print'] : ['Lesson 2 and the complete weekly package', 'Study notes for every sub-topic', examOf(state.params.cls).section + ' questions with a marking guide', 'Word download, ready to print']).map((x) => h('li', { text: x }))),
       h('div', { class: 'pw-actions' }, btn, sub));
   }
+  /* First visit: ask once whether GuidEd is for a parent or a teacher. The answer is remembered on this device; /parents and
+     /teachers (or ?for=parent|teacher) answer it from a link. A parent goes straight to the sign-up form with Parent selected. */
+  const AUD_KEY = 'guided.audience';
+  const getAudience = () => { try { const a = localStorage.getItem(AUD_KEY); return a === 'parent' || a === 'teacher' ? a : ''; } catch (e) { return ''; } };
+  function setAudience(a) { try { localStorage.setItem(AUD_KEY, a); } catch (e) { /* storage blocked */ } }
+  function chooseAudience(a, fromLink) {
+    setAudience(a);
+    const dlg = $('#audSheet'); if (dlg && dlg.open) dlg.close();
+    if (signedIn()) return;
+    if (a === 'parent') { openSignupSheet(); window.dispatchEvent(new CustomEvent('guided:preselect-role', { detail: 'parent' })); }
+    else if (a === 'teacher' && fromLink) { /* the planner is already on screen */ }
+  }
+  function readAudienceLink() {
+    let a = '';
+    try {
+      const q = new URLSearchParams(location.search).get('for');
+      a = q === 'parent' || q === 'teacher' ? q : /^\/parents\/?$/.test(location.pathname) ? 'parent' : /^\/teachers\/?$/.test(location.pathname) ? 'teacher' : '';
+      if (a && (q || /^\/(parents|teachers)\/?$/.test(location.pathname))) { const u = new URL(location.href); u.searchParams.delete('for'); history.replaceState(null, '', '/' + (u.search || '') + u.hash); }
+    } catch (e) { /* ignore */ }
+    return a;
+  }
+  function maybeAskAudience() {
+    const P = window.PadiSync;
+    if (!P || !P.authConfigured() || signedIn()) return;
+    const fromLink = readAudienceLink();
+    if (fromLink) { chooseAudience(fromLink, true); return; }
+    let skipped = false; try { skipped = sessionStorage.getItem('guided.audienceSkip') === '1'; } catch (e) { /* ignore */ }
+    if (getAudience() || skipped) return;
+    if (document.querySelector('dialog[open]') || /[?&](reference|trxref)=/.test(location.search)) return;
+    const dlg = $('#audSheet'); if (dlg && !dlg.open) dlg.showModal();
+  }
+  document.addEventListener('click', (e) => {
+    const card = e.target.closest && e.target.closest('[data-aud]'); if (card) { chooseAudience(card.dataset.aud, false); return; }
+    if (e.target.closest && (e.target.closest('#audSkip') || e.target.closest('#audClose'))) {
+      try { sessionStorage.setItem('guided.audienceSkip', '1'); } catch (err) { /* ignore */ }
+      const dlg = $('#audSheet'); if (dlg && dlg.open) dlg.close();
+    }
+  });
   function openSignupSheet(msg) {
     if (!window.PadiSync || !window.PadiSync.authConfigured()) { toast(msg || 'Sign-in is not available here.'); return; }
     openSheet('signup');
@@ -2013,6 +2051,7 @@
       state.config = { loaded: true, demo: !!j.demo, provider: j.provider || null, accessRequired: !!j.accessRequired };
       if (window.GuidedAds) { window.GuidedAds.init(j.ads); showNotice(j.notice); updateView(); }
       initAccount(Object.assign({}, j.sync || {}, { enabled: !!(j.auth && j.auth.enabled), syncEnabled: !!j.sync, authUrl: j.auth && j.auth.url }));
+      setTimeout(maybeAskAudience, 1200);   // after the saved sign-in has had a moment to restore
     } catch (e) {
       state.config = { loaded: true, demo: true, provider: null, accessRequired: false };   // static preview, no server
     }
