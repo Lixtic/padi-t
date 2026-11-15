@@ -216,6 +216,25 @@
     return '<article class="pd-activity" data-record="' + esc(record.id) + '"><span class="pd-activity-icon pd-activity-art">' + familyArt(record.kind === 'practice' ? 'practice-pencil' : record.kind === 'explanation' ? 'curious-child' : 'book-sprout', 'pd-activity-mini-art') + '</span><div class="pd-activity-copy"><span class="pd-kicker">' + esc(labels[record.kind] || 'Learning activity') + '</span><h3>' + esc(data.title || data.topic || 'Learning activity') + '</h3><p>' + esc(meta) + '</p><small>' + (data.status === 'completed' ? 'Completed' : 'Saved for learning') + '</small></div><div class="pd-activity-actions"><button type="button" class="pd-secondary pd-small" data-view-record="' + esc(record.id) + '">Open activity</button>' + status + '</div></article>';
   }
 
+  function renderProgress() {
+    var chosen = state.progressChildId || 'all';
+    var scoped = state.records.filter(function (record) { return chosen === 'all' || (record.data && record.data.childId === chosen); });
+    var completed = scoped.filter(function (record) { return record.data && record.data.status === 'completed'; });
+    var saved = scoped.length - completed.length;
+    var practice = completed.filter(function (record) { return record.kind === 'practice'; }).length;
+    var child = children().find(function (item) { return item.id === chosen; });
+    var milestones = [{at:1,title:'First steps',note:'Your first activity completed',art:'book-sprout'},{at:3,title:'Growing confidence',note:'Three activities completed',art:'curious-child'},{at:5,title:'Learning star',note:'Five activities completed',art:'celebration'}];
+    var earned = milestones.filter(function (item) { return completed.length >= item.at; });
+    var options = '<option value="all"' + (chosen === 'all' ? ' selected' : '') + '>All children</option>' + children().map(function (item) { return '<option value="' + esc(item.id) + '"' + (chosen === item.id ? ' selected' : '') + '>' + esc(item.name) + '</option>'; }).join('');
+    var milestoneHtml = milestones.map(function (item) { var unlocked = completed.length >= item.at; return '<article class="pd-milestone' + (unlocked ? ' is-earned' : ' is-locked') + '"><span class="pd-milestone-art">' + familyArt(item.art, 'pd-milestone-illustration') + '</span><div><strong>' + esc(item.title) + '</strong><span>' + esc(item.note) + '</span></div><span class="pd-milestone-state">' + (unlocked ? 'Earned' : completed.length + ' / ' + item.at) + '</span></article>'; }).join('');
+    var activityHtml = scoped.length ? scoped.map(renderActivity).join('') : '<div class="pd-empty pd-empty-illustrated">' + familyArt('book-sprout', 'pd-empty-art') + '<strong>' + (child ? esc(child.name) + '’s learning story starts here.' : 'Your family learning story starts here.') + '</strong><span>Plan a home lesson or create a practice activity to begin.</span></div>';
+    return '<section class="pd-progress-hero"><div class="pd-progress-hero-copy"><span class="pd-kicker">EVERY LITTLE STEP COUNTS</span><h2>' + (child ? esc(child.name) + '’s progress' : 'Look how far you’ve come') + '</h2><p>Celebrate effort, curiosity and every activity completed together.</p></div>' + familyArt('celebration', 'pd-progress-hero-art') + '</section>' +
+      '<div class="pd-progress-filter"><label for="pdProgressChild">Learning profile</label><select id="pdProgressChild">' + options + '</select></div>' +
+      '<div class="pd-progress-stats"><article><strong>' + scoped.length + '</strong><span>Activities started</span></article><article><strong>' + completed.length + '</strong><span>Completed</span></article><article><strong>' + saved + '</strong><span>Still to explore</span></article></div>' +
+      '<section class="pd-milestone-section"><div class="pd-section-head"><div><span class="pd-kicker">LITTLE WINS</span><h3>Milestones</h3><p>' + (earned.length ? earned.length + ' of ' + milestones.length + ' milestones earned. Keep going!' : 'Every completed activity brings a new milestone closer.') + '</p></div></div><div class="pd-milestone-grid">' + milestoneHtml + '</div></section>' +
+      '<div class="pd-section-head pd-progress-activity-head"><div><span class="pd-kicker">THE LEARNING STORY</span><h3>Learning activities</h3><p>' + (practice ? practice + ' practice ' + (practice === 1 ? 'activity' : 'activities') + ' completed' : 'Saved and completed activities appear here.') + '</p></div></div>' +
+      '<div class="pd-activity-list">' + activityHtml + '</div>';
+  }
   // "3 of 5 free home activities left this week", shown only to free accounts when plans are switched on.
   function allowanceHtml() {
     var P = window.GuidedPlans, info = P && P.info && P.info();
@@ -237,7 +256,7 @@
       var activeLesson = state.task === 'lesson' && state.lessonRoom && state.records.find(function (item) { return item.id === state.lessonRoom; });
       body = activeLesson ? renderLessonRoom(activeLesson) : '<div class="pd-section-head"><div><span class="pd-kicker">CURRICULUM-GUIDED HOME LEARNING</span><h2>' + esc(labels[state.task]) + '</h2><p>' + (state.task === 'lesson' ? 'A complete activity for you and your child to work through together.' : state.task === 'explanation' ? 'A clear explanation you can use when your child gets stuck.' : 'Age-appropriate questions with an answer key and explanations.') + '</p></div></div>' + (list.length ? renderTaskForm() : '<div class="pd-empty pd-empty-illustrated">' + familyArt('family-reading', 'pd-empty-art') + '<strong>Let’s set up your learning team.</strong><span>Add a child profile before creating a home-learning activity.</span></div><button type="button" class="pd-primary" data-parent-tab="children">Add a child</button>') + (state.result ? '<section class="pd-result" aria-live="polite"><div class="pd-section-head"><div><span class="pd-kicker">READY FOR YOU AND YOUR CHILD</span><h3>' + esc(state.result.title) + '</h3></div><button type="button" class="pd-text-button" data-clear-result>Close</button></div>' + (state.result.kind === 'practice' ? worksheetHtml(state.result.content) : '<pre>' + esc(state.result.content) + '</pre>') + '</section>' : '');
     } else {
-      body = '<div class="pd-section-head"><div><span class="pd-kicker">MY CHILD’S LEARNING JOURNEY</span><h2>Learning Progress</h2><p>Keep track of activities your child has completed.</p></div></div><div class="pd-progress-summary"><strong>' + state.records.filter(function (r) { return r.data && r.data.status === 'completed'; }).length + '</strong><span>completed activities</span></div><div class="pd-activity-list">' + (state.records.length ? state.records.map(renderActivity).join('') : '<div class="pd-empty pd-empty-illustrated">' + familyArt('book-sprout', 'pd-empty-art') + '<strong>Your child’s progress will grow one activity at a time.</strong><span>Create a home lesson to get started.</span></div>') + '</div>';
+      body = renderProgress();
     }
     if (['overview', 'lesson', 'explanation', 'practice'].indexOf(state.tab) >= 0 && body.indexOf('pd-lesson-room') < 0) body = allowanceHtml() + body;   // not while a lesson is open
     state.root.innerHTML = '<div class="pd-header"><div><span class="pd-brand">GuidEd <i>Family</i></span><span class="pd-account">' + icon('users') + ' Parent account</span></div></div><nav class="pd-tabs" aria-label="Parent dashboard">' + nav + '</nav><div class="pd-main">' + (state.error ? '<p class="pd-error" role="alert">' + esc(state.error) + '</p>' : '') + (state.loading ? '<p class="pd-note">Loading your saved learning activities…</p>' : '') + body + '</div>';
@@ -333,6 +352,7 @@
       if (event.target.closest('[data-finish-lesson]')) { var finished = state.records.find(function (item) { return item.id === state.lessonRoom; }); if (finished) { var finishedData = Object.assign({}, finished.data, { status: 'completed', completedAt: Date.now(), lessonStage: 5 }); saveRecord({ id: finished.id, kind: finished.kind, data: finishedData }).then(function () { state.lessonRoom = null; state.tab = 'progress'; render(); }).catch(function (error) { state.error = error.message; render(); }); } return; }
     });
     state.root.addEventListener('change', function (event) {
+      if (event.target.id === 'pdProgressChild') { state.progressChildId = event.target.value; render(); return; }
       var f = event.target.form;
       if (f && f.id === 'pdTaskForm' && !f.dataset.step && (event.target.name === 'childId' || event.target.name === 'subject')) {
         var box = state.root.querySelector('#pdSuggestBox');
