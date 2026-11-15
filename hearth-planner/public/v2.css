@@ -383,3 +383,9 @@ body.role-parent .sb-list, body.role-parent .sb-list-head, body.role-parent #lib
 /* Settings: teacher-only and parent-only rows follow the account role. */
 body.role-parent .teacher-only { display: none !important; }
 body:not(.role-parent) .parent-only { display: none !important; }
+
+/* Parent dashboard: no intro block, and tighter gaps between the header, tabs and content. */
+.dashboard-page .parent-dashboard-content.dash-inner { gap: 0; }
+.dashboard-page .parent-dashboard-content .pd-header { padding: 2px 0 10px; }
+.dashboard-page .parent-dashboard-content .pd-tabs { padding: 8px 2px; }
+.dashboard-page .parent-dashboard-content .pd-main { padding-top: 12px; }
