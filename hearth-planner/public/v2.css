@@ -404,3 +404,11 @@ body:not(.role-parent) .parent-only { display: none !important; }
 .up-prompt-actions { display: flex; flex-wrap: wrap; gap: 8px; }
 .up-prompt button { min-height: 42px; padding: 0 14px; border-radius: 12px; border: 1px solid var(--line); background: transparent; color: var(--text); font: inherit; font-weight: 600; cursor: pointer; }
 #upCheck, #upOtpSend { background: var(--accent); border-color: var(--accent); color: var(--on-accent, #fff); }
+
+/* Parent dashboard: slimmer free-activities strip and lesson header. */
+.dashboard-page .parent-dashboard-content .pd-allowance { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin: 0 0 10px; padding: 7px 12px; border-radius: 10px; font-size: 13px; line-height: 1.3; }
+.dashboard-page .parent-dashboard-content .pd-allowance-link { flex: none; min-height: 0; padding: 4px 11px; border: 0; border-radius: 999px; background: var(--accent); color: var(--on-accent, #fff); font: inherit; font-size: 12.5px; font-weight: 700; cursor: pointer; }
+.dashboard-page .parent-dashboard-content .pd-room-top { gap: 2px; }
+.dashboard-page .parent-dashboard-content .pd-room-top .pd-text-button { min-height: 32px; padding: 5px 12px; margin-bottom: 4px; font-size: 13px; }
+.dashboard-page .parent-dashboard-content .pd-room-top h2 { font-size: clamp(20px, 3.4vw, 26px); }
+.dashboard-page .parent-dashboard-content .pd-room-top p { font-size: 12.5px; }
