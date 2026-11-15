@@ -64,3 +64,15 @@
 @media(prefers-reduced-motion:reduce) {
   .splash-art { animation:none; }
 }
+
+:root[data-theme="dark"] .guided-parent-fields { background:linear-gradient(145deg,#292a29,#242c2a); border-color:#454a46; }
+:root[data-theme="dark"] .guided-parent-fields h3 { color:#f2ebdc; }
+:root[data-theme="dark"] .guided-role-card:first-child { background:linear-gradient(145deg,#30332f,#263747); }
+:root[data-theme="dark"] .parent-dashboard-content .pd-welcome { border-color:#46515c; background:linear-gradient(115deg,#2d302f 0%,#273342 100%); }
+:root[data-theme="dark"] .parent-dashboard-content .pd-welcome-copy h2 { color:#f2ebdc; }
+:root[data-theme="dark"] .parent-dashboard-content .pd-welcome-copy p { color:#c2cbd3; }
+:root[data-theme="dark"] .parent-dashboard-content .pd-stats article { border-color:#414541; background:linear-gradient(160deg,#292a29,#2e302e); }
+:root[data-theme="dark"] .parent-dashboard-content .pd-quick-grid button { border-color:#414541; background:linear-gradient(150deg,#292a29,#2d3033); }
+:root[data-theme="dark"] .parent-dashboard-content .pd-room-card { border-color:#414541; background:linear-gradient(160deg,#292a29,#2e302e); }
+:root[data-theme="dark"] .parent-dashboard-content .pd-empty-illustrated { border-color:#414541; background:linear-gradient(145deg,#292a29,#273342); }
+:root[data-theme="dark"] .parent-dashboard-content .pd-empty-illustrated strong { color:#f2ebdc; }
