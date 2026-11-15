@@ -1,6 +1,6 @@
 # GuidEd: GES lesson planner
 
-Pick a **subject, class and week**, from Basic 1 to SHS 3. GuidEd writes a full Ghana Education Service package: two lessons, notes, exam practice with a marking guide, and a rubric. You can then download it as a formatted **Word (.docx)** file.
+Pick a **subject, class and week**, from KG 1 to SHS 3. GuidEd writes a full Ghana Education Service package: two lessons, notes, exam practice with a marking guide, and a rubric. You can then download it as a formatted **Word (.docx)** file.
 
 It works on phones and desktops, has light and dark themes, and keeps a history of your plans in the browser.
 
@@ -235,12 +235,13 @@ How it works: the page asks the server for a one-time token, plays the video, th
 - **Recent admin actions** lists who did what (table `admin_log`).
 - **Usage and payments** now also shows AI use: requests, estimated tokens, a daily bar chart and the heaviest teachers (the daily counters are kept for 35 days).
 
-## Levels: Lower Primary, Upper Primary, JHS and SHS
+## Levels: Kindergarten, Lower Primary, Upper Primary, JHS and SHS
 
 The class menu is grouped by level, and the subjects change with the level. Each level has its own style of plan.
 
 | Level | Classes | Subjects | Style |
 |---|---|---|---|
+| Kindergarten | KG 1 and KG 2 | Integrated Learning (the NaCCA kindergarten curriculum is thematic: language and literacy, numeracy, creative arts and our world and our people are taught together under one weekly theme) | Play-based, 30-minute periods, circle time and songs. **Teacher's Notes** with a take-home activity, then an **Oral Check** (spoken tasks and a tick-list, no written test). |
 | Lower Primary | Basic 1 to 3 | English Language, Mathematics, Ghanaian Language, Our World Our People, Creative Arts, Religious and Moral Education, Physical Education, Computing | Play-based and mostly spoken. **Teacher's Notes** with a take-home activity, then a **Class Exercise** (oral and written). |
 | Upper Primary | Basic 4 to 6 | The above, plus Science, History and French | Simple English, group work. **Study Notes**, then a **Class Exercise** (multiple choice and short answers). |
 | JHS | Basic 7 to 9 | Unchanged | As before, with **BECE Practice**. |
@@ -248,7 +249,7 @@ The class menu is grouped by level, and the subjects change with the level. Each
 
 - The list of levels, classes and subjects lives in `api/_levels.js`. After editing it run `node scripts/build-levels.js` (`npm run build` does it too; the generated files are committed) so the browser copy matches.
 - The level profiles live in `prompts/ges-lesson-plans.md` (the `### Level:` sections). Only the matching profile is sent with a request, so JHS requests cost what they did before. Run `node scripts/build-prompt.js` after editing.
-- Schemes of learning (`data/schemes.json`) are stored per class and term. Basic 1 to 6 and SHS 1 to 3 come from yearly indicator lists that `scripts/import-schemes.py` spreads over three 14-week terms in the NaCCA order (week 1 revision, weeks 2 to 12 teaching, week 13 revision, week 14 examination); Basic 7 to 9 are Term 1 files with real week numbers. The app picks the term from the calendar (Term 1 from September, Term 2 from January, Term 3 from about 20 April, see `currentTerm` in `scripts/build-schemes.js`), and a teacher can pick another with the Term button; that choice is kept per account and is dropped when the calendar moves on.
+- Schemes of learning (`data/schemes.json`) are stored per class and term. KG 1 and 2 come from the thematic Kindergarten Curriculum (`scripts/import-kindergarten.py`: seven themes over three terms, one sub-strand per teaching week). Basic 1 to 6 and SHS 1 to 3 come from yearly indicator lists that `scripts/import-schemes.py` spreads over three 14-week terms in the NaCCA order (week 1 revision, weeks 2 to 12 teaching, week 13 revision, week 14 examination); Basic 7 to 9 are Term 1 files with real week numbers. The app picks the term from the calendar (Term 1 from September, Term 2 from January, Term 3 from about 20 April, see `currentTerm` in `scripts/build-schemes.js`), and a teacher can pick another with the Term button; that choice is kept per account and is dropped when the calendar moves on.
 
 ## Icons and splash screens
 

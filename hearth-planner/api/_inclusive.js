@@ -16,7 +16,7 @@ const ACTIVITIES = {
 // Lower primary starts with learner support and gender-responsive grouping on; the teacher can change it.
 function defaultFor(cls) {
   const l = Levels.levelOfClass(cls);
-  const lower = !!l && l.id === 'lower';
+  const lower = !!l && (l.id === 'lower' || l.id === 'kg');
   return { support: lower, gender: lower, ict: false, acts: [] };
 }
 
