@@ -23,7 +23,7 @@
         '<h3>Let’s get to know your family</h3><p>Set up your child’s learning space. You can add more children from your Parent Dashboard later.</p>' +
         '<div class="as-field"><label for="guidedChildName">Child’s name or preferred name</label><input id="guidedChildName" type="text" maxlength="80" autocomplete="off" placeholder="e.g. Ama"></div>' +
         '<div class="as-field"><label for="guidedChildClass">Current class</label><select id="guidedChildClass">' +
-          Array.from({ length: 9 }, function (_, i) { return '<option value="Basic ' + (i + 1) + '"' + (i === 6 ? ' selected' : '') + '>Basic ' + (i + 1) + '</option>'; }).join('') +
+          ['KG 1', 'KG 2'].concat(Array.from({ length: 9 }, function (_, i) { return 'Basic ' + (i + 1); })).map(function (c) { return '<option value="' + c + '"' + (c === 'Basic 7' ? ' selected' : '') + '>' + c + '</option>'; }).join('') +
         '</select></div>' +
         '<div class="as-field"><label>Subjects your child studies</label><div class="guided-parent-subjects" id="guidedParentSubjects"></div></div>' +
         '<div class="as-field"><label for="guidedLearningMinutes">Time available for home learning each day</label><select id="guidedLearningMinutes"><option value="15">15 minutes</option><option value="30" selected>30 minutes</option><option value="45">45 minutes</option><option value="60">60 minutes</option></select></div>' +
