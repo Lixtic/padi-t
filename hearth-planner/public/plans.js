@@ -197,7 +197,7 @@
         ['Your children', true, 'Up to 10 children'],
         ['Sync across your devices', true, 'Included'],
       ];
-      if (window.GuidedAds && window.GuidedAds.enabled()) rowsP.push(t === 'pro' ? ['Ads', true, 'No ads'] : ['Ads', true, 'One small banner on the start screen', 'No ads with Pro']);
+      if (window.GuidedAds && window.GuidedAds.enabled()) rowsP.push(t === 'pro' ? ['Ads', true, 'No ads'] : ['Ads', true, 'One small banner on the dashboard home', 'No ads with Pro']);
       return rowsP;
     }
     var lim = info.limits || {};

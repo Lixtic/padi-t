@@ -239,6 +239,7 @@
     if (['overview', 'lesson', 'explanation', 'practice'].indexOf(state.tab) >= 0) body = allowanceHtml() + body;
     state.root.innerHTML = '<div class="pd-header"><div><span class="pd-brand">GuidEd <i>Family</i></span><span class="pd-account">' + icon('users') + ' Parent account</span></div></div><nav class="pd-tabs" aria-label="Parent dashboard">' + nav + '</nav><div class="pd-main">' + (state.error ? '<p class="pd-error" role="alert">' + esc(state.error) + '</p>' : '') + (state.loading ? '<p class="pd-note">Loading your saved learning activities…</p>' : '') + body + '</div>';
     if (state.root.dataset.parentWired !== '1') wire();
+    if (window.GuidedAds && window.GuidedAds.syncParent) window.GuidedAds.syncParent(state.tab === 'overview' && !state.busy && !state.result);
   }
 
   function wire() {
@@ -435,6 +436,8 @@
       render();
       if (!state.loaded && !state.loading) loadRecords();
     },
+    // The ads settings arrived after the dashboard drew: check the banner again.
+    syncAds: function () { if (window.GuidedAds && window.GuidedAds.syncParent && state.root) window.GuidedAds.syncParent(state.tab === 'overview' && !state.busy && !state.result); },
     // Used by "New Home Lesson" in the sidebar: start a fresh home lesson.
     open: function (tab) {
       if (!state.root) return;
