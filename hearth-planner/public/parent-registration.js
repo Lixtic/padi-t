@@ -19,7 +19,8 @@
       '</div>' +
       '<p class="guided-role-error" id="guidedRoleError" role="alert" hidden></p>' +
       '<div class="guided-parent-fields" id="guidedParentFields" hidden>' +
-        '<h3>Tell us about your child</h3><p>You can add more children from your Parent Dashboard later.</p>' +
+        (window.GuidEdFamilyArt ? window.GuidEdFamilyArt.render('family-reading', 'guided-family-art') : '') +
+        '<h3>Let’s get to know your family</h3><p>Set up your child’s learning space. You can add more children from your Parent Dashboard later.</p>' +
         '<div class="as-field"><label for="guidedChildName">Child’s name or preferred name</label><input id="guidedChildName" type="text" maxlength="80" autocomplete="off" placeholder="e.g. Ama"></div>' +
         '<div class="as-field"><label for="guidedChildClass">Current class</label><select id="guidedChildClass">' +
           Array.from({ length: 9 }, function (_, i) { return '<option value="Basic ' + (i + 1) + '"' + (i === 6 ? ' selected' : '') + '>Basic ' + (i + 1) + '</option>'; }).join('') +
