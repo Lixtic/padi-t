@@ -40,7 +40,7 @@ process.stdout.write('Curriculum Intelligence Engine tests passed.\n');
   const scheme = { type: 'teach', term: 1, indicators: ['Round numbers [B8.1.1.1.2]'] };
   const text = C.buildInstruction(scheme, { cls: 'Basic 8', subject: 'Mathematics', week: 3 });
   assert2.ok(!/Official NaCCA exemplars/.test(text), 'unverified exemplars are not sent as official');
-  process.stdout.write('Curriculum provenance tests passed.\\n');
+  process.stdout.write('Curriculum provenance tests passed.\n');
 }
 
 {
@@ -158,7 +158,7 @@ process.stdout.write('Curriculum Intelligence Engine tests passed.\n');
 
     const omittedTerm = validate({ term: undefined, indicatorCodes: [] });
     assert.equal(omittedTerm.error, undefined, 'legacy requests without a term still use the server current term');
-    process.stdout.write('Study Notes indicator selection validation tests passed.\\n');
+    process.stdout.write('Study Notes indicator selection validation tests passed.\n');
   } finally {
     Schemes.lookup = originalLookup;
   }
@@ -174,7 +174,7 @@ process.stdout.write('Curriculum Intelligence Engine tests passed.\n');
     query: { subject: 'Computing', cls: 'SHS 1', term: '3', week: '2' }
   }, res);
   assert.equal(res.statusCode, 400, 'the curriculum endpoint rejects a third SHS semester');
-  process.stdout.write('Curriculum endpoint term validation tests passed.\\n');
+  process.stdout.write('Curriculum endpoint term validation tests passed.\n');
 })().catch((error) => {
   console.error(error);
   process.exitCode = 1;
