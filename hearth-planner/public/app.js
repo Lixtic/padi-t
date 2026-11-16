@@ -268,7 +268,7 @@
   const state = {
     sessions: [],
     currentId: null,
-    params: { subject: SUBJECTS[0], cls: 'Basic 8', week: 1, hook: true, size: '31–45', light: false, mode: 'full', resourceType: 'Study notes', indicatorCodes: [] },
+    params: { subject: SUBJECTS[0], cls: 'Basic 8', week: 1, hook: true, size: '31–45', light: false, mode: 'full', resourceType: 'Study notes', indicatorCodes: [], indicatorContextKey: '' },
     streaming: null,
     stick: true,
     bots: [],
@@ -468,7 +468,7 @@
       }
     });
     state.bots.forEach((b, i) => { if (i < state.bots.length - 1) b.demote(); });
-    if (s.params) { state.params = Object.assign({ size: '31–45', light: false, hook: true, studyNotes: true, bece: true, indicatorCodes: [] }, s.params); syncPills(); }
+    if (s.params) { state.params = Object.assign({ size: '31–45', light: false, hook: true, studyNotes: true, bece: true, indicatorCodes: [], indicatorContextKey: '' }, s.params); syncPills(); }
     updateView(); updateTopbar(); renderSessions(); updateSend(); scrollBottom(true);
   }
 
@@ -1510,12 +1510,12 @@
     state.params.mode = mode;
     state.params.resourceType = resourceType || 'Study notes';
     if (mode === 'resources' && state.params.resourceType === 'Study notes') {
-      // Indicator checkboxes are a convenience for narrowing the request, not a prerequisite.
-      // The API resolves the authoritative scheme context during generation, so never block
-      // Study Notes merely because the optional UI indicator request is still loading.
-      const checked = [...studyIndicatorOptions.querySelectorAll('input[type="checkbox"]:checked')].map((x) => x.value);
-      if (checked.length) state.params.indicatorCodes = checked;
-      else if (studyIndicatorOptions.childElementCount) { toast('Select at least one curriculum indicator for the study notes.'); state.params.mode = 'full'; return; }
+      const checkboxes = [...studyIndicatorOptions.querySelectorAll('input[type="checkbox"]')];
+      const checked = checkboxes.filter((input) => input.checked).map((input) => input.value).filter(Boolean);
+      if (checked.length > 10) { toast('Choose no more than 10 curriculum indicators for the study notes.'); state.params.mode = 'full'; return; }
+      if (checkboxes.length && !checked.length) { toast('Select at least one curriculum indicator for the study notes.'); state.params.mode = 'full'; return; }
+      // While indicators are loading, or when no coded indicators exist, use no stale selection.
+      state.params.indicatorCodes = checked;
     }
     const fresh = makeSession();
     state.sessions.unshift(fresh);
@@ -1527,25 +1527,48 @@
   if (resourceAction) resourceAction.addEventListener('click', () => startIndependentTool('resources', resourceTypeEl.value));
   function renderStudyIndicators(data, key) {
     const indicators = Array.isArray(data.indicators) ? data.indicators : [];
+    const selectable = indicators.filter((item) => item && item.code);
+    const unselectable = indicators.filter((item) => item && !item.code);
     const previous = Array.isArray(state.params.indicatorCodes) ? state.params.indicatorCodes : [];
-    const sameContext = studyCurriculumKey === key;
-    const validPrevious = sameContext ? previous.filter((code) => indicators.some((item) => item.code === code)) : [];
-    const selected = validPrevious.length ? validPrevious : indicators.map((item) => item.code).filter(Boolean);
+    const sameContext = state.params.indicatorContextKey === key;
+    const validPrevious = sameContext ? previous.filter((code) => selectable.some((item) => item.code === code)).slice(0, 10) : [];
+    const selected = validPrevious.length ? validPrevious : selectable.slice(0, 10).map((item) => item.code);
     studyCurriculumKey = key;
+    state.params.indicatorContextKey = key;
     state.params.indicatorCodes = selected;
     studyIndicatorMeta.textContent = [data.strand, data.substrand, data.contentStandard].filter(Boolean).join(' · ');
-    studyIndicatorOptions.replaceChildren(...indicators.map((item) => {
+    const options = selectable.map((item) => {
       const input = h('input', { type: 'checkbox', value: item.code, checked: selected.includes(item.code) });
       input.addEventListener('change', () => {
-        state.params.indicatorCodes = [...studyIndicatorOptions.querySelectorAll('input[type="checkbox"]:checked')].map((x) => x.value);
+        const checked = [...studyIndicatorOptions.querySelectorAll('input[type="checkbox"]:checked')].map((x) => x.value).filter(Boolean);
+        if (checked.length > 10) {
+          input.checked = false;
+          toast('Choose no more than 10 curriculum indicators at a time.');
+          return;
+        }
+        state.params.indicatorCodes = checked;
+        state.params.indicatorContextKey = key;
         store.save(true);
       });
       return h('label', { class: 'study-indicator-option' }, input,
-        h('span', null, h('strong', { text: item.code || 'Indicator' }), h('span', { text: item.text || '' })));
-    }));
-    studyCurriculumSource.textContent = data.sourceStatus === 'scheme_metadata_only'
+        h('span', null, h('strong', { text: item.code }), h('span', { text: item.text || '' })));
+    });
+    const unscoped = unselectable.map((item) => h('div', { class: 'study-indicator-unscoped' },
+      h('strong', { text: 'Indicator text without a code' }),
+      h('span', { text: item.text || '' })));
+    studyIndicatorOptions.replaceChildren(...options, ...unscoped);
+    const sourceNote = data.sourceStatus === 'scheme_metadata_only'
       ? 'Loaded from GuidEd scheme metadata. This is not a full NaCCA document retrieval.'
       : 'Curriculum details loaded.';
+    if (!selectable.length) {
+      studyCurriculumSource.textContent = indicators.length
+        ? 'The scheme contains indicator text without usable codes. Exact indicator selection is unavailable; you can still generate general study notes.'
+        : 'No coded indicators are loaded for this week. You can still generate general study notes from the scheme topic.';
+    } else {
+      studyCurriculumSource.textContent = sourceNote
+        + (unselectable.length ? ' Some indicator text has no code and cannot be selected individually.' : '')
+        + (selectable.length > 10 ? ' Choose up to 10 indicators per request.' : '');
+    }
     studyNotesCurriculum.hidden = resourceTypeEl.value !== 'Study notes';
   }
   async function refreshStudyCurriculum() {
@@ -1558,6 +1581,13 @@
     }
     const p = state.params, term = p.term || termNow();
     const key = [p.subject, p.cls, term, p.week].join('|');
+    const savedContextKey = state.params.indicatorContextKey || studyCurriculumKey;
+    if (savedContextKey !== key) {
+      studyIndicatorOptions.replaceChildren();
+      state.params.indicatorCodes = [];
+      state.params.indicatorContextKey = key;
+      store.save(true);
+    }
     if (studyCurriculumLoading && studyCurriculumPendingKey === key) return;
     const requestId = ++studyCurriculumRequest;
     const controller = new AbortController();
@@ -1588,6 +1618,10 @@
     } catch (error) {
       if (requestId !== studyCurriculumRequest) return;
       studyIndicatorOptions.replaceChildren();
+      state.params.indicatorCodes = [];
+      state.params.indicatorContextKey = key;
+      studyCurriculumKey = key;
+      store.save(true);
       studyIndicatorMeta.textContent = '';
       studyCurriculumSource.textContent = error.name === 'AbortError'
         ? 'Curriculum loading took too long. You can still generate general study notes; try changing the week to reload indicators.'
