@@ -2987,29 +2987,56 @@
     });
   }
 
-  /* My Library: every saved plan and resource as a card, filterable by type. */
+  /* My Library: a curated, searchable collection of saved teaching materials. */
   let libType = 'all';
   function renderLibrary() {
     const grid = $('#libGrid'); if (!grid) return;
-    const q = ($('#libSearch').value || '').trim().toLowerCase();
+    const search = $('#libSearch');
+    const q = (search && search.value || '').trim().toLowerCase();
     const all = state.sessions.filter((s) => s.messages.length).sort((a, b) => b.updatedAt - a.updatedAt);
     const counts = {}; all.forEach((s) => { const t = typeOf(s); counts[t] = (counts[t] || 0) + 1; });
+    const count = $('#libraryCount'); if (count) count.textContent = String(all.length);
     const chips = $('#libChips');
-    chips.replaceChildren(...[['all', 'All', all.length]].concat(TYPE_ORDER.filter((t) => counts[t]).map((t) => [t, TYPE_LABEL[t], counts[t]]))
-      .map(([id, label, n]) => h('button', { type: 'button', class: 'lib-chip', 'data-type': id, 'aria-pressed': String(libType === id), text: label + ' ' + n })));
+    if (chips) chips.replaceChildren(...[['all', 'Everything', all.length]].concat(TYPE_ORDER.filter((t) => counts[t]).map((t) => [t, TYPE_LABEL[t], counts[t]]))
+      .map(([id, label, n]) => h('button', { type: 'button', class: 'lib-chip', 'data-type': id, 'aria-pressed': String(libType === id) }, h('span', { text: label }), h('small', { text: String(n) }))));
     const list = all.filter((s) => (libType === 'all' || typeOf(s) === libType) &&
-      (!q || (s.title + ' ' + (s.params ? s.params.cls + ' ' + s.params.subject : '')).toLowerCase().includes(q)));
-    grid.replaceChildren(...list.map((s) => h('div', { class: 'lib-item' },
-      h('button', { type: 'button', class: 'lib-card', 'data-id': s.id },
-        h('span', { class: 'lib-tag', text: TYPE_LABEL[typeOf(s)] }),
-        h('span', { class: 'lib-name', text: s.params ? s.params.subject : s.title }),
-        h('span', { class: 'lib-meta', text: s.params ? s.params.cls + ' · Week ' + s.params.week : s.title }),
-        h('span', { class: 'lib-time', text: rel(s.updatedAt) })),
-      h('button', { type: 'button', class: 'lib-del', 'data-del-id': s.id, 'aria-label': 'Delete ' + (s.params ? s.params.subject + ' ' + s.params.cls + ' week ' + s.params.week : s.title), title: 'Delete' }, icon('x')))));
-    $('#libEmpty').hidden = !!list.length;
+      (!q || [s.title, s.params && s.params.cls, s.params && s.params.subject, s.params && s.params.week, s.params && s.params.resourceType].join(' ').toLowerCase().includes(q)));
+    const resultCount = $('#libraryResultsCount'); if (resultCount) resultCount.textContent = list.length + (list.length === 1 ? ' item' : ' items');
+    const resultsTitle = $('#libraryResultsTitle'); if (resultsTitle) resultsTitle.textContent = q ? 'Search results' : libType === 'all' ? 'Your saved work' : TYPE_LABEL[libType] || 'Your saved work';
+    const kindIcon = (s) => typeOf(s) === 'plan' ? 'clipboard' : typeOf(s) === 'Study notes' ? 'book' : typeOf(s) === 'Learner worksheet' ? 'pencil' : typeOf(s) === 'Teaching slides' ? 'layers' : typeOf(s) === 'BECE practice' ? 'chart' : 'library';
+    grid.replaceChildren(...list.map((s) => {
+      const type = typeOf(s), p = s.params || {};
+      const heading = p.subject || s.title || TYPE_LABEL[type];
+      const meta = p.cls ? [p.cls, p.term ? termWord(p.cls) + ' ' + p.term : '', p.week ? 'Week ' + p.week : ''].filter(Boolean).join(' · ') : (s.title || 'Saved teaching resource');
+      return h('article', { class: 'lib-item' },
+        h('button', { type: 'button', class: 'lib-card', 'data-id': s.id, 'aria-label': 'Open ' + heading },
+          h('span', { class: 'lib-card-top' }, h('span', { class: 'lib-card-icon lib-icon-' + (type === 'plan' ? 'plan' : 'resource') }, icon(kindIcon(s))), h('span', { class: 'lib-card-type', text: TYPE_LABEL[type] || type })),
+          h('span', { class: 'lib-name', text: heading }),
+          h('span', { class: 'lib-description', text: s.title && s.title !== heading ? s.title : type === 'plan' ? 'Lesson plan and teaching sequence' : 'Saved teaching resource' }),
+          h('span', { class: 'lib-meta', text: meta }),
+          h('span', { class: 'lib-card-footer' }, h('span', { class: 'lib-time' }, icon('clock'), h('span', { text: rel(s.updatedAt) })), h('span', { class: 'lib-open-label' }, 'Open', icon('chevron-right')))
+        ),
+        h('button', { type: 'button', class: 'lib-del', 'data-del-id': s.id, 'aria-label': 'Delete ' + heading, title: 'Delete' }, icon('trash'))
+      );
+    }));
+    const empty = $('#libEmpty');
+    if (empty) {
+      empty.hidden = !!list.length;
+      if (!all.length) {
+        $('#libraryEmptyTitle').textContent = 'Your library is ready for its first resource';
+        $('#libraryEmptyText').textContent = 'Create a lesson plan, study note or worksheet. Your teaching materials will be kept here for easy access.';
+        $('#libraryEmptyCreate span').textContent = 'Create your first lesson plan';
+      } else {
+        $('#libraryEmptyTitle').textContent = q ? 'No matching materials found' : 'Nothing in this collection yet';
+        $('#libraryEmptyText').textContent = q ? 'Try another topic, subject or class name.' : 'Choose another collection or create a new teaching resource.';
+        $('#libraryEmptyCreate span').textContent = 'Create a lesson plan';
+      }
+    }
   }
   if ($('#libraryPage')) {
     $('#libSearch').addEventListener('input', renderLibrary);
+    $('#libraryCreate').addEventListener('click', () => { showPage(null); const b = $('#newSession'); if (b) b.click(); });
+    $('#libraryEmptyCreate').addEventListener('click', () => { showPage(null); const b = $('#newSession'); if (b) b.click(); });
     $('#libChips').addEventListener('click', (e) => { const b = e.target.closest('.lib-chip'); if (b) { libType = b.dataset.type; renderLibrary(); } });
     $('#libGrid').addEventListener('click', (e) => {
       const d = e.target.closest('.lib-del');
