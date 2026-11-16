@@ -459,3 +459,62 @@ body:not(.role-parent) .parent-only { display: none !important; }
 /* My Children: "Add a child" is a button that opens the form */
 .pd-add-child { display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%; min-height: 48px; margin-top: 12px; }
 .pd-add-child .ico { width: 18px; height: 18px; }
+
+
+/* Teacher dashboard: calmer hierarchy and tighter mobile rhythm. */
+.dashboard-page .dash-inner { gap: 18px; }
+.dashboard-page .sp-head { align-items: center; gap: 12px; }
+.dashboard-page .sp-head h1 { min-width: 0; font-size: clamp(1.35rem, 2.8vw, 1.8rem); line-height: 1.15; letter-spacing: -.035em; }
+.dashboard-page .dash-intro { max-width: 62ch; margin: -5px 0 0; line-height: 1.55; }
+.dashboard-page .dash-stats { gap: 12px; }
+.dashboard-page .dash-stat { padding: 17px; gap: 7px; border-radius: 16px; }
+.dashboard-page .dash-stat-label { font-size: 13px; line-height: 1.35; }
+.dashboard-page .dash-stat-value { font-size: clamp(1.8rem, 3.5vw, 2.25rem); }
+.dashboard-page .dash-stat-foot { font-size: 12px; line-height: 1.4; }
+.dashboard-page .dash-week, .dashboard-page .dash-saved { gap: 12px; }
+.dashboard-page .dash-section-head { align-items: center; flex-wrap: wrap; }
+.dashboard-page .dash-section-head h2 { font-size: clamp(1.15rem, 2.5vw, 1.45rem); line-height: 1.2; letter-spacing: -.025em; }
+.dashboard-page .dash-eyebrow { font-size: 10px; }
+.dashboard-page .dash-week-list { grid-template-columns: repeat(auto-fill, minmax(min(100%, 260px), 1fr)); gap: 10px; }
+.dashboard-page .dash-class-card, .dashboard-page .dash-week-empty { padding: 14px; border-radius: 16px; }
+.dashboard-page .dash-class-head { padding-bottom: 9px; }
+.dashboard-page .dash-subject { min-height: 42px; padding: 8px 0; }
+.dashboard-page .dash-subject-name { font-size: 14px; }
+.dashboard-page .dash-subject-meta { font-size: 12px; text-align: right; }
+.dashboard-page .dash-note { font-size: 12px; line-height: 1.55; }
+.dashboard-page .dash-plan-grid { gap: 10px; }
+.dashboard-page .dash-plan-card { padding: 14px; border-radius: 16px; }
+.dashboard-page .dash-plan-open { margin-top: auto; }
+
+@media (max-width: 640px) {
+  .dashboard-page { padding: 12px 12px calc(28px + env(safe-area-inset-bottom)); }
+  .dashboard-page .dash-inner { gap: 18px; }
+  .dashboard-page .sp-head { gap: 10px; }
+  .dashboard-page .sp-head h1 { font-size: clamp(1.25rem, 5vw, 1.55rem); }
+  .dashboard-page .sp-back { min-height: 42px; padding: 0 12px; }
+  .dashboard-page .dash-intro { margin: -4px 0 0; font-size: 14px; line-height: 1.5; }
+  .dashboard-page .dash-stats { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 9px; }
+  .dashboard-page .dash-stat { min-height: 118px; padding: 13px; gap: 6px; border-radius: 15px; }
+  .dashboard-page .dash-stat:last-child { grid-column: 1 / -1; min-height: 104px; }
+  .dashboard-page .dash-stat-label { font-size: 12px; }
+  .dashboard-page .dash-stat-value { font-size: 1.8rem; }
+  .dashboard-page .dash-stat-foot { font-size: 11px; }
+  .dashboard-page .dash-week, .dashboard-page .dash-saved { gap: 11px; }
+  .dashboard-page .dash-section-head { align-items: flex-start; flex-direction: row; }
+  .dashboard-page .dash-section-head > div { min-width: 0; }
+  .dashboard-page .dash-section-head h2 { font-size: 1.2rem; }
+  .dashboard-page .dash-week-tag, .dashboard-page .dash-count { align-self: flex-start; padding: 7px 10px; font-size: 11px; white-space: nowrap; }
+  .dashboard-page .dash-week-list, .dashboard-page .dash-plan-grid { grid-template-columns: minmax(0, 1fr); }
+  .dashboard-page .dash-class-card, .dashboard-page .dash-week-empty { padding: 13px; }
+  .dashboard-page .dash-subject { gap: 10px; min-height: 44px; }
+  .dashboard-page .dash-subject-name { min-width: 0; }
+  .dashboard-page .dash-subject-meta { flex: 0 0 auto; }
+  .dashboard-page .dash-note { margin: -2px 0 0; font-size: 11px; }
+  .dashboard-page .dash-saved { padding-top: 0; }
+  .dashboard-page .dash-plan-card { gap: 8px; padding: 14px; }
+}
+@media (max-width: 380px) {
+  .dashboard-page .dash-stats { grid-template-columns: 1fr; }
+  .dashboard-page .dash-stat, .dashboard-page .dash-stat:last-child { grid-column: auto; min-height: 0; }
+  .dashboard-page .dash-section-head { flex-direction: column; }
+}
