@@ -2974,16 +2974,17 @@
         const grouped = new Map();
         weekPlans.forEach((s) => { const cls = (s.params && s.params.cls) || 'Class not specified'; if (!grouped.has(cls)) grouped.set(cls, []); grouped.get(cls).push(s); });
         const maxClassPlans = Math.max(1, ...Array.from(grouped.values()).map((rows) => rows.length));
-        weekList.replaceChildren(...Array.from(grouped.entries()).map(([cls, rows]) => h('button', { type: 'button', class: 'dash-class-tile', 'data-dash-class': cls, 'aria-label': 'Open ' + cls + ', ' + rows.length + ' saved plans' },
+        weekList.replaceChildren(...Array.from(grouped.entries()).map(([cls, rows]) => h('button', { type: 'button', class: 'dash-class-tile', 'data-dash-class': cls, 'aria-label': 'Open the latest ' + cls + ' lesson plan for week ' + week + ', ' + rows.length + ' saved ' + (rows.length === 1 ? 'plan' : 'plans') },
           h('span', { class: 'dash-class-symbol' }, icon('users')), h('strong', { text: cls }), h('span', { class: 'dash-class-count', text: rows.length + (rows.length === 1 ? ' plan' : ' plans') }),
-          h('span', { class: 'dash-class-progress-track', 'aria-hidden': 'true' }, h('span', { class: 'dash-class-progress-fill', style: 'width:' + Math.round(rows.length / maxClassPlans * 100) + '%' }))
+          h('span', { class: 'dash-class-progress-track', 'aria-hidden': 'true' }, h('span', { class: 'dash-class-progress-fill', style: 'width:' + Math.round(rows.length / maxClassPlans * 100) + '%' })),
+          h('span', { class: 'dash-class-open', text: 'Open latest plan' })
         )));
       }
     }
     const next = weekPlans[0] || plans[0], nextHost = $('#dashNextPlan');
     if (nextHost) {
       if (!next) nextHost.replaceChildren(h('div', { class: 'dash-next-empty' }, h('span', { class: 'dash-next-icon' }, icon('spark')), h('div', {}, h('strong', { text: 'Your next lesson starts here' }), h('span', { text: 'Create a plan and it will be ready to open from this space.' })), h('button', { type: 'button', class: 'dash-next-cta', 'data-dash-action': 'plan', text: 'Create plan' })));
-      else nextHost.replaceChildren(h('button', { type: 'button', class: 'dash-next-card', 'data-dash-plan': next.id },
+      else nextHost.replaceChildren(h('button', { type: 'button', class: 'dash-next-card', 'data-dash-plan': next.id, 'aria-label': 'Open saved lesson plan: ' + ((next.params && next.params.cls) || 'Class') + ', ' + ((next.params && next.params.subject) || next.title || 'Lesson') + ', week ' + ((next.params && next.params.week) || week) },
         h('span', { class: 'dash-next-subject-icon', text: '▣' }),
         h('span', { class: 'dash-next-content' }, h('strong', { text: ((next.params && next.params.cls) || 'Class') + ' – ' + ((next.params && next.params.subject) || next.title) }), h('span', { text: next.title && next.params && next.params.subject ? next.title : 'Your saved lesson plan' }), h('span', { class: 'dash-next-meta', text: 'Week ' + ((next.params && next.params.week) || week) + ' · ' + rel(next.updatedAt) })),
         h('span', { class: 'dash-next-arrow', text: '›' })
@@ -2993,7 +2994,7 @@
     const visible = plans.filter((s) => { const p = s.params || {}; return !q || [s.title, p.subject, p.cls, p.week].join(' ').toLowerCase().includes(q); }).slice(0, 4);
     const recent = $('#dashRecentList');
     if (recent) recent.replaceChildren(...visible.map((s) => h('div', { class: 'dash-recent-item' },
-      h('button', { type: 'button', class: 'dash-recent-card-main', 'data-dash-plan': s.id },
+      h('button', { type: 'button', class: 'dash-recent-card-main', 'data-dash-plan': s.id, 'aria-label': 'Open lesson plan: ' + ((s.params && s.params.cls) || 'Class') + ', ' + ((s.params && s.params.subject) || s.title || 'Lesson') + ', week ' + ((s.params && s.params.week) || 'unspecified') },
         h('span', { class: 'dash-recent-icon' }, icon('clipboard')),
         h('span', { class: 'dash-recent-content' }, h('strong', { text: ((s.params && s.params.cls) || 'Class') + ' – ' + ((s.params && s.params.subject) || s.title) }), h('span', { text: s.title || 'Saved lesson plan' })),
         h('span', { class: 'dash-recent-time', text: rel(s.updatedAt) })
@@ -3004,7 +3005,15 @@
         h('button', { type: 'button', 'data-dash-menu-action': 'delete', 'data-plan-id': s.id, text: 'Delete plan' })
       )
     )));
-    const empty = $('#dashEmpty'); if (empty) empty.hidden = visible.length > 0;
+    const empty = $('#dashEmpty');
+    if (empty) {
+      empty.hidden = visible.length > 0;
+      const emptyText = $('#dashEmptyText'), clearSearch = $('#dashClearSearch');
+      if (emptyText) emptyText.textContent = q
+        ? 'No lesson plans match “' + search.value.trim() + '”. Try another search.'
+        : plans.length ? 'No recent lesson plans to show.' : 'No saved lesson plans yet. Create your first plan and it will appear here.';
+      if (clearSearch) clearSearch.hidden = !q;
+    }
   }
   if ($('#dashboardPage')) {
     $('#dashSearch').addEventListener('input', renderDashboard);
@@ -3036,16 +3045,28 @@
       if (plan) { showPage(null); showSession(plan.dataset.dashPlan); return; }
       const action = e.target.closest('[data-dash-action]');
       if (action) {
-        const kind = action.dataset.dashAction, start = $('#newSession');
-        if (start) start.click();
-        if (kind === 'notes' || kind === 'worksheet') {
-          const tab = $('#studioTabResources'); if (tab) tab.click();
-          const type = $('#resourceType'); if (type) type.value = kind === 'notes' ? 'Study notes' : 'Learner worksheet';
-        } else if (kind === 'media') { const tab = $('#studioTabMedia'); if (tab) tab.click(); }
-        else { const tab = $('#studioTabPlan'); if (tab) tab.click(); }
+        const routes = {
+          plan: { tab: 'plan' },
+          notes: { tab: 'resources', mode: 'resources', resourceType: 'Study notes' },
+          media: { tab: 'media' },
+          worksheet: { tab: 'resources', mode: 'resources', resourceType: 'Learner worksheet' }
+        };
+        const route = routes[action.dataset.dashAction];
+        if (!route) return;
+        showPage(null);
+        newSession();
+        if (route.mode) state.params.mode = route.mode;
+        if (route.resourceType) {
+          state.params.resourceType = route.resourceType;
+          const type = $('#resourceType');
+          if (type) { type.value = route.resourceType; type.dispatchEvent(new Event('change', { bubbles: true })); }
+        }
+        setStudioTab(route.tab);
+        if (route.tab === 'media') loadMediaContext();
         return;
       }
-      if (e.target.closest('#dashViewAll')) { showPage('library'); return; }
+      if (e.target.closest('#dashClearSearch')) { const search = $('#dashSearch'); if (search) { search.value = ''; renderDashboard(); search.focus(); } return; }
+      if (e.target.closest('#dashViewAll')) { libType = 'plan'; showPage('library'); return; }
       if (e.target.closest('#dashViewWeek')) { const week = $('#dashWeekList'); if (week) week.scrollIntoView({ behavior: 'smooth', block: 'start' }); }
     });
   }
@@ -3058,7 +3079,7 @@
     const all = state.sessions.filter((s) => s.messages.length).sort((a, b) => b.updatedAt - a.updatedAt);
     const counts = {}; all.forEach((s) => { const t = typeOf(s); counts[t] = (counts[t] || 0) + 1; });
     const chips = $('#libChips');
-    chips.replaceChildren(...[['all', 'All', all.length]].concat(TYPE_ORDER.filter((t) => counts[t]).map((t) => [t, TYPE_LABEL[t], counts[t]]))
+    chips.replaceChildren(...[['all', 'All', all.length]].concat(TYPE_ORDER.filter((t) => counts[t] || (libType === t && t === 'plan')).map((t) => [t, TYPE_LABEL[t], counts[t] || 0]))
       .map(([id, label, n]) => h('button', { type: 'button', class: 'lib-chip', 'data-type': id, 'aria-pressed': String(libType === id), text: label + ' ' + n })));
     const list = all.filter((s) => (libType === 'all' || typeOf(s) === libType) &&
       (!q || (s.title + ' ' + (s.params ? s.params.cls + ' ' + s.params.subject : '')).toLowerCase().includes(q)));
