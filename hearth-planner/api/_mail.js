@@ -27,7 +27,7 @@ function layout(parts) {
     <tr><td style="padding:20px 8px 0;font-size:12.5px;line-height:1.6;color:#8a8a84;text-align:center">
       GuidEd · Lesson plans for Ghanaian teachers<br>
       <a href="${site}/about" style="color:#8a8a84">About</a> &nbsp;·&nbsp; <a href="${site}/privacy" style="color:#8a8a84">Privacy</a> &nbsp;·&nbsp; <a href="${site}/refunds" style="color:#8a8a84">Refunds</a> &nbsp;·&nbsp; <a href="mailto:hello@guidedgh.site" style="color:#8a8a84">hello@guidedgh.site</a><br>
-      You are receiving this because you have a GuidEd account.${p.unsubscribe ? ` <a href="${esc(p.unsubscribe)}" style="color:#8a8a84">Unsubscribe from weekly reminders</a>` : ''}
+      You are receiving this because you have a GuidEd account.${p.unsubscribe ? ` <a href="${esc(p.unsubscribe)}" style="color:#8a8a84">${esc(p.unsubscribeLabel || 'Unsubscribe from weekly reminders')}</a>` : ''}
     </td></tr>
   </table>
 </td></tr></table></body></html>`;
@@ -61,20 +61,48 @@ function proEnding(left, expiresAt) {
   };
 }
 
+const joinList = (xs) => xs.length <= 1 ? (xs[0] || '') : xs.slice(0, -1).join(', ') + ' and ' + xs[xs.length - 1];
+
+// o.children: [{ name, class, minutes, subject, done: [{ subject, topic }] }]; o.done: activities finished in the last 7 days.
 function familyWeekly(o) {
   const site = SITE();
   const kids = o.children || [];
+  const any = kids.some((k) => (k.done || []).length);
   return {
-    subject: 'This week at home with GuidEd',
+    subject: o.done ? 'Your family’s week with GuidEd' : 'This week at home with GuidEd',
     ...layout({
-      preheader: 'A short activity for each child, ready on your phone.',
-      title: 'Your week of learning at home',
-      intro: o.done ? 'Last week you finished ' + o.done + ' home ' + (o.done === 1 ? 'activity' : 'activities') + '. Well done.' : 'A little time at home goes a long way. Here is an idea for each child this week.',
-      facts: kids.map((k) => [k.name, k.subject + ' (' + k.class + ', about ' + k.minutes + ' minutes)']),
+      preheader: o.done ? 'Here is what your children finished, and an idea for this week.' : 'A short activity for each child, ready on your phone.',
+      title: o.done ? 'Your family’s week' : 'Your week of learning at home',
+      intro: o.done ? 'Last week your family finished ' + o.done + ' home ' + (o.done === 1 ? 'activity' : 'activities') + '. Well done.' : 'A little time at home goes a long way. Here is an idea for each child this week.',
+      facts: kids.map((k) => {
+        const done = (k.done || []).slice(0, 3).map((d) => (d.topic ? d.topic : d.subject) + (d.topic && d.subject ? ' (' + d.subject + ')' : ''));
+        const more = (k.done || []).length > 3 ? ' and ' + ((k.done || []).length - 3) + ' more' : '';
+        const next = 'Next: ' + k.subject + ' (' + k.class + ', about ' + k.minutes + ' minutes)';
+        return [k.name, any ? (done.length ? 'Finished ' + joinList(done) + more + '. ' : 'Nothing finished yet. ') + next : k.subject + ' (' + k.class + ', about ' + k.minutes + ' minutes)'];
+      }),
       paragraphs: ['Open My Children, pick the suggested subject and GuidEd will guide you through a short lesson step by step.'],
       button: { label: 'Start this week', url: site + '/' },
       closing: 'You can stop these emails any time with the link below.',
       unsubscribe: o.unsubscribeUrl,
+    }),
+  };
+}
+
+// o: { plans: n, items: ['Basic 5 · Mathematics, Week 3', ...], next: 'Basic 5 Mathematics, Week 4: Fractions' | '', unsubscribeUrl }
+function teacherWeekly(o) {
+  const site = SITE();
+  return {
+    subject: 'Your teaching week with GuidEd',
+    ...layout({
+      preheader: 'You planned ' + o.plans + ' ' + (o.plans === 1 ? 'lesson' : 'lessons') + ' this week' + (o.next ? '. Next up: ' + o.next : '.'),
+      title: 'Your teaching week',
+      intro: 'This week you made ' + o.plans + ' lesson ' + (o.plans === 1 ? 'plan' : 'plans') + ' with GuidEd. Thank you for the work you put in for your learners.',
+      facts: (o.items || []).map((x) => ['Planned', x]).concat(o.next ? [['Next week', o.next]] : []),
+      paragraphs: [o.next ? 'Your next plan is one tap away: choose the class and week and GuidEd fills in the scheme of learning for you.' : 'Choose your class and week and GuidEd fills in the scheme of learning for you.'],
+      button: { label: 'Plan next week', url: site + '/' },
+      closing: 'You can stop these emails any time with the link below.',
+      unsubscribe: o.unsubscribeUrl,
+      unsubscribeLabel: 'Unsubscribe from weekly summaries',
     }),
   };
 }
@@ -94,4 +122,4 @@ function welcome() {
   };
 }
 
-module.exports = { layout, proEnding, familyWeekly, welcome, fmtDate, SITE };
+module.exports = { layout, proEnding, familyWeekly, teacherWeekly, welcome, fmtDate, SITE };

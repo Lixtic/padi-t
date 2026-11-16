@@ -31,6 +31,7 @@
   var upgradeLinkDone = false;
   var P = {
     configure: function (h) { hooks = h || {}; },
+    billingPost: function (a, b) { return billingPost(a, b); },
     onChange: function (f) { listeners.push(f); },
     info: function () { return info; },
     headers: async function () { return hooks.authHeader ? await hooks.authHeader() : {}; },

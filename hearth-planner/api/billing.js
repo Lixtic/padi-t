@@ -110,16 +110,17 @@ module.exports = async (req, res) => {
     if (action === 'family-reminders') {
       const cs = process.env.CRON_SECRET || '';
       if (!cs || req.headers.authorization !== 'Bearer ' + cs) return sendJson(res, 401, { error: 'unauthorized' });
-      return sendJson(res, 200, await require('./_family').remindFamilies());
+      const F = require('./_family');
+      return sendJson(res, 200, { families: await F.remindFamilies(), teachers: await F.summariseTeachers() });
     }
 
     // One-click unsubscribe from the weekly family email; the link is signed, so no sign-in is needed.
     if (action === 'unsubscribe') {
-      const ok = await require('./_family').unsubscribe(url.searchParams.get('u'), url.searchParams.get('t')).catch(() => false);
+      const ok = await require('./_family').unsubscribe(url.searchParams.get('u'), url.searchParams.get('t'), url.searchParams.get('k') === 'teacher' ? 'teacher' : 'family').catch(() => false);
       res.statusCode = ok ? 200 : 400;
       res.setHeader('Content-Type', 'text/html; charset=utf-8');
       res.setHeader('Cache-Control', 'no-store');
-      return res.end('<!doctype html><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>GuidEd</title><body style="font-family:system-ui;max-width:30rem;margin:15vh auto;padding:0 1rem;line-height:1.5"><h1>' + (ok ? 'You are unsubscribed' : 'This link is not valid') + '</h1><p>' + (ok ? 'We will not send the weekly family email again. You can turn it back on in My Children.' : 'Open GuidEd and use the reminder setting in My Children instead.') + '</p><p><a href="/">Open GuidEd</a></p></body>');
+      return res.end('<!doctype html><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>GuidEd</title><body style="font-family:system-ui;max-width:30rem;margin:15vh auto;padding:0 1rem;line-height:1.5"><h1>' + (ok ? 'You are unsubscribed' : 'This link is not valid') + '</h1><p>' + (ok ? (url.searchParams.get('k') === 'teacher' ? 'We will not send the weekly teaching summary again. You can turn it back on in your account settings.' : 'We will not send the weekly family email again. You can turn it back on in My Children.') : 'Open GuidEd and use the email setting in your account settings instead.') + '</p><p><a href="/">Open GuidEd</a></p></body>');
     }
 
     const me = req.headers.authorization ? await A.authed(req).catch(() => null) : null;
@@ -143,6 +144,13 @@ module.exports = async (req, res) => {
     const body = await readJson(req);
 
     // The saved mobile money number: read, save or clear. Only ever the signed-in owner's own.
+    if (action === 'summary-pref') {                 // the teacher's Sunday summary email: read (no `on` sent) or switch on/off
+      if (await require('./_quota').limited(res, 'summary:' + me.uid, 30, 10 * 60 * 1000)) return;
+      const F = require('./_family');
+      if (typeof body.on === 'boolean') await F.setTeacherSummary(me.uid, body.on);
+      return sendJson(res, 200, { on: await F.teacherSummaryOn(me.uid) });
+    }
+
     if (action === 'phone') {
       if (await require('./_quota').limited(res, 'phone:' + me.uid, 30, 10 * 60 * 1000)) return;
       const Ph = require('./_phone');

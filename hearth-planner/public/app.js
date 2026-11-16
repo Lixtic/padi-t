@@ -2594,7 +2594,7 @@
       if (!coarse) promptEl.focus();
     };
     const ddTerm = makeDropdown($('#ddTerm'), { name: 'Term', items: () => termsFor(state.params.cls).map((x) => ({ id: x, label: termWord(state.params.cls) + ' ' + x + (x === termAuto() ? ' (now)' : '') })), get: () => termNow(), set: (v) => { termSet(v); continueWeek(); syncPills(); }, label: (x) => termWord(state.params.cls) + ' ' + x });
-    window.addEventListener('guided:account', () => { ddTerm.build(); syncScheme(); });
+    window.addEventListener('guided:account', () => { ddTerm.build(); syncScheme(); syncSummaryToggle(); });
     makeDropdown($('#ddWeek'), { name: 'Week', items: () => weeksFor(state.params.cls).map((x) => { const we = weekEnd(termNow(), x, state.params.cls); return { id: x, label: 'Week ' + x, sub: we ? (we.afterClose ? 'date to be confirmed' : we.short + (x === calendarWeek() ? ' · this week' : '')) : '' }; }), get: () => state.params.week, set: (v) => { state.params.week = v; store.save(); syncScheme(); }, label: (x) => 'Week ' + x });
 
     makeDropdown($('#ddSize'), { name: 'Class size', items: SIZES.map((x) => ({ id: x, label: x + ' learners' })), get: () => state.params.size, set: (v) => { state.params.size = v; syncSummary(); store.save(); }, label: (x) => x + ' learners' });
@@ -2638,6 +2638,7 @@
     const keep = $('#clearCacheKeep'); if (keep) keep.textContent = parent ? 'Your saved lessons are kept.' : 'Your saved plans are kept.';
     const fb = $('#familyBtn'), rr = $('#reminderRow'); if (fb) fb.hidden = !parent; if (rr) rr.hidden = !parent;
     const rt = $('#reminderToggle'); if (rt) rt.setAttribute('aria-checked', accountProfile && accountProfile.familyReminders === false ? 'false' : 'true');
+    syncSummaryToggle();
     const label = $('#newSession span');
     if (label) label.textContent = parent ? 'New Home Lesson' : 'New Plan';
     try { if (accountRole) localStorage.setItem('guided.role', accountRole); else localStorage.removeItem('guided.role'); } catch (e) { /* storage blocked */ }
@@ -2674,6 +2675,23 @@
       try { const d = $('#acctSheet'); if (d && d.close) d.close(); } catch (e) { /* ignore */ }
     } catch (e) { toast(e && e.message || 'Could not switch view. Please try again.'); }
   }
+  /* Teachers: the Sunday week-summary email switch. It lives on the server (the email link can switch it off too). */
+  function syncSummaryToggle() {
+    const row = $('#summaryRow'), t = $('#summaryToggle');
+    if (!row || !t) return;
+    const teacher = accountRole !== 'parent' && !!(window.PadiSync && window.PadiSync.user && window.PadiSync.user());
+    row.hidden = !teacher;
+    if (!teacher || !window.GuidedPlans || !window.GuidedPlans.billingPost) return;
+    window.GuidedPlans.billingPost('summary-pref', {}).then((r) => { if (r && r.ok && r.j) t.setAttribute('aria-checked', r.j.on === false ? 'false' : 'true'); }).catch(() => {});
+  }
+  { const t = $('#summaryToggle');
+    if (t) t.addEventListener('click', async () => {
+      if (!window.GuidedPlans || !window.GuidedPlans.billingPost) return;
+      const on = t.getAttribute('aria-checked') !== 'true';
+      t.setAttribute('aria-checked', on ? 'true' : 'false');
+      try { const r = await window.GuidedPlans.billingPost('summary-pref', { on }); if (!r.ok) throw new Error('save'); }
+      catch (e) { t.setAttribute('aria-checked', on ? 'false' : 'true'); toast('Could not save that. Please try again.'); }
+    }); }
   { const fb = $('#familyBtn'); if (fb) fb.addEventListener('click', () => { showPage('dashboard'); if (window.GuidedParentDashboard) window.GuidedParentDashboard.open('children'); }); }
   { const rt = $('#reminderToggle');
     if (rt) rt.addEventListener('click', async () => {
