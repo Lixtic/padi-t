@@ -2868,64 +2868,62 @@
     const subjects = new Set(plans.map((s) => s.params && s.params.subject).filter(Boolean));
     const stats = $('#dashStats');
     if (stats) stats.replaceChildren(
-      h('article', { class: 'dash-stat' }, h('span', { class: 'dash-stat-label', text: 'Saved lesson plans' }), h('strong', { class: 'dash-stat-value', text: String(plans.length) }), h('span', { class: 'dash-stat-foot', text: 'Across your workspace' })),
-      h('article', { class: 'dash-stat' }, h('span', { class: 'dash-stat-label', text: 'Classes covered' }), h('strong', { class: 'dash-stat-value', text: String(classes.size) }), h('span', { class: 'dash-stat-foot', text: 'Different class levels' })),
-      h('article', { class: 'dash-stat' }, h('span', { class: 'dash-stat-label', text: 'Subjects planned' }), h('strong', { class: 'dash-stat-value', text: String(subjects.size) }), h('span', { class: 'dash-stat-foot', text: resources + ' saved teaching resources' }))
+      h('article', { class: 'dash-stat' }, h('span', { class: 'dash-stat-icon dash-stat-icon-plans' }, '▤'), h('div', { class: 'dash-stat-copy' }, h('strong', { class: 'dash-stat-value', text: String(plans.length) }), h('span', { class: 'dash-stat-label', text: 'Lesson plans' }), h('span', { class: 'dash-stat-foot', text: 'Saved in your workspace' }))),
+      h('article', { class: 'dash-stat' }, h('span', { class: 'dash-stat-icon dash-stat-icon-subjects' }, '▱'), h('div', { class: 'dash-stat-copy' }, h('strong', { class: 'dash-stat-value', text: String(subjects.size) }), h('span', { class: 'dash-stat-label', text: 'Subjects' }), h('span', { class: 'dash-stat-foot', text: 'With learning plans' }))),
+      h('article', { class: 'dash-stat' }, h('span', { class: 'dash-stat-icon dash-stat-icon-classes' }, '♧'), h('div', { class: 'dash-stat-copy' }, h('strong', { class: 'dash-stat-value', text: String(classes.size) }), h('span', { class: 'dash-stat-label', text: 'Classes' }), h('span', { class: 'dash-stat-foot', text: resources + ' saved resources' })))
     );
-
     const term = Number(termNow()) || 1;
     const week = Number(state.params.week) || 1;
     const weekPlans = plans.filter((s) => s.params && Number(s.params.week) === week && Number(s.params.term || term) === term);
-    const tag = $('#dashWeekTag');
-    if (tag) tag.textContent = termWord(state.params.cls) + ' ' + term + ' · Week ' + week;
+    const tag = $('#dashWeekTag'); if (tag) tag.textContent = termWord(state.params.cls) + ' ' + term + ' · Week ' + week;
     const weekList = $('#dashWeekList');
     if (weekList) {
-      if (!weekPlans.length) {
-        weekList.replaceChildren(h('div', { class: 'dash-week-empty' }, h('strong', { text: 'No saved plans for this selected week yet' }), h('span', { text: 'Choose this term and week in the planner, then save your lesson plans to see them here.' })));
-      } else {
+      if (!weekPlans.length) weekList.replaceChildren(h('div', { class: 'dash-week-empty' }, h('strong', { text: 'Your week is ready to plan' }), h('span', { text: 'Saved plans for the selected term and week will appear here.' }), h('button', { type: 'button', class: 'dash-empty-action', 'data-dash-action': 'plan', text: 'Create a lesson plan' })));
+      else {
         const grouped = new Map();
-        weekPlans.forEach((s) => {
-          const cls = (s.params && s.params.cls) || 'Class not specified';
-          if (!grouped.has(cls)) grouped.set(cls, []);
-          grouped.get(cls).push(s);
-        });
-        weekList.replaceChildren(...Array.from(grouped.entries()).map(([cls, rows]) =>
-          h('article', { class: 'dash-class-card' },
-            h('div', { class: 'dash-class-head' }, h('strong', { text: cls }), h('span', { text: rows.length + (rows.length === 1 ? ' saved plan' : ' saved plans') })),
-            h('div', { class: 'dash-subject-list' }, ...rows.map((s) =>
-              h('button', { type: 'button', class: 'dash-subject', 'data-dash-plan': s.id },
-                h('span', { class: 'dash-subject-name', text: (s.params && s.params.subject) || s.title }),
-                h('span', { class: 'dash-subject-meta', text: 'Open plan · ' + rel(s.updatedAt) })
-              )
-            ))
-          )
-        ));
+        weekPlans.forEach((s) => { const cls = (s.params && s.params.cls) || 'Class not specified'; if (!grouped.has(cls)) grouped.set(cls, []); grouped.get(cls).push(s); });
+        weekList.replaceChildren(...Array.from(grouped.entries()).map(([cls, rows], index) => h('div', { class: 'dash-class-tile' + (index === 0 ? ' is-active' : ''), 'data-dash-class': cls },
+          h('span', { class: 'dash-class-symbol', text: '⌂' }), h('strong', { text: cls }), h('span', { class: 'dash-class-count', text: rows.length + (rows.length === 1 ? ' plan' : ' plans') }), h('span', { class: 'dash-class-progress' })
+        )));
       }
     }
-
-    const search = $('#dashSearch');
-    const q = search ? search.value.trim().toLowerCase() : '';
-    const visible = plans.filter((s) => {
-      const p = s.params || {};
-      return !q || [s.title, p.subject, p.cls, p.week].join(' ').toLowerCase().includes(q);
-    });
-    const grid = $('#dashPlanGrid');
-    if (grid) grid.replaceChildren(...visible.map((s) =>
-      h('button', { type: 'button', class: 'dash-plan-card', 'data-dash-plan': s.id },
-        h('span', { class: 'dash-plan-top' }, h('span', { class: 'dash-plan-type', text: 'LESSON PLAN' }), h('span', { class: 'dash-plan-time', text: rel(s.updatedAt) })),
-        h('strong', { class: 'dash-plan-title', text: (s.params && s.params.subject) || s.title }),
-        h('span', { class: 'dash-plan-meta', text: s.params ? [s.params.cls, s.params.term ? termWord(s.params.cls) + ' ' + s.params.term : '', 'Week ' + s.params.week].filter(Boolean).join(' · ') : 'Saved plan' }),
-        h('span', { class: 'dash-plan-open', text: 'Open lesson plan →' })
-      )
-    ));
-    const count = $('#dashPlanCount'); if (count) count.textContent = plans.length + (plans.length === 1 ? ' plan' : ' plans');
+    const next = weekPlans[0] || plans[0], nextHost = $('#dashNextPlan');
+    if (nextHost) {
+      if (!next) nextHost.replaceChildren(h('div', { class: 'dash-next-empty' }, h('span', { class: 'dash-next-icon', text: '✦' }), h('div', {}, h('strong', { text: 'Your next lesson starts here' }), h('span', { text: 'Create a plan and it will be ready to open from this space.' })), h('button', { type: 'button', class: 'dash-next-cta', 'data-dash-action': 'plan', text: 'Create plan' })));
+      else nextHost.replaceChildren(h('button', { type: 'button', class: 'dash-next-card', 'data-dash-plan': next.id },
+        h('span', { class: 'dash-next-subject-icon', text: '▣' }),
+        h('span', { class: 'dash-next-content' }, h('strong', { text: ((next.params && next.params.cls) || 'Class') + ' – ' + ((next.params && next.params.subject) || next.title) }), h('span', { text: next.title && next.params && next.params.subject ? next.title : 'Your saved lesson plan' }), h('span', { class: 'dash-next-meta', text: 'Week ' + ((next.params && next.params.week) || week) + ' · ' + rel(next.updatedAt) })),
+        h('span', { class: 'dash-next-arrow', text: '›' })
+      ));
+    }
+    const search = $('#dashSearch'), q = search ? search.value.trim().toLowerCase() : '';
+    const visible = plans.filter((s) => { const p = s.params || {}; return !q || [s.title, p.subject, p.cls, p.week].join(' ').toLowerCase().includes(q); }).slice(0, 4);
+    const recent = $('#dashRecentList');
+    if (recent) recent.replaceChildren(...visible.map((s) => h('button', { type: 'button', class: 'dash-recent-card', 'data-dash-plan': s.id },
+      h('span', { class: 'dash-recent-icon', text: '▤' }),
+      h('span', { class: 'dash-recent-content' }, h('strong', { text: ((s.params && s.params.cls) || 'Class') + ' – ' + ((s.params && s.params.subject) || s.title) }), h('span', { text: s.title || 'Saved lesson plan' })),
+      h('span', { class: 'dash-recent-time', text: rel(s.updatedAt) }), h('span', { class: 'dash-recent-arrow', text: '···' })
+    )));
     const empty = $('#dashEmpty'); if (empty) empty.hidden = visible.length > 0;
   }
   if ($('#dashboardPage')) {
     $('#dashSearch').addEventListener('input', renderDashboard);
     $('#dashboardPage').addEventListener('click', (e) => {
-      const b = e.target.closest('[data-dash-plan]');
-      if (b) { showPage(null); showSession(b.dataset.dashPlan); }
+      const plan = e.target.closest('[data-dash-plan]');
+      if (plan) { showPage(null); showSession(plan.dataset.dashPlan); return; }
+      const action = e.target.closest('[data-dash-action]');
+      if (action) {
+        const kind = action.dataset.dashAction, start = $('#newSession');
+        if (start) start.click();
+        if (kind === 'notes' || kind === 'worksheet') {
+          const tab = $('#studioTabResources'); if (tab) tab.click();
+          const type = $('#resourceType'); if (type) type.value = kind === 'notes' ? 'Study notes' : 'Learner worksheet';
+        } else if (kind === 'media') { const tab = $('#studioTabMedia'); if (tab) tab.click(); }
+        else { const tab = $('#studioTabPlan'); if (tab) tab.click(); }
+        return;
+      }
+      if (e.target.closest('#dashViewAll')) { showPage('library'); return; }
+      if (e.target.closest('#dashViewWeek')) { const week = $('#dashWeekTitle'); if (week) week.scrollIntoView({ behavior: 'smooth', block: 'start' }); }
     });
   }
 
