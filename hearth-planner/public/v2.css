@@ -564,3 +564,39 @@ body:not(.role-parent) .parent-only { display: none !important; }
   .dashboard-page .dash-stat-foot { font-size:8px !important; }
   .dashboard-page .dash-week-tools { gap:5px; flex-wrap:wrap; }
 }
+
+
+/* Final Teacher Dashboard polish: clear hierarchy, meaningful stats and consistent line icons. */
+.dash-role-pill { display:none !important; }
+.dashboard-page .dash-stats,
+.dashboard-page #dashStats { grid-template-columns:repeat(4,minmax(0,1fr)) !important; }
+.dashboard-page .dash-stat-icon { display:grid; place-items:center; }
+.dashboard-page .dash-stat-icon .ico { width:21px; height:21px; stroke-width:2; }
+.dashboard-page .dash-stat-icon-plans { color:#1264cf; background:#e7f1ff; }
+.dashboard-page .dash-stat-icon-subjects { color:#6540c7; background:#f0eaff; }
+.dashboard-page .dash-stat-icon-classes { color:#15985a; background:#e6f8ee; }
+.dashboard-page .dash-stat-icon-resources { color:#b56b13; background:#fff3d9; }
+.dash-class-symbol { display:grid; place-items:center; }
+.dash-class-symbol .ico { width:21px; height:21px; stroke-width:2; }
+.dash-recent-icon { display:grid; place-items:center; }
+.dash-recent-icon .ico { width:19px; height:19px; stroke-width:2; }
+.dash-first-plan { grid-column:1/-1; display:grid; grid-template-columns:auto minmax(0,1fr) auto; align-items:center; gap:14px; padding:17px 19px; border:1px solid #dce8f7; border-radius:18px; background:linear-gradient(115deg,#f2f7ff,#fff 75%); }
+.dash-first-plan-icon { display:grid; place-items:center; width:46px; height:46px; border-radius:15px; color:#1264cf; background:#e3efff; }
+.dash-first-plan-icon .ico { width:24px; height:24px; }
+.dash-first-plan-copy { display:grid; gap:4px; min-width:0; }
+.dash-first-plan-copy strong { color:#172b4d; font-size:15px; font-weight:800; }
+.dash-first-plan-copy span { color:#6b7b94; font-size:12px; line-height:1.45; }
+.dash-first-plan-cta { display:inline-flex; align-items:center; justify-content:center; gap:8px; min-height:42px; padding:0 14px; border:0; border-radius:12px; background:#075dc5; color:#fff; font:700 12px var(--font-ui); cursor:pointer; white-space:nowrap; }
+.dash-first-plan-cta .ico { width:17px; height:17px; }
+@media(max-width:700px) {
+  .dashboard-page .dash-stats,.dashboard-page #dashStats { grid-template-columns:repeat(2,minmax(0,1fr)) !important; gap:9px !important; }
+  .dashboard-page .dash-stat,.dashboard-page .dash-stat:last-child { grid-column:auto !important; }
+  .dash-first-plan { grid-template-columns:auto minmax(0,1fr); gap:10px 12px; padding:14px; }
+  .dash-first-plan-icon { width:40px; height:40px; }
+  .dash-first-plan-copy strong { font-size:13px; }
+  .dash-first-plan-copy span { font-size:11px; }
+  .dash-first-plan-cta { grid-column:1/-1; width:100%; }
+}
+@media(max-width:380px) {
+  .dashboard-page .dash-stats,.dashboard-page #dashStats { grid-template-columns:repeat(2,minmax(0,1fr)) !important; }
+}
