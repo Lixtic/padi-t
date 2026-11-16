@@ -2890,7 +2890,7 @@
           grouped.get(cls).push(s);
         });
         weekList.replaceChildren(...Array.from(grouped.entries()).map(([cls, rows], index) =>
-          h('button', { type: 'button', class: 'dash-class-tile' + (index === 0 ? ' is-active' : ''), 'data-dash-class': cls },
+          h('div', { class: 'dash-class-tile' + (index === 0 ? ' is-active' : ''), 'data-dash-class': cls },
             h('span', { class: 'dash-class-symbol', text: '⌂' }),
             h('strong', { text: cls }),
             h('span', { class: 'dash-class-count', text: rows.length + (rows.length === 1 ? ' plan' : ' plans') }),
