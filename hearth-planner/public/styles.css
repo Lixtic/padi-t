@@ -989,7 +989,9 @@ html { overscroll-behavior-y: none; }
 .profile-ask .pa-yes { background: var(--accent); border-color: var(--accent); color: var(--on-accent); }
 
 /* Splash for the installed app */
-.splash { display: none; position: fixed; inset: 0; z-index: 9999; align-items: center; justify-content: center; overflow: hidden; padding: 0; background: #eaf6ff; transition: opacity .35s ease; }\n.splash-image { display: block; width: min(100vw, 760px); height: 100%; max-height: 100dvh; object-fit: contain; object-position: center; }
+.splash { display: none; position: fixed; inset: 0; z-index: 9999; align-items: center; justify-content: center; overflow: hidden; padding: 0; background: linear-gradient(180deg, #2fa8f7 0%, #8fd0fb 55%, #f6b768 100%); transition: opacity .35s ease; }
+.splash-image { position: relative; display: block; width: 100%; height: 100%; object-fit: cover; object-position: 50% 40%; }
+@media (min-aspect-ratio: 3/5) { .splash-image { width: auto; max-width: 100%; object-fit: contain; } }
 html.splash-on .splash { display: flex; }
 .splash.is-out { opacity: 0; pointer-events: none; }
 .splash > svg { width: min(34vw, 150px); height: auto; margin-bottom: 10px; }
