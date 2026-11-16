@@ -2921,7 +2921,7 @@
     if (nextHost) {
       if (!next) nextHost.replaceChildren(h('div', { class: 'dash-next-empty' }, h('span', { class: 'dash-next-icon', text: '✦' }), h('div', {}, h('strong', { text: 'Your next lesson starts here' }), h('span', { text: 'Create a plan and it will be ready to open from this space.' })), h('button', { type: 'button', class: 'dash-next-cta', 'data-dash-action': 'plan', text: 'Create plan' })));
       else nextHost.replaceChildren(h('button', { type: 'button', class: 'dash-next-card', 'data-dash-plan': next.id },
-        h('span', { class: 'dash-next-subject-icon', text: '▣' }),
+        h('span', { class: 'dash-next-subject-icon' }, icon('book')),
         h('span', { class: 'dash-next-content' }, h('strong', { text: ((next.params && next.params.cls) || 'Class') + ' – ' + ((next.params && next.params.subject) || next.title) }), h('span', { text: next.title && next.params && next.params.subject ? next.title : 'Your saved lesson plan' }), h('span', { class: 'dash-next-meta', text: 'Week ' + ((next.params && next.params.week) || week) + ' · ' + rel(next.updatedAt) })),
         h('span', { class: 'dash-next-arrow', text: '›' })
       ));
