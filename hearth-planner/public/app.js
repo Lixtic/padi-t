@@ -2869,11 +2869,33 @@
     const classes = new Set(plans.map((s) => s.params && s.params.cls).filter(Boolean));
     const subjects = new Set(plans.map((s) => s.params && s.params.subject).filter(Boolean));
     const stats = $('#dashStats');
-    if (stats) stats.replaceChildren(
-      h('article', { class: 'dash-stat' }, h('span', { class: 'dash-stat-icon dash-stat-icon-plans' }, '▤'), h('div', { class: 'dash-stat-copy' }, h('strong', { class: 'dash-stat-value', text: String(plans.length) }), h('span', { class: 'dash-stat-label', text: 'Lesson plans' }), h('span', { class: 'dash-stat-foot', text: 'Saved in your workspace' }))),
-      h('article', { class: 'dash-stat' }, h('span', { class: 'dash-stat-icon dash-stat-icon-subjects' }, '▱'), h('div', { class: 'dash-stat-copy' }, h('strong', { class: 'dash-stat-value', text: String(subjects.size) }), h('span', { class: 'dash-stat-label', text: 'Subjects' }), h('span', { class: 'dash-stat-foot', text: 'With learning plans' }))),
-      h('article', { class: 'dash-stat' }, h('span', { class: 'dash-stat-icon dash-stat-icon-classes' }, '♧'), h('div', { class: 'dash-stat-copy' }, h('strong', { class: 'dash-stat-value', text: String(classes.size) }), h('span', { class: 'dash-stat-label', text: 'Classes' }), h('span', { class: 'dash-stat-foot', text: resources + ' saved resources' })))
-    );
+    if (stats) {
+      if (!plans.length) {
+        stats.replaceChildren(h('section', { class: 'dash-first-plan' },
+          h('span', { class: 'dash-first-plan-icon' }, icon('spark')),
+          h('div', { class: 'dash-first-plan-copy' },
+            h('strong', { text: 'Let’s create your first lesson plan' }),
+            h('span', { text: 'Your teaching workspace is ready. Start with a class and subject, and your plans and resources will appear here.' })
+          ),
+          h('button', { type: 'button', class: 'dash-first-plan-cta', 'data-dash-action': 'plan' }, icon('plus'), h('span', { text: 'Make my first plan' }))
+        ));
+      } else {
+        const stat = (name, label, foot, tone) => h('article', { class: 'dash-stat' },
+          h('span', { class: 'dash-stat-icon dash-stat-icon-' + tone }, icon(name)),
+          h('div', { class: 'dash-stat-copy' },
+            h('strong', { class: 'dash-stat-value', text: String(label === 'Lesson plans' ? plans.length : label === 'Subjects' ? subjects.size : label === 'Classes' ? classes.size : resources) }),
+            h('span', { class: 'dash-stat-label', text: label }),
+            h('span', { class: 'dash-stat-foot', text: foot })
+          )
+        );
+        stats.replaceChildren(
+          stat('clipboard', 'Lesson plans', 'Saved in your workspace', 'plans'),
+          stat('layers', 'Subjects', 'With learning plans', 'subjects'),
+          stat('users', 'Classes', 'Across your workspace', 'classes'),
+          stat('library', 'Resources', 'Saved teaching resources', 'resources')
+        );
+      }
+    }
     const term = Number(termNow()) || 1;
     const week = Number(state.params.week) || 1;
     const weekPlans = plans.filter((s) => s.params && Number(s.params.week) === week && Number(s.params.term || term) === term);
@@ -2886,7 +2908,7 @@
         weekPlans.forEach((s) => { const cls = (s.params && s.params.cls) || 'Class not specified'; if (!grouped.has(cls)) grouped.set(cls, []); grouped.get(cls).push(s); });
         const maxClassPlans = Math.max(1, ...Array.from(grouped.values()).map((rows) => rows.length));
         weekList.replaceChildren(...Array.from(grouped.entries()).map(([cls, rows]) => h('button', { type: 'button', class: 'dash-class-tile', 'data-dash-class': cls, 'aria-label': 'Open ' + cls + ', ' + rows.length + ' saved plans' },
-          h('span', { class: 'dash-class-symbol', text: '⌂' }), h('strong', { text: cls }), h('span', { class: 'dash-class-count', text: rows.length + (rows.length === 1 ? ' plan' : ' plans') }),
+          h('span', { class: 'dash-class-symbol' }, icon('users')), h('strong', { text: cls }), h('span', { class: 'dash-class-count', text: rows.length + (rows.length === 1 ? ' plan' : ' plans') }),
           h('span', { class: 'dash-class-progress-track', 'aria-hidden': 'true' }, h('span', { class: 'dash-class-progress-fill', style: 'width:' + Math.round(rows.length / maxClassPlans * 100) + '%' }))
         )));
       }
@@ -2905,7 +2927,7 @@
     const recent = $('#dashRecentList');
     if (recent) recent.replaceChildren(...visible.map((s) => h('div', { class: 'dash-recent-item' },
       h('button', { type: 'button', class: 'dash-recent-card-main', 'data-dash-plan': s.id },
-        h('span', { class: 'dash-recent-icon', text: '▤' }),
+        h('span', { class: 'dash-recent-icon' }, icon('clipboard')),
         h('span', { class: 'dash-recent-content' }, h('strong', { text: ((s.params && s.params.cls) || 'Class') + ' – ' + ((s.params && s.params.subject) || s.title) }), h('span', { text: s.title || 'Saved lesson plan' })),
         h('span', { class: 'dash-recent-time', text: rel(s.updatedAt) })
       ),
