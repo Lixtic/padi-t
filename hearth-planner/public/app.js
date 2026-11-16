@@ -2727,14 +2727,18 @@
       accountProfile = profile || null;
       accountRole = profile && (profile.primaryRole || (Array.isArray(profile.roles) ? profile.roles[0] : '')) || '';
       // A pinned "Open GuidEd in" applies once per launch, so switching view later in the session sticks.
-      if (!launchRoleApplied && profile && Array.isArray(profile.roles) && profile.roles.length > 1 && profile.roles.includes(profile.startIn)) accountRole = profile.startIn;
+      const isInitialLaunch = !launchRoleApplied;
+      if (isInitialLaunch && profile && Array.isArray(profile.roles) && profile.roles.length > 1 && profile.roles.includes(profile.startIn)) accountRole = profile.startIn;
       launchRoleApplied = true;
       try { localStorage.setItem('guided.startIn', profile && profile.roles && profile.roles.length > 1 && profile.startIn && profile.startIn !== 'last' ? profile.startIn : ''); } catch (e) { /* storage blocked */ }
       window.GuidedAccountRole = accountRole;
       accountProfileLoaded = true;
       accountProfileError = false;
       applyRoleUi();
-      if (accountRole === 'parent' && !pageOpen()) showPage(null);   // a parent lands on the dashboard, not the studio
+      // On a fresh signed-in launch, open the correct role dashboard directly.
+      // Do not override navigation after the user has started using the app.
+      if (isInitialLaunch && !pageOpen()) showPage('dashboard');
+      else if (accountRole === 'parent' && !pageOpen()) showPage(null);
       const link = $('#dashboardLink');
       if (link) {
         const label = link.querySelector('span');
