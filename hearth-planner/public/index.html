@@ -618,7 +618,7 @@
 
     <section class="settings-page dashboard-page" id="dashboardPage" aria-labelledby="dashTitle" hidden>
       <div class="sp-inner dash-inner">
-        <section class="dash-welcome" aria-labelledby="dashTitle"><div class="dash-welcome-copy"><span class="dash-kicker">YOUR TEACHING SPACE</span><h1 id="dashTitle">Good to see you, Teacher <span aria-hidden="true">👋</span></h1><p>Plan, teach and assess with ease.</p></div><div class="dash-welcome-art" aria-hidden="true"><span class="dash-book dash-book-one"></span><span class="dash-book dash-book-two"></span><span class="dash-pencil-pot">✏️ ✏️</span></div></section>
+        <section class="dash-welcome" aria-labelledby="dashTitle"><div class="dash-welcome-copy"><span class="dash-kicker">YOUR TEACHING SPACE</span><h1 id="dashTitle">Good to see you, Teacher</h1><p>Plan, teach and assess with ease.</p></div><div class="dash-welcome-art" aria-hidden="true"><span class="dash-book dash-book-one"></span><span class="dash-book dash-book-two"></span><span class="dash-pencil-pot"><svg class="ico"><use href="#i-pencil"/></svg></span></div></section>
         <div class="dash-stats" id="dashStats" aria-label="Teaching summary"></div>
         <section class="dash-actions" aria-label="Quick teaching actions">
           <button type="button" class="dash-action dash-action-primary" data-dash-action="plan"><svg class="ico"><use href="#i-plus"/></svg><span>Create Lesson Plan</span></button>
@@ -789,9 +789,13 @@
             <div class="study-curriculum" id="studyNotesCurriculum" hidden>
               <div class="study-curriculum-head">
                 <strong>Curriculum indicators</strong>
-                <small>Select the exact indicator(s) these study notes should cover.</small>
+                <small>Choose up to 10 indicators. The first 10 are selected to start.</small>
               </div>
               <div class="study-indicator-meta" id="studyIndicatorMeta"></div>
+              <div class="study-indicator-toolbar" id="studyIndicatorToolbar" hidden>
+                <span class="study-indicator-count" id="studyIndicatorCount" role="status" aria-atomic="true"></span>
+                <button type="button" class="study-indicator-reset" id="studyIndicatorReset">Select first 10</button>
+              </div>
               <div class="study-indicator-options" id="studyIndicatorOptions" role="group" aria-label="Curriculum indicators"></div>
               <small class="study-curriculum-source" id="studyCurriculumSource">Loading the selected scheme details…</small>
             </div>

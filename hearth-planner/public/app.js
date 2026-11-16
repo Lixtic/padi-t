@@ -1497,12 +1497,28 @@
   const planAction = $('#planAction'), resourceAction = $('#resourceAction'), resourceTypeEl = $('#resourceType');
   const studyNotesCurriculum = $('#studyNotesCurriculum'), studyIndicatorMeta = $('#studyIndicatorMeta');
   const studyIndicatorOptions = $('#studyIndicatorOptions'), studyCurriculumSource = $('#studyCurriculumSource');
+  const studyIndicatorToolbar = $('#studyIndicatorToolbar'), studyIndicatorCount = $('#studyIndicatorCount'), studyIndicatorReset = $('#studyIndicatorReset');
   let studyCurriculumRequest = 0, studyCurriculumKey = '', studyCurriculumPendingKey = '', studyCurriculumLoading = false;
   const mediaForm = $('#mediaSearchForm'), mediaQuery = $('#mediaQuery');
   const mediaStatus = $('#mediaStatus'), mediaResults = $('#mediaResults');
   const mediaIndicatorText = $('#mediaIndicatorText'), mediaIndicatorPicker = $('#mediaIndicatorPicker');
   const mediaIndicatorPickerWrap = $('#mediaIndicatorPickerWrap'), mediaCurriculumMeta = $('#mediaCurriculumMeta');
   let mediaType = 'image', mediaIndicator = '', mediaContext = null;
+  function updateStudyIndicatorCount() {
+    if (!studyIndicatorOptions || !studyIndicatorToolbar || !studyIndicatorCount) return;
+    const checkboxes = studyIndicatorOptions.querySelectorAll('input[type="checkbox"]');
+    const selected = studyIndicatorOptions.querySelectorAll('input[type="checkbox"]:checked').length;
+    studyIndicatorToolbar.hidden = !checkboxes.length;
+    studyIndicatorCount.textContent = selected + ' selected · maximum 10';
+  }
+  if (studyIndicatorReset) studyIndicatorReset.addEventListener('click', () => {
+    const checkboxes = [...studyIndicatorOptions.querySelectorAll('input[type="checkbox"]')];
+    checkboxes.forEach((input, index) => { input.checked = index < 10; });
+    state.params.indicatorCodes = checkboxes.filter((input) => input.checked).map((input) => input.value);
+    state.params.indicatorContextKey = studyCurriculumKey;
+    updateStudyIndicatorCount();
+    store.save(true);
+  });
   function startIndependentTool(mode, resourceType) {
     if (state.streaming) { toast('Wait for the current generation to finish.'); return; }
     const active = current();
@@ -1548,6 +1564,7 @@
         }
         state.params.indicatorCodes = checked;
         state.params.indicatorContextKey = key;
+        updateStudyIndicatorCount();
         store.save(true);
       });
       return h('label', { class: 'study-indicator-option' }, input,
@@ -1557,6 +1574,7 @@
       h('strong', { text: 'Indicator text without a code' }),
       h('span', { text: item.text || '' })));
     studyIndicatorOptions.replaceChildren(...options, ...unscoped);
+    updateStudyIndicatorCount();
     const sourceNote = data.sourceStatus === 'scheme_metadata_only'
       ? 'Loaded from GuidEd scheme metadata. This is not a full NaCCA document retrieval.'
       : 'Curriculum details loaded.';
@@ -1584,6 +1602,7 @@
     const savedContextKey = state.params.indicatorContextKey || studyCurriculumKey;
     if (savedContextKey !== key) {
       studyIndicatorOptions.replaceChildren();
+      updateStudyIndicatorCount();
       state.params.indicatorCodes = [];
       state.params.indicatorContextKey = key;
       store.save(true);
@@ -1607,6 +1626,7 @@
       if (!response.ok) throw new Error(data.message || 'No curriculum indicators are available for this selection.');
       if (data.type !== 'teach') {
         studyIndicatorOptions.replaceChildren();
+        updateStudyIndicatorCount();
         studyIndicatorMeta.textContent = data.type === 'revision' ? 'Revision week — no new indicators are assigned.' : 'Examination week — no new indicators are assigned.';
         studyCurriculumSource.textContent = 'Choose a teaching week to select specific indicators.';
         state.params.indicatorCodes = [];
@@ -1620,6 +1640,7 @@
     } catch (error) {
       if (requestId !== studyCurriculumRequest) return;
       studyIndicatorOptions.replaceChildren();
+      updateStudyIndicatorCount();
       state.params.indicatorCodes = [];
       state.params.indicatorContextKey = key;
       studyCurriculumKey = key;
@@ -2908,7 +2929,7 @@
     if (parentPanel) parentPanel.hidden = true;
     if (teacherContent) teacherContent.hidden = false;
     const teacherName = String((accountProfile && accountProfile.displayName) || profile().teacher || '').trim();
-    const greeting = $('#dashTitle'); if (greeting) greeting.textContent = 'Good to see you, ' + (teacherName || 'Teacher') + ' 👋';
+    const greeting = $('#dashTitle'); if (greeting) greeting.textContent = 'Good to see you, ' + (teacherName || 'Teacher');
     const all = state.sessions.filter((s) => s.messages.length).sort((a, b) => b.updatedAt - a.updatedAt);
     const plans = all.filter((s) => typeOf(s) === 'plan');
     const resources = all.length - plans.length;
@@ -2961,7 +2982,7 @@
     }
     const next = weekPlans[0] || plans[0], nextHost = $('#dashNextPlan');
     if (nextHost) {
-      if (!next) nextHost.replaceChildren(h('div', { class: 'dash-next-empty' }, h('span', { class: 'dash-next-icon', text: '✦' }), h('div', {}, h('strong', { text: 'Your next lesson starts here' }), h('span', { text: 'Create a plan and it will be ready to open from this space.' })), h('button', { type: 'button', class: 'dash-next-cta', 'data-dash-action': 'plan', text: 'Create plan' })));
+      if (!next) nextHost.replaceChildren(h('div', { class: 'dash-next-empty' }, h('span', { class: 'dash-next-icon' }, icon('spark')), h('div', {}, h('strong', { text: 'Your next lesson starts here' }), h('span', { text: 'Create a plan and it will be ready to open from this space.' })), h('button', { type: 'button', class: 'dash-next-cta', 'data-dash-action': 'plan', text: 'Create plan' })));
       else nextHost.replaceChildren(h('button', { type: 'button', class: 'dash-next-card', 'data-dash-plan': next.id },
         h('span', { class: 'dash-next-subject-icon', text: '▣' }),
         h('span', { class: 'dash-next-content' }, h('strong', { text: ((next.params && next.params.cls) || 'Class') + ' – ' + ((next.params && next.params.subject) || next.title) }), h('span', { text: next.title && next.params && next.params.subject ? next.title : 'Your saved lesson plan' }), h('span', { class: 'dash-next-meta', text: 'Week ' + ((next.params && next.params.week) || week) + ' · ' + rel(next.updatedAt) })),
