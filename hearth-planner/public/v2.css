@@ -686,3 +686,4 @@ body:not(.role-parent) .parent-only { display: none !important; }
   .library-page .lib-grid { grid-template-columns:1fr; }
   .library-page .lib-item,.library-page .lib-item .lib-card { min-height:180px; }
 }
+.dash-next-subject-icon .ico { width: 26px; height: 26px; }
