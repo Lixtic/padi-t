@@ -618,25 +618,39 @@
 
     <section class="settings-page dashboard-page" id="dashboardPage" aria-labelledby="dashTitle" hidden>
       <div class="sp-inner dash-inner">
-        <div class="sp-head"><button type="button" class="sp-back" id="dashboardBack"><svg class="ico"><use href="#i-chevron"/></svg><span>Back</span></button><h1 id="dashTitle">Teacher Dashboard</h1></div>
-        <p class="dash-intro">Your teaching week and saved lesson plans, together in one place.</p>
+        <div class="dash-brand-row">
+          <div class="dash-brand"><svg class="dash-brand-mark" aria-hidden="true"><use href="#i-logo"/></svg><span>Guid<em>Ed</em></span></div>
+          <div class="dash-head-actions"><button type="button" class="icon-btn" id="dashNotifications" aria-label="Notifications"><svg class="ico"><use href="#i-bell"/></svg></button><button type="button" class="dash-avatar" id="dashboardBack" aria-label="Back to lesson planner">T</button></div>
+        </div>
+        <section class="dash-welcome" aria-labelledby="dashTitle">
+          <div class="dash-welcome-copy"><span class="dash-kicker">YOUR TEACHING SPACE</span><h1 id="dashTitle">Good to see you, Teacher <span aria-hidden="true">👋</span></h1><p>Plan, teach and assess with ease.</p><span class="dash-role-pill"><svg class="ico"><use href="#i-cap"/></svg> Teacher Dashboard</span></div>
+          <div class="dash-welcome-art" aria-hidden="true"><span class="dash-book dash-book-one"></span><span class="dash-book dash-book-two"></span><span class="dash-pencil-pot">✏️ ✏️</span></div>
+        </section>
         <div class="dash-stats" id="dashStats" aria-label="Teaching summary"></div>
+        <section class="dash-actions" aria-label="Quick teaching actions">
+          <button type="button" class="dash-action dash-action-primary" data-dash-action="plan"><svg class="ico"><use href="#i-plus"/></svg><span>Create Lesson Plan</span></button>
+          <button type="button" class="dash-action dash-action-notes" data-dash-action="notes"><svg class="ico"><use href="#i-book"/></svg><span>Generate Notes</span></button>
+          <button type="button" class="dash-action dash-action-media" data-dash-action="media"><svg class="ico"><use href="#i-search"/></svg><span>Find Resources</span></button>
+          <button type="button" class="dash-action dash-action-worksheet" data-dash-action="worksheet"><svg class="ico"><use href="#i-file"/></svg><span>Create Worksheet</span></button>
+        </section>
         <section class="dash-week" aria-labelledby="dashWeekTitle">
-          <div class="dash-section-head"><div><span class="dash-eyebrow">WEEK AT A GLANCE</span><h2 id="dashWeekTitle">Upcoming teaching week</h2></div><span class="dash-week-tag" id="dashWeekTag"></span></div>
+          <div class="dash-section-head"><div><span class="dash-eyebrow">YOUR SCHEDULE</span><h2 id="dashWeekTitle">This Week at a Glance</h2></div><span class="dash-week-tag" id="dashWeekTag"></span></div>
           <div class="dash-week-list" id="dashWeekList"></div>
-          <p class="dash-note">This overview uses the class, subject and week saved with each plan. Lesson periods and weekdays are not currently stored in GuidEd, so this is a planning overview rather than a bell-time timetable.</p>
-              <aside class="ad-slot" id="adSlotParent" aria-label="Advertisement" data-nosnippet hidden>
-        <small>Advertisement</small>
-        <ins class="adsbygoogle" data-ad-format="auto" data-full-width-responsive="false"></ins>
-        <button type="button" class="ad-remove" id="adUpgradeParent">Remove ads with Pro</button>
-      </aside>
-    </section>
+        </section>
+        <section class="dash-next" aria-labelledby="dashNextTitle">
+          <div class="dash-section-head"><h2 id="dashNextTitle">Next Teaching Plan</h2><button type="button" class="dash-text-link" id="dashViewWeek">View week <span aria-hidden="true">›</span></button></div>
+          <div id="dashNextPlan"></div>
+        </section>
         <section class="dash-saved" aria-labelledby="dashSavedTitle">
-          <div class="dash-section-head"><div><span class="dash-eyebrow">YOUR WORKSPACE</span><h2 id="dashSavedTitle">All saved lesson plans</h2></div><span class="dash-count" id="dashPlanCount"></span></div>
-          <input type="search" id="dashSearch" class="lib-search" placeholder="Search by subject, class or topic" aria-label="Search saved lesson plans" autocomplete="off">
-          <div class="dash-plan-grid" id="dashPlanGrid"></div>
+          <div class="dash-section-head"><h2 id="dashSavedTitle">Recent Plans</h2><button type="button" class="dash-text-link" id="dashViewAll">View all <span aria-hidden="true">›</span></button></div>
+          <input type="search" id="dashSearch" class="lib-search" placeholder="Search recent plans" aria-label="Search saved lesson plans" autocomplete="off">
+          <div class="dash-recent-list" id="dashRecentList"></div>
           <p class="lib-empty" id="dashEmpty" hidden>No saved lesson plans yet. Create your first plan and it will appear here.</p>
         </section>
+        <aside class="ad-slot" id="adSlotParent" aria-label="Advertisement" data-nosnippet hidden>
+          <small>Advertisement</small><ins class="adsbygoogle" data-ad-format="auto" data-full-width-responsive="false"></ins>
+          <button type="button" class="ad-remove" id="adUpgradeParent">Remove ads with Pro</button>
+        </aside>
       </div>
     </section>
     <section class="settings-page library-page" id="libraryPage" aria-labelledby="libTitle" hidden>
