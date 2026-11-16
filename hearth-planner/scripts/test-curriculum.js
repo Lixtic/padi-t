@@ -84,3 +84,99 @@ process.stdout.write('Curriculum Intelligence Engine tests passed.\n');
   eq(S.weekEnding(1, 18, { today: d, cls: 'SHS 2' }).afterClose, true);
   process.stdout.write('SHS semester calendar tests passed.\n');
 }
+
+{
+  const Lib = require('../api/_lib');
+  const Schemes = require('../api/_schemes');
+  const selectedText = 'B7.1.1.1.2 Demonstrate use of input devices';
+  const otherText = 'B7.1.1.1.3 Demonstrate use of output devices';
+  const selectedCode = Curriculum.codeFrom(selectedText);
+  const originalLookup = Schemes.lookup;
+  Schemes.lookup = (subject, cls, term, week) => ({
+    type: 'teach',
+    term: 'Term ' + term,
+    indicators: subject === 'Computing' && cls === 'Basic 7' && term === 1 && week === 2
+      ? [selectedText, otherText]
+      : [otherText]
+  });
+  try {
+    const base = {
+      subject: 'Computing', cls: 'Basic 7', term: 1, week: 2,
+      mode: 'resources', resourceType: 'Study notes',
+      indicatorCodes: [selectedCode]
+    };
+    const validate = (overrides) => Lib.validate({
+      params: Object.assign({}, base, overrides || {}),
+      thread: []
+    });
+
+    const scoped = validate();
+    assert.equal(scoped.error, undefined, 'a valid Study Notes indicator is accepted');
+    assert.deepEqual(scoped.params.scheme.indicators, [selectedText], 'only the selected indicator reaches the generation contract');
+
+    for (const mismatch of [
+      { cls: 'Basic 8' },
+      { subject: 'Mathematics' },
+      { term: 2 },
+      { week: 3 }
+    ]) {
+      const rejected = validate(mismatch);
+      assert.match(rejected.error || '', /do not belong to this class, subject, term and week/,
+        'an indicator from a different class, subject, term or week is rejected');
+    }
+
+    const duplicate = validate({ indicatorCodes: [selectedCode, selectedCode] });
+    assert.deepEqual(duplicate.params.indicatorCodes, [selectedCode], 'duplicate indicator codes are de-duplicated');
+
+    const malformed = validate({ indicatorCodes: selectedCode });
+    assert.match(malformed.error || '', /sent as a list/, 'malformed indicator payloads fail closed');
+
+    const empty = validate({ indicatorCodes: [] });
+    assert.equal(empty.error, undefined, 'general Study Notes remain available when no coded indicators are loaded');
+    assert.deepEqual(empty.params.scheme.indicators, [selectedText, otherText]);
+
+    const tooMany = validate({ indicatorCodes: Array.from({ length: 11 }, (_, i) => 'B7.1.1.1.' + (i + 1)) });
+    assert.match(tooMany.error || '', /no more than 10/, 'the server enforces the indicator selection limit');
+
+    const plan = validate({ mode: 'plan', indicatorCodes: [selectedCode] });
+    assert.equal(plan.error, undefined);
+    assert.deepEqual(plan.params.scheme.indicators, [selectedText, otherText], 'Lesson Plan keeps its original full scheme scope');
+    assert.deepEqual(plan.params.indicatorCodes, [], 'Lesson Plan does not consume Study Notes indicator selections');
+
+    const worksheet = validate({ resourceType: 'Learner worksheet', indicatorCodes: [selectedCode] });
+    assert.equal(worksheet.error, undefined);
+    assert.deepEqual(worksheet.params.scheme.indicators, [selectedText, otherText], 'other Resources remain independent of Study Notes selection');
+
+    const invalidShsTerm = Lib.validate({
+      params: { subject: 'Computing', cls: 'SHS 1', term: 3, week: 2, mode: 'resources', resourceType: 'Study notes', indicatorCodes: [] },
+      thread: []
+    });
+    assert.match(invalidShsTerm.error || '', /valid term \(1–2\)/, 'SHS accepts only its two semesters');
+
+    const invalidTermText = validate({ term: 'Term 1' });
+    assert.match(invalidTermText.error || '', /valid term/, 'invalid term text is not silently replaced with the current term');
+
+    const omittedTerm = validate({ term: undefined, indicatorCodes: [] });
+    assert.equal(omittedTerm.error, undefined, 'legacy requests without a term still use the server current term');
+    process.stdout.write('Study Notes indicator selection validation tests passed.\\n');
+  } finally {
+    Schemes.lookup = originalLookup;
+  }
+}
+
+(async () => {
+  const curriculumRoute = require('../api/curriculum');
+  const res = { headers: {}, setHeader(name, value) { this.headers[name] = value; }, end(body) { this.body = body; } };
+  await curriculumRoute({
+    method: 'GET',
+    headers: {},
+    socket: { remoteAddress: '127.0.0.1' },
+    query: { subject: 'Computing', cls: 'SHS 1', term: '3', week: '2' }
+  }, res);
+  assert.equal(res.statusCode, 400, 'the curriculum endpoint rejects a third SHS semester');
+  process.stdout.write('Curriculum endpoint term validation tests passed.\\n');
+})().catch((error) => {
+  console.error(error);
+  process.exitCode = 1;
+});
+
