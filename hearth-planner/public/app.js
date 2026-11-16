@@ -1100,7 +1100,7 @@
     if (!s.messages.length) {                       // new plan
       const p = Object.assign({}, state.params);
       delete p.also;
-      p.term = termNow();
+      p.term = p.term || termNow();
       p.mode = p.mode || 'full';
       p.resourceType = p.resourceType || 'Study notes';
       if (fromQueue !== true) {                     // "Also plan for": the other classes follow, one after another
@@ -1579,7 +1579,7 @@
       if (studyNotesCurriculum) studyNotesCurriculum.hidden = true;
       return;
     }
-    const p = state.params, term = p.term || termNow();
+    const p = state.params, selectedTerm = Number(p.term), term = termsFor(p.cls).includes(selectedTerm) ? selectedTerm : termNow();
     const key = [p.subject, p.cls, term, p.week].join('|');
     const savedContextKey = state.params.indicatorContextKey || studyCurriculumKey;
     if (savedContextKey !== key) {
@@ -1610,7 +1610,9 @@
         studyIndicatorMeta.textContent = data.type === 'revision' ? 'Revision week — no new indicators are assigned.' : 'Examination week — no new indicators are assigned.';
         studyCurriculumSource.textContent = 'Choose a teaching week to select specific indicators.';
         state.params.indicatorCodes = [];
+        state.params.indicatorContextKey = key;
         studyCurriculumKey = key;
+        store.save(true);
         return;
       }
       renderStudyIndicators(data, key);
@@ -1878,6 +1880,8 @@
   }
   // After a plan is written the pill moves to the next week; otherwise it sits on this week, or on the week after the last one planned when there is no calendar.
   function continueWeek(afterPlan) {
+    const selectedTerm = Number(state.params.term);
+    if (!termsFor(state.params.cls).includes(selectedTerm)) state.params.term = termNow();
     const GP = window.GuidedProfile;
     const next = GP ? GP.nextWeek(state.params.cls, state.params.subject, termNow()) : null;
     const now = calendarWeek();
@@ -1929,7 +1933,11 @@
     try { const t = JSON.parse(localStorage.getItem(termKey())); if (t && t.auto === termAuto() && termsFor(state.params.cls).includes(t.v)) return t.v; } catch (e) { /* use the calendar */ }
     return termAuto();
   }
-  function termSet(v) { try { localStorage.setItem(termKey(), JSON.stringify({ v, auto: termAuto() })); } catch (e) { /* the calendar term still works */ } }
+  function termSet(v) {
+    try { localStorage.setItem(termKey(), JSON.stringify({ v, auto: termAuto() })); } catch (e) { /* the calendar term still works */ }
+    state.params.term = v;
+    store.save(true);
+  }
   const schemeStrip = $('#schemeStrip');
   const schemeFor = (p) => (window.SchoolPadiSchemes ? window.SchoolPadiSchemes.lookup(p.subject, p.cls, p.term || termNow(), p.week) : null);
   // Initialize media context only after termNow and schemeFor are initialized.
@@ -2627,7 +2635,7 @@
       chooseClass(cls);
       if (!coarse) promptEl.focus();
     };
-    const ddTerm = makeDropdown($('#ddTerm'), { name: 'Term', items: () => termsFor(state.params.cls).map((x) => ({ id: x, label: termWord(state.params.cls) + ' ' + x + (x === termAuto() ? ' (now)' : '') })), get: () => termNow(), set: (v) => { termSet(v); continueWeek(); syncPills(); }, label: (x) => termWord(state.params.cls) + ' ' + x });
+    const ddTerm = makeDropdown($('#ddTerm'), { name: 'Term', items: () => termsFor(state.params.cls).map((x) => ({ id: x, label: termWord(state.params.cls) + ' ' + x + (x === termAuto() ? ' (now)' : '') })), get: () => termsFor(state.params.cls).includes(Number(state.params.term)) ? Number(state.params.term) : termNow(), set: (v) => { termSet(v); continueWeek(); syncPills(); }, label: (x) => termWord(state.params.cls) + ' ' + x });
     window.addEventListener('guided:account', () => { ddTerm.build(); syncScheme(); syncSummaryToggle(); });
     makeDropdown($('#ddWeek'), { name: 'Week', items: () => weeksFor(state.params.cls).map((x) => { const we = weekEnd(termNow(), x, state.params.cls); return { id: x, label: 'Week ' + x, sub: we ? (we.afterClose ? 'date to be confirmed' : we.short + (x === calendarWeek() ? ' · this week' : '')) : '' }; }), get: () => state.params.week, set: (v) => { state.params.week = v; store.save(); syncScheme(); }, label: (x) => 'Week ' + x });
 
