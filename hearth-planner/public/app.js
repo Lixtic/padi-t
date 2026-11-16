@@ -3014,7 +3014,7 @@
           h('span', { class: 'lib-name', text: heading }),
           h('span', { class: 'lib-description', text: s.title && s.title !== heading ? s.title : type === 'plan' ? 'Lesson plan and teaching sequence' : 'Saved teaching resource' }),
           h('span', { class: 'lib-meta', text: meta }),
-          h('span', { class: 'lib-card-footer' }, h('span', { class: 'lib-time' }, icon('clock'), h('span', { text: rel(s.updatedAt) })), h('span', { class: 'lib-open-label' }, 'Open', icon('chevron-right')))
+          h('span', { class: 'lib-card-footer' }, h('span', { class: 'lib-time' }, icon('calendar'), h('span', { text: rel(s.updatedAt) })), h('span', { class: 'lib-open-label' }, 'Open', icon('chevron')))
         ),
         h('button', { type: 'button', class: 'lib-del', 'data-del-id': s.id, 'aria-label': 'Delete ' + heading, title: 'Delete' }, icon('trash'))
       );
