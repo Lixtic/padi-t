@@ -2929,7 +2929,7 @@
     if (parentPanel) parentPanel.hidden = true;
     if (teacherContent) teacherContent.hidden = false;
     const teacherName = String((accountProfile && accountProfile.displayName) || profile().teacher || '').trim();
-    const greeting = $('#dashTitle'); if (greeting) greeting.textContent = 'Good to see you, ' + (teacherName || 'Teacher') + ' 👋';
+    const greeting = $('#dashTitle'); if (greeting) greeting.textContent = 'Good to see you, ' + (teacherName || 'Teacher');
     const all = state.sessions.filter((s) => s.messages.length).sort((a, b) => b.updatedAt - a.updatedAt);
     const plans = all.filter((s) => typeOf(s) === 'plan');
     const resources = all.length - plans.length;
@@ -2982,7 +2982,7 @@
     }
     const next = weekPlans[0] || plans[0], nextHost = $('#dashNextPlan');
     if (nextHost) {
-      if (!next) nextHost.replaceChildren(h('div', { class: 'dash-next-empty' }, h('span', { class: 'dash-next-icon', text: '✦' }), h('div', {}, h('strong', { text: 'Your next lesson starts here' }), h('span', { text: 'Create a plan and it will be ready to open from this space.' })), h('button', { type: 'button', class: 'dash-next-cta', 'data-dash-action': 'plan', text: 'Create plan' })));
+      if (!next) nextHost.replaceChildren(h('div', { class: 'dash-next-empty' }, h('span', { class: 'dash-next-icon' }, icon('spark')), h('div', {}, h('strong', { text: 'Your next lesson starts here' }), h('span', { text: 'Create a plan and it will be ready to open from this space.' })), h('button', { type: 'button', class: 'dash-next-cta', 'data-dash-action': 'plan', text: 'Create plan' })));
       else nextHost.replaceChildren(h('button', { type: 'button', class: 'dash-next-card', 'data-dash-plan': next.id },
         h('span', { class: 'dash-next-subject-icon', text: '▣' }),
         h('span', { class: 'dash-next-content' }, h('strong', { text: ((next.params && next.params.cls) || 'Class') + ' – ' + ((next.params && next.params.subject) || next.title) }), h('span', { text: next.title && next.params && next.params.subject ? next.title : 'Your saved lesson plan' }), h('span', { class: 'dash-next-meta', text: 'Week ' + ((next.params && next.params.week) || week) + ' · ' + rel(next.updatedAt) })),
