@@ -98,9 +98,23 @@ function validate(body) {
   if (notes.length > MAX_NOTES) return { error: 'Notes are too long (max ' + MAX_NOTES + ' characters).' };
 
   const maxTerm = Schemes.isShs(cls) ? 2 : 3;   // senior high schools have two semesters
-  const term = Number.isInteger(Number(body.params && body.params.term)) && Number(body.params.term) >= 1 && Number(body.params.term) <= maxTerm ? Number(body.params.term) : Schemes.currentTerm(undefined, cls);
+  const rawTerm = p.term;
+  const hasTerm = rawTerm !== undefined && rawTerm !== null && String(rawTerm).trim() !== '';
+  const parsedTerm = typeof rawTerm === 'number' || typeof rawTerm === 'string' ? Number(rawTerm) : NaN;
+  if (hasTerm && (!Number.isInteger(parsedTerm) || parsedTerm < 1 || parsedTerm > maxTerm)) {
+    return { error: 'Please choose a valid term (1–' + maxTerm + ') for ' + cls + '.' };
+  }
+  const term = hasTerm ? parsedTerm : Schemes.currentTerm(undefined, cls);
   let scheme = Schemes.lookup(subject, cls, term, week);   // looked up here, never taken from the browser
-  const indicatorCodes = Array.isArray(p.indicatorCodes) ? p.indicatorCodes.map((x) => String(x).trim().toUpperCase()).filter(Boolean) : [];
+  let indicatorCodes = [];
+  const hasIndicatorCodes = Object.prototype.hasOwnProperty.call(p, 'indicatorCodes');
+  if (mode === 'resources' && resourceType === 'Study notes' && hasIndicatorCodes) {
+    if (!Array.isArray(p.indicatorCodes)) return { error: 'Curriculum indicators must be sent as a list.' };
+    if (p.indicatorCodes.some((code) => typeof code !== 'string' || !code.trim())) {
+      return { error: 'Choose valid curriculum indicators from the list.' };
+    }
+    indicatorCodes = [...new Set(p.indicatorCodes.map((code) => code.trim().toUpperCase()))];
+  }
   if (indicatorCodes.length > 10) return { error: 'Choose no more than 10 curriculum indicators at a time.' };
   if (indicatorCodes.length) {
     if (!scheme || !Array.isArray(scheme.indicators)) return { error: 'No curriculum indicators are loaded for this selection.' };
