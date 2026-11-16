@@ -41,11 +41,5 @@
   if (root) {
     root.GuidEdFamilyArt = api;
     var splash = root.document && root.document.getElementById('splash');
-    if (splash) {
-      var art = root.document.createElement('div');
-      art.className = 'splash-art';
-      art.innerHTML = render('family-reading', 'splash-illustration');
-      splash.insertBefore(art, splash.firstChild);
-    }
   }
 })(typeof window !== 'undefined' ? window : null);
