@@ -2861,6 +2861,8 @@
     const teacherContent = $('#dashboardPage .dash-inner');
     if (parentPanel) parentPanel.hidden = true;
     if (teacherContent) teacherContent.hidden = false;
+    const teacherName = String((accountProfile && accountProfile.displayName) || profile().teacher || '').trim();
+    const greeting = $('#dashTitle'); if (greeting) greeting.textContent = 'Good to see you, ' + (teacherName || 'Teacher') + ' 👋';
     const all = state.sessions.filter((s) => s.messages.length).sort((a, b) => b.updatedAt - a.updatedAt);
     const plans = all.filter((s) => typeOf(s) === 'plan');
     const resources = all.length - plans.length;
@@ -2882,8 +2884,10 @@
       else {
         const grouped = new Map();
         weekPlans.forEach((s) => { const cls = (s.params && s.params.cls) || 'Class not specified'; if (!grouped.has(cls)) grouped.set(cls, []); grouped.get(cls).push(s); });
-        weekList.replaceChildren(...Array.from(grouped.entries()).map(([cls, rows], index) => h('div', { class: 'dash-class-tile' + (index === 0 ? ' is-active' : ''), 'data-dash-class': cls },
-          h('span', { class: 'dash-class-symbol', text: '⌂' }), h('strong', { text: cls }), h('span', { class: 'dash-class-count', text: rows.length + (rows.length === 1 ? ' plan' : ' plans') }), h('span', { class: 'dash-class-progress' })
+        const maxClassPlans = Math.max(1, ...Array.from(grouped.values()).map((rows) => rows.length));
+        weekList.replaceChildren(...Array.from(grouped.entries()).map(([cls, rows]) => h('button', { type: 'button', class: 'dash-class-tile', 'data-dash-class': cls, 'aria-label': 'Open ' + cls + ', ' + rows.length + ' saved plans' },
+          h('span', { class: 'dash-class-symbol', text: '⌂' }), h('strong', { text: cls }), h('span', { class: 'dash-class-count', text: rows.length + (rows.length === 1 ? ' plan' : ' plans') }),
+          h('span', { class: 'dash-class-progress-track', 'aria-hidden': 'true' }, h('span', { class: 'dash-class-progress-fill', style: 'width:' + Math.round(rows.length / maxClassPlans * 100) + '%' }))
         )));
       }
     }
@@ -2899,16 +2903,46 @@
     const search = $('#dashSearch'), q = search ? search.value.trim().toLowerCase() : '';
     const visible = plans.filter((s) => { const p = s.params || {}; return !q || [s.title, p.subject, p.cls, p.week].join(' ').toLowerCase().includes(q); }).slice(0, 4);
     const recent = $('#dashRecentList');
-    if (recent) recent.replaceChildren(...visible.map((s) => h('button', { type: 'button', class: 'dash-recent-card', 'data-dash-plan': s.id },
-      h('span', { class: 'dash-recent-icon', text: '▤' }),
-      h('span', { class: 'dash-recent-content' }, h('strong', { text: ((s.params && s.params.cls) || 'Class') + ' – ' + ((s.params && s.params.subject) || s.title) }), h('span', { text: s.title || 'Saved lesson plan' })),
-      h('span', { class: 'dash-recent-time', text: rel(s.updatedAt) }), h('span', { class: 'dash-recent-arrow', text: '···' })
+    if (recent) recent.replaceChildren(...visible.map((s) => h('div', { class: 'dash-recent-item' },
+      h('button', { type: 'button', class: 'dash-recent-card-main', 'data-dash-plan': s.id },
+        h('span', { class: 'dash-recent-icon', text: '▤' }),
+        h('span', { class: 'dash-recent-content' }, h('strong', { text: ((s.params && s.params.cls) || 'Class') + ' – ' + ((s.params && s.params.subject) || s.title) }), h('span', { text: s.title || 'Saved lesson plan' })),
+        h('span', { class: 'dash-recent-time', text: rel(s.updatedAt) })
+      ),
+      h('button', { type: 'button', class: 'dash-recent-more', 'data-dash-more': s.id, 'aria-label': 'More options for ' + (s.title || 'lesson plan'), 'aria-expanded': 'false', text: '···' }),
+      h('div', { class: 'dash-plan-menu', hidden: true },
+        h('button', { type: 'button', 'data-dash-menu-action': 'open', 'data-plan-id': s.id, text: 'Open lesson plan' }),
+        h('button', { type: 'button', 'data-dash-menu-action': 'delete', 'data-plan-id': s.id, text: 'Delete plan' })
+      )
     )));
     const empty = $('#dashEmpty'); if (empty) empty.hidden = visible.length > 0;
   }
   if ($('#dashboardPage')) {
     $('#dashSearch').addEventListener('input', renderDashboard);
     $('#dashboardPage').addEventListener('click', (e) => {
+      const more = e.target.closest('[data-dash-more]');
+      if (more) {
+        const item = more.closest('.dash-recent-item'), menu = item && item.querySelector('.dash-plan-menu');
+        const open = menu && menu.hidden;
+        document.querySelectorAll('.dash-plan-menu').forEach((m) => { m.hidden = true; });
+        document.querySelectorAll('[data-dash-more]').forEach((b) => b.setAttribute('aria-expanded', 'false'));
+        if (menu && open) { menu.hidden = false; more.setAttribute('aria-expanded', 'true'); }
+        return;
+      }
+      const menuAction = e.target.closest('[data-dash-menu-action]');
+      if (menuAction) {
+        const id = menuAction.dataset.planId, session = state.sessions.find((s) => s.id === id);
+        if (menuAction.dataset.dashMenuAction === 'open' && session) { showPage(null); showSession(id); return; }
+        if (menuAction.dataset.dashMenuAction === 'delete' && session && window.confirm('Delete this saved lesson plan? This cannot be undone.')) { deleteSession(id); renderDashboard(); }
+        return;
+      }
+      const classTile = e.target.closest('[data-dash-class]');
+      if (classTile) {
+        const cls = classTile.dataset.dashClass;
+        const match = state.sessions.filter((s) => s.messages.length && typeOf(s) === 'plan' && s.params && s.params.cls === cls && Number(s.params.week) === week && Number(s.params.term || term) === term).sort((a, b) => b.updatedAt - a.updatedAt)[0];
+        if (match) { showPage(null); showSession(match.id); }
+        return;
+      }
       const plan = e.target.closest('[data-dash-plan]');
       if (plan) { showPage(null); showSession(plan.dataset.dashPlan); return; }
       const action = e.target.closest('[data-dash-action]');
@@ -2923,7 +2957,7 @@
         return;
       }
       if (e.target.closest('#dashViewAll')) { showPage('library'); return; }
-      if (e.target.closest('#dashViewWeek')) { const week = $('#dashWeekTitle'); if (week) week.scrollIntoView({ behavior: 'smooth', block: 'start' }); }
+      if (e.target.closest('#dashViewWeek')) { const week = $('#dashWeekList'); if (week) week.scrollIntoView({ behavior: 'smooth', block: 'start' }); }
     });
   }
 
