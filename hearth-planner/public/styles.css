@@ -992,7 +992,7 @@ html { overscroll-behavior-y: none; }
 .splash { display: none; position: fixed; inset: 0; z-index: 9999; flex-direction: column; align-items: center; justify-content: center; gap: 8px; background: #1B45A8; color: #fff; transition: opacity .35s ease; }
 html.splash-on .splash { display: flex; }
 .splash.is-out { opacity: 0; pointer-events: none; }
-.splash svg { width: min(34vw, 150px); height: auto; margin-bottom: 10px; }
+.splash > svg { width: min(34vw, 150px); height: auto; margin-bottom: 10px; }
 .splash b { font: 700 28px var(--font-ui); letter-spacing: .01em; }
 .splash i { font-style: normal; color: #F4B400; }
 .splash small { font: 400 13px var(--font-ui); opacity: .85; }

@@ -44,7 +44,7 @@
     if (splash) {
       var art = root.document.createElement('div');
       art.className = 'splash-art';
-      art.innerHTML = render('book-sprout', 'splash-illustration');
+      art.innerHTML = render('family-reading', 'splash-illustration');
       splash.insertBefore(art, splash.firstChild);
     }
   }
