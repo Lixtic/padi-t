@@ -697,6 +697,10 @@ body:not(.role-parent) .parent-only { display: none !important; }
 #dashboardPage .dash-empty-action,
 #dashboardPage .dash-next-cta,
 #dashboardPage .dash-first-plan-cta { min-height:44px; padding-inline:14px; }
+#dashboardPage .dash-class-open { margin-top:3px; color:#075fc9; font-size:11px; font-weight:750; }
+#dashboardPage .dash-clear-search { min-height:44px; margin-left:8px; padding:0 10px; border:0; background:transparent; color:#075fc9; font:700 13px var(--font-ui); text-decoration:underline; cursor:pointer; }
+:root[data-theme="dark"] #dashboardPage .dash-class-open,
+:root[data-theme="dark"] #dashboardPage .dash-clear-search { color:var(--dash-link); }
 @media(prefers-reduced-motion:reduce) {
   .dashboard-page .dash-class-progress-fill,
   .dashboard-page .dash-plan-card,
