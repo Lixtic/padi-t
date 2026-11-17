@@ -52,7 +52,7 @@
     var parent = document.body.classList.contains('role-parent');
     var items = parent
       ? [['home', 'Home', 'i-home', '#dashboardLink'], ['children', 'Children', 'i-users', '#familyBtn'], ['more', 'More', 'i-menu', '#settingsLink']]
-      : [['home', 'Home', 'i-home', '#dashboardLink'], ['studio', 'My Office', 'i-mobile-office', '#studioLink'], ['library', 'Library', 'i-library', '#libraryLink'], ['more', 'More', 'i-menu', '#settingsLink']];
+      : [['home', 'Home', 'i-home', '#dashboardLink'], ['studio', 'Office', 'i-mobile-office', '#studioLink'], ['library', 'Library', 'i-library', '#libraryLink'], ['more', 'More', 'i-menu', '#settingsLink']];
     function activate(key, selector) {
       var target = selector && $(selector);
       if (target) target.click();
