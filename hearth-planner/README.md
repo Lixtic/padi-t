@@ -1,22 +1,46 @@
 # GuidEd: GES lesson planner
 
-Pick a **subject, class and week**, from KG 1 to SHS 3. GuidEd writes a full Ghana Education Service package: two lessons, notes, exam practice with a marking guide, and a rubric. You can then download it as a formatted **Word (.docx)** file.
+Pick a **subject, class and week**, from Kindergarten to SHS 3. GuidEd writes a full Ghana Education Service package for the NaCCA scheme of learning: two lessons, study notes, exam practice with a marking guide, worksheets, teaching slides and media. Parents get a separate family experience with short guided home activities for their children.
 
-It works on phones and desktops, has light and dark themes, and keeps a history of your plans in the browser.
+It works on phones and desktops, installs as an app, has light and dark themes, and keeps plans on the device first, syncing them to the account when the teacher signs in.
+
+## What is in the app
+
+| Area | What it does | Where it lives |
+|---|---|---|
+| **Teacher dashboard** | Opens on launch for signed-in teachers: this week, next lesson, class tiles, recent plans. | `renderDashboard` in `public/app.js` |
+| **Teaching Studio** | Lesson plan, Resources (study notes, worksheets, slides, exam practice) and Find media. Separate from the chat view. | `public/app.js`, `public/v2.js` |
+| **Lesson reader** | Saved lessons open full screen, at the top. Back returns to where you came from. | `openFullScreen` in `public/app.js` |
+| **My Library** | Everything saved, searchable, colour-coded by kind. | `renderLibrary` in `public/app.js` |
+| **Parent dashboard** | Children, guided lessons, practice and progress, with Delete and a saved-item cap. | `public/parent-dashboard.js`, `api/_parent-learning.js` |
+| **Levels** | Kindergarten, lower and upper primary, JHS, SHS, each with its own prompt profile. | `api/_levels.js`, `prompts/ges-lesson-plans.md` |
+| **Schemes** | The NaCCA scheme of learning, imported into `data/schemes.json`. | `scripts/import-*.py`, `scripts/build-schemes.js` |
+| **Accounts, sync** | Neon Managed Auth, plans copied to the account. | `api/sync.js`, `api/neon-auth.js` |
+| **Billing** | Free and Pro, one-off Paystack payments (cards and mobile money), refunds. | `api/billing.js`, `api/_entitle.js` |
+| **Emails** | Pro-ending notices and the Sunday weekly summaries for families and teachers, with signed unsubscribe links. | `api/_mail.js`, `api/_family.js`, cron in `vercel.json` |
+| **Admin** | Owner-only stats, grants, refunds, blocking, notices and knowledge uploads. | `api/admin.js` |
+| **Updates** | The installed app updates itself on launch, with a progress bar. | `public/sw.js`, `public/pwa.js` |
 
 ## How it fits together
 
 ```
-public/            the website (HTML, CSS, vanilla JS, no build step)
-api/config.js      tells the site whether an AI key is set (never returns keys)
-api/generate.js    streams the lesson package from your AI provider (Node)
-api/export_docx.py builds the Word file (Python, python-docx)
-lib/               the Word layout builder (landscape tables, shaded headers)
+public/            the website (HTML, CSS, vanilla JS, no framework)
+  app.js             the teacher app (one closure; the markdown renderer is split out)
+  markdown.js        the escaping markdown renderer, tested on its own
+  parent-*.js        the parent experience
+  sw.js              service worker (bump VERSION on every public change)
+api/               serverless functions; files starting with _ are shared helpers
+  generate.js        streams the lesson package from your AI provider
+  _levels.js         class levels, built from scripts/build-levels.js
+data/              curriculum schemes and indexes
 prompts/           the master prompt (edit this to change what GuidEd writes)
-scripts/           build-prompt.js turns the prompt into api/_prompt.js
+scripts/           build-*.js generators, import-*.py scheme importers, test-*.js
+lib/               the Word layout builder (landscape tables, shaded headers)
 ```
 
-Your API key and the master prompt stay on the server. The browser never sees them.
+Your API keys and the master prompt stay on the server. The browser never sees them.
+
+Run the whole check with `npm test` (about 26 test files). Run `npm run build` after changing the prompt, levels or schemes.
 
 ## Deploy to Vercel
 
@@ -104,10 +128,10 @@ Knowledge retrieval is additive and fail-open: if no approved source matches or 
 Edit `prompts/ges-lesson-plans.md`, then run:
 
 ```bash
-node scripts/build-prompt.js
+npm run build:prompt
 ```
 
-This regenerates `api/_prompt.js`. Commit both files. The prompt tells the model the exact table formats, so the Word export stays clean. If you change those formats, test an export.
+This regenerates `api/_prompt.js` and `api/_prompt_levels.js` (the per-level profiles, including Kindergarten). Commit the markdown and both generated files. The prompt tells the model the exact table formats, so the Word export stays clean. If you change those formats, test an export.
 
 ## Using it
 
