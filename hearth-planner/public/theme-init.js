@@ -26,6 +26,10 @@
     var top = vv ? (vv.offsetTop || 0) : 0;
     var height = vv && vv.height ? vv.height : (window.innerHeight || 0);
     if (height > 200) {
+      // A reduced visual viewport means the on-screen keyboard is open. Remove
+      // the bottom-navigation reservation while the keyboard owns that space.
+      var keyboardOpen = !!(vv && window.innerHeight - height > 120);
+      document.body.classList.toggle('keyboard-open', keyboardOpen);
       root.style.setProperty('--app-top', Math.round(top) + 'px');
       root.style.setProperty('--app-h', Math.round(height) + 'px');
     }
