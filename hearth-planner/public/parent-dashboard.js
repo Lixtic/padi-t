@@ -244,11 +244,6 @@
     var a = info.free.parent, left = Math.max(0, a.limit - a.used);
     return '<p class="pd-allowance' + (left ? '' : ' pd-allowance-out') + '" role="status"><span>' + (left ? left + ' of ' + a.limit + ' free activities left this week' : 'Free activities used up. They return Monday') + '</span><button type="button" class="pd-allowance-link" data-upgrade>Go Pro</button></p>';
   }
-  function librarySubject(childSubject, child) {
-    var S = window.SchoolPadiSchemes, cw = child && currentWeek(child.class);
-    if (!S || !child || !cw) return childSubject;
-    return S.has(childSubject, child.class, cw.term) ? childSubject : childSubject;
-  }
   function libraryMaterials(subject) {
     var s = String(subject || '').toLowerCase();
     if (/math/.test(s)) return 'Paper, pencil and bottle tops, beans or other small objects';
@@ -266,7 +261,7 @@
     if (!cw) return [];
     var picks = [], seen = {};
     (child.subjects || []).forEach(function (registeredSubject) {
-      var subject = librarySubject(registeredSubject, child);
+      var subject = registeredSubject;
       [cw.week, cw.week + 1, cw.week + 2, cw.week - 1].forEach(function (week) {
         if (week < 1 || week > S.span(subject, child.class, cw.term)) return;
         var row = S.lookup(subject, child.class, cw.term, week);
