@@ -96,7 +96,13 @@
     bar.append(heading, smaller, bigger, close);
     dlg.append(bar, body);
     body.scrollTop = 0;
+    // Back (browser, Android or swipe) closes the reader and lands on the page it was opened from.
+    let viaBack = false, pushed = false;
+    const onPop = () => { viaBack = true; if (dlg.open) dlg.close(); };
+    try { history.pushState({ guidedReader: true }, ''); pushed = true; window.addEventListener('popstate', onPop); } catch (e) { /* history unavailable */ }
     dlg.addEventListener('close', () => {
+      window.removeEventListener('popstate', onPop);
+      if (pushed && !viaBack && history.state && history.state.guidedReader) { try { history.back(); } catch (e) { /* ignore */ } }
       if (document.fullscreenElement === dlg && document.exitFullscreen) document.exitFullscreen().catch(() => {});
       dlg.remove();
       if (returnFocus && returnFocus.isConnected && returnFocus.focus) returnFocus.focus({ preventScroll: true });
@@ -105,6 +111,8 @@
     if (dlg.showModal) dlg.showModal(); else dlg.setAttribute('open', '');
     const fs = dlg.requestFullscreen || dlg.webkitRequestFullscreen;
     if (fs) { try { const r = fs.call(dlg); if (r && r.catch) r.catch(() => {}); } catch (e) { /* dialog already fills the viewport */ } }
+    body.scrollTop = 0;   // every lesson opens at its beginning, never at an old scroll position
+    requestAnimationFrame(() => { body.scrollTop = 0; });
     body.focus({ preventScroll: true });
   }
 
