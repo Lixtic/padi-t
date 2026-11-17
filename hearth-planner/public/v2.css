@@ -1108,3 +1108,27 @@ body[data-studio-tab="resources"]:has(#studyNotesCurriculum:not([hidden])) .sche
 :root[data-theme="dark"] .v2-tabbar .v2-tabbar-create { border-color: rgba(255,255,255,.14); color: #0b1226; box-shadow: 0 8px 22px rgba(0,0,0,.55); }
 :root[data-theme="dark"] .v2-tabbar .v2-tabbar-search { border-color: rgba(255,255,255,.12); color: #e6e6e6; background: rgba(22,22,22,.82); }
 :root[data-theme="dark"] .v2-tabbar .v2-tabbar-search[aria-current="page"] { color: #c4d4ff; background: rgba(108,147,240,.28); box-shadow: inset 0 1px 0 rgba(255,255,255,.1); }
+
+/* GuidEd Family Library */
+.dashboard-page .parent-dashboard-content .pd-library-hero { padding: 22px; border: 1px solid var(--line); border-radius: 20px; background: linear-gradient(135deg, color-mix(in srgb, var(--accent) 10%, var(--card)), var(--card)); margin-bottom: 20px; }
+.dashboard-page .parent-dashboard-content .pd-library-hero h2 { margin: 7px 0; font-size: clamp(23px, 4vw, 30px); letter-spacing: -.035em; }
+.dashboard-page .parent-dashboard-content .pd-library-hero p { max-width: 560px; margin: 0; color: var(--muted); line-height: 1.55; }
+.dashboard-page .parent-dashboard-content .pd-library-intro { display:flex; justify-content:space-between; margin: 20px 0 12px; }
+.dashboard-page .parent-dashboard-content .pd-library-intro div { display:grid; gap:4px; }
+.dashboard-page .parent-dashboard-content .pd-library-intro span { color:var(--muted); font-size:13px; }
+.dashboard-page .parent-dashboard-content .pd-library-filters { display:flex; gap:8px; overflow-x:auto; padding:2px 0 12px; scrollbar-width:none; }
+.dashboard-page .parent-dashboard-content .pd-library-chip { flex:none; min-height:36px; padding:0 13px; border:1px solid var(--line); border-radius:999px; background:var(--card); color:var(--text); font:inherit; font-size:13px; cursor:pointer; }
+.dashboard-page .parent-dashboard-content .pd-library-chip.is-active { background:var(--accent); border-color:var(--accent); color:var(--on-accent,#fff); }
+.dashboard-page .parent-dashboard-content .pd-library-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:12px; }
+.dashboard-page .parent-dashboard-content .pd-library-card { min-width:0; display:flex; flex-direction:column; padding:16px; border:1px solid var(--line); border-radius:17px; background:var(--card); }
+.dashboard-page .parent-dashboard-content .pd-library-card-top,.dashboard-page .parent-dashboard-content .pd-library-card-foot { display:flex; align-items:center; justify-content:space-between; gap:8px; }
+.dashboard-page .parent-dashboard-content .pd-library-subject { color:var(--accent); font-size:11px; font-weight:800; text-transform:uppercase; letter-spacing:.05em; }
+.dashboard-page .parent-dashboard-content .pd-library-time,.dashboard-page .parent-dashboard-content .pd-library-card-foot>span { color:var(--muted); font-size:11px; }
+.dashboard-page .parent-dashboard-content .pd-library-card h3 { margin:13px 0 7px; font-size:16px; line-height:1.3; }
+.dashboard-page .parent-dashboard-content .pd-library-card p { flex:1; margin:0 0 18px; color:var(--muted); font-size:13px; line-height:1.5; }
+.dashboard-page .parent-dashboard-content .pd-library-card-foot { align-items:flex-end; flex-wrap:wrap; }
+.dashboard-page .parent-dashboard-content .pd-library-card-foot .pd-primary { min-height:36px; padding:0 10px; font-size:12px; }
+.dashboard-page .parent-dashboard-content .pd-family-saved { margin-top:28px; }
+.dashboard-page .parent-dashboard-content .pd-library-empty { display:grid; gap:5px; padding:18px; border:1px dashed var(--line); border-radius:15px; color:var(--muted); font-size:13px; }
+.dashboard-page .parent-dashboard-content .pd-library-empty strong { color:var(--text); }
+@media(max-width:640px) { .dashboard-page .parent-dashboard-content .pd-library-grid { grid-template-columns:1fr; } .dashboard-page .parent-dashboard-content .pd-library-card { padding:15px; } }
