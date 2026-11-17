@@ -70,7 +70,10 @@ select, input[type="search"], input[type="text"] { border-radius: 999px; }
 @media (max-width: 760px) {
   /* Reserve the tab-bar height only while the tab bar is actually mounted.
      If a view removes it, let the app reclaim the full viewport. */
-  body.has-tabbar:has(> .v2-tabbar) .app { height: calc(var(--app-h, 100dvh) - 84px - env(safe-area-inset-bottom)); }
+  body.has-tabbar:not(.on-settings):not(.keyboard-open):has(> .v2-tabbar) .app { height: calc(var(--app-h, 100dvh) - 84px - env(safe-area-inset-bottom)); }
+  /* Settings and keyboard focus hide the tab bar, so neither should reserve its space. */
+  body.on-settings .app, body.keyboard-open .app { height: var(--app-h, 100dvh); }
+  body.keyboard-open .v2-tabbar { display: none !important; }
   body.has-tabbar .app.nav-open { height: var(--app-h, 100dvh); }
   #menuBtn { display: none !important; }
   .sidebar { display: none !important; }
