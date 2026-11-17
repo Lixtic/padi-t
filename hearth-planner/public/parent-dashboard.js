@@ -2,7 +2,7 @@
 (function () {
   'use strict';
   var CHILD_CLASSES = ['KG 1', 'KG 2'].concat(Array.from({ length: 9 }, function (_, i) { return 'Basic ' + (i + 1); }));   // kindergarten to JHS 3
-  var state = { root: null, profile: null, records: [], loaded: false, loading: false, tab: 'overview', task: 'lesson', lessonStep: 0, lessonDraft: {}, lessonRoom: null, stageSaving: false, editingChild: '', addingChild: false, busy: false, error: '', result: null, familyFilter: 'All' };
+  var state = { root: null, profile: null, records: [], loaded: false, loading: false, tab: 'overview', task: 'lesson', lessonStep: 0, lessonDraft: {}, lessonRoom: null, stageSaving: false, editingChild: '', addingChild: false, busy: false, error: '', result: null, familyFilter: 'All', libraryChildId: '' };
   var $ = function (selector, root) { return (root || state.root).querySelector(selector); };
   var esc = function (value) { return String(value == null ? '' : value).replace(/[&<>"']/g, function (ch) { return ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[ch]; }); };
   var uid = function () { return 'pl-' + Math.random().toString(36).slice(2, 10) + Date.now().toString(36).slice(-5); };
@@ -244,23 +244,75 @@
     var a = info.free.parent, left = Math.max(0, a.limit - a.used);
     return '<p class="pd-allowance' + (left ? '' : ' pd-allowance-out') + '" role="status"><span>' + (left ? left + ' of ' + a.limit + ' free activities left this week' : 'Free activities used up. They return Monday') + '</span><button type="button" class="pd-allowance-link" data-upgrade>Go Pro</button></p>';
   }
-  var FAMILY_IDEAS = [
-    {subject:'Mathematics',topic:'Fractions in everyday life',group:'Mathematics',level:'Basic 4–9',description:'Explore halves, quarters and sharing using food, money and household objects.',time:'15–20 min'},
-    {subject:'English Language',topic:'Reading and understanding a short story',group:'English',level:'Basic 1–9',description:'Read a short story together, identify the main idea and talk about new words.',time:'15 min'},
-    {subject:'Science',topic:'The water cycle',group:'Science',level:'Basic 4–9',description:'Discover evaporation, condensation and rainfall with a simple home demonstration.',time:'20 min'},
-    {subject:'Computing',topic:'Parts of a computer',group:'Computing',level:'Basic 1–9',description:'Identify common computer parts and explain what each part helps us do.',time:'15 min'},
-    {subject:'Science',topic:'Keeping our surroundings clean',group:'Science',level:'Basic 1–9',description:'Spot ways to keep the home and community clean and prevent disease.',time:'15 min'},
-    {subject:'Social Studies',topic:'Our community and its leaders',group:'Social Studies',level:'Basic 1–9',description:'Talk about community helpers, local leadership and how people contribute.',time:'20 min'},
-    {subject:'Creative Arts',topic:'Patterns inspired by nature',group:'Creative Arts',level:'Basic 1–9',description:'Find patterns around the home and create a simple repeating design.',time:'20 min'},
-    {subject:'English Language',topic:'Writing a friendly letter',group:'English',level:'Basic 4–9',description:'Plan and write a short letter to a friend or family member.',time:'20 min'}
-  ];
+  function libraryMaterials(subject) {
+    var s = String(subject || '').toLowerCase();
+    if (/math/.test(s)) return 'Paper, pencil and bottle tops, beans or other small objects';
+    if (/english|language|french/.test(s)) return 'A short reading passage, paper and pencil';
+    if (/science/.test(s)) return 'A cup of water and safe, everyday household objects';
+    if (/comput/.test(s)) return 'Paper and pencil; a device is optional';
+    if (/creative|art/.test(s)) return 'Paper, pencil, crayons or safe natural materials';
+    if (/social|history|world/.test(s)) return 'Paper, pencil and examples from your home or community';
+    return 'Paper, pencil and safe everyday household objects';
+  }
+  function libraryActivities(child) {
+    var S = window.SchoolPadiSchemes;
+    if (!S || !child) return [];
+    var cw = currentWeek(child.class);
+    if (!cw) return [];
+    var picks = [], seen = {};
+    (child.subjects || []).forEach(function (registeredSubject) {
+      var subject = registeredSubject;
+      [cw.week, cw.week + 1, cw.week + 2, cw.week - 1].forEach(function (week) {
+        if (week < 1 || week > S.span(subject, child.class, cw.term)) return;
+        var row = S.lookup(subject, child.class, cw.term, week);
+        if (!row || row.type === 'exam') return;
+        var revision = row.type === 'revision';
+        var topics = revision ? (row.topics || []).slice(0, 4) : [plainName(row.substrand || row.strand || row.indicators && row.indicators[0] || row.focus)];
+        topics.forEach(function (topic) {
+          topic = plainName(topic);
+          if (!topic) return;
+          var key = subject + '|' + week + '|' + topic;
+          if (seen[key]) return;
+          seen[key] = true;
+          var group = revision ? 'Revision' : week === cw.week ? 'This week' : week > cw.week ? 'Coming up' : 'Catch up';
+          var indicator = !revision && Array.isArray(row.indicators) ? row.indicators[0] || '' : '';
+          picks.push({
+            subject: subject, registeredSubject: registeredSubject, topic: topic,
+            group: group, term: cw.term, week: week, type: row.type,
+            strand: row.strand || '', substrand: row.substrand || '',
+            standard: row.standard || '', indicator: indicator,
+            indicators: Array.isArray(row.indicators) ? row.indicators.slice(0, 3) : [],
+            goal: indicator || (revision ? 'Strengthen understanding of previously taught topics.' : row.focus || 'Explore this topic through a short home-learning activity.'),
+            materials: libraryMaterials(registeredSubject),
+            guide: revision
+              ? ['Ask your child what they remember about ' + topic + '.', 'Invite them to explain one idea in their own words.', 'Try a short example together and celebrate their effort.']
+              : ['Read the learning goal together and ask what your child already knows.', 'Connect ' + topic + ' to something familiar at home or in your community.', 'Let your child explain or demonstrate one new thing they learned.']
+          });
+        });
+      });
+    });
+    var rank = { 'This week': 0, 'Coming up': 1, 'Catch up': 2, 'Revision': 3 };
+    return picks.sort(function (a,b) { return rank[a.group]-rank[b.group] || a.week-b.week || a.subject.localeCompare(b.subject); });
+  }
   function renderFamilyLibrary() {
-    var groups = ['All','Mathematics','English','Science','Computing','Social Studies','Creative Arts'];
+    var list = children();
+    var child = list.find(function (item) { return item.id === state.libraryChildId; }) || list[0] || null;
+    if (child && state.libraryChildId !== child.id) state.libraryChildId = child.id;
+    var activities = libraryActivities(child);
+    var groups = ['All'].concat(Array.from(new Set(activities.map(function (item) { return item.subject; }))));
+    if (groups.indexOf(state.familyFilter) < 0) state.familyFilter = 'All';
+    var childSelect = '<label class="pd-library-child-select"><span>Learning for</span><select id="pdLibraryChild">' + list.map(function (item) { return '<option value="' + esc(item.id) + '"' + (child && item.id === child.id ? ' selected' : '') + '>' + esc(item.name) + ' · ' + esc(item.class) + '</option>'; }).join('') + '</select></label>';
     var chips = groups.map(function (group) { return '<button type="button" class="pd-library-chip' + (state.familyFilter === group ? ' is-active' : '') + '" data-family-filter="' + esc(group) + '" aria-pressed="' + (state.familyFilter === group ? 'true' : 'false') + '">' + esc(group) + '</button>'; }).join('');
-    var ideas = FAMILY_IDEAS.filter(function (idea) { return state.familyFilter === 'All' || idea.group === state.familyFilter; });
-    var cards = ideas.map(function (idea, index) { return '<article class="pd-library-card"><div class="pd-library-card-top"><span class="pd-library-subject">' + esc(idea.group) + '</span><span class="pd-library-time">' + esc(idea.time) + '</span></div><h3>' + esc(idea.topic) + '</h3><p>' + esc(idea.description) + '</p><div class="pd-library-card-foot"><span>' + esc(idea.level) + '</span><button type="button" class="pd-primary" data-use-family-idea="' + FAMILY_IDEAS.indexOf(idea) + '">Explore activity ' + icon('arrow-right') + '</button></div></article>'; }).join('');
-    var saved = state.records.length ? '<section class="pd-family-saved"><div class="pd-section-head"><div><span class="pd-kicker">YOUR FAMILY COLLECTION</span><h3>Saved learning activities</h3><p>Pick up where your family left off.</p></div><span class="pd-count">' + state.records.length + '</span></div><div class="pd-activity-list">' + state.records.slice(0,6).map(renderActivity).join('') + '</div></section>' : '<div class="pd-library-empty"><strong>Your saved activities will live here.</strong><span>When you create a home lesson or practice activity, you can return to it anytime.</span></div>';
-    return '<section class="pd-library-hero"><span class="pd-kicker">GUIDED FAMILY LIBRARY</span><h2>Little ideas. Big learning moments.</h2><p>Explore ready-to-use activities and find simple ways to keep learning together at home.</p></section><div class="pd-library-intro"><div><strong>Explore learning ideas</strong><span>Choose a topic to create an activity for your child.</span></div></div><div class="pd-library-filters" role="group" aria-label="Filter learning ideas">' + chips + '</div><div class="pd-library-grid">' + cards + '</div>' + saved;
+    var filtered = activities.filter(function (item) { return state.familyFilter === 'All' || item.subject === state.familyFilter; });
+    var cards = filtered.map(function (item) {
+      var index = activities.indexOf(item);
+      var tag = item.group === 'This week' ? 'This week' : item.group === 'Coming up' ? 'Coming up' : item.group === 'Catch up' ? 'Catch up' : 'Revision';
+      var scope = [item.strand, item.substrand].filter(Boolean).join(' · ');
+      return '<article class="pd-library-card"><div class="pd-library-card-top"><span class="pd-library-subject">' + esc(item.subject) + '</span><span class="pd-library-time">' + (child.minutes || 30) + ' min</span></div><div class="pd-library-meta"><span class="pd-library-tag">' + tag + '</span><span>' + esc('Term ' + item.term + ' · Week ' + item.week) + '</span></div><h3>' + esc(item.topic) + '</h3>' + (scope ? '<p class="pd-library-scope">' + esc(scope) + '</p>' : '') + '<section class="pd-library-detail"><strong>Learning goal</strong><p>' + esc(item.goal) + '</p></section><section class="pd-library-detail"><strong>What you need</strong><p>' + esc(item.materials) + '</p></section><details class="pd-library-guide"><summary>Parent guide</summary><ol>' + item.guide.map(function (step) { return '<li>' + esc(step) + '</li>'; }).join('') + '</ol></details><div class="pd-library-card-foot"><span>' + esc(child.class) + '</span><button type="button" class="pd-primary" data-use-family-idea="' + index + '">Start activity ' + icon('arrow-right') + '</button></div></article>';
+    }).join('');
+    var empty = !child ? '<div class="pd-library-empty"><strong>Add a child to see learning ideas for their class.</strong><span>The Family Library follows each child’s school level and subjects.</span><button type="button" class="pd-primary" data-parent-tab="children">Add a child</button></div>' : !activities.length ? '<div class="pd-library-empty"><strong>No matching school-scheme topics are available yet.</strong><span>We could not find a loaded scheme for this child’s registered subjects and current term. You can still create a home lesson from the Home Lesson tab.</span></div>' : !filtered.length ? '<div class="pd-library-empty"><strong>No topics in this subject for the selected period.</strong><span>Choose another subject to explore more learning ideas.</span></div>' : '';
+    var saved = state.records.length ? '<section class="pd-family-saved"><div class="pd-section-head"><div><span class="pd-kicker">YOUR FAMILY COLLECTION</span><h3>Saved learning activities</h3><p>Pick up where your family left off.</p></div><span class="pd-count">' + state.records.length + '</span></div><div class="pd-activity-list">' + state.records.slice(0,6).map(renderActivity).join('') + '</div></section>' : '';
+    return '<section class="pd-library-hero"><span class="pd-kicker">GUIDED FAMILY LIBRARY</span><h2>Learning ideas from your child’s school work.</h2><p>Explore this week’s topics, prepare for what is coming next, or revisit earlier learning. Each activity is shaped around the selected child’s class and school scheme.</p></section>' + childSelect + '<div class="pd-library-intro"><div><strong>Curriculum learning ideas</strong><span>' + (child ? esc(child.name) + ' · ' + esc(child.class) : 'Your family') + '</span></div></div><div class="pd-library-filters" role="group" aria-label="Filter learning ideas">' + chips + '</div><div class="pd-library-grid">' + cards + '</div>' + empty + saved;
   }
   function render() {
     if (!state.root) return;
@@ -292,13 +344,10 @@
       if (familyFilter) { state.familyFilter = familyFilter.dataset.familyFilter; render(); return; }
       var familyIdea = event.target.closest('[data-use-family-idea]');
       if (familyIdea) {
-        var idea = FAMILY_IDEAS[Number(familyIdea.dataset.useFamilyIdea)];
-        if (!idea) return;
-        var child = selectedChild();
-        if (!child) { state.tab = 'children'; state.addingChild = true; state.error = 'Add a child profile before starting a family activity.'; render(); return; }
-        var subject = (child.subjects || []).find(function (item) { return item.toLowerCase() === idea.subject.toLowerCase(); }) || (child.subjects || [])[0] || idea.subject;
-        var cw = currentWeek(child.class) || { term: 1, week: 1 };
-        state.lessonDraft = { childId: child.id, subject: subject, topic: idea.topic, term: cw.term, week: cw.week };
+        var child = children().find(function (item) { return item.id === state.libraryChildId; }) || selectedChild();
+        var idea = libraryActivities(child)[Number(familyIdea.dataset.useFamilyIdea)];
+        if (!idea || !child) return;
+        state.lessonDraft = { childId: child.id, subject: idea.registeredSubject, topic: idea.topic, term: idea.term, week: idea.week, notes: 'Use this school-scheme learning goal: ' + idea.goal + (idea.indicators.length ? '\nRelevant scheme indicators: ' + idea.indicators.join(' | ') : '') + '\nSuggested home materials: ' + idea.materials + '\nParent guidance: ' + idea.guide.join(' ') };
         state.lessonStep = 1; state.task = 'lesson'; state.tab = 'lesson'; state.lessonRoom = null; state.result = null; state.error = '';
         render(); return;
       }
@@ -400,6 +449,7 @@
     });
     state.root.addEventListener('change', function (event) {
       if (event.target.id === 'pdProgressChild') { state.progressChildId = event.target.value; render(); return; }
+      if (event.target.id === 'pdLibraryChild') { state.libraryChildId = event.target.value; state.familyFilter = 'All'; render(); return; }
       var f = event.target.form;
       if (f && f.id === 'pdTaskForm' && !f.dataset.step && (event.target.name === 'childId' || event.target.name === 'subject')) {
         var box = state.root.querySelector('#pdSuggestBox');

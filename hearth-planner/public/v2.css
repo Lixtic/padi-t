@@ -1132,3 +1132,17 @@ body[data-studio-tab="resources"]:has(#studyNotesCurriculum:not([hidden])) .sche
 .dashboard-page .parent-dashboard-content .pd-library-empty { display:grid; gap:5px; padding:18px; border:1px dashed var(--line); border-radius:15px; color:var(--muted); font-size:13px; }
 .dashboard-page .parent-dashboard-content .pd-library-empty strong { color:var(--text); }
 @media(max-width:640px) { .dashboard-page .parent-dashboard-content .pd-library-grid { grid-template-columns:1fr; } .dashboard-page .parent-dashboard-content .pd-library-card { padding:15px; } }
+
+/* Curriculum-aware GuidEd Family Library cards */
+.dashboard-page .parent-dashboard-content .pd-library-child-select { display:grid; gap:6px; max-width:440px; margin:18px 0; font-size:13px; font-weight:700; }
+.dashboard-page .parent-dashboard-content .pd-library-child-select select { width:100%; min-height:44px; padding:0 12px; border:1px solid var(--line); border-radius:12px; background:var(--card); color:var(--text); font:inherit; }
+.dashboard-page .parent-dashboard-content .pd-library-meta { display:flex; align-items:center; flex-wrap:wrap; gap:8px; margin-top:10px; color:var(--muted); font-size:11px; }
+.dashboard-page .parent-dashboard-content .pd-library-tag { padding:4px 8px; border-radius:999px; background:color-mix(in srgb,var(--accent) 12%,var(--card)); color:var(--accent); font-weight:750; }
+.dashboard-page .parent-dashboard-content .pd-library-scope { margin:-2px 0 12px!important; font-size:11px!important; }
+.dashboard-page .parent-dashboard-content .pd-library-detail { margin-top:10px; }
+.dashboard-page .parent-dashboard-content .pd-library-detail strong { display:block; font-size:12px; }
+.dashboard-page .parent-dashboard-content .pd-library-detail p { margin:3px 0 0!important; font-size:12px!important; line-height:1.45; }
+.dashboard-page .parent-dashboard-content .pd-library-guide { margin:11px 0 14px; padding-top:9px; border-top:1px solid var(--line); font-size:12px; }
+.dashboard-page .parent-dashboard-content .pd-library-guide summary { color:var(--accent); font-weight:750; cursor:pointer; }
+.dashboard-page .parent-dashboard-content .pd-library-guide ol { padding-left:19px; margin:8px 0 0; color:var(--muted); line-height:1.5; }
+.dashboard-page .parent-dashboard-content .pd-library-guide li+li { margin-top:5px; }
