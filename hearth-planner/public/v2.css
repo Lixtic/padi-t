@@ -814,3 +814,52 @@ main[data-view="chat"] .teaching-studio { display: none; }
 /* The indicator list already appears inside these tabs, so the scheme strip would repeat it. */
 body[data-studio-tab="media"] .scheme,
 body[data-studio-tab="resources"]:has(#studyNotesCurriculum:not([hidden])) .scheme { display: none; }
+
+
+/* Library resource identities: colour and icon treatment make each material type
+   recognisable before the teacher has to read its title. */
+.library-page .lib-item { --lib-type-accent:#1764c5; --lib-type-tint:#eaf2ff; }
+.library-page .lib-kind-plan { --lib-type-accent:#0f8b83; --lib-type-tint:#e5f7f4; }
+.library-page .lib-kind-notes { --lib-type-accent:#2467c7; --lib-type-tint:#eaf2ff; }
+.library-page .lib-kind-worksheet { --lib-type-accent:#7650c8; --lib-type-tint:#f1ebff; }
+.library-page .lib-kind-homework { --lib-type-accent:#278451; --lib-type-tint:#e9f7ee; }
+.library-page .lib-kind-exam { --lib-type-accent:#c45b38; --lib-type-tint:#fff0e9; }
+.library-page .lib-kind-slides { --lib-type-accent:#b87916; --lib-type-tint:#fff5df; }
+.library-page .lib-item .lib-card { border-top:3px solid var(--lib-type-accent); }
+.library-page .lib-card-type {
+  display:inline-flex;
+  align-items:center;
+  width:max-content;
+  max-width:100%;
+  min-height:24px;
+  padding:0 9px;
+  border-radius:999px;
+  color:var(--lib-type-accent);
+  background:var(--lib-type-tint);
+  font-size:9px;
+  letter-spacing:.075em;
+  line-height:1;
+}
+.library-page .lib-type-icon-notes,
+.library-page .lib-type-icon-worksheet,
+.library-page .lib-type-icon-homework,
+.library-page .lib-type-icon-exam,
+.library-page .lib-type-icon-slides,
+.library-page .lib-kind-plan .lib-card-icon {
+  color:var(--lib-type-accent);
+  background:var(--lib-type-tint);
+}
+.library-page .lib-kind-plan .lib-card-type { color:var(--lib-type-accent); }
+.library-page .lib-item .lib-card:focus-visible {
+  outline:3px solid color-mix(in srgb, var(--lib-type-accent) 35%, transparent);
+  outline-offset:3px;
+}
+:root[data-theme="dark"] .library-page .lib-item {
+  --lib-type-tint:#293544;
+}
+:root[data-theme="dark"] .library-page .lib-kind-plan { --lib-type-tint:#203d3a; }
+:root[data-theme="dark"] .library-page .lib-kind-notes { --lib-type-tint:#243752; }
+:root[data-theme="dark"] .library-page .lib-kind-worksheet { --lib-type-tint:#382d4d; }
+:root[data-theme="dark"] .library-page .lib-kind-homework { --lib-type-tint:#244334; }
+:root[data-theme="dark"] .library-page .lib-kind-exam { --lib-type-tint:#4a3028; }
+:root[data-theme="dark"] .library-page .lib-kind-slides { --lib-type-tint:#493a22; }
