@@ -2723,7 +2723,7 @@
   /* Account role controls which dashboard is shown. Resolve it from the signed-in account. */
   let accountRole = (() => { try { const pin = localStorage.getItem('guided.startIn'); if (pin === 'parent' || pin === 'teacher') return pin === 'parent' ? 'parent' : ''; return localStorage.getItem('guided.role') === 'parent' ? 'parent' : ''; } catch (e) { return ''; } })();   // cached, so a parent never sees the studio flash up
   const SIGNED_KEY = 'guided.signedIn';
-  const signedBefore = (() => { try { return localStorage.getItem(SIGNED_KEY) === '1'; } catch (e) { return false; } })();
+  const signedBefore = (() => { try { return localStorage.getItem(SIGNED_KEY) === '1' || !!localStorage.getItem('schoolpadi.auth'); } catch (e) { return false; } })();
   let earlyDash = false;
   let accountProfile = null;
   let accountProfileRequest = null;
