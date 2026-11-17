@@ -73,12 +73,12 @@
       nav.setAttribute('aria-label', isParent ? 'Family navigation' : 'Primary navigation');
       var pill = document.createElement('div'); pill.className = 'v2-tabbar-pill'; nav.appendChild(pill);
       var items = isParent
-        ? [['home','Home','i-home','overview'],['library','Library','i-library','library'],['progress','Progress','i-chart','progress'],['family','Family','i-users','children']]
+        ? [['home','Home','i-home','overview'],['library','Library','i-library','library'],['progress','Progress','i-chart','progress'],['family','Family','i-users','children'],['settings','Settings','i-sliders','#settingsLink']]
         : [['home','Home','i-home','#dashboardLink'],['studio','Office','i-mobile-office','#studioLink'],['library','Library','i-library','#libraryLink'],['more','More','i-menu','#settingsLink']];
       items.forEach(function (item) {
         var b = document.createElement('button'); b.type = 'button'; b.dataset.familyNav = item[0];
         b.innerHTML = svg(item[2]) + '<span></span>'; b.querySelector('span').textContent = item[1];
-        if (isParent) b.addEventListener('click', function () { openFamilyTab(item[3]); });
+        if (isParent) b.addEventListener('click', function () { if (item[0] === 'settings') { var settings = $(item[3]); if (settings) settings.click(); mark('settings'); } else openFamilyTab(item[3]); });
         else b.addEventListener('click', function () {
           var target = $(item[3]); if (target) target.click();
           mark(item[0]);
@@ -120,7 +120,11 @@
         }
         new MutationObserver(syncPage).observe(document.body,{attributes:true,attributeFilter:['class']});
         syncPage();
-      } else mark('home');
+      } else {
+        function syncParentPage() { if (document.body.classList.contains('on-settings')) mark('settings'); else if (document.body.classList.contains('on-dashboard')) { var active = document.querySelector('#parentDashboardContent [data-parent-tab].is-active'); mark(active ? (active.dataset.parentTab === 'children' ? 'family' : active.dataset.parentTab) : 'home'); } }
+        new MutationObserver(syncParentPage).observe(document.body,{attributes:true,attributeFilter:['class']});
+        syncParentPage();
+      }
     }
     build();
     new MutationObserver(build).observe(document.body,{attributes:true,attributeFilter:['class']});
