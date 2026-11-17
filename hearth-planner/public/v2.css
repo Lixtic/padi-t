@@ -814,3 +814,20 @@ main[data-view="chat"] .teaching-studio { display: none; }
 /* The indicator list already appears inside these tabs, so the scheme strip would repeat it. */
 body[data-studio-tab="media"] .scheme,
 body[data-studio-tab="resources"]:has(#studyNotesCurriculum:not([hidden])) .scheme { display: none; }
+
+/* Library cards: one colour per kind of material, so notes, worksheets, plans and slides tell apart at a glance. */
+[data-kind="plan"] { --k: #1264cf; }        /* blue */
+[data-kind="notes"] { --k: #0f8a5f; }       /* green */
+[data-kind="worksheet"] { --k: #d9730d; }   /* orange */
+[data-kind="slides"] { --k: #7a3fd1; }      /* purple */
+[data-kind="exam"] { --k: #cc2f4a; }        /* red */
+[data-kind="homework"] { --k: #0e7f95; }    /* teal */
+.library-page .lib-item .lib-card[data-kind] { overflow:hidden; border-color:color-mix(in srgb, var(--k) 22%, var(--card-line)); background:linear-gradient(180deg, color-mix(in srgb, var(--k) 9%, var(--card)), var(--card) 62%); }
+.library-page .lib-item .lib-card[data-kind]::before { content:""; position:absolute; inset:0 0 auto 0; height:5px; background:var(--k); }
+.library-page .lib-item .lib-card[data-kind]:hover { border-color:var(--k); }
+.lib-card[data-kind] .lib-card-icon { color:#fff; background:var(--k); }
+.lib-card[data-kind] .lib-card-type { color:var(--k); }
+.lib-card[data-kind] .lib-open-label { color:var(--k); }
+.lib-chip[data-kind]:not([data-kind=""])::before { content:""; width:8px; height:8px; margin-right:6px; border-radius:50%; background:var(--k); flex:none; }
+.lib-chip[data-kind]:not([data-kind=""]) { display:inline-flex; align-items:center; }
+.library-page .lib-chip[aria-pressed="true"][data-kind]::before { background:#fff; }

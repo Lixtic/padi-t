@@ -3118,6 +3118,7 @@
 
   /* My Library: a curated, searchable collection of saved teaching materials. */
   let libType = 'all';
+  const KIND_SLUG = { plan: 'plan', 'Study notes': 'notes', 'Learner worksheet': 'worksheet', 'Teaching slides': 'slides', 'BECE practice': 'exam', 'Homework pack': 'homework' };
   function renderLibrary() {
     const grid = $('#libGrid'); if (!grid) return;
     const search = $('#libSearch');
@@ -3127,7 +3128,7 @@
     const count = $('#libraryCount'); if (count) count.textContent = String(all.length);
     const chips = $('#libChips');
     if (chips) chips.replaceChildren(...[['all', 'Everything', all.length]].concat(TYPE_ORDER.filter((t) => counts[t] || (libType === t && t === 'plan')).map((t) => [t, TYPE_LABEL[t], counts[t] || 0]))
-      .map(([id, label, n]) => h('button', { type: 'button', class: 'lib-chip', 'data-type': id, 'aria-pressed': String(libType === id) }, h('span', { text: label }), h('small', { text: String(n) }))));
+      .map(([id, label, n]) => h('button', { type: 'button', class: 'lib-chip', 'data-type': id, 'data-kind': KIND_SLUG[id] || '', 'aria-pressed': String(libType === id) }, h('span', { text: label }), h('small', { text: String(n) }))));
     const list = all.filter((s) => (libType === 'all' || typeOf(s) === libType) &&
       (!q || [s.title, s.params && s.params.cls, s.params && s.params.subject, s.params && s.params.week, s.params && s.params.resourceType].join(' ').toLowerCase().includes(q)));
     const resultCount = $('#libraryResultsCount'); if (resultCount) resultCount.textContent = list.length + (list.length === 1 ? ' item' : ' items');
@@ -3138,8 +3139,8 @@
       const heading = p.subject || s.title || TYPE_LABEL[type];
       const meta = p.cls ? [p.cls, p.term ? termWord(p.cls) + ' ' + p.term : '', p.week ? 'Week ' + p.week : ''].filter(Boolean).join(' · ') : (s.title || 'Saved teaching resource');
       return h('article', { class: 'lib-item' },
-        h('button', { type: 'button', class: 'lib-card', 'data-id': s.id, 'aria-label': 'Open ' + heading },
-          h('span', { class: 'lib-card-top' }, h('span', { class: 'lib-card-icon lib-icon-' + (type === 'plan' ? 'plan' : 'resource') }, icon(kindIcon(s))), h('span', { class: 'lib-card-type', text: TYPE_LABEL[type] || type })),
+        h('button', { type: 'button', class: 'lib-card', 'data-kind': KIND_SLUG[type] || 'plan', 'data-id': s.id, 'aria-label': 'Open ' + heading },
+          h('span', { class: 'lib-card-top' }, h('span', { class: 'lib-card-icon' }, icon(kindIcon(s))), h('span', { class: 'lib-card-type', text: TYPE_LABEL[type] || type })),
           h('span', { class: 'lib-name', text: heading }),
           h('span', { class: 'lib-description', text: s.title && s.title !== heading ? s.title : type === 'plan' ? 'Lesson plan and teaching sequence' : 'Saved teaching resource' }),
           h('span', { class: 'lib-meta', text: meta }),
