@@ -21,7 +21,7 @@ const A = require('../api/_auth');
 
 (async () => {
   // 1. Markdown links cannot carry extra attributes. Run the real inline() from app.js.
-  const src = fs.readFileSync(__dirname + '/../public/app.js', 'utf8');
+  const src = fs.readFileSync(__dirname + '/../public/markdown.js', 'utf8');
   const start = src.indexOf('const esc = (s) => s.replace'), end = src.indexOf('function cellHtml');
   const inline = new Function(src.slice(start, end) + '; return inline;')();
   const html = inline('[x](https://a.com/"onfocus="alert(1)"autofocus=")');
