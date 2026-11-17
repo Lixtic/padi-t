@@ -77,6 +77,7 @@
   </symbol>
   <symbol id="i-share" viewBox="0 0 24 24"><path d="M12 15V4M7.5 8.5L12 4l4.5 4.5M5 13v5.5a1.5 1.5 0 0 0 1.5 1.5h11a1.5 1.5 0 0 0 1.5-1.5V13"/></symbol>
   <symbol id="i-download" viewBox="0 0 24 24"><path d="M12 4v11M7 10.5l5 5 5-5M5 19.5h14"/></symbol>
+  <symbol id="i-bell" viewBox="0 0 24 24"><path d="M18 9a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9M10 21h4"/></symbol>
   <symbol id="i-menu" viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h16"/></symbol>
   <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
   <symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="6.5"/><path d="M16 16l4.5 4.5"/></symbol>
@@ -537,9 +538,7 @@
       <button type="button" class="icon-btn acct-top" id="acctTop" aria-label="Sign in or create account" aria-haspopup="dialog" data-state="out" hidden>
         <svg class="ico"><use href="#i-user"/></svg><span class="acct-initial" aria-hidden="true"></span><span class="acct-dot" aria-hidden="true"></span>
       </button>
-      <span class="chip" id="statusChip" title="Status">
-        <span class="dot dot-online" id="statusDot"></span><span id="statusText">Online</span>
-      </span>
+      <button type="button" class="notification-bell" id="notificationBell" aria-label="Notifications" aria-haspopup="dialog" aria-expanded="false" title="Notifications"><svg class="ico"><use href="#i-bell"/></svg><span class="notification-count" id="notificationCount" hidden></span></button>
     </header>
     <div class="pro-banner profile-ask" id="termBar" role="status" hidden></div>
     <div class="pro-banner profile-ask" id="profileAsk" role="status" hidden></div>
