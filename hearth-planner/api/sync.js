@@ -23,6 +23,37 @@ module.exports = async (req, res) => {
   if (await require('./_quota').limited(res, 'sync:' + me.uid, 1200, 10 * 60 * 1000)) return;   // about two a second: far above normal use
   try {
     await db.ensure();
+    if (route.searchParams.get('what') === 'notifications') {
+      if (await require('./_quota').limited(res, 'notifications:' + me.uid, 300, 10 * 60 * 1000)) return;
+      const Entitle = require('./_entitle');
+      if (req.method === 'GET') {
+        const notice = await Entitle.notice();
+        if (notice) {
+          await db.query(
+            'insert into notifications (id,user_id,dedupe_key,type,title,body,url,created_at) values ($1,$2,$3,$4,$5,$6,$7,$8) on conflict (user_id,dedupe_key) do nothing',
+            ['notice-' + notice.id + '-' + me.uid, me.uid, 'announcement:' + notice.id, 'announcement', notice.kind === 'warn' ? 'Important GuidEd announcement' : 'GuidEd announcement', notice.text, '/', Date.now()]
+          );
+        }
+        const rows = await db.query(
+          'select id,type,title,body,url,created_at,read_at from notifications where user_id = $1 order by created_at desc limit 50',
+          [me.uid]
+        );
+        return sendJson(res, 200, { items: rows.map((r) => ({
+          id: r.id, type: r.type, title: r.title, body: r.body, url: r.url,
+          createdAt: Number(r.created_at), read: r.read_at != null
+        })), unread: rows.filter((r) => r.read_at == null).length });
+      }
+      let notificationBody;
+      try { notificationBody = await readJson(req, 12000); }
+      catch (e) { return sendJson(res, e.status || 400, { error: 'bad_request', message: e.message }); }
+      const ids = Array.isArray(notificationBody.ids) ? [...new Set(notificationBody.ids.filter((id) => typeof id === 'string' && id.length <= 100))].slice(0, 50) : [];
+      if (notificationBody.all === true) {
+        await db.query('update notifications set read_at = coalesce(read_at,$2) where user_id = $1', [me.uid, Date.now()]);
+      } else if (ids.length) {
+        await db.query('update notifications set read_at = coalesce(read_at,$3) where user_id = $1 and id = any($2::text[])', [me.uid, ids, Date.now()]);
+      } else return sendJson(res, 400, { error: 'bad_request', message: 'Choose notifications to mark as read.' });
+      return sendJson(res, 200, { ok: true });
+    }
     if (req.method === 'GET') {
       const what = route.searchParams.get('what');
       if (what === 'plans') {
