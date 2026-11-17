@@ -1014,3 +1014,95 @@ body[data-studio-tab="resources"]:has(#studyNotesCurriculum:not([hidden])) .sche
  .dashboard-page .dash-search-wrap input { min-height:45px; font-size:13px; }
  .dashboard-page .dash-search-hint { display:none; }
 }
+
+
+/* Teacher dashboard dark-mode finish: cover the newer search toolbar and every dashboard state. */
+:root[data-theme="dark"] #dashboardPage > .dash-inner {
+  --dash-text: #f3f5f8;
+  --dash-ink: #f3f5f8;
+  --dash-muted: #b9c4d2;
+  --dash-surface: #252f3d;
+  --dash-surface-soft: #303c4c;
+  --dash-border: #435166;
+  --dash-link: #9fc5ff;
+  color: var(--dash-text);
+}
+:root[data-theme="dark"] #dashboardPage .dash-recent-subtitle,
+:root[data-theme="dark"] #dashboardPage .dash-class-count,
+:root[data-theme="dark"] #dashboardPage .dash-stat-foot,
+:root[data-theme="dark"] #dashboardPage .dash-next-meta,
+:root[data-theme="dark"] #dashboardPage .dash-recent-content span {
+  color: var(--dash-muted);
+}
+:root[data-theme="dark"] #dashboardPage .dash-search-wrap {
+  border-color: var(--dash-border);
+  background: #202a38;
+  color: var(--dash-muted);
+  box-shadow: none;
+}
+:root[data-theme="dark"] #dashboardPage .dash-search-wrap:focus-within {
+  border-color: #79adf5;
+  box-shadow: 0 0 0 3px rgba(121,173,245,.18);
+}
+:root[data-theme="dark"] #dashboardPage .dash-search-wrap > .ico { color: #9fc5ff; }
+:root[data-theme="dark"] #dashboardPage .dash-search-wrap input {
+  color: var(--dash-text);
+  caret-color: #9fc5ff;
+}
+:root[data-theme="dark"] #dashboardPage .dash-search-wrap input::placeholder { color: #aab7c8; opacity:1; }
+:root[data-theme="dark"] #dashboardPage .dash-search-hint {
+  border-color: #4a5b72;
+  background: #2b3747;
+  color: #c2ccda;
+}
+:root[data-theme="dark"] #dashboardPage .dash-search-empty {
+  border-color: #4a5b72;
+  background: #202a38;
+  color: #c2ccda;
+}
+:root[data-theme="dark"] #dashboardPage .dash-clear-search { color: #a8caff; }
+:root[data-theme="dark"] #dashboardPage .dash-action-primary {
+  border-color: #397bd0;
+  background: linear-gradient(145deg,#2879df,#174c9d);
+  color: #fff;
+}
+:root[data-theme="dark"] #dashboardPage .dash-action-primary:hover { background: linear-gradient(145deg,#3989ed,#2059b1); }
+:root[data-theme="dark"] #dashboardPage .dash-action-notes,
+:root[data-theme="dark"] #dashboardPage .dash-action-media,
+:root[data-theme="dark"] #dashboardPage .dash-action-worksheet {
+  box-shadow: none;
+}
+:root[data-theme="dark"] #dashboardPage .dash-week-tag {
+  border: 1px solid #40536d;
+  background: #29394d;
+  color: #c5dcff;
+}
+:root[data-theme="dark"] #dashboardPage .dash-class-tile:not(.is-active):hover,
+:root[data-theme="dark"] #dashboardPage .dash-next-card:hover,
+:root[data-theme="dark"] #dashboardPage .dash-recent-card-main:hover {
+  border-color: #6688b2;
+  background: #2d3b4e;
+}
+:root[data-theme="dark"] #dashboardPage .dash-recent-time {
+  border: 1px solid #43536a;
+  background: #303d4e;
+  color: #c5d0df;
+}
+:root[data-theme="dark"] #dashboardPage .dash-plan-menu {
+  border-color: var(--dash-border);
+  background: #253142;
+  box-shadow: 0 12px 28px rgba(0,0,0,.35);
+}
+:root[data-theme="dark"] #dashboardPage .dash-plan-menu button { color: #edf3fb; }
+:root[data-theme="dark"] #dashboardPage .dash-plan-menu button:hover { background: #354459; }
+:root[data-theme="dark"] #dashboardPage .dash-first-plan {
+  border-color: var(--dash-border);
+  background: linear-gradient(115deg,#26364b,#252f3d 75%);
+  color: var(--dash-text);
+}
+:root[data-theme="dark"] #dashboardPage .dash-first-plan-copy span { color: var(--dash-muted); }
+:root[data-theme="dark"] #dashboardPage .dash-class-open,
+:root[data-theme="dark"] #dashboardPage .dash-text-link { color: #a8caff; }
+:root[data-theme="dark"] #dashboardPage .dash-class-progress-track,
+:root[data-theme="dark"] #dashboardPage .dash-class-progress { background: #435064; }
+:root[data-theme="dark"] #dashboardPage .dash-class-progress-fill { background: linear-gradient(90deg,#5598ed,#8bbdff); }
