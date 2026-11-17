@@ -223,8 +223,8 @@
     listParentLearning: function (childId) { return call('/api/sync?what=parent-learning' + (childId ? '&childId=' + encodeURIComponent(childId) : ''), { auth: true }); },
     deleteParentLearning: function (id) { return call('/api/sync?what=parent-learning', { method: 'POST', auth: true, body: { id: id, delete: true } }); },
     saveParentLearning: function (record) { return call('/api/sync?what=parent-learning', { method: 'POST', auth: true, body: record }); },
-    listNotifications: function () { return call('/api/notifications', { auth: true }); },
-    markNotificationsRead: function (ids) { return call('/api/notifications', { method: 'POST', auth: true, body: { ids: ids } }); },
-    markAllNotificationsRead: function () { return call('/api/notifications', { method: 'POST', auth: true, body: { all: true } }); }
+    listNotifications: function () { return call('/api/sync?what=notifications', { auth: true }); },
+    markNotificationsRead: function (ids) { return call('/api/sync?what=notifications', { method: 'POST', auth: true, body: { ids: ids } }); },
+    markAllNotificationsRead: function () { return call('/api/sync?what=notifications', { method: 'POST', auth: true, body: { all: true } }); }
   };
 })();
