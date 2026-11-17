@@ -69,7 +69,7 @@
       });
       btns[it[0]] = b; pill.appendChild(b);
     });
-    var search = document.createElement('button'); search.type = 'button'; search.className = 'v2-tabbar-search'; search.setAttribute('aria-label', 'Find media'); search.innerHTML = svg('i-search');
+    var search = document.createElement('button'); search.type = 'button'; search.className = 'v2-tabbar-search'; search.dataset.tab = 'media'; search.setAttribute('aria-label', 'Find media'); search.innerHTML = svg('i-search');
     search.addEventListener('click', function () { studio.classList.remove('is-collapsed'); var t = $('#studioContent'), tog = $('#studioCollapseToggle'); if (tog) tog.setAttribute('aria-expanded', 'true'); if (t) t.hidden = false; var tab = $('#studioTabMedia'); if (tab) tab.click(); mark('media'); studio.scrollIntoView({ behavior: 'smooth', block: 'start' }); });
     btns.media = search; nav.appendChild(search);
     function mark(k) { Object.keys(btns).forEach(function (n) { if (n === k) btns[n].setAttribute('aria-current', 'page'); else btns[n].removeAttribute('aria-current'); }); }
