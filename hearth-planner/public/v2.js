@@ -95,6 +95,9 @@
     document.addEventListener('click',function(e){if(!panel.contains(e.target)&&!trigger.contains(e.target))close();});
     document.addEventListener('keydown',function(e){if(e.key==='Escape')close();});
     document.addEventListener('guided:notification-refresh',refresh);
+    window.addEventListener('focus',refresh);
+    document.addEventListener('visibilitychange',function(){if(!document.hidden)refresh();});
+    window.addEventListener('guided:auth-changed',refresh);
     window.GuidedNotifications={refresh:refresh,list:function(){return items.slice();},markAllRead:function(){var S=window.PadiSync;return S&&S.markAllNotificationsRead?S.markAllNotificationsRead().then(refresh):Promise.resolve();}};
     refresh();
   }
