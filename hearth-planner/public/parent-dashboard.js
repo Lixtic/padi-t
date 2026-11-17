@@ -347,7 +347,7 @@
         var child = children().find(function (item) { return item.id === state.libraryChildId; }) || selectedChild();
         var idea = libraryActivities(child)[Number(familyIdea.dataset.useFamilyIdea)];
         if (!idea || !child) return;
-        state.lessonDraft = { childId: child.id, subject: idea.registeredSubject, topic: idea.topic, term: idea.term, week: idea.week, notes: 'Use this school-scheme learning goal: ' + idea.goal + (idea.indicators.length ? '\\nRelevant scheme indicators: ' + idea.indicators.join(' | ') : '') + '\\nSuggested home materials: ' + idea.materials + '\\nParent guidance: ' + idea.guide.join(' ') };
+        state.lessonDraft = { childId: child.id, subject: idea.registeredSubject, topic: idea.topic, term: idea.term, week: idea.week, notes: 'Use this school-scheme learning goal: ' + idea.goal + (idea.indicators.length ? '\nRelevant scheme indicators: ' + idea.indicators.join(' | ') : '') + '\nSuggested home materials: ' + idea.materials + '\nParent guidance: ' + idea.guide.join(' ') };
         state.lessonStep = 1; state.task = 'lesson'; state.tab = 'lesson'; state.lessonRoom = null; state.result = null; state.error = '';
         render(); return;
       }
