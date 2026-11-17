@@ -321,8 +321,10 @@
     document.title = (s.messages.length ? s.title + ' · ' : '') + 'GuidEd';
     let st = statusOf(s);
     if (st !== 'running' && state.config.demo) st = 'demo';
-    statusDot.className = 'dot dot-' + (st === 'demo' ? 'idle' : st);
-    statusText.textContent = STATUS[st];
+    // The top-bar status indicator is optional in compact layouts and newer shells.
+    // Keep session status updates safe when those elements are not present in the DOM.
+    if (statusDot) statusDot.className = 'dot dot-' + (st === 'demo' ? 'idle' : st);
+    if (statusText) statusText.textContent = STATUS[st];
     document.body.dataset.status = st;
   }
 
