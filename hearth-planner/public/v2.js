@@ -46,42 +46,44 @@
 
   function tabBar() {
     var studio = $('.teaching-studio'); if (!studio || $('.v2-tabbar')) return;
-    var items = [['studio', 'Studio', 'i-home', null], ['plan', 'Lesson plan', 'i-book', '#studioTabPlan'], ['resources', 'Resources', 'i-layers', '#studioTabResources'], ['library', 'Library', 'i-library', null]];
-    var nav = document.createElement('nav'); nav.className = 'v2-tabbar'; nav.setAttribute('aria-label', 'Teaching Studio');
+    var nav = document.createElement('nav'); nav.className = 'v2-tabbar'; nav.setAttribute('aria-label', 'Primary navigation');
     var pill = document.createElement('div'); pill.className = 'v2-tabbar-pill'; nav.appendChild(pill);
     var btns = {};
+    var parent = document.body.classList.contains('role-parent');
+    var items = parent
+      ? [['home', 'Home', 'i-home', '#dashboardLink'], ['children', 'Children', 'i-users', '#familyBtn'], ['more', 'More', 'i-menu', '#settingsLink']]
+      : [['home', 'Home', 'i-home', '#dashboardLink'], ['studio', 'Office', 'i-mobile-office', '#studioLink'], ['library', 'Library', 'i-library', '#libraryLink'], ['more', 'More', 'i-menu', '#settingsLink']];
+    function activate(key, selector) {
+      var target = selector && $(selector);
+      if (target) target.click();
+      mark(key);
+    }
     items.forEach(function (it) {
       var b = document.createElement('button'); b.type = 'button'; b.innerHTML = svg(it[2]) + '<span></span>'; b.querySelector('span').textContent = it[1];
       b.dataset.tab = it[0];
       b.addEventListener('click', function () {
-        if (it[0] === 'library') { var lk = $('#libraryLink'); if (lk) { lk.click(); mark('library'); } return; }
-        // Tapping the tab you are already on folds the Studio away again, for a wider reading area.
-        if (b.getAttribute('aria-current') === 'page' && !studio.classList.contains('is-collapsed')) {
-          studio.classList.add('is-collapsed');
-          var tg = $('#studioCollapseToggle'); if (tg) tg.setAttribute('aria-expanded', 'false');
-          mark(null); return;
+        if (it[0] === 'studio' && b.getAttribute('aria-current') === 'page' && !studio.classList.contains('is-collapsed')) {
+          studio.classList.add('is-collapsed'); var tg = $('#studioCollapseToggle'); if (tg) tg.setAttribute('aria-expanded', 'false'); return;
         }
-        studio.classList.remove('is-collapsed');
-        var t = $('#studioContent'), tog = $('#studioCollapseToggle'); if (tog) tog.setAttribute('aria-expanded', 'true'); if (t) t.hidden = false;
-        if (it[3]) { var tab = $(it[3]); if (tab) tab.click(); }
-        mark(it[0]);
-        studio.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        activate(it[0], it[3]);
       });
       btns[it[0]] = b; pill.appendChild(b);
     });
-    var search = document.createElement('button'); search.type = 'button'; search.className = 'v2-tabbar-search'; search.dataset.tab = 'media'; search.setAttribute('aria-label', 'Find media'); search.innerHTML = svg('i-search');
-    search.addEventListener('click', function () { studio.classList.remove('is-collapsed'); var t = $('#studioContent'), tog = $('#studioCollapseToggle'); if (tog) tog.setAttribute('aria-expanded', 'true'); if (t) t.hidden = false; var tab = $('#studioTabMedia'); if (tab) tab.click(); mark('media'); studio.scrollIntoView({ behavior: 'smooth', block: 'start' }); });
-    btns.media = search; nav.appendChild(search);
+    if (!parent) {
+      var create = document.createElement('button'); create.type = 'button'; create.className = 'v2-tabbar-create'; create.setAttribute('aria-label', 'Create a new lesson plan'); create.innerHTML = svg('i-plus');
+      create.addEventListener('click', function () { var fresh = $('#newSession'); if (fresh) fresh.click(); });
+      nav.appendChild(create);
+    }
     function mark(k) { Object.keys(btns).forEach(function (n) { if (n === k) btns[n].setAttribute('aria-current', 'page'); else btns[n].removeAttribute('aria-current'); }); }
-    ['Plan', 'Resources', 'Media'].forEach(function (n) {
-      var tab = $('#studioTab' + n); if (tab) tab.addEventListener('click', function () { mark(n.toLowerCase()); });
-    });
-    mark('studio');
-    // Keep the Library tab in step with the page: lit while My Library is open, cleared when it closes.
-    new MutationObserver(function () {
-      if (document.body.classList.contains('on-library')) mark('library');
-      else if (btns.library.getAttribute('aria-current') === 'page') mark(null);
-    }).observe(document.body, { attributes: true, attributeFilter: ['class'] });
+    function syncPage() {
+      if (document.body.classList.contains('on-dashboard')) mark('home');
+      else if (document.body.classList.contains('on-library')) mark('library');
+      else if (document.body.classList.contains('on-settings')) mark('more');
+      else if (parent) mark('home');
+      else if (!document.body.classList.contains('on-dashboard')) mark('studio');
+    }
+    new MutationObserver(syncPage).observe(document.body, { attributes: true, attributeFilter: ['class'] });
+    syncPage();
     document.body.appendChild(nav); document.body.classList.add('has-tabbar');
   }
 
