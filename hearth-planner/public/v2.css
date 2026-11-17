@@ -991,3 +991,5 @@ body[data-studio-tab="resources"]:has(#studyNotesCurriculum:not([hidden])) .sche
 .sp-card .acct-settings-actions .set-action .ico { width:17px; height:17px; flex:none; }
 .sp-card .acct-settings-actions .settings-signout { color:#c75b43; }
 @media(max-width:390px) { .sp-card .acct-settings-actions { grid-template-columns:1fr; } }
+
+.sp-card .acct-in[hidden] + .acct-settings-actions { display:none; }
