@@ -1014,3 +1014,89 @@ body[data-studio-tab="resources"]:has(#studyNotesCurriculum:not([hidden])) .sche
  .dashboard-page .dash-search-wrap input { min-height:45px; font-size:13px; }
  .dashboard-page .dash-search-hint { display:none; }
 }
+
+
+/* Dashboard dark mode v2: theme the page shell itself, not only its inner cards. */
+:root[data-theme="dark"] body:has(#dashboardPage:not([hidden])) {
+  background: #0f1725;
+  color: #edf3fb;
+}
+:root[data-theme="dark"] #dashboardPage.settings-page {
+  background: #0f1725 !important;
+  color: #edf3fb !important;
+}
+:root[data-theme="dark"] #dashboardPage > .dash-inner {
+  background: transparent !important;
+  color: #edf3fb !important;
+  --dash-ink: #edf3fb !important;
+  --dash-text: #edf3fb !important;
+  --dash-muted: #b6c3d4 !important;
+  --dash-surface: #202c3b !important;
+  --dash-surface-soft: #29394b !important;
+  --dash-border: #3b4b60 !important;
+  --dash-link: #a8caff !important;
+}
+:root[data-theme="dark"] #dashboardPage .dash-section-head h2,
+:root[data-theme="dark"] #dashboardPage .dash-stat-value,
+:root[data-theme="dark"] #dashboardPage .dash-stat-label,
+:root[data-theme="dark"] #dashboardPage .dash-class-tile strong,
+:root[data-theme="dark"] #dashboardPage .dash-next-content strong,
+:root[data-theme="dark"] #dashboardPage .dash-recent-content strong,
+:root[data-theme="dark"] #dashboardPage .dash-first-plan-copy strong {
+  color: #f1f5fb !important;
+}
+:root[data-theme="dark"] #dashboardPage .dash-stat-foot,
+:root[data-theme="dark"] #dashboardPage .dash-class-count,
+:root[data-theme="dark"] #dashboardPage .dash-next-content > span:not(.dash-next-meta),
+:root[data-theme="dark"] #dashboardPage .dash-next-meta,
+:root[data-theme="dark"] #dashboardPage .dash-recent-content span,
+:root[data-theme="dark"] #dashboardPage .dash-recent-subtitle,
+:root[data-theme="dark"] #dashboardPage .dash-first-plan-copy span {
+  color: #b6c3d4 !important;
+}
+:root[data-theme="dark"] #dashboardPage .dash-stat,
+:root[data-theme="dark"] #dashboardPage .dash-class-tile,
+:root[data-theme="dark"] #dashboardPage .dash-next-card,
+:root[data-theme="dark"] #dashboardPage .dash-recent-card,
+:root[data-theme="dark"] #dashboardPage .dash-week-empty,
+:root[data-theme="dark"] #dashboardPage .dash-next-empty,
+:root[data-theme="dark"] #dashboardPage .dash-first-plan {
+  background-color: #202c3b !important;
+  border-color: #3b4b60 !important;
+  color: #edf3fb !important;
+  box-shadow: none !important;
+}
+:root[data-theme="dark"] #dashboardPage .dash-class-tile.is-active {
+  background: linear-gradient(145deg,#263d58,#233144) !important;
+  border-color: #78aef5 !important;
+}
+:root[data-theme="dark"] #dashboardPage .dash-action-notes {
+  color: #ffd58a !important; background: #3b3022 !important; border-color: #66512e !important;
+}
+:root[data-theme="dark"] #dashboardPage .dash-action-media {
+  color: #9de3bb !important; background: #20392f !important; border-color: #345b48 !important;
+}
+:root[data-theme="dark"] #dashboardPage .dash-action-worksheet {
+  color: #d1bdff !important; background: #332b48 !important; border-color: #51436f !important;
+}
+:root[data-theme="dark"] #dashboardPage .dash-search-wrap,
+:root[data-theme="dark"] #dashboardPage .dash-search-empty {
+  background: #182434 !important; border-color: #43556c !important; color: #dce6f2 !important;
+}
+:root[data-theme="dark"] #dashboardPage .dash-search-wrap input {
+  background: transparent !important; color: #f1f5fb !important;
+}
+:root[data-theme="dark"] #dashboardPage .dash-search-wrap input::placeholder { color: #aebed1 !important; }
+:root[data-theme="dark"] #dashboardPage .dash-week-tag,
+:root[data-theme="dark"] #dashboardPage .dash-recent-time {
+  background: #2b3b50 !important; color: #d3e2f6 !important; border-color: #465a73 !important;
+}
+:root[data-theme="dark"] #dashboardPage .dash-plan-menu {
+  background: #202c3b !important; border-color: #43556c !important;
+}
+:root[data-theme="dark"] #dashboardPage .dash-plan-menu button { color: #edf3fb !important; }
+:root[data-theme="dark"] #dashboardPage .dash-text-link,
+:root[data-theme="dark"] #dashboardPage .dash-eyebrow,
+:root[data-theme="dark"] #dashboardPage .dash-clear-search,
+:root[data-theme="dark"] #dashboardPage .dash-class-open { color: #a8caff !important; }
+:root[data-theme="dark"] #dashboardPage .dash-class-progress-track { background: #3a4a5e !important; }
