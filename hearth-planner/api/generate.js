@@ -4,6 +4,7 @@ const LEVEL_PROMPTS = require('./_prompt_levels');
 const Levels = require('./_levels');
 const Curriculum = require('./_curriculum');
 const Knowledge = require('./_knowledge');
+const db = require('./_db');
 // JHS uses the main prompt as it is. Other levels add their own profile at the end.
 const systemFor = (cls, mode, resourceType, scheme, request, knowledgeContext) => {
   const l = Levels.levelOfClass(cls);
@@ -209,5 +210,15 @@ module.exports = async (req, res) => {
   else if (ent && ent.tier === 'free' && parentTurn && !fresh && complete) tasks.push(Entitle.countFreeParent(ent));
   else if (ent && ent.tier === 'pro' && firstTurn && !fresh && complete) Entitle.event('plan_pro');
   await Promise.all(tasks).catch(() => {});
+  // A signed-in teacher gets a durable inbox item when a new plan has finished successfully.
+  if (complete && ent && ent.uid && firstTurn && planTurn) {
+    try {
+      await db.ensure();
+      const id = require('crypto').randomUUID();
+      const label = v.params.mode === 'plan' ? 'Lesson plan' : 'Teaching resource';
+      await db.query('insert into notifications (id,user_id,dedupe_key,type,title,body,url,created_at) values ($1,$2,$3,$4,$5,$6,$7,$8) on conflict (user_id,dedupe_key) do nothing',
+        [id, ent.uid, 'teacher-generated:' + ck, 'teaching', label + ' ready', v.params.subject + ' · ' + v.params.cls + ' · Week ' + v.params.week + ' is ready to view.', '/', Date.now()]);
+    } catch (e) { console.error('[generate] notification save failed', e && e.message); }
+  }
 };
 
