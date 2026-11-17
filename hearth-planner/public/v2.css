@@ -70,8 +70,11 @@ select, input[type="search"], input[type="text"] { border-radius: 999px; }
 @media (max-width: 760px) {
   /* Reserve the tab-bar height only while the tab bar is actually mounted.
      If a view removes it, let the app reclaim the full viewport. */
-  body.has-tabbar:not(.on-dashboard):has(> .v2-tabbar) .app { height: calc(var(--app-h, 100dvh) - 84px - env(safe-area-inset-bottom)); }
+  body.has-tabbar:has(> .v2-tabbar) .app { height: calc(var(--app-h, 100dvh) - 84px - env(safe-area-inset-bottom)); }
   body.has-tabbar .app.nav-open { height: var(--app-h, 100dvh); }
+  #menuBtn { display: none !important; }
+  .sidebar { display: none !important; }
+  .scrim { display: none !important; }
   .v2-tabbar { display: flex; align-items: center; gap: 12px; position: fixed; left: 12px; right: 12px; bottom: calc(10px + env(safe-area-inset-bottom)); z-index: 40; padding: 0; background: transparent; transform-origin: center bottom; animation: guided-nav-enter .62s cubic-bezier(.2,.85,.25,1.15) both; }
   .app.nav-open ~ .v2-tabbar { display: none; }
   .v2-tabbar-pill { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); align-items: center; flex: 1; min-width: 0; min-height: 68px; padding: 7px; border: 1px solid rgba(255,255,255,.72); border-radius: 999px; background: rgba(255,255,255,.76); -webkit-backdrop-filter: blur(24px) saturate(1.55); backdrop-filter: blur(24px) saturate(1.55); box-shadow: 0 8px 28px rgba(18,35,55,.18), inset 0 1px 0 rgba(255,255,255,.8); transition: box-shadow .3s ease, background .3s ease; }
@@ -84,6 +87,9 @@ select, input[type="search"], input[type="text"] { border-radius: 999px; }
   .v2-tabbar button .ico { width: 21px; height: 21px; transition: transform .28s cubic-bezier(.2,.8,.2,1); }
   .v2-tabbar-pill button[aria-current="page"] .ico { animation: guided-icon-pop .38s cubic-bezier(.2,.8,.2,1); }
   .v2-tabbar-pill button[aria-current="page"] { background: rgba(103,190,229,.36); color: #07517a; box-shadow: inset 0 0 0 1px rgba(255,255,255,.42), 0 3px 12px rgba(35,112,153,.10); }
+  .v2-tabbar .v2-tabbar-create { display: grid; place-items: center; flex: 0 0 68px; width: 68px; height: 68px; min-height: 68px; padding: 0; border: 1px solid rgba(255,255,255,.78); border-radius: 50%; color: #fff; background: var(--accent); box-shadow: 0 8px 28px rgba(18,35,55,.2), inset 0 1px 0 rgba(255,255,255,.25); transition: transform .25s cubic-bezier(.2,.8,.2,1); }
+  .v2-tabbar .v2-tabbar-create:active { transform: scale(.9) rotate(-8deg); }
+  .v2-tabbar .v2-tabbar-create .ico { width: 28px; height: 28px; }
   .v2-tabbar .v2-tabbar-search { display: grid; place-items: center; flex: 0 0 68px; width: 68px; height: 68px; min-height: 68px; padding: 0; border: 1px solid rgba(255,255,255,.78); border-radius: 50%; color: #18212a; background: rgba(255,255,255,.8); -webkit-backdrop-filter: blur(24px) saturate(1.55); backdrop-filter: blur(24px) saturate(1.55); box-shadow: 0 8px 28px rgba(18,35,55,.18), inset 0 1px 0 rgba(255,255,255,.85); transition: transform .25s cubic-bezier(.2,.8,.2,1), background .25s ease, box-shadow .25s ease; animation: guided-search-arrive .55s .18s cubic-bezier(.2,.8,.2,1) both; }
   .v2-tabbar .v2-tabbar-search:active { transform: scale(.9) rotate(-8deg); }
   .v2-tabbar .v2-tabbar-search .ico { width: 28px; height: 28px; }
@@ -95,7 +101,7 @@ select, input[type="search"], input[type="text"] { border-radius: 999px; }
   @keyframes guided-search-arrive { from { opacity: 0; transform: scale(.72) rotate(-18deg); } to { opacity: 1; transform: scale(1) rotate(0); } }
   @keyframes guided-search-focus { 0% { transform: rotate(-18deg) scale(.82); } 65% { transform: rotate(8deg) scale(1.12); } 100% { transform: rotate(0) scale(1); } }
   @media (prefers-reduced-motion: reduce) { .v2-tabbar, .v2-tabbar *, .v2-tabbar *::before, .v2-tabbar *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; scroll-behavior: auto !important; } }
-  @media (max-width: 390px) { .v2-tabbar { left: 8px; right: 8px; gap: 8px; } .v2-tabbar-pill { min-height: 62px; padding: 5px; } .v2-tabbar button { font-size: .62rem; } .v2-tabbar .v2-tabbar-search { flex-basis: 62px; width: 62px; height: 62px; min-height: 62px; } }
+  @media (max-width: 390px) { .v2-tabbar { left: 8px; right: 8px; gap: 8px; } .v2-tabbar-pill { min-height: 62px; padding: 5px; } .v2-tabbar button { font-size: .62rem; } .v2-tabbar .v2-tabbar-create { flex-basis: 62px; width: 62px; height: 62px; min-height: 62px; } .v2-tabbar .v2-tabbar-search { flex-basis: 62px; width: 62px; height: 62px; min-height: 62px; } }
 }
 
 /* teaching slides follow the new accent */
@@ -339,7 +345,7 @@ body.on-settings .v2-tabbar { display: none !important; }
   .dash-week-list, .dash-plan-grid { grid-template-columns: 1fr; }
 }
 
-body.on-dashboard .v2-tabbar { display: none !important; }
+
 
 /* Compact plan toolbar: small buttons in tidy rows (actions, then Download) */
 .doc-bar { padding: 8px 12px; gap: 6px 10px; }
@@ -396,7 +402,7 @@ body.on-dashboard .v2-tabbar { display: none !important; }
 .as-danger-solid:disabled { opacity: .45; cursor: not-allowed; }
 
 /* Parent accounts have no Teaching Studio: no plan history, plan library, search or studio tab bar. Their home is the Parent Dashboard. */
-body.role-parent .stage, body.role-parent .pro-banner, body.role-parent .v2-tabbar,
+body.role-parent .stage, body.role-parent .pro-banner,
 body.role-parent .sb-list, body.role-parent .sb-list-head, body.role-parent #libraryLink, body.role-parent #searchToggle, body.role-parent #searchWrap { display: none !important; }
 
 /* Settings: teacher-only and parent-only rows follow the account role. */
