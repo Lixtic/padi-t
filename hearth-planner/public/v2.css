@@ -12,14 +12,14 @@
   --v2-ink: #0E1424; --v2-soft: #EAF0FD; --v2-cyan: #00A6D6; --v2-radius: 24px;
 }
 :root[data-theme="dark"] {
-  --bg: #0F1424; --sb: #151B30; --sb-hover: #1C2440; --sb-active: #243050;
-  --line: #28314E; --text: #EDF1FB; --muted: #98A4C2;
-  --card: #171E36; --card-line: #28314E;
-  --shadow: 0 1px 2px rgba(0, 0, 0, .4), 0 12px 32px rgba(0, 0, 0, .4);
-  --accent: #6C93F0; --accent-h: #8CA9F5; --on-accent: #0B1226;
-  --user-bubble: #1E2745; --code-bg: #121830; --ok: #4CC79A; --add: #4CC79A; --add-bg: rgba(76, 199, 154, .14);
-  --tbl-head: #2A4A7A; --tbl-line: #2E3858; --label: rgba(108, 147, 240, .14);
-  --v2-ink: #F3F6FF; --v2-soft: #1B2547; --v2-cyan: #3CC8F0; --v2-radius: 24px;
+  --bg: #000000; --sb: #0a0a0a; --sb-hover: #161616; --sb-active: #1f1f1f;
+  --line: #262626; --text: #F2F2F2; --muted: #9b9b9b;
+  --card: #111111; --card-line: #262626;
+  --shadow: 0 1px 2px rgba(0, 0, 0, .5), 0 12px 32px rgba(0, 0, 0, .5);
+  --accent: #6C93F0; --accent-h: #8CA9F5; --on-accent: #0f0f0f;
+  --user-bubble: #1c1c1c; --code-bg: #0c0c0c; --ok: #4CC79A; --add: #4CC79A; --add-bg: rgba(76, 199, 154, .14);
+  --tbl-head: #2A4A7A; --tbl-line: #2a2a2a; --label: rgba(108, 147, 240, .14);
+  --v2-ink: #F5F5F5; --v2-soft: #1a1a1a; --v2-cyan: #3CC8F0; --v2-radius: 24px;
 }
 
 /* ───────── Studio card ───────── */
@@ -628,11 +628,11 @@ body:not(.role-parent) .parent-only { display: none !important; }
 
 /* Teacher Dashboard dark theme: keep dashboard cards and labels legible in both app themes. */
 :root[data-theme="dark"] #dashboardPage > .dash-inner {
-  --dash-surface: #292a29;
-  --dash-surface-soft: #343634;
-  --dash-border: #474a47;
-  --dash-ink: #f2ebdc;
-  --dash-muted: #c2bdad;
+  --dash-surface: #111111;
+  --dash-surface-soft: #1c1c1c;
+  --dash-border: #2a2a2a;
+  --dash-ink: #f2f2f2;
+  --dash-muted: #b5b5b5;
   --dash-link: #9bbfff;
 }
 :root[data-theme="dark"] #dashboardPage > .dash-inner .dash-stat,
@@ -675,17 +675,17 @@ body:not(.role-parent) .parent-only { display: none !important; }
 :root[data-theme="dark"] #dashboardPage > .dash-inner .dash-text-link { color: var(--dash-link); }
 :root[data-theme="dark"] #dashboardPage > .dash-inner .dash-week-tag,
 :root[data-theme="dark"] #dashboardPage > .dash-inner .dash-recent-time {
-  background: #303a48;
+  background: #2d2d2d;
 }
 :root[data-theme="dark"] #dashboardPage > .dash-inner .dash-class-tile.is-active {
   border-color: #83b4ff;
-  background: linear-gradient(145deg, #25374d, #2b3037);
+  background: linear-gradient(145deg, #2a2a2a, #262626);
 }
 :root[data-theme="dark"] #dashboardPage > .dash-inner .dash-class-symbol { color: #a6c8ff; }
 :root[data-theme="dark"] #dashboardPage > .dash-inner .dash-class-progress-track,
-:root[data-theme="dark"] #dashboardPage > .dash-inner .dash-class-progress { background: #454b50; }
+:root[data-theme="dark"] #dashboardPage > .dash-inner .dash-class-progress { background: #3b3b3b; }
 :root[data-theme="dark"] #dashboardPage > .dash-inner .dash-class-progress-fill { background: linear-gradient(90deg, #4e91e8, #79b3ff); }
-:root[data-theme="dark"] #dashboardPage > .dash-inner .dash-stat-icon-plans { color: #a6c8ff; background: #263b57; }
+:root[data-theme="dark"] #dashboardPage > .dash-inner .dash-stat-icon-plans { color: #a6c8ff; background: #2d2d2d; }
 :root[data-theme="dark"] #dashboardPage > .dash-inner .dash-stat-icon-subjects { color: #d2b6ff; background: #382c4e; }
 :root[data-theme="dark"] #dashboardPage > .dash-inner .dash-stat-icon-classes { color: #9ee3bc; background: #234537; }
 :root[data-theme="dark"] #dashboardPage > .dash-inner .dash-stat-icon-resources { color: #ffd38a; background: #4a3820; }
@@ -694,7 +694,7 @@ body:not(.role-parent) .parent-only { display: none !important; }
 :root[data-theme="dark"] #dashboardPage > .dash-inner .dash-action-worksheet { color: #cfb9ff; border-color: #51406e; background: #342a4a; }
 :root[data-theme="dark"] #dashboardPage > .dash-inner .dash-first-plan {
   border-color: var(--dash-border);
-  background: linear-gradient(115deg, #243247, var(--dash-surface) 75%);
+  background: linear-gradient(115deg, #272727, var(--dash-surface) 75%);
 }
 :root[data-theme="dark"] #dashboardPage > .dash-inner .dash-first-plan-icon,
 :root[data-theme="dark"] #dashboardPage > .dash-inner .dash-next-subject-icon,
@@ -703,7 +703,7 @@ body:not(.role-parent) .parent-only { display: none !important; }
 :root[data-theme="dark"] #dashboardPage > .dash-inner .dash-empty-action,
 :root[data-theme="dark"] #dashboardPage > .dash-inner .dash-next-cta {
   color: #a9c7ff;
-  background: #263b57;
+  background: #2d2d2d;
 }
 :root[data-theme="dark"] #dashboardPage > .dash-inner .dash-first-plan-cta {
   color: #fff;
@@ -880,10 +880,10 @@ body[data-studio-tab="resources"]:has(#studyNotesCurriculum:not([hidden])) .sche
   outline-offset:3px;
 }
 :root[data-theme="dark"] .library-page .lib-item {
-  --lib-type-tint:#293544;
+  --lib-type-tint:#292929;
 }
 :root[data-theme="dark"] .library-page .lib-kind-plan { --lib-type-tint:#203d3a; }
-:root[data-theme="dark"] .library-page .lib-kind-notes { --lib-type-tint:#243752; }
+:root[data-theme="dark"] .library-page .lib-kind-notes { --lib-type-tint:#2a2a2a; }
 :root[data-theme="dark"] .library-page .lib-kind-worksheet { --lib-type-tint:#382d4d; }
 :root[data-theme="dark"] .library-page .lib-kind-homework { --lib-type-tint:#244334; }
 :root[data-theme="dark"] .library-page .lib-kind-exam { --lib-type-tint:#4a3028; }
@@ -970,9 +970,9 @@ body[data-studio-tab="resources"]:has(#studyNotesCurriculum:not([hidden])) .sche
   .library-page .lib-preview-page { width:37px; min-height:49px; padding:6px 5px; gap:3px; }
   .library-page .lib-card-type { max-width:calc(100% - 62px); padding:0 7px; font-size:8px; letter-spacing:.025em; }
 }
-:root[data-theme="dark"] .library-page .lib-preview { border-color:#465367; background:#303b4b; }
+:root[data-theme="dark"] .library-page .lib-preview { border-color:#414141; background:#2e2e2e; }
 :root[data-theme="dark"] .library-page .lib-preview-page { border-color:#dce3ec; background:#fff; }
-:root[data-theme="dark"] .library-page .lib-card-type { border-color:#465367; background:#303b4b; color:#dce7f5; }
+:root[data-theme="dark"] .library-page .lib-card-type { border-color:#414141; background:#2e2e2e; color:#dce7f5; }
 
 
 /* Full-screen lesson reader share action */
@@ -1018,11 +1018,11 @@ body[data-studio-tab="resources"]:has(#studyNotesCurriculum:not([hidden])) .sche
 
 /* Dashboard dark mode v2: theme the page shell itself, not only its inner cards. */
 :root[data-theme="dark"] body:has(#dashboardPage:not([hidden])) {
-  background: #0f1725;
+  background: #121212;
   color: #edf3fb;
 }
 :root[data-theme="dark"] #dashboardPage.settings-page {
-  background: #0f1725 !important;
+  background: #121212 !important;
   color: #edf3fb !important;
 }
 :root[data-theme="dark"] #dashboardPage > .dash-inner {
@@ -1031,9 +1031,9 @@ body[data-studio-tab="resources"]:has(#studyNotesCurriculum:not([hidden])) .sche
   --dash-ink: #edf3fb !important;
   --dash-text: #edf3fb !important;
   --dash-muted: #b6c3d4 !important;
-  --dash-surface: #202c3b !important;
-  --dash-surface-soft: #29394b !important;
-  --dash-border: #3b4b60 !important;
+  --dash-surface: #222222 !important;
+  --dash-surface-soft: #2b2b2b !important;
+  --dash-border: #3a3a3a !important;
   --dash-link: #a8caff !important;
 }
 :root[data-theme="dark"] #dashboardPage .dash-section-head h2,
@@ -1061,13 +1061,13 @@ body[data-studio-tab="resources"]:has(#studyNotesCurriculum:not([hidden])) .sche
 :root[data-theme="dark"] #dashboardPage .dash-week-empty,
 :root[data-theme="dark"] #dashboardPage .dash-next-empty,
 :root[data-theme="dark"] #dashboardPage .dash-first-plan {
-  background-color: #202c3b !important;
-  border-color: #3b4b60 !important;
+  background-color: #222222 !important;
+  border-color: #3a3a3a !important;
   color: #edf3fb !important;
   box-shadow: none !important;
 }
 :root[data-theme="dark"] #dashboardPage .dash-class-tile.is-active {
-  background: linear-gradient(145deg,#263d58,#233144) !important;
+  background: linear-gradient(145deg,#2e2e2e,#262626) !important;
   border-color: #78aef5 !important;
 }
 :root[data-theme="dark"] #dashboardPage .dash-action-notes {
@@ -1081,7 +1081,7 @@ body[data-studio-tab="resources"]:has(#studyNotesCurriculum:not([hidden])) .sche
 }
 :root[data-theme="dark"] #dashboardPage .dash-search-wrap,
 :root[data-theme="dark"] #dashboardPage .dash-search-empty {
-  background: #182434 !important; border-color: #43556c !important; color: #dce6f2 !important;
+  background: #1b1b1b !important; border-color: #424242 !important; color: #dce6f2 !important;
 }
 :root[data-theme="dark"] #dashboardPage .dash-search-wrap input {
   background: transparent !important; color: #f1f5fb !important;
@@ -1089,14 +1089,14 @@ body[data-studio-tab="resources"]:has(#studyNotesCurriculum:not([hidden])) .sche
 :root[data-theme="dark"] #dashboardPage .dash-search-wrap input::placeholder { color: #aebed1 !important; }
 :root[data-theme="dark"] #dashboardPage .dash-week-tag,
 :root[data-theme="dark"] #dashboardPage .dash-recent-time {
-  background: #2b3b50 !important; color: #d3e2f6 !important; border-color: #465a73 !important;
+  background: #2d2d2d !important; color: #d3e2f6 !important; border-color: #465a73 !important;
 }
 :root[data-theme="dark"] #dashboardPage .dash-plan-menu {
-  background: #202c3b !important; border-color: #43556c !important;
+  background: #222222 !important; border-color: #424242 !important;
 }
 :root[data-theme="dark"] #dashboardPage .dash-plan-menu button { color: #edf3fb !important; }
 :root[data-theme="dark"] #dashboardPage .dash-text-link,
 :root[data-theme="dark"] #dashboardPage .dash-eyebrow,
 :root[data-theme="dark"] #dashboardPage .dash-clear-search,
 :root[data-theme="dark"] #dashboardPage .dash-class-open { color: #a8caff !important; }
-:root[data-theme="dark"] #dashboardPage .dash-class-progress-track { background: #3a4a5e !important; }
+:root[data-theme="dark"] #dashboardPage .dash-class-progress-track { background: #393939 !important; }
