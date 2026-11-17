@@ -2,7 +2,7 @@
 (function () {
   'use strict';
   var CHILD_CLASSES = ['KG 1', 'KG 2'].concat(Array.from({ length: 9 }, function (_, i) { return 'Basic ' + (i + 1); }));   // kindergarten to JHS 3
-  var state = { root: null, profile: null, records: [], loaded: false, loading: false, tab: 'overview', task: 'lesson', lessonStep: 0, lessonDraft: {}, lessonRoom: null, stageSaving: false, editingChild: '', addingChild: false, busy: false, error: '', result: null };
+  var state = { root: null, profile: null, records: [], loaded: false, loading: false, tab: 'overview', task: 'lesson', lessonStep: 0, lessonDraft: {}, lessonRoom: null, stageSaving: false, editingChild: '', addingChild: false, busy: false, error: '', result: null, familyFilter: 'All' };
   var $ = function (selector, root) { return (root || state.root).querySelector(selector); };
   var esc = function (value) { return String(value == null ? '' : value).replace(/[&<>"']/g, function (ch) { return ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[ch]; }); };
   var uid = function () { return 'pl-' + Math.random().toString(36).slice(2, 10) + Date.now().toString(36).slice(-5); };
@@ -244,15 +244,34 @@
     var a = info.free.parent, left = Math.max(0, a.limit - a.used);
     return '<p class="pd-allowance' + (left ? '' : ' pd-allowance-out') + '" role="status"><span>' + (left ? left + ' of ' + a.limit + ' free activities left this week' : 'Free activities used up. They return Monday') + '</span><button type="button" class="pd-allowance-link" data-upgrade>Go Pro</button></p>';
   }
+  var FAMILY_IDEAS = [
+    {subject:'Mathematics',topic:'Fractions in everyday life',group:'Mathematics',level:'Basic 4–9',description:'Explore halves, quarters and sharing using food, money and household objects.',time:'15–20 min'},
+    {subject:'English Language',topic:'Reading and understanding a short story',group:'English',level:'Basic 1–9',description:'Read a short story together, identify the main idea and talk about new words.',time:'15 min'},
+    {subject:'Science',topic:'The water cycle',group:'Science',level:'Basic 4–9',description:'Discover evaporation, condensation and rainfall with a simple home demonstration.',time:'20 min'},
+    {subject:'Computing',topic:'Parts of a computer',group:'Computing',level:'Basic 1–9',description:'Identify common computer parts and explain what each part helps us do.',time:'15 min'},
+    {subject:'Science',topic:'Keeping our surroundings clean',group:'Science',level:'Basic 1–9',description:'Spot ways to keep the home and community clean and prevent disease.',time:'15 min'},
+    {subject:'Social Studies',topic:'Our community and its leaders',group:'Social Studies',level:'Basic 1–9',description:'Talk about community helpers, local leadership and how people contribute.',time:'20 min'},
+    {subject:'Creative Arts',topic:'Patterns inspired by nature',group:'Creative Arts',level:'Basic 1–9',description:'Find patterns around the home and create a simple repeating design.',time:'20 min'},
+    {subject:'English Language',topic:'Writing a friendly letter',group:'English',level:'Basic 4–9',description:'Plan and write a short letter to a friend or family member.',time:'20 min'}
+  ];
+  function renderFamilyLibrary() {
+    var groups = ['All','Mathematics','English','Science','Computing','Social Studies','Creative Arts'];
+    var chips = groups.map(function (group) { return '<button type="button" class="pd-library-chip' + (state.familyFilter === group ? ' is-active' : '') + '" data-family-filter="' + esc(group) + '" aria-pressed="' + (state.familyFilter === group ? 'true' : 'false') + '">' + esc(group) + '</button>'; }).join('');
+    var ideas = FAMILY_IDEAS.filter(function (idea) { return state.familyFilter === 'All' || idea.group === state.familyFilter; });
+    var cards = ideas.map(function (idea, index) { return '<article class="pd-library-card"><div class="pd-library-card-top"><span class="pd-library-subject">' + esc(idea.group) + '</span><span class="pd-library-time">' + esc(idea.time) + '</span></div><h3>' + esc(idea.topic) + '</h3><p>' + esc(idea.description) + '</p><div class="pd-library-card-foot"><span>' + esc(idea.level) + '</span><button type="button" class="pd-primary" data-use-family-idea="' + FAMILY_IDEAS.indexOf(idea) + '">Explore activity ' + icon('arrow-right') + '</button></div></article>'; }).join('');
+    var saved = state.records.length ? '<section class="pd-family-saved"><div class="pd-section-head"><div><span class="pd-kicker">YOUR FAMILY COLLECTION</span><h3>Saved learning activities</h3><p>Pick up where your family left off.</p></div><span class="pd-count">' + state.records.length + '</span></div><div class="pd-activity-list">' + state.records.slice(0,6).map(renderActivity).join('') + '</div></section>' : '<div class="pd-library-empty"><strong>Your saved activities will live here.</strong><span>When you create a home lesson or practice activity, you can return to it anytime.</span></div>';
+    return '<section class="pd-library-hero"><span class="pd-kicker">GUIDED FAMILY LIBRARY</span><h2>Little ideas. Big learning moments.</h2><p>Explore ready-to-use activities and find simple ways to keep learning together at home.</p></section><div class="pd-library-intro"><div><strong>Explore learning ideas</strong><span>Choose a topic to create an activity for your child.</span></div></div><div class="pd-library-filters" role="group" aria-label="Filter learning ideas">' + chips + '</div><div class="pd-library-grid">' + cards + '</div>' + saved;
+  }
   function render() {
     if (!state.root) return;
     var profile = state.profile || {}, list = children(), recent = state.records.slice(0, 4);
-    var tabs = [['overview', 'home', 'Overview'], ['children', 'users', 'My Children'], ['lesson', 'book', 'Home Lesson'], ['explanation', 'spark', 'Understand'], ['practice', 'clipboard', 'Exercises'], ['progress', 'chart', 'Progress']];
+    var tabs = [['overview', 'home', 'Overview'], ['children', 'users', 'My Children'], ['lesson', 'book', 'Home Lesson'], ['explanation', 'spark', 'Understand'], ['practice', 'clipboard', 'Exercises'], ['progress', 'chart', 'Progress'], ['library', 'library', 'Family Library']];
     var nav = tabs.map(function (item) { return '<button type="button" role="tab" aria-selected="' + (state.tab === item[0] ? 'true' : 'false') + '" data-parent-tab="' + item[0] + '" class="' + (state.tab === item[0] ? 'is-active' : '') + '"' + (state.tab === item[0] ? ' aria-current="page"' : '') + '>' + icon(item[1]) + '<span>' + item[2] + '</span></button>'; }).join('');
     var body = '';
     if (state.tab === 'overview') {
       body = '<section class="pd-welcome"><div class="pd-welcome-copy"><span class="pd-kicker">YOUR FAMILY LEARNING SPACE</span><h2>Welcome, ' + esc(profile.displayName || 'Parent') + '.</h2><p>Every small learning moment counts. Choose a child, explore a topic and learn together at home.</p></div><div class="pd-welcome-art">' + familyArt('family-reading', 'pd-family-hero-art') + '</div><button type="button" class="pd-primary pd-welcome-action" data-parent-tab="' + (list.length ? 'lesson' : 'children') + '">' + (list.length ? 'Plan a home lesson' : 'Add your child') + '</button></section><div class="pd-stats"><article><span class="pd-stat-icon">' + icon('users') + '</span><strong>' + list.length + '</strong><span>Children</span></article><article><span class="pd-stat-icon">' + icon('book') + '</span><strong>' + state.records.length + '</strong><span>Saved activities</span></article><article><span class="pd-stat-icon">' + icon('check') + '</span><strong>' + state.records.filter(function (r) { return r.data && r.data.status === 'completed'; }).length + '</strong><span>Completed</span></article></div><div class="pd-quick-grid"><button type="button" data-open-task="lesson"><span class="pd-quick-art-wrap">' + familyArt('book-sprout', 'pd-quick-art') + '</span><strong>Plan a Home Lesson</strong><span>Create a guided activity to learn together.</span></button><button type="button" data-open-task="explanation"><span class="pd-quick-art-wrap">' + familyArt('curious-child', 'pd-quick-art') + '</span><strong>Help Me Understand</strong><span>Get a simple explanation of a difficult topic.</span></button><button type="button" data-open-task="practice"><span class="pd-quick-art-wrap">' + familyArt('practice-pencil', 'pd-quick-art') + '</span><strong>Practice Exercises</strong><span>Give your child questions with answers.</span></button><button type="button" data-parent-tab="progress"><span class="pd-quick-art-wrap">' + familyArt('celebration', 'pd-quick-art') + '</span><strong>Learning Progress</strong><span>See saved and completed activities.</span></button></div><div class="pd-section-head"><div><h2>My Children</h2><p>Learning profiles linked to your account.</p></div><button type="button" class="pd-text-button" data-parent-tab="children">Manage children</button></div><div class="pd-child-list">' + (list.length ? list.map(function (child) { return '<article class="pd-child-card"><span class="pd-child-avatar pd-child-avatar-art">' + familyArt('curious-child', 'pd-child-mini-art') + '</span><div><span class="pd-kicker">' + esc(child.class) + '</span><h3>' + esc(child.name) + '</h3><p>' + esc((child.subjects || []).join(' · ')) + '</p></div><button type="button" data-edit-child="' + esc(child.id) + '">Edit</button></article>'; }).join('') : '<div class="pd-empty pd-empty-illustrated">' + familyArt('empty-books', 'pd-empty-art') + '<strong>Your family learning story starts here.</strong><span>Add a child to begin.</span></div>') + '</div><div class="pd-section-head"><div><h2>Recent learning</h2><p>Your latest saved activities.</p></div><button type="button" class="pd-text-button" data-parent-tab="progress">View all</button></div><div class="pd-activity-list">' + (recent.length ? recent.map(renderActivity).join('') : '<div class="pd-empty pd-empty-illustrated">' + familyArt('book-sprout', 'pd-empty-art') + '<strong>A little learning goes a long way.</strong><span>Your saved lessons and activities will appear here.</span></div>') + '</div>';
     } else if (state.tab === 'children') body = renderChildren();
+    else if (state.tab === 'library') body = renderFamilyLibrary();
     else if (['lesson', 'explanation', 'practice'].includes(state.tab)) {
       state.task = state.tab;
       var activeLesson = state.task === 'lesson' && state.lessonRoom && state.records.find(function (item) { return item.id === state.lessonRoom; });
@@ -269,6 +288,20 @@
   function wire() {
     state.root.dataset.parentWired = '1';
     state.root.addEventListener('click', function (event) {
+      var familyFilter = event.target.closest('[data-family-filter]');
+      if (familyFilter) { state.familyFilter = familyFilter.dataset.familyFilter; render(); return; }
+      var familyIdea = event.target.closest('[data-use-family-idea]');
+      if (familyIdea) {
+        var idea = FAMILY_IDEAS[Number(familyIdea.dataset.useFamilyIdea)];
+        if (!idea) return;
+        var child = selectedChild();
+        if (!child) { state.tab = 'children'; state.addingChild = true; state.error = 'Add a child profile before starting a family activity.'; render(); return; }
+        var subject = (child.subjects || []).find(function (item) { return item.toLowerCase() === idea.subject.toLowerCase(); }) || (child.subjects || [])[0] || idea.subject;
+        var cw = currentWeek(child.class) || { term: 1, week: 1 };
+        state.lessonDraft = { childId: child.id, subject: subject, topic: idea.topic, term: cw.term, week: cw.week };
+        state.lessonStep = 1; state.task = 'lesson'; state.tab = 'lesson'; state.lessonRoom = null; state.result = null; state.error = '';
+        render(); return;
+      }
       var tab = event.target.closest('[data-parent-tab]');
       if (tab) { if (tab.dataset.parentTab === 'lesson') { state.lessonStep = 0; state.lessonDraft = {}; } state.tab = tab.dataset.parentTab; state.result = null; render(); return; }
       if (event.target.closest('[data-upgrade]')) { if (window.GuidedPlans) window.GuidedPlans.openUpgrade('parent', ''); return; }
