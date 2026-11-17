@@ -91,15 +91,21 @@
     const apply = () => { body.style.fontSize = size + 'em'; };
     bigger.addEventListener('click', () => { size = Math.min(size + 0.15, 2); apply(); });
     smaller.addEventListener('click', () => { size = Math.max(size - 0.15, 0.8); apply(); });
+    const returnFocus = document.activeElement;
     close.addEventListener('click', () => dlg.close());
     bar.append(heading, smaller, bigger, close);
     dlg.append(bar, body);
-    dlg.addEventListener('close', () => { if (document.fullscreenElement === dlg && document.exitFullscreen) document.exitFullscreen().catch(() => {}); dlg.remove(); });
+    body.scrollTop = 0;
+    dlg.addEventListener('close', () => {
+      if (document.fullscreenElement === dlg && document.exitFullscreen) document.exitFullscreen().catch(() => {});
+      dlg.remove();
+      if (returnFocus && returnFocus.isConnected && returnFocus.focus) returnFocus.focus({ preventScroll: true });
+    });
     document.body.appendChild(dlg);
     if (dlg.showModal) dlg.showModal(); else dlg.setAttribute('open', '');
     const fs = dlg.requestFullscreen || dlg.webkitRequestFullscreen;
-    if (fs) { try { const r = fs.call(dlg); if (r && r.catch) r.catch(() => {}); } catch (e) { /* already full window */ } }
-    body.focus();
+    if (fs) { try { const r = fs.call(dlg); if (r && r.catch) r.catch(() => {}); } catch (e) { /* dialog already fills the viewport */ } }
+    body.focus({ preventScroll: true });
   }
 
   function icon(name, cls = '') {
@@ -472,6 +478,14 @@
     updateView(); updateTopbar(); renderSessions(); updateSend(); scrollBottom(true);
   }
 
+  // Saved lessons open in the dedicated reader while the originating page stays underneath.
+  // Closing the reader therefore returns to the dashboard or Library, never to the Studio.
+  function openSavedSession(id) {
+    showSession(id);
+    const bot = state.bots[state.bots.length - 1];
+    if (bot && typeof bot.openFullScreen === 'function') bot.openFullScreen();
+  }
+
   function newSession() {
     setComposer(false, true);
     state.params.mode = 'full';
@@ -637,6 +651,11 @@
       root, text: '', msg: null,
       get title() { return baseTitle + (kindTitle(kind, session.params && session.params.cls) || ''); },
       get kind() { return kind; },
+      openFullScreen() {
+        const SL = window.SchoolPadiSlides;
+        if (SL && SL.isDeck(session.params) && SL.parse(api.text).length) { slideState = slideState || { i: 0 }; SL.present(api.text, slideState, () => {}); return; }
+        openReader(titleEl.textContent, bodyEl);
+      },
       setKind(k) { kind = KIND_TITLE[k] !== undefined ? k : 'plan'; titleEl.textContent = api.title; bodyEl.classList.toggle('worksheet', kind === 'worksheet' || !!(session.params && session.params.resourceType === 'Learner worksheet')); btnShare.hidden = kind !== 'plan' || !!(session.params && session.params.mode === 'resources'); },
       set(raw, final, msg) {
         api.text = raw;
@@ -673,11 +692,7 @@
       else startEdit();
     });
     btnReuse.addEventListener('click', () => reuseSession());
-    btnFull.addEventListener('click', () => {
-      const SL = window.SchoolPadiSlides;
-      if (SL && SL.isDeck(session.params) && SL.parse(api.text).length) { slideState = slideState || { i: 0 }; SL.present(api.text, slideState, () => {}); return; }
-      openReader(titleEl.textContent, bodyEl);
-    });
+    btnFull.addEventListener('click', () => api.openFullScreen());
     btnShare.addEventListener('click', () => {
       if (api.msg && api.msg.preview) {
         if (signedIn()) toast('This is a preview of Lesson 1. Write the full plan to share it.');
@@ -3030,7 +3045,7 @@
       const menuAction = e.target.closest('[data-dash-menu-action]');
       if (menuAction) {
         const id = menuAction.dataset.planId, session = state.sessions.find((s) => s.id === id);
-        if (menuAction.dataset.dashMenuAction === 'open' && session) { showPage(null); showSession(id); return; }
+        if (menuAction.dataset.dashMenuAction === 'open' && session) { openSavedSession(id); return; }
         if (menuAction.dataset.dashMenuAction === 'delete' && session && window.confirm('Delete this saved lesson plan? This cannot be undone.')) { deleteSession(id); renderDashboard(); }
         return;
       }
@@ -3038,11 +3053,11 @@
       if (classTile) {
         const cls = classTile.dataset.dashClass;
         const match = state.sessions.filter((s) => s.messages.length && typeOf(s) === 'plan' && s.params && s.params.cls === cls && Number(s.params.week) === week && Number(s.params.term || term) === term).sort((a, b) => b.updatedAt - a.updatedAt)[0];
-        if (match) { showPage(null); showSession(match.id); }
+        if (match) { openSavedSession(match.id); }
         return;
       }
       const plan = e.target.closest('[data-dash-plan]');
-      if (plan) { showPage(null); showSession(plan.dataset.dashPlan); return; }
+      if (plan) { openSavedSession(plan.dataset.dashPlan); return; }
       const action = e.target.closest('[data-dash-action]');
       if (action) {
         const routes = {
@@ -3125,7 +3140,7 @@
     $('#libGrid').addEventListener('click', (e) => {
       const d = e.target.closest('.lib-del');
       if (d) { const s = state.sessions.find((x) => x.id === d.dataset.delId); if (s && window.confirm('Delete "' + (s.params ? s.params.subject + ' · ' + s.params.cls + ' · Week ' + s.params.week : s.title) + '"? This cannot be undone.')) { deleteSession(s.id); renderLibrary(); } return; }
-      const c = e.target.closest('.lib-card'); if (c) { showPage(null); showSession(c.dataset.id); }
+      const c = e.target.closest('.lib-card'); if (c) { openSavedSession(c.dataset.id); }
     });
   }
 
