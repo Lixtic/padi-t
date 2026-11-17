@@ -2121,3 +2121,14 @@ main[data-view="chat"] .notice-bar { display: none; }
 #accountProfileSheet input[type="tel"] {
   letter-spacing: .01em;
 }
+
+/* Learner worksheets in dark mode: the light tints above were fixed colours, which left pale text on pale cells. */
+:root[data-theme="dark"] .md.worksheet { --worksheet-blue: #6f9bff; --worksheet-ink: #e6edf9; }
+:root[data-theme="dark"] .md.worksheet > h2.h1 { border-bottom-color: #2c3b57; }
+:root[data-theme="dark"] .md.worksheet h3.h2 { background: #24449a; color: #fff; box-shadow: none; }
+:root[data-theme="dark"] .md.worksheet .tbl-wrap { border-color: #2c3b57; background: #172033; box-shadow: none; }
+:root[data-theme="dark"] .md.worksheet .tbl td { border-color: #2c3b57; color: #e6edf9; }
+:root[data-theme="dark"] .md.worksheet .tbl th { background: #26385c; color: #f2f6ff; }
+:root[data-theme="dark"] .md.worksheet p:has(> strong:first-child) { border-color: #2c3b57; border-left-color: var(--worksheet-blue); background: #182540; color: #e6edf9; }
+:root[data-theme="dark"] .md.worksheet ol li { border-color: #2c3b57; background: #172033; color: #e6edf9; }
+:root[data-theme="dark"] .md.worksheet .tbl-wrap { --label: #1f2c47; }
