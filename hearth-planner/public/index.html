@@ -634,11 +634,27 @@
     </section>
     <section class="settings-page library-page" id="libraryPage" aria-labelledby="libTitle" hidden>
       <div class="sp-inner lib-inner">
-        <div class="sp-head"><button type="button" class="sp-back" id="libraryBack"><svg class="ico"><use href="#i-chevron"/></svg><span>Back</span></button><h1 id="libTitle">My Library</h1></div>
-        <input type="search" id="libSearch" class="lib-search" placeholder="Search your plans and resources" aria-label="Search your library" autocomplete="off">
-        <div class="lib-chips" id="libChips" role="group" aria-label="Filter by type"></div>
+        <header class="library-hero">
+          <div class="library-hero-copy">
+            <span class="library-eyebrow">YOUR TEACHING COLLECTION</span>
+            <h1 id="libTitle">My Library</h1>
+            <p>Everything you’ve created, organised in one place.</p>
+          </div>
+          <button type="button" class="library-create" id="libraryCreate"><svg class="ico"><use href="#i-plus"/></svg><span>New lesson plan</span></button>
+          <div class="library-total" id="libraryTotal"><span class="library-total-icon"><svg class="ico"><use href="#i-library"/></svg></span><span><strong id="libraryCount">0</strong><small>saved items</small></span></div>
+        </header>
+        <div class="library-toolbar">
+          <label class="library-search-wrap"><svg class="ico"><use href="#i-search"/></svg><input type="search" id="libSearch" class="lib-search" placeholder="Search by topic, subject or class…" aria-label="Search your library" autocomplete="off"></label>
+          <div class="lib-chips" id="libChips" role="group" aria-label="Filter by type"></div>
+        </div>
+        <div class="library-results-head"><h2 id="libraryResultsTitle">Your saved work</h2><span id="libraryResultsCount"></span></div>
         <div class="lib-grid" id="libGrid"></div>
-        <p class="lib-empty" id="libEmpty" hidden>Nothing here yet. Make a plan or a resource and it shows up here.</p>
+        <div class="library-empty" id="libEmpty" hidden>
+          <span class="library-empty-icon"><svg class="ico"><use href="#i-library"/></svg></span>
+          <h2 id="libraryEmptyTitle">Your library is ready for its first resource</h2>
+          <p id="libraryEmptyText">Create a lesson plan, study note or worksheet. Your teaching materials will be kept here for easy access.</p>
+          <button type="button" class="library-create library-empty-cta" id="libraryEmptyCreate"><svg class="ico"><use href="#i-plus"/></svg><span>Create your first lesson plan</span></button>
+        </div>
       </div>
     </section>
     <section class="stage" id="stage">
