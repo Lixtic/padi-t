@@ -2468,6 +2468,18 @@
   acct.top.addEventListener('click', () => openSheet('signin'));
   acct.manage.addEventListener('click', () => openSheet());
   acct.now.addEventListener('click', () => syncNow(true));
+  $('#settingsSyncNow').addEventListener('click', async () => {
+    const button = $('#settingsSyncNow');
+    button.disabled = true;
+    acctMsg('Syncing…');
+    try {
+      const result = await syncAndReport(false);
+      acctMsg(result && result.error ? 'Sync could not be completed. Please try again.' : 'Your account is up to date.');
+    } catch (err) {
+      acctMsg((err && err.message) || 'Sync could not be completed. Please try again.', true);
+    } finally { button.disabled = false; }
+  });
+  $('#settingsSignOut').addEventListener('click', () => sheet.signOut.click());
 
   // Shared profile editor for Parent and Teacher accounts. Role-specific teaching
   // and child details remain in their existing profile areas.
@@ -2504,18 +2516,20 @@
     }
   }
   $('#asEditProfile').addEventListener('click', openAccountProfile);
-  $('#asResetPassword').addEventListener('click', async () => {
+  $('#settingsEditProfile').addEventListener('click', openAccountProfile);
+  async function sendPasswordReset(button, report) {
     const P = window.PadiSync, user = P && P.user();
-    if (!user || !user.email) { sheet.result.textContent = 'We could not find the email address for this account.'; return; }
-    const button = $('#asResetPassword');
+    if (!user || !user.email) { report('We could not find the email address for this account.', true); return; }
     button.disabled = true;
     try {
       await P.requestReset(user.email);
-      sheet.result.textContent = 'Password reset instructions have been sent to ' + user.email + '. Check your inbox.';
+      report('Password reset instructions have been sent to ' + user.email + '. Check your inbox.');
     } catch (err) {
-      sheet.result.textContent = (err && err.message) || 'Could not send the password reset email.';
+      report((err && err.message) || 'Could not send the password reset email.', true);
     } finally { button.disabled = false; }
-  });
+  }
+  $('#asResetPassword').addEventListener('click', () => sendPasswordReset($('#asResetPassword'), (message) => { sheet.result.textContent = message; }));
+  $('#settingsResetPassword').addEventListener('click', () => sendPasswordReset($('#settingsResetPassword'), acctMsg));
   ep.close.addEventListener('click', () => ep.dlg.close());
   ep.dlg.addEventListener('click', (event) => {
     const rect = ep.dlg.getBoundingClientRect();
