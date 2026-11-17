@@ -948,3 +948,14 @@ body[data-studio-tab="resources"]:has(#studyNotesCurriculum:not([hidden])) .sche
 :root[data-theme="dark"] .library-page .lib-preview { border-color:#465367; background:#303b4b; }
 :root[data-theme="dark"] .library-page .lib-preview-page { border-color:#dce3ec; background:#fff; }
 :root[data-theme="dark"] .library-page .lib-card-type { border-color:#465367; background:#303b4b; color:#dce7f5; }
+
+
+/* Full-screen lesson reader share action */
+.reader-share { display:inline-flex; align-items:center; justify-content:center; gap:6px; white-space:nowrap; }
+.reader-share .ico { width:16px; height:16px; }
+@media(max-width:520px) {
+  .reader-bar { gap:5px; padding-left:9px; padding-right:9px; }
+  .reader-btn { min-width:40px; padding-inline:10px; }
+  .reader-share { gap:4px; padding-inline:9px; }
+  .reader-share .ico { width:15px; height:15px; }
+}
