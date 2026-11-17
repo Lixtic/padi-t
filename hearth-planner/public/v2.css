@@ -984,3 +984,10 @@ body[data-studio-tab="resources"]:has(#studyNotesCurriculum:not([hidden])) .sche
   .reader-share { gap:4px; padding-inline:9px; }
   .reader-share .ico { width:15px; height:15px; }
 }
+
+/* Account actions live in Settings as well as the compact account sheet. */
+.sp-card .acct-settings-actions { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:8px; margin-top:12px; }
+.sp-card .acct-settings-actions .set-action { justify-content:flex-start; min-height:46px; padding:0 12px; }
+.sp-card .acct-settings-actions .set-action .ico { width:17px; height:17px; flex:none; }
+.sp-card .acct-settings-actions .settings-signout { color:#c75b43; }
+@media(max-width:390px) { .sp-card .acct-settings-actions { grid-template-columns:1fr; } }
