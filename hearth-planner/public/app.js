@@ -3146,7 +3146,7 @@
         page.append(h('span', { class: 'lib-preview-slide-title' }), h('span', { class: 'lib-preview-slide-art' }, h('i'), h('i')), previewLine('78%'));
       } else if (kind === 'homework') {
         [1, 2, 3].forEach(() => page.append(h('span', { class: 'lib-preview-check-row' }, h('i'), previewLine('78%'))));
-        previewLine('62%');
+        page.append(previewLine('62%'));
       } else if (kind === 'exam') {
         [1, 2, 3].forEach((n) => page.append(h('span', { class: 'lib-preview-question' }, h('b', { text: n + '.' }), previewLine('78%')), h('span', { class: 'lib-preview-options' }, h('i'), h('i'), h('i'), h('i'))));
       } else {
