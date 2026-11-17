@@ -2722,6 +2722,9 @@
 
   /* Account role controls which dashboard is shown. Resolve it from the signed-in account. */
   let accountRole = (() => { try { const pin = localStorage.getItem('guided.startIn'); if (pin === 'parent' || pin === 'teacher') return pin === 'parent' ? 'parent' : ''; return localStorage.getItem('guided.role') === 'parent' ? 'parent' : ''; } catch (e) { return ''; } })();   // cached, so a parent never sees the studio flash up
+  const SIGNED_KEY = 'guided.signedIn';
+  const signedBefore = (() => { try { return localStorage.getItem(SIGNED_KEY) === '1'; } catch (e) { return false; } })();
+  let earlyDash = false;
   let accountProfile = null;
   let accountProfileRequest = null;
   let accountProfileLoaded = false;
@@ -2819,7 +2822,9 @@
   { const b = $('#asRole'); if (b) b.addEventListener('click', () => switchRole(b.dataset.role, !!b.dataset.add)); }
   async function refreshAccountProfile() {
     if (!window.PadiSync || !window.PadiSync.user || !window.PadiSync.user() || !window.PadiSync.getAccountProfile) {
-      accountRole = ''; accountProfile = null; return null;
+      accountRole = ''; accountProfile = null;
+      if (earlyDash) { earlyDash = false; try { localStorage.removeItem(SIGNED_KEY); } catch (e) { /* ignore */ } if (pageOpen() && pageOpen()[0] === 'dashboard') showPage(null); }   // the remembered sign-in is gone
+      return null;
     }
     if (accountProfileRequest) return accountProfileRequest;
     accountProfileRequest = window.PadiSync.getAccountProfile().then((profile) => {
@@ -2829,6 +2834,7 @@
       const isInitialLaunch = !launchRoleApplied;
       if (isInitialLaunch && profile && Array.isArray(profile.roles) && profile.roles.length > 1 && profile.roles.includes(profile.startIn)) accountRole = profile.startIn;
       launchRoleApplied = true;
+      earlyDash = false; try { localStorage.setItem(SIGNED_KEY, '1'); } catch (e) { /* storage blocked */ }
       try { localStorage.setItem('guided.startIn', profile && profile.roles && profile.roles.length > 1 && profile.startIn && profile.startIn !== 'last' ? profile.startIn : ''); } catch (e) { /* storage blocked */ }
       window.GuidedAccountRole = accountRole;
       accountProfileLoaded = true;
@@ -2867,9 +2873,10 @@
     if (window.PadiSync && window.PadiSync.user && window.PadiSync.user()) refreshAccountProfile();
     else {
       const wasParent = accountRole === 'parent';
+      try { localStorage.removeItem(SIGNED_KEY); } catch (e) { /* ignore */ }
       accountRole = ''; accountProfile = null; window.GuidedAccountRole = ''; accountProfileLoaded = false; accountProfileError = false;
       applyRoleUi();
-      if (wasParent && pageOpen() && pageOpen()[0] === 'dashboard') showPage(null);   // signed out (or an old cached role): back to the normal studio
+      if ((wasParent || earlyDash) && pageOpen() && pageOpen()[0] === 'dashboard') showPage(null);   // signed out (or an old cached role): back to the normal studio
       const link = $('#dashboardLink');
       if (link) { const label = link.querySelector('span'); if (label) label.textContent = 'Teacher Dashboard'; }
     }
@@ -2905,6 +2912,8 @@
     }
   }, true);
   document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && pageOpen() && !document.querySelector('dialog[open]')) showPage(null); });
+  // A signed-in teacher opens straight on the dashboard too: remember it, so the Studio never flashes before the profile loads.
+  if (signedBefore && accountRole !== 'parent' && !pageOpen()) { earlyDash = true; showPage('dashboard'); }
   if (accountRole === 'parent') { applyRoleUi(); showPage(null); }   // returning parent: straight to the dashboard (refreshAcct undoes this if they are not signed in)
 
   /* Parent Dashboard: account-backed child profile, separate from teacher planning. */
