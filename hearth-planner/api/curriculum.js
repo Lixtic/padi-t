@@ -18,8 +18,9 @@ module.exports = async (req, res) => {
   const cls = String(q.cls || '').trim();
   const term = Number(q.term);
   const week = Number(q.week);
-  if (!subject || !cls || ![1, 2, 3].includes(term) || !Number.isInteger(week) || week < 1 || week > 20) {
-    return sendJson(res, 400, { error: 'params', message: 'Provide subject, class, term (1–3), and week (1–20).' });
+  const maxTerm = Schemes.isShs(cls) ? 2 : 3;
+  if (!subject || !cls || !Number.isInteger(term) || term < 1 || term > maxTerm || !Number.isInteger(week) || week < 1 || week > 20) {
+    return sendJson(res, 400, { error: 'params', message: 'Provide subject, class, term (1–' + maxTerm + '), and week (1–20).' });
   }
   const scheme = Schemes.lookup(subject, cls, term, week);
   if (!scheme) return sendJson(res, 404, { error: 'not_found', message: 'No scheme is loaded for this subject, class, term and week.' });

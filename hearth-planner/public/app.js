@@ -268,7 +268,7 @@
   const state = {
     sessions: [],
     currentId: null,
-    params: { subject: SUBJECTS[0], cls: 'Basic 8', week: 1, hook: true, size: '31–45', light: false, mode: 'full', resourceType: 'Study notes', indicatorCodes: [] },
+    params: { subject: SUBJECTS[0], cls: 'Basic 8', week: 1, hook: true, size: '31–45', light: false, mode: 'full', resourceType: 'Study notes', indicatorCodes: [], indicatorContextKey: '' },
     streaming: null,
     stick: true,
     bots: [],
@@ -468,7 +468,7 @@
       }
     });
     state.bots.forEach((b, i) => { if (i < state.bots.length - 1) b.demote(); });
-    if (s.params) { state.params = Object.assign({ size: '31–45', light: false, hook: true, studyNotes: true, bece: true, indicatorCodes: [] }, s.params); syncPills(); }
+    if (s.params) { state.params = Object.assign({ size: '31–45', light: false, hook: true, studyNotes: true, bece: true, indicatorCodes: [], indicatorContextKey: '' }, s.params); syncPills(); }
     updateView(); updateTopbar(); renderSessions(); updateSend(); scrollBottom(true);
   }
 
@@ -1100,7 +1100,7 @@
     if (!s.messages.length) {                       // new plan
       const p = Object.assign({}, state.params);
       delete p.also;
-      p.term = termNow();
+      p.term = p.term || termNow();
       p.mode = p.mode || 'full';
       p.resourceType = p.resourceType || 'Study notes';
       if (fromQueue !== true) {                     // "Also plan for": the other classes follow, one after another
@@ -1497,12 +1497,28 @@
   const planAction = $('#planAction'), resourceAction = $('#resourceAction'), resourceTypeEl = $('#resourceType');
   const studyNotesCurriculum = $('#studyNotesCurriculum'), studyIndicatorMeta = $('#studyIndicatorMeta');
   const studyIndicatorOptions = $('#studyIndicatorOptions'), studyCurriculumSource = $('#studyCurriculumSource');
+  const studyIndicatorToolbar = $('#studyIndicatorToolbar'), studyIndicatorCount = $('#studyIndicatorCount'), studyIndicatorReset = $('#studyIndicatorReset');
   let studyCurriculumRequest = 0, studyCurriculumKey = '', studyCurriculumPendingKey = '', studyCurriculumLoading = false;
   const mediaForm = $('#mediaSearchForm'), mediaQuery = $('#mediaQuery');
   const mediaStatus = $('#mediaStatus'), mediaResults = $('#mediaResults');
   const mediaIndicatorText = $('#mediaIndicatorText'), mediaIndicatorPicker = $('#mediaIndicatorPicker');
   const mediaIndicatorPickerWrap = $('#mediaIndicatorPickerWrap'), mediaCurriculumMeta = $('#mediaCurriculumMeta');
   let mediaType = 'image', mediaIndicator = '', mediaContext = null;
+  function updateStudyIndicatorCount() {
+    if (!studyIndicatorOptions || !studyIndicatorToolbar || !studyIndicatorCount) return;
+    const checkboxes = studyIndicatorOptions.querySelectorAll('input[type="checkbox"]');
+    const selected = studyIndicatorOptions.querySelectorAll('input[type="checkbox"]:checked').length;
+    studyIndicatorToolbar.hidden = !checkboxes.length;
+    studyIndicatorCount.textContent = selected + ' selected · maximum 10';
+  }
+  if (studyIndicatorReset) studyIndicatorReset.addEventListener('click', () => {
+    const checkboxes = [...studyIndicatorOptions.querySelectorAll('input[type="checkbox"]')];
+    checkboxes.forEach((input, index) => { input.checked = index < 10; });
+    state.params.indicatorCodes = checkboxes.filter((input) => input.checked).map((input) => input.value);
+    state.params.indicatorContextKey = studyCurriculumKey;
+    updateStudyIndicatorCount();
+    store.save(true);
+  });
   function startIndependentTool(mode, resourceType) {
     if (state.streaming) { toast('Wait for the current generation to finish.'); return; }
     const active = current();
@@ -1510,12 +1526,12 @@
     state.params.mode = mode;
     state.params.resourceType = resourceType || 'Study notes';
     if (mode === 'resources' && state.params.resourceType === 'Study notes') {
-      // Indicator checkboxes are a convenience for narrowing the request, not a prerequisite.
-      // The API resolves the authoritative scheme context during generation, so never block
-      // Study Notes merely because the optional UI indicator request is still loading.
-      const checked = [...studyIndicatorOptions.querySelectorAll('input[type="checkbox"]:checked')].map((x) => x.value);
-      if (checked.length) state.params.indicatorCodes = checked;
-      else if (studyIndicatorOptions.childElementCount) { toast('Select at least one curriculum indicator for the study notes.'); state.params.mode = 'full'; return; }
+      const checkboxes = [...studyIndicatorOptions.querySelectorAll('input[type="checkbox"]')];
+      const checked = checkboxes.filter((input) => input.checked).map((input) => input.value).filter(Boolean);
+      if (checked.length > 10) { toast('Choose no more than 10 curriculum indicators for the study notes.'); state.params.mode = 'full'; return; }
+      if (checkboxes.length && !checked.length) { toast('Select at least one curriculum indicator for the study notes.'); state.params.mode = 'full'; return; }
+      // While indicators are loading, or when no coded indicators exist, use no stale selection.
+      state.params.indicatorCodes = checked;
     }
     const fresh = makeSession();
     state.sessions.unshift(fresh);
@@ -1527,25 +1543,50 @@
   if (resourceAction) resourceAction.addEventListener('click', () => startIndependentTool('resources', resourceTypeEl.value));
   function renderStudyIndicators(data, key) {
     const indicators = Array.isArray(data.indicators) ? data.indicators : [];
+    const selectable = indicators.filter((item) => item && item.code);
+    const unselectable = indicators.filter((item) => item && !item.code);
     const previous = Array.isArray(state.params.indicatorCodes) ? state.params.indicatorCodes : [];
-    const sameContext = studyCurriculumKey === key;
-    const validPrevious = sameContext ? previous.filter((code) => indicators.some((item) => item.code === code)) : [];
-    const selected = validPrevious.length ? validPrevious : indicators.map((item) => item.code).filter(Boolean);
+    const sameContext = state.params.indicatorContextKey === key;
+    const validPrevious = sameContext ? previous.filter((code) => selectable.some((item) => item.code === code)).slice(0, 10) : [];
+    const selected = validPrevious.length ? validPrevious : selectable.slice(0, 10).map((item) => item.code);
     studyCurriculumKey = key;
+    state.params.indicatorContextKey = key;
     state.params.indicatorCodes = selected;
     studyIndicatorMeta.textContent = [data.strand, data.substrand, data.contentStandard].filter(Boolean).join(' · ');
-    studyIndicatorOptions.replaceChildren(...indicators.map((item) => {
+    const options = selectable.map((item) => {
       const input = h('input', { type: 'checkbox', value: item.code, checked: selected.includes(item.code) });
       input.addEventListener('change', () => {
-        state.params.indicatorCodes = [...studyIndicatorOptions.querySelectorAll('input[type="checkbox"]:checked')].map((x) => x.value);
+        const checked = [...studyIndicatorOptions.querySelectorAll('input[type="checkbox"]:checked')].map((x) => x.value).filter(Boolean);
+        if (checked.length > 10) {
+          input.checked = false;
+          toast('Choose no more than 10 curriculum indicators at a time.');
+          return;
+        }
+        state.params.indicatorCodes = checked;
+        state.params.indicatorContextKey = key;
+        updateStudyIndicatorCount();
         store.save(true);
       });
       return h('label', { class: 'study-indicator-option' }, input,
-        h('span', null, h('strong', { text: item.code || 'Indicator' }), h('span', { text: item.text || '' })));
-    }));
-    studyCurriculumSource.textContent = data.sourceStatus === 'scheme_metadata_only'
+        h('span', null, h('strong', { text: item.code }), h('span', { text: item.text || '' })));
+    });
+    const unscoped = unselectable.map((item) => h('div', { class: 'study-indicator-unscoped' },
+      h('strong', { text: 'Indicator text without a code' }),
+      h('span', { text: item.text || '' })));
+    studyIndicatorOptions.replaceChildren(...options, ...unscoped);
+    updateStudyIndicatorCount();
+    const sourceNote = data.sourceStatus === 'scheme_metadata_only'
       ? 'Loaded from GuidEd scheme metadata. This is not a full NaCCA document retrieval.'
       : 'Curriculum details loaded.';
+    if (!selectable.length) {
+      studyCurriculumSource.textContent = indicators.length
+        ? 'The scheme contains indicator text without usable codes. Exact indicator selection is unavailable; you can still generate general study notes.'
+        : 'No coded indicators are loaded for this week. You can still generate general study notes from the scheme topic.';
+    } else {
+      studyCurriculumSource.textContent = sourceNote
+        + (unselectable.length ? ' Some indicator text has no code and cannot be selected individually.' : '')
+        + (selectable.length > 10 ? ' Choose up to 10 indicators per request.' : '');
+    }
     studyNotesCurriculum.hidden = resourceTypeEl.value !== 'Study notes';
   }
   async function refreshStudyCurriculum() {
@@ -1556,8 +1597,16 @@
       if (studyNotesCurriculum) studyNotesCurriculum.hidden = true;
       return;
     }
-    const p = state.params, term = p.term || termNow();
+    const p = state.params, selectedTerm = Number(p.term), term = termsFor(p.cls).includes(selectedTerm) ? selectedTerm : termNow();
     const key = [p.subject, p.cls, term, p.week].join('|');
+    const savedContextKey = state.params.indicatorContextKey || studyCurriculumKey;
+    if (savedContextKey !== key) {
+      studyIndicatorOptions.replaceChildren();
+      updateStudyIndicatorCount();
+      state.params.indicatorCodes = [];
+      state.params.indicatorContextKey = key;
+      store.save(true);
+    }
     if (studyCurriculumLoading && studyCurriculumPendingKey === key) return;
     const requestId = ++studyCurriculumRequest;
     const controller = new AbortController();
@@ -1577,10 +1626,13 @@
       if (!response.ok) throw new Error(data.message || 'No curriculum indicators are available for this selection.');
       if (data.type !== 'teach') {
         studyIndicatorOptions.replaceChildren();
+        updateStudyIndicatorCount();
         studyIndicatorMeta.textContent = data.type === 'revision' ? 'Revision week — no new indicators are assigned.' : 'Examination week — no new indicators are assigned.';
         studyCurriculumSource.textContent = 'Choose a teaching week to select specific indicators.';
         state.params.indicatorCodes = [];
+        state.params.indicatorContextKey = key;
         studyCurriculumKey = key;
+        store.save(true);
         return;
       }
       renderStudyIndicators(data, key);
@@ -1588,6 +1640,11 @@
     } catch (error) {
       if (requestId !== studyCurriculumRequest) return;
       studyIndicatorOptions.replaceChildren();
+      updateStudyIndicatorCount();
+      state.params.indicatorCodes = [];
+      state.params.indicatorContextKey = key;
+      studyCurriculumKey = key;
+      store.save(true);
       studyIndicatorMeta.textContent = '';
       studyCurriculumSource.textContent = error.name === 'AbortError'
         ? 'Curriculum loading took too long. You can still generate general study notes; try changing the week to reload indicators.'
@@ -1844,6 +1901,8 @@
   }
   // After a plan is written the pill moves to the next week; otherwise it sits on this week, or on the week after the last one planned when there is no calendar.
   function continueWeek(afterPlan) {
+    const selectedTerm = Number(state.params.term);
+    if (!termsFor(state.params.cls).includes(selectedTerm)) state.params.term = termNow();
     const GP = window.GuidedProfile;
     const next = GP ? GP.nextWeek(state.params.cls, state.params.subject, termNow()) : null;
     const now = calendarWeek();
@@ -1895,7 +1954,11 @@
     try { const t = JSON.parse(localStorage.getItem(termKey())); if (t && t.auto === termAuto() && termsFor(state.params.cls).includes(t.v)) return t.v; } catch (e) { /* use the calendar */ }
     return termAuto();
   }
-  function termSet(v) { try { localStorage.setItem(termKey(), JSON.stringify({ v, auto: termAuto() })); } catch (e) { /* the calendar term still works */ } }
+  function termSet(v) {
+    try { localStorage.setItem(termKey(), JSON.stringify({ v, auto: termAuto() })); } catch (e) { /* the calendar term still works */ }
+    state.params.term = v;
+    store.save(true);
+  }
   const schemeStrip = $('#schemeStrip');
   const schemeFor = (p) => (window.SchoolPadiSchemes ? window.SchoolPadiSchemes.lookup(p.subject, p.cls, p.term || termNow(), p.week) : null);
   // Initialize media context only after termNow and schemeFor are initialized.
@@ -2593,7 +2656,7 @@
       chooseClass(cls);
       if (!coarse) promptEl.focus();
     };
-    const ddTerm = makeDropdown($('#ddTerm'), { name: 'Term', items: () => termsFor(state.params.cls).map((x) => ({ id: x, label: termWord(state.params.cls) + ' ' + x + (x === termAuto() ? ' (now)' : '') })), get: () => termNow(), set: (v) => { termSet(v); continueWeek(); syncPills(); }, label: (x) => termWord(state.params.cls) + ' ' + x });
+    const ddTerm = makeDropdown($('#ddTerm'), { name: 'Term', items: () => termsFor(state.params.cls).map((x) => ({ id: x, label: termWord(state.params.cls) + ' ' + x + (x === termAuto() ? ' (now)' : '') })), get: () => termsFor(state.params.cls).includes(Number(state.params.term)) ? Number(state.params.term) : termNow(), set: (v) => { termSet(v); continueWeek(); syncPills(); }, label: (x) => termWord(state.params.cls) + ' ' + x });
     window.addEventListener('guided:account', () => { ddTerm.build(); syncScheme(); syncSummaryToggle(); });
     makeDropdown($('#ddWeek'), { name: 'Week', items: () => weeksFor(state.params.cls).map((x) => { const we = weekEnd(termNow(), x, state.params.cls); return { id: x, label: 'Week ' + x, sub: we ? (we.afterClose ? 'date to be confirmed' : we.short + (x === calendarWeek() ? ' · this week' : '')) : '' }; }), get: () => state.params.week, set: (v) => { state.params.week = v; store.save(); syncScheme(); }, label: (x) => 'Week ' + x });
 
@@ -2866,7 +2929,7 @@
     if (parentPanel) parentPanel.hidden = true;
     if (teacherContent) teacherContent.hidden = false;
     const teacherName = String((accountProfile && accountProfile.displayName) || profile().teacher || '').trim();
-    const greeting = $('#dashTitle'); if (greeting) greeting.textContent = 'Good to see you, ' + (teacherName || 'Teacher') + ' 👋';
+    const greeting = $('#dashTitle'); if (greeting) greeting.textContent = 'Good to see you, ' + (teacherName || 'Teacher');
     const all = state.sessions.filter((s) => s.messages.length).sort((a, b) => b.updatedAt - a.updatedAt);
     const plans = all.filter((s) => typeOf(s) === 'plan');
     const resources = all.length - plans.length;
@@ -2911,16 +2974,17 @@
         const grouped = new Map();
         weekPlans.forEach((s) => { const cls = (s.params && s.params.cls) || 'Class not specified'; if (!grouped.has(cls)) grouped.set(cls, []); grouped.get(cls).push(s); });
         const maxClassPlans = Math.max(1, ...Array.from(grouped.values()).map((rows) => rows.length));
-        weekList.replaceChildren(...Array.from(grouped.entries()).map(([cls, rows]) => h('button', { type: 'button', class: 'dash-class-tile', 'data-dash-class': cls, 'aria-label': 'Open ' + cls + ', ' + rows.length + ' saved plans' },
+        weekList.replaceChildren(...Array.from(grouped.entries()).map(([cls, rows]) => h('button', { type: 'button', class: 'dash-class-tile', 'data-dash-class': cls, 'aria-label': 'Open the latest ' + cls + ' lesson plan for week ' + week + ', ' + rows.length + ' saved ' + (rows.length === 1 ? 'plan' : 'plans') },
           h('span', { class: 'dash-class-symbol' }, icon('users')), h('strong', { text: cls }), h('span', { class: 'dash-class-count', text: rows.length + (rows.length === 1 ? ' plan' : ' plans') }),
-          h('span', { class: 'dash-class-progress-track', 'aria-hidden': 'true' }, h('span', { class: 'dash-class-progress-fill', style: 'width:' + Math.round(rows.length / maxClassPlans * 100) + '%' }))
+          h('span', { class: 'dash-class-progress-track', 'aria-hidden': 'true' }, h('span', { class: 'dash-class-progress-fill', style: 'width:' + Math.round(rows.length / maxClassPlans * 100) + '%' })),
+          h('span', { class: 'dash-class-open', text: 'Open latest plan' })
         )));
       }
     }
     const next = weekPlans[0] || plans[0], nextHost = $('#dashNextPlan');
     if (nextHost) {
-      if (!next) nextHost.replaceChildren(h('div', { class: 'dash-next-empty' }, h('span', { class: 'dash-next-icon', text: '✦' }), h('div', {}, h('strong', { text: 'Your next lesson starts here' }), h('span', { text: 'Create a plan and it will be ready to open from this space.' })), h('button', { type: 'button', class: 'dash-next-cta', 'data-dash-action': 'plan', text: 'Create plan' })));
-      else nextHost.replaceChildren(h('button', { type: 'button', class: 'dash-next-card', 'data-dash-plan': next.id },
+      if (!next) nextHost.replaceChildren(h('div', { class: 'dash-next-empty' }, h('span', { class: 'dash-next-icon' }, icon('spark')), h('div', {}, h('strong', { text: 'Your next lesson starts here' }), h('span', { text: 'Create a plan and it will be ready to open from this space.' })), h('button', { type: 'button', class: 'dash-next-cta', 'data-dash-action': 'plan', text: 'Create plan' })));
+      else nextHost.replaceChildren(h('button', { type: 'button', class: 'dash-next-card', 'data-dash-plan': next.id, 'aria-label': 'Open saved lesson plan: ' + ((next.params && next.params.cls) || 'Class') + ', ' + ((next.params && next.params.subject) || next.title || 'Lesson') + ', week ' + ((next.params && next.params.week) || week) },
         h('span', { class: 'dash-next-subject-icon' }, icon('book')),
         h('span', { class: 'dash-next-content' }, h('strong', { text: ((next.params && next.params.cls) || 'Class') + ' – ' + ((next.params && next.params.subject) || next.title) }), h('span', { text: next.title && next.params && next.params.subject ? next.title : 'Your saved lesson plan' }), h('span', { class: 'dash-next-meta', text: 'Week ' + ((next.params && next.params.week) || week) + ' · ' + rel(next.updatedAt) })),
         h('span', { class: 'dash-next-arrow', text: '›' })
@@ -2930,7 +2994,7 @@
     const visible = plans.filter((s) => { const p = s.params || {}; return !q || [s.title, p.subject, p.cls, p.week].join(' ').toLowerCase().includes(q); }).slice(0, 4);
     const recent = $('#dashRecentList');
     if (recent) recent.replaceChildren(...visible.map((s) => h('div', { class: 'dash-recent-item' },
-      h('button', { type: 'button', class: 'dash-recent-card-main', 'data-dash-plan': s.id },
+      h('button', { type: 'button', class: 'dash-recent-card-main', 'data-dash-plan': s.id, 'aria-label': 'Open lesson plan: ' + ((s.params && s.params.cls) || 'Class') + ', ' + ((s.params && s.params.subject) || s.title || 'Lesson') + ', week ' + ((s.params && s.params.week) || 'unspecified') },
         h('span', { class: 'dash-recent-icon' }, icon('clipboard')),
         h('span', { class: 'dash-recent-content' }, h('strong', { text: ((s.params && s.params.cls) || 'Class') + ' – ' + ((s.params && s.params.subject) || s.title) }), h('span', { text: s.title || 'Saved lesson plan' })),
         h('span', { class: 'dash-recent-time', text: rel(s.updatedAt) })
@@ -2941,7 +3005,15 @@
         h('button', { type: 'button', 'data-dash-menu-action': 'delete', 'data-plan-id': s.id, text: 'Delete plan' })
       )
     )));
-    const empty = $('#dashEmpty'); if (empty) empty.hidden = visible.length > 0;
+    const empty = $('#dashEmpty');
+    if (empty) {
+      empty.hidden = visible.length > 0;
+      const emptyText = $('#dashEmptyText'), clearSearch = $('#dashClearSearch');
+      if (emptyText) emptyText.textContent = q
+        ? 'No lesson plans match “' + search.value.trim() + '”. Try another search.'
+        : plans.length ? 'No recent lesson plans to show.' : 'No saved lesson plans yet. Create your first plan and it will appear here.';
+      if (clearSearch) clearSearch.hidden = !q;
+    }
   }
   if ($('#dashboardPage')) {
     $('#dashSearch').addEventListener('input', renderDashboard);
@@ -2973,16 +3045,28 @@
       if (plan) { showPage(null); showSession(plan.dataset.dashPlan); return; }
       const action = e.target.closest('[data-dash-action]');
       if (action) {
-        const kind = action.dataset.dashAction, start = $('#newSession');
-        if (start) start.click();
-        if (kind === 'notes' || kind === 'worksheet') {
-          const tab = $('#studioTabResources'); if (tab) tab.click();
-          const type = $('#resourceType'); if (type) type.value = kind === 'notes' ? 'Study notes' : 'Learner worksheet';
-        } else if (kind === 'media') { const tab = $('#studioTabMedia'); if (tab) tab.click(); }
-        else { const tab = $('#studioTabPlan'); if (tab) tab.click(); }
+        const routes = {
+          plan: { tab: 'plan' },
+          notes: { tab: 'resources', mode: 'resources', resourceType: 'Study notes' },
+          media: { tab: 'media' },
+          worksheet: { tab: 'resources', mode: 'resources', resourceType: 'Learner worksheet' }
+        };
+        const route = routes[action.dataset.dashAction];
+        if (!route) return;
+        showPage(null);
+        newSession();
+        if (route.mode) state.params.mode = route.mode;
+        if (route.resourceType) {
+          state.params.resourceType = route.resourceType;
+          const type = $('#resourceType');
+          if (type) { type.value = route.resourceType; type.dispatchEvent(new Event('change', { bubbles: true })); }
+        }
+        setStudioTab(route.tab);
+        if (route.tab === 'media') loadMediaContext();
         return;
       }
-      if (e.target.closest('#dashViewAll')) { showPage('library'); return; }
+      if (e.target.closest('#dashClearSearch')) { const search = $('#dashSearch'); if (search) { search.value = ''; renderDashboard(); search.focus(); } return; }
+      if (e.target.closest('#dashViewAll')) { libType = 'plan'; showPage('library'); return; }
       if (e.target.closest('#dashViewWeek')) { const week = $('#dashWeekList'); if (week) week.scrollIntoView({ behavior: 'smooth', block: 'start' }); }
     });
   }
@@ -2997,7 +3081,7 @@
     const counts = {}; all.forEach((s) => { const t = typeOf(s); counts[t] = (counts[t] || 0) + 1; });
     const count = $('#libraryCount'); if (count) count.textContent = String(all.length);
     const chips = $('#libChips');
-    if (chips) chips.replaceChildren(...[['all', 'Everything', all.length]].concat(TYPE_ORDER.filter((t) => counts[t]).map((t) => [t, TYPE_LABEL[t], counts[t]]))
+    if (chips) chips.replaceChildren(...[['all', 'Everything', all.length]].concat(TYPE_ORDER.filter((t) => counts[t] || (libType === t && t === 'plan')).map((t) => [t, TYPE_LABEL[t], counts[t] || 0]))
       .map(([id, label, n]) => h('button', { type: 'button', class: 'lib-chip', 'data-type': id, 'aria-pressed': String(libType === id) }, h('span', { text: label }), h('small', { text: String(n) }))));
     const list = all.filter((s) => (libType === 'all' || typeOf(s) === libType) &&
       (!q || [s.title, s.params && s.params.cls, s.params && s.params.subject, s.params && s.params.week, s.params && s.params.resourceType].join(' ').toLowerCase().includes(q)));

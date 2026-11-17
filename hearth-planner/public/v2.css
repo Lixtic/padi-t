@@ -601,6 +601,113 @@ body:not(.role-parent) .parent-only { display: none !important; }
   .dashboard-page .dash-stats,.dashboard-page #dashStats { grid-template-columns:repeat(2,minmax(0,1fr)) !important; }
 }
 
+/* Teacher Dashboard dark theme: keep dashboard cards and labels legible in both app themes. */
+:root[data-theme="dark"] #dashboardPage > .dash-inner {
+  --dash-surface: #292a29;
+  --dash-surface-soft: #343634;
+  --dash-border: #474a47;
+  --dash-ink: #f2ebdc;
+  --dash-muted: #c2bdad;
+  --dash-link: #9bbfff;
+}
+:root[data-theme="dark"] #dashboardPage > .dash-inner .dash-stat,
+:root[data-theme="dark"] #dashboardPage > .dash-inner .dash-class-tile,
+:root[data-theme="dark"] #dashboardPage > .dash-inner .dash-week-empty,
+:root[data-theme="dark"] #dashboardPage > .dash-inner .dash-next-empty,
+:root[data-theme="dark"] #dashboardPage > .dash-inner .dash-next-card,
+:root[data-theme="dark"] #dashboardPage > .dash-inner .dash-recent-card,
+:root[data-theme="dark"] #dashboardPage > .dash-inner .dash-recent-card-main,
+:root[data-theme="dark"] #dashboardPage > .dash-inner .dash-recent-more,
+:root[data-theme="dark"] #dashboardPage > .dash-inner .dash-plan-menu {
+  border-color: var(--dash-border);
+  background: var(--dash-surface);
+  color: var(--dash-ink);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, .22);
+}
+:root[data-theme="dark"] #dashboardPage > .dash-inner .dash-stat-value,
+:root[data-theme="dark"] #dashboardPage > .dash-inner .dash-stat-label,
+:root[data-theme="dark"] #dashboardPage > .dash-inner .dash-section-head h2,
+:root[data-theme="dark"] #dashboardPage > .dash-inner .dash-class-tile strong,
+:root[data-theme="dark"] #dashboardPage > .dash-inner .dash-week-empty strong,
+:root[data-theme="dark"] #dashboardPage > .dash-inner .dash-next-empty strong,
+:root[data-theme="dark"] #dashboardPage > .dash-inner .dash-next-content strong,
+:root[data-theme="dark"] #dashboardPage > .dash-inner .dash-recent-content strong,
+:root[data-theme="dark"] #dashboardPage > .dash-inner .dash-first-plan-copy strong,
+:root[data-theme="dark"] #dashboardPage > .dash-inner .dash-plan-menu button {
+  color: var(--dash-ink);
+}
+:root[data-theme="dark"] #dashboardPage > .dash-inner .dash-stat-foot,
+:root[data-theme="dark"] #dashboardPage > .dash-inner .dash-class-count,
+:root[data-theme="dark"] #dashboardPage > .dash-inner .dash-next-content > span:not(.dash-next-meta),
+:root[data-theme="dark"] #dashboardPage > .dash-inner .dash-next-meta,
+:root[data-theme="dark"] #dashboardPage > .dash-inner .dash-week-empty span,
+:root[data-theme="dark"] #dashboardPage > .dash-inner .dash-next-empty span:not(.dash-next-icon),
+:root[data-theme="dark"] #dashboardPage > .dash-inner .dash-recent-content span,
+:root[data-theme="dark"] #dashboardPage > .dash-inner .dash-recent-time {
+  color: var(--dash-muted);
+}
+:root[data-theme="dark"] #dashboardPage > .dash-inner .dash-eyebrow,
+:root[data-theme="dark"] #dashboardPage > .dash-inner .dash-text-link { color: var(--dash-link); }
+:root[data-theme="dark"] #dashboardPage > .dash-inner .dash-week-tag,
+:root[data-theme="dark"] #dashboardPage > .dash-inner .dash-recent-time {
+  background: #303a48;
+}
+:root[data-theme="dark"] #dashboardPage > .dash-inner .dash-class-tile.is-active {
+  border-color: #83b4ff;
+  background: linear-gradient(145deg, #25374d, #2b3037);
+}
+:root[data-theme="dark"] #dashboardPage > .dash-inner .dash-class-symbol { color: #a6c8ff; }
+:root[data-theme="dark"] #dashboardPage > .dash-inner .dash-class-progress-track,
+:root[data-theme="dark"] #dashboardPage > .dash-inner .dash-class-progress { background: #454b50; }
+:root[data-theme="dark"] #dashboardPage > .dash-inner .dash-class-progress-fill { background: linear-gradient(90deg, #4e91e8, #79b3ff); }
+:root[data-theme="dark"] #dashboardPage > .dash-inner .dash-stat-icon-plans { color: #a6c8ff; background: #263b57; }
+:root[data-theme="dark"] #dashboardPage > .dash-inner .dash-stat-icon-subjects { color: #d2b6ff; background: #382c4e; }
+:root[data-theme="dark"] #dashboardPage > .dash-inner .dash-stat-icon-classes { color: #9ee3bc; background: #234537; }
+:root[data-theme="dark"] #dashboardPage > .dash-inner .dash-stat-icon-resources { color: #ffd38a; background: #4a3820; }
+:root[data-theme="dark"] #dashboardPage > .dash-inner .dash-action-notes { color: #ffd58a; border-color: #5c4828; background: #3d3020; }
+:root[data-theme="dark"] #dashboardPage > .dash-inner .dash-action-media { color: #9be0b2; border-color: #335840; background: #203b2d; }
+:root[data-theme="dark"] #dashboardPage > .dash-inner .dash-action-worksheet { color: #cfb9ff; border-color: #51406e; background: #342a4a; }
+:root[data-theme="dark"] #dashboardPage > .dash-inner .dash-first-plan {
+  border-color: var(--dash-border);
+  background: linear-gradient(115deg, #243247, var(--dash-surface) 75%);
+}
+:root[data-theme="dark"] #dashboardPage > .dash-inner .dash-first-plan-icon,
+:root[data-theme="dark"] #dashboardPage > .dash-inner .dash-next-subject-icon,
+:root[data-theme="dark"] #dashboardPage > .dash-inner .dash-next-icon,
+:root[data-theme="dark"] #dashboardPage > .dash-inner .dash-next-arrow,
+:root[data-theme="dark"] #dashboardPage > .dash-inner .dash-empty-action,
+:root[data-theme="dark"] #dashboardPage > .dash-inner .dash-next-cta {
+  color: #a9c7ff;
+  background: #263b57;
+}
+:root[data-theme="dark"] #dashboardPage > .dash-inner .dash-first-plan-cta {
+  color: #fff;
+  background: #286cda;
+}
+:root[data-theme="dark"] #dashboardPage > .dash-inner .dash-recent-icon {
+  color: #ffd489;
+  background: #42331e;
+}
+:root[data-theme="dark"] #dashboardPage > .dash-inner .dash-plan-menu button:hover { background: var(--dash-surface-soft); }
+.dash-pencil-pot { display:grid; place-items:center; width:42px; height:48px; border-radius:10px 10px 14px 14px; background:linear-gradient(135deg,#e3efff,#b5d4ff); color:#145fbd; }
+.dash-pencil-pot .ico { width:29px; height:29px; }
+.dash-next-icon .ico { width:22px; height:22px; }
+#dashboardPage .dash-text-link { min-height:44px; padding:0 6px; }
+#dashboardPage .dash-recent-more { width:44px; height:44px; }
+#dashboardPage .dash-empty-action,
+#dashboardPage .dash-next-cta,
+#dashboardPage .dash-first-plan-cta { min-height:44px; padding-inline:14px; }
+#dashboardPage .dash-class-open { margin-top:3px; color:#075fc9; font-size:11px; font-weight:750; }
+#dashboardPage .dash-clear-search { min-height:44px; margin-left:8px; padding:0 10px; border:0; background:transparent; color:#075fc9; font:700 13px var(--font-ui); text-decoration:underline; cursor:pointer; }
+:root[data-theme="dark"] #dashboardPage .dash-class-open,
+:root[data-theme="dark"] #dashboardPage .dash-clear-search { color:var(--dash-link); }
+@media(prefers-reduced-motion:reduce) {
+  .dashboard-page .dash-class-progress-fill,
+  .dashboard-page .dash-plan-card,
+  .dashboard-page .dash-action { transition:none !important; }
+  .dashboard-page .dash-plan-card:hover,
+  .dashboard-page .dash-action:hover { transform:none; }
+}
 
 /* Reimagined My Library */
 .library-page .lib-inner { width:min(1080px,100%); gap:22px; padding-top:22px; }
@@ -687,3 +794,17 @@ body:not(.role-parent) .parent-only { display: none !important; }
   .library-page .lib-item,.library-page .lib-item .lib-card { min-height:180px; }
 }
 .dash-next-subject-icon .ico { width: 26px; height: 26px; }
+
+/* Teacher Dashboard: stretch cards to their grid cells with hard-cut states. */
+#dashboardPage .dash-stats,
+#dashboardPage .dash-actions,
+#dashboardPage .dash-week-list,
+#dashboardPage .dash-plan-grid { align-items:stretch; grid-auto-rows:1fr; }
+#dashboardPage .dash-stat,
+#dashboardPage .dash-action,
+#dashboardPage .dash-class-tile,
+#dashboardPage .dash-plan-card,
+#dashboardPage .dash-next-card,
+#dashboardPage .dash-recent-card-main { width:100%; height:100%; min-width:0; transition:none !important; }
+#dashboardPage .dash-action:hover,
+#dashboardPage .dash-plan-card:hover { transform:none; }
