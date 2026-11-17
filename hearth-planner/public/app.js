@@ -505,6 +505,18 @@
     if (!coarse) promptEl.focus();
   }
 
+  // Chat and the Teaching Studio are separate views. A plan on screen gets a clean chat (just the plan and "Ask for a change");
+  // tapping any Studio tab then starts a fresh, empty Studio instead of opening the tools underneath the chat.
+  document.addEventListener('click', (e) => {
+    const tab = e.target.closest('.v2-tabbar button');
+    if (!tab || tab.dataset.tab === 'library') return;
+    const cur = current();
+    if (!(cur && cur.messages.length)) return;
+    if (state.streaming) { toast('Wait for the current generation to finish.'); e.stopPropagation(); return; }
+    newSession();
+    document.querySelectorAll('.v2-tabbar [aria-current]').forEach((b) => b.removeAttribute('aria-current'));   // so this tap opens the fresh Studio rather than folding it
+  }, true);
+
   function deleteSession(id) {
     const wasCurrent = id === state.currentId;
     if (wasCurrent) stopStreaming();
@@ -1747,6 +1759,7 @@
       button.tabIndex = active ? 0 : -1;
     });
     document.querySelectorAll('[data-studio-panel]').forEach((panel) => { panel.hidden = panel.dataset.studioPanel !== tab; });
+    document.body.dataset.studioTab = tab;   // lets the CSS drop the scheme strip where a tab already lists the indicators
     // Keep the media search, chosen indicator, and results intact when switching tabs.
     if (focus) $('#studioTab' + (tab === 'plan' ? 'Plan' : tab === 'resources' ? 'Resources' : 'Media')).focus();
   }
