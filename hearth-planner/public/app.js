@@ -2910,7 +2910,14 @@
   const studioLink = $('#studioLink');
   const PAGES = [['settings', 'Settings', $('#settingsPage'), $('#settingsLink')], ['dashboard', 'Teacher Dashboard', $('#dashboardPage'), $('#dashboardLink')], ['library', 'My Library', $('#libraryPage'), $('#libraryLink')]];
   const pageOpen = () => PAGES.find((x) => x[2] && !x[2].hidden);
+  // Settings can be opened from the dashboard, Library or Studio. Remember its origin
+  // so the Settings back button returns to the screen the user came from.
+  let settingsReturnPage = null;
   function showPage(name) {
+    if (name === 'settings') {
+      const current = pageOpen();
+      settingsReturnPage = current && current[0] !== 'settings' ? current[0] : null;
+    }
     if (!name && accountRole === 'parent') name = 'dashboard';   // "back to planning" means the parent's home
     PAGES.forEach(([key, title, el, link]) => {
       if (!el) return;
@@ -2929,7 +2936,13 @@
   const showSettings = (on) => showPage(on ? 'settings' : null);
   if (studioLink) studioLink.addEventListener('click', () => { showPage(null); if (isMobile()) setNav(false); });
   PAGES.forEach(([key, , el, link]) => { if (el && link) link.addEventListener('click', () => showPage(key)); });
-  [['#settingsBack'], ['#dashboardBack'], ['#libraryBack']].forEach(([sel]) => { const b = $(sel); if (b) b.addEventListener('click', () => showPage(null)); });
+  const settingsBack = $('#settingsBack');
+  if (settingsBack) settingsBack.addEventListener('click', () => {
+    const destination = settingsReturnPage;
+    settingsReturnPage = null;
+    showPage(destination || null);
+  });
+  [['#dashboardBack'], ['#libraryBack']].forEach(([sel]) => { const b = $(sel); if (b) b.addEventListener('click', () => showPage(null)); });
   // Anything that goes back to planning leaves the page first.
   document.addEventListener('click', (e) => {
     if (!pageOpen()) return;
