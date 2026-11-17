@@ -70,17 +70,31 @@ select, input[type="search"], input[type="text"] { border-radius: 999px; }
 @media (max-width: 760px) {
   /* Reserve the tab-bar height only while the tab bar is actually mounted.
      If a view removes it, let the app reclaim the full viewport. */
-  body.has-tabbar:not(.on-dashboard):has(> .v2-tabbar) .app { height: calc(var(--app-h, 100dvh) - 64px - env(safe-area-inset-bottom)); }
+  body.has-tabbar:not(.on-dashboard):has(> .v2-tabbar) .app { height: calc(var(--app-h, 100dvh) - 84px - env(safe-area-inset-bottom)); }
   body.has-tabbar .app.nav-open { height: var(--app-h, 100dvh); }
-  .v2-tabbar { display: flex; align-items: center; gap: 12px; position: fixed; left: 12px; right: 12px; bottom: calc(10px + env(safe-area-inset-bottom)); z-index: 40; padding: 0; background: transparent; }
+  .v2-tabbar { display: flex; align-items: center; gap: 12px; position: fixed; left: 12px; right: 12px; bottom: calc(10px + env(safe-area-inset-bottom)); z-index: 40; padding: 0; background: transparent; transform-origin: center bottom; animation: guided-nav-enter .62s cubic-bezier(.2,.85,.25,1.15) both; }
   .app.nav-open ~ .v2-tabbar { display: none; }
-  .v2-tabbar-pill { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); align-items: center; flex: 1; min-width: 0; min-height: 68px; padding: 7px; border: 1px solid rgba(255,255,255,.72); border-radius: 999px; background: rgba(255,255,255,.76); -webkit-backdrop-filter: blur(24px) saturate(1.55); backdrop-filter: blur(24px) saturate(1.55); box-shadow: 0 8px 28px rgba(18,35,55,.18), inset 0 1px 0 rgba(255,255,255,.8); }
-  .v2-tabbar button { display: grid; justify-items: center; align-content: center; gap: 3px; min-width: 0; min-height: 52px; padding: 6px 3px; border-radius: 999px; color: #4c5965; background: transparent; font-size: .68rem; font-weight: 650; white-space: nowrap; }
-  .v2-tabbar button .ico { width: 21px; height: 21px; }
-  .v2-tabbar-pill button[aria-current="page"] { background: rgba(103,190,229,.36); color: #07517a; box-shadow: inset 0 0 0 1px rgba(255,255,255,.42); }
-  .v2-tabbar .v2-tabbar-search { display: grid; place-items: center; flex: 0 0 68px; width: 68px; height: 68px; min-height: 68px; padding: 0; border: 1px solid rgba(255,255,255,.78); border-radius: 50%; color: #18212a; background: rgba(255,255,255,.8); -webkit-backdrop-filter: blur(24px) saturate(1.55); backdrop-filter: blur(24px) saturate(1.55); box-shadow: 0 8px 28px rgba(18,35,55,.18), inset 0 1px 0 rgba(255,255,255,.85); }
+  .v2-tabbar-pill { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); align-items: center; flex: 1; min-width: 0; min-height: 68px; padding: 7px; border: 1px solid rgba(255,255,255,.72); border-radius: 999px; background: rgba(255,255,255,.76); -webkit-backdrop-filter: blur(24px) saturate(1.55); backdrop-filter: blur(24px) saturate(1.55); box-shadow: 0 8px 28px rgba(18,35,55,.18), inset 0 1px 0 rgba(255,255,255,.8); transition: box-shadow .3s ease, background .3s ease; }
+  .v2-tabbar button { display: grid; justify-items: center; align-content: center; gap: 3px; min-width: 0; min-height: 52px; padding: 6px 3px; border-radius: 999px; color: #4c5965; background: transparent; font-size: .68rem; font-weight: 650; white-space: nowrap; transition: color .24s ease, background .28s cubic-bezier(.2,.8,.2,1), transform .22s cubic-bezier(.2,.8,.2,1), box-shadow .28s ease; -webkit-tap-highlight-color: transparent; }
+  .v2-tabbar-pill button:nth-child(1) { animation: guided-tab-arrive .45s .06s both; }
+  .v2-tabbar-pill button:nth-child(2) { animation: guided-tab-arrive .45s .12s both; }
+  .v2-tabbar-pill button:nth-child(3) { animation: guided-tab-arrive .45s .18s both; }
+  .v2-tabbar-pill button:nth-child(4) { animation: guided-tab-arrive .45s .24s both; }
+  .v2-tabbar button:active { transform: scale(.91); }
+  .v2-tabbar button .ico { width: 21px; height: 21px; transition: transform .28s cubic-bezier(.2,.8,.2,1); }
+  .v2-tabbar-pill button[aria-current="page"] .ico { animation: guided-icon-pop .38s cubic-bezier(.2,.8,.2,1); }
+  .v2-tabbar-pill button[aria-current="page"] { background: rgba(103,190,229,.36); color: #07517a; box-shadow: inset 0 0 0 1px rgba(255,255,255,.42), 0 3px 12px rgba(35,112,153,.10); }
+  .v2-tabbar .v2-tabbar-search { display: grid; place-items: center; flex: 0 0 68px; width: 68px; height: 68px; min-height: 68px; padding: 0; border: 1px solid rgba(255,255,255,.78); border-radius: 50%; color: #18212a; background: rgba(255,255,255,.8); -webkit-backdrop-filter: blur(24px) saturate(1.55); backdrop-filter: blur(24px) saturate(1.55); box-shadow: 0 8px 28px rgba(18,35,55,.18), inset 0 1px 0 rgba(255,255,255,.85); transition: transform .25s cubic-bezier(.2,.8,.2,1), background .25s ease, box-shadow .25s ease; animation: guided-search-arrive .55s .18s cubic-bezier(.2,.8,.2,1) both; }
+  .v2-tabbar .v2-tabbar-search:active { transform: scale(.9) rotate(-8deg); }
   .v2-tabbar .v2-tabbar-search .ico { width: 28px; height: 28px; }
-  .v2-tabbar .v2-tabbar-search[aria-current="page"] { color: #07517a; background: rgba(190,226,244,.94); }
+  .v2-tabbar .v2-tabbar-search[aria-current="page"] { color: #07517a; background: rgba(190,226,244,.94); box-shadow: 0 5px 18px rgba(35,112,153,.18), inset 0 1px 0 rgba(255,255,255,.9); }
+  .v2-tabbar .v2-tabbar-search[aria-current="page"] .ico { animation: guided-search-focus .55s cubic-bezier(.2,.8,.2,1); }
+  @keyframes guided-nav-enter { from { opacity: 0; transform: translateY(24px) scale(.96); } to { opacity: 1; transform: translateY(0) scale(1); } }
+  @keyframes guided-tab-arrive { from { opacity: 0; transform: translateY(9px) scale(.94); } to { opacity: 1; transform: translateY(0) scale(1); } }
+  @keyframes guided-icon-pop { 0% { transform: scale(.72); } 65% { transform: scale(1.18); } 100% { transform: scale(1); } }
+  @keyframes guided-search-arrive { from { opacity: 0; transform: scale(.72) rotate(-18deg); } to { opacity: 1; transform: scale(1) rotate(0); } }
+  @keyframes guided-search-focus { 0% { transform: rotate(-18deg) scale(.82); } 65% { transform: rotate(8deg) scale(1.12); } 100% { transform: rotate(0) scale(1); } }
+  @media (prefers-reduced-motion: reduce) { .v2-tabbar, .v2-tabbar *, .v2-tabbar *::before, .v2-tabbar *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; scroll-behavior: auto !important; } }
   @media (max-width: 390px) { .v2-tabbar { left: 8px; right: 8px; gap: 8px; } .v2-tabbar-pill { min-height: 62px; padding: 5px; } .v2-tabbar button { font-size: .62rem; } .v2-tabbar .v2-tabbar-search { flex-basis: 62px; width: 62px; height: 62px; min-height: 62px; } }
 }
 
