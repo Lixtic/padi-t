@@ -155,6 +155,7 @@
       }
       session = { user: user };
       try { await confirmSession(); } catch (e) { e.created = true; throw e; }
+      window.dispatchEvent(new Event('guided:auth-changed'));
       return user;
     },
     signIn: async function (email, password) {
@@ -162,6 +163,7 @@
       if (!result.data || !result.data.user) throw problem('Could not sign in. Please try again.', 'other');
       session = { user: result.data.user };
       await confirmSession();
+      window.dispatchEvent(new Event('guided:auth-changed'));
       return session.user;
     },
     // Sends the password reset email. The link in it returns to this site with ?token=... (see app.js).
@@ -177,9 +179,10 @@
       var r = await call('/api/sync', { method: 'POST', auth: true, body: { what: 'delete-account', confirm: confirm } });
       try { if (authClient) await authClient.signOut(); } catch (e) { /* the account is gone, so there is nothing left to sign out of */ }
       session = null; store();
+      window.dispatchEvent(new Event('guided:auth-changed'));
       return r;
     },
-    signOut: async function () { try { if (authClient) await authClient.signOut(); } catch (e) { /* signing out locally is enough */ } session = null; store(); },
+    signOut: async function () { try { if (authClient) await authClient.signOut(); } catch (e) { /* signing out locally is enough */ } session = null; store(); window.dispatchEvent(new Event('guided:auth-changed')); },
     watch: async function (onChange) {
       if (!realtime || !window.NeonRealtime || !session) return function () {};
       if (live) { live.unsubscribe(); live = null; }
