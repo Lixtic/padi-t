@@ -60,6 +60,8 @@ const SCHEMA = [
   'create table if not exists mail_optout (user_id text not null, kind text not null, at bigint not null, primary key (user_id, kind))',
   'create table if not exists bonus (user_id text primary key, n int not null default 0)',
   'create table if not exists plan_log (subject text not null, period text not null, cls text not null, n int not null default 0, primary key (subject, period, cls))',
+  "create table if not exists notifications (id text primary key, user_id text not null, dedupe_key text not null, type text not null, title text not null, body text not null default '', url text not null default '', created_at bigint not null, read_at bigint, unique (user_id, dedupe_key))",
+  'create index if not exists notifications_user_recent on notifications (user_id, created_at desc)',
 ];
 
 // Creates the tables the first time a function runs after a deploy.
