@@ -43,22 +43,22 @@
 
 :root[data-theme="dark"] {
   color-scheme: dark;
-  --bg: #1E1F1E;
-  --sb: #2C2C2C;
-  --sb-hover: #363736;
-  --sb-active: #404240;
-  --line: #3C3E3C;
-  --text: #F2EBDC;
-  --muted: #A8A596;
-  --card: #292A29;
-  --card-line: #404240;
+  --bg: #000000;
+  --sb: #0a0a0a;
+  --sb-hover: #161616;
+  --sb-active: #1f1f1f;
+  --line: #262626;
+  --text: #f2f2f2;
+  --muted: #9b9b9b;
+  --card: #111111;
+  --card-line: #262626;
   --shadow: 0 1px 2px rgba(0, 0, 0, .4), 0 12px 32px rgba(0, 0, 0, .38);
   --accent: #2FA57F;
   --accent-h: #46BC95;
   --gold: #F4B400;
   --on-accent: #0B1F18;
-  --user-bubble: #343634;
-  --code-bg: #232423;
+  --user-bubble: #1c1c1c;
+  --code-bg: #0c0c0c;
   --ok: #46BC95;
   --busy: #F4B400;
   --idle: #6F6F66;
@@ -67,7 +67,7 @@
   --del: #F08A7E;
   --del-bg: rgba(240, 138, 126, .13);
   --tbl-head: #2A4A7A;
-  --tbl-line: #474A47;
+  --tbl-line: #2a2a2a;
   --label: rgba(70, 188, 149, .13);
 }
 
@@ -2124,11 +2124,11 @@ main[data-view="chat"] .notice-bar { display: none; }
 
 /* Learner worksheets in dark mode: the light tints above were fixed colours, which left pale text on pale cells. */
 :root[data-theme="dark"] .md.worksheet { --worksheet-blue: #6f9bff; --worksheet-ink: #e6edf9; }
-:root[data-theme="dark"] .md.worksheet > h2.h1 { border-bottom-color: #2c3b57; }
+:root[data-theme="dark"] .md.worksheet > h2.h1 { border-bottom-color: #2e2e2e; }
 :root[data-theme="dark"] .md.worksheet h3.h2 { background: #24449a; color: #fff; box-shadow: none; }
-:root[data-theme="dark"] .md.worksheet .tbl-wrap { border-color: #2c3b57; background: #172033; box-shadow: none; }
-:root[data-theme="dark"] .md.worksheet .tbl td { border-color: #2c3b57; color: #e6edf9; }
-:root[data-theme="dark"] .md.worksheet .tbl th { background: #26385c; color: #f2f6ff; }
-:root[data-theme="dark"] .md.worksheet p:has(> strong:first-child) { border-color: #2c3b57; border-left-color: var(--worksheet-blue); background: #182540; color: #e6edf9; }
-:root[data-theme="dark"] .md.worksheet ol li { border-color: #2c3b57; background: #172033; color: #e6edf9; }
-:root[data-theme="dark"] .md.worksheet .tbl-wrap { --label: #1f2c47; }
+:root[data-theme="dark"] .md.worksheet .tbl-wrap { border-color: #2e2e2e; background: #191919; box-shadow: none; }
+:root[data-theme="dark"] .md.worksheet .tbl td { border-color: #2e2e2e; color: #e6edf9; }
+:root[data-theme="dark"] .md.worksheet .tbl th { background: #2c2c2c; color: #f2f6ff; }
+:root[data-theme="dark"] .md.worksheet p:has(> strong:first-child) { border-color: #2e2e2e; border-left-color: var(--worksheet-blue); background: #1d1d1d; color: #e6edf9; }
+:root[data-theme="dark"] .md.worksheet ol li { border-color: #2e2e2e; background: #191919; color: #e6edf9; }
+:root[data-theme="dark"] .md.worksheet .tbl-wrap { --label: #232323; }

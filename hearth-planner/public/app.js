@@ -2018,7 +2018,7 @@
     root.setAttribute('data-theme', theme);
     themeToggle.setAttribute('aria-checked', String(theme === 'dark'));
     const meta = document.querySelector('meta[name="theme-color"]');
-    if (meta) meta.setAttribute('content', theme === 'dark' ? '#242120' : '#EFE8DB');
+    if (meta) meta.setAttribute('content', theme === 'dark' ? '#000000' : '#EFE8DB');
     if (persist) { try { localStorage.setItem(THEME_KEY, theme); } catch (e) { /* ignore */ } }
   }
   themeToggle.addEventListener('click', () => applyTheme(document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark', true));
