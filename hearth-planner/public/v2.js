@@ -45,46 +45,96 @@
   }
 
   function tabBar() {
-    var studio = $('.teaching-studio'); if (!studio || $('.v2-tabbar')) return;
-    var nav = document.createElement('nav'); nav.className = 'v2-tabbar'; nav.setAttribute('aria-label', 'Primary navigation');
-    var pill = document.createElement('div'); pill.className = 'v2-tabbar-pill'; nav.appendChild(pill);
-    var btns = {};
-    var parent = document.body.classList.contains('role-parent');
-    var items = parent
-      ? [['home', 'Home', 'i-home', '#dashboardLink'], ['children', 'Children', 'i-users', '#familyBtn'], ['more', 'More', 'i-menu', '#settingsLink']]
-      : [['home', 'Home', 'i-home', '#dashboardLink'], ['studio', 'Office', 'i-mobile-office', '#studioLink'], ['library', 'Library', 'i-library', '#libraryLink'], ['more', 'More', 'i-menu', '#settingsLink']];
-    function activate(key, selector) {
-      var target = selector && $(selector);
-      if (target) target.click();
-      mark(key);
-    }
-    items.forEach(function (it) {
-      var b = document.createElement('button'); b.type = 'button'; b.innerHTML = svg(it[2]) + '<span></span>'; b.querySelector('span').textContent = it[1];
-      b.dataset.tab = it[0];
-      b.addEventListener('click', function () {
-        if (it[0] === 'studio' && b.getAttribute('aria-current') === 'page' && !studio.classList.contains('is-collapsed')) {
-          studio.classList.add('is-collapsed'); var tg = $('#studioCollapseToggle'); if (tg) tg.setAttribute('aria-expanded', 'false'); return;
-        }
-        activate(it[0], it[3]);
+    var studio = $('.teaching-studio'); if (!studio) return;
+    var nav = $('.v2-tabbar'), sheet = $('.family-create-sheet'), currentRole = '';
+    function parentMode() { return document.body.classList.contains('role-parent'); }
+    function mark(key) {
+      if (!nav) return;
+      nav.querySelectorAll('[data-family-nav]').forEach(function (b) {
+        if (b.dataset.familyNav === key) b.setAttribute('aria-current', 'page');
+        else b.removeAttribute('aria-current');
       });
-      btns[it[0]] = b; pill.appendChild(b);
+    }
+    function openFamilyTab(key) {
+      if (window.GuidedParentDashboard && window.GuidedParentDashboard.open) window.GuidedParentDashboard.open(key);
+      mark(key === 'children' ? 'family' : key);
+    }
+    function closeSheet() {
+      if (!sheet) return;
+      sheet.hidden = true;
+      document.body.classList.remove('family-create-open');
+    }
+    function build() {
+      var isParent = parentMode(), role = isParent ? 'parent' : 'teacher';
+      if (nav && currentRole === role) return;
+      if (nav) nav.remove();
+      if (sheet) { sheet.remove(); sheet = null; }
+      nav = document.createElement('nav'); nav.className = 'v2-tabbar' + (isParent ? ' v2-tabbar-family' : '');
+      nav.setAttribute('aria-label', isParent ? 'Family navigation' : 'Primary navigation');
+      var pill = document.createElement('div'); pill.className = 'v2-tabbar-pill'; nav.appendChild(pill);
+      var items = isParent
+        ? [['home','Home','i-home','overview'],['library','Library','i-library','library'],['progress','Progress','i-chart','progress'],['family','Family','i-users','children']]
+        : [['home','Home','i-home','#dashboardLink'],['studio','Office','i-mobile-office','#studioLink'],['library','Library','i-library','#libraryLink'],['more','More','i-menu','#settingsLink']];
+      items.forEach(function (item) {
+        var b = document.createElement('button'); b.type = 'button'; b.dataset.familyNav = item[0];
+        b.innerHTML = svg(item[2]) + '<span></span>'; b.querySelector('span').textContent = item[1];
+        if (isParent) b.addEventListener('click', function () { openFamilyTab(item[3]); });
+        else b.addEventListener('click', function () {
+          var target = $(item[3]); if (target) target.click();
+          mark(item[0]);
+        });
+        pill.appendChild(b);
+      });
+      if (isParent) {
+        var create = document.createElement('button'); create.type = 'button'; create.className = 'v2-tabbar-create';
+        create.setAttribute('aria-label','Start a learning activity'); create.innerHTML = svg('i-plus');
+        create.addEventListener('click', function () {
+          if (!sheet) return;
+          sheet.hidden = false; document.body.classList.add('family-create-open');
+        });
+        nav.appendChild(create);
+        sheet = document.createElement('section'); sheet.className = 'family-create-sheet'; sheet.hidden = true;
+        sheet.setAttribute('aria-label','Start a learning activity');
+        sheet.innerHTML = '<button type="button" class="family-create-backdrop" data-family-create-close aria-label="Close"></button><div class="family-create-panel"><div class="family-create-grabber"></div><div class="family-create-heading"><div><span>LET’S LEARN TOGETHER</span><strong>What would you like to do?</strong></div><button type="button" data-family-create-close aria-label="Close">×</button></div><button type="button" data-family-create="lesson"><span class="family-create-icon">'+svg('i-book')+'</span><span><strong>Start a home lesson</strong><small>Follow a guided learning activity</small></span>'+svg('i-chevron')+'</button><button type="button" data-family-create="explanation"><span class="family-create-icon">'+svg('i-spark')+'</span><span><strong>Explain a difficult topic</strong><small>Help your child understand</small></span>'+svg('i-chevron')+'</button><button type="button" data-family-create="practice"><span class="family-create-icon">'+svg('i-pencil')+'</span><span><strong>Create practice exercises</strong><small>Build confidence with questions</small></span>'+svg('i-chevron')+'</button>';
+        document.body.appendChild(sheet);
+        sheet.addEventListener('click', function (event) {
+          var action = event.target.closest('[data-family-create]');
+          if (action) { closeSheet(); openFamilyTab(action.dataset.familyCreate); return; }
+          if (event.target.closest('[data-family-create-close]')) closeSheet();
+        });
+      } else {
+        var create = document.createElement('button'); create.type = 'button'; create.className = 'v2-tabbar-create';
+        create.setAttribute('aria-label','Create a new lesson plan'); create.innerHTML = svg('i-plus');
+        create.addEventListener('click', function () { var fresh = $('#newSession'); if (fresh) fresh.click(); });
+        nav.appendChild(create);
+      }
+      document.body.appendChild(nav);
+      document.body.classList.add('has-tabbar');
+      currentRole = role;
+      if (!isParent) {
+        function syncPage() {
+          if (document.body.classList.contains('on-dashboard')) mark('home');
+          else if (document.body.classList.contains('on-library')) mark('library');
+          else if (document.body.classList.contains('on-settings')) mark('more');
+          else mark('studio');
+        }
+        new MutationObserver(syncPage).observe(document.body,{attributes:true,attributeFilter:['class']});
+        syncPage();
+      } else mark('home');
+    }
+    build();
+    new MutationObserver(build).observe(document.body,{attributes:true,attributeFilter:['class']});
+    document.addEventListener('click',function(event){
+      var tab=event.target.closest('#parentDashboardContent [data-parent-tab]');
+      if(tab) {
+        var key=tab.dataset.parentTab;
+        mark(key==='children'?'family':key);
+      }
     });
-    if (!parent) {
-      var create = document.createElement('button'); create.type = 'button'; create.className = 'v2-tabbar-create'; create.setAttribute('aria-label', 'Create a new lesson plan'); create.innerHTML = svg('i-plus');
-      create.addEventListener('click', function () { var fresh = $('#newSession'); if (fresh) fresh.click(); });
-      nav.appendChild(create);
-    }
-    function mark(k) { Object.keys(btns).forEach(function (n) { if (n === k) btns[n].setAttribute('aria-current', 'page'); else btns[n].removeAttribute('aria-current'); }); }
-    function syncPage() {
-      if (document.body.classList.contains('on-dashboard')) mark('home');
-      else if (document.body.classList.contains('on-library')) mark('library');
-      else if (document.body.classList.contains('on-settings')) mark('more');
-      else if (parent) mark('home');
-      else if (!document.body.classList.contains('on-dashboard')) mark('studio');
-    }
-    new MutationObserver(syncPage).observe(document.body, { attributes: true, attributeFilter: ['class'] });
-    syncPage();
-    document.body.appendChild(nav); document.body.classList.add('has-tabbar');
+    document.addEventListener('guided:parent-tab-change',function(event){
+      var key=event.detail && event.detail.tab;
+      if(key) mark(key==='children'?'family':key);
+    });
   }
 
   /* The subject, class, term and week pills fold into one line. They open by themselves for someone who has not set up yet,

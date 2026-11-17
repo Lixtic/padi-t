@@ -1149,3 +1149,32 @@ body[data-studio-tab="resources"]:has(#studyNotesCurriculum:not([hidden])) .sche
 .dashboard-page .parent-dashboard-content .pd-library-guide summary { color:var(--accent); font-weight:750; cursor:pointer; }
 .dashboard-page .parent-dashboard-content .pd-library-guide ol { padding-left:19px; margin:8px 0 0; color:var(--muted); line-height:1.5; }
 .dashboard-page .parent-dashboard-content .pd-library-guide li+li { margin-top:5px; }
+
+
+/* GuidEd Family mobile navigation */
+@media (max-width: 760px) {
+  body.role-parent .pd-tabs { display: none !important; }
+  .v2-tabbar-family { gap: 10px; }
+  .v2-tabbar-family .v2-tabbar-pill { grid-template-columns: repeat(4,minmax(0,1fr)); }
+  .v2-tabbar-family .v2-tabbar-create { position: absolute; left: 50%; bottom: 76px; transform: translateX(-50%); width: 58px; height: 58px; min-height: 58px; flex: none; border-radius: 50%; box-shadow: 0 8px 26px rgba(20,45,90,.28); }
+  .v2-tabbar-family .v2-tabbar-create:active { transform: translateX(-50%) scale(.92); }
+  body.family-create-open { overflow: hidden; }
+  .family-create-sheet { position: fixed; inset: 0; z-index: 90; display: flex; align-items: flex-end; }
+  .family-create-sheet[hidden] { display: none !important; }
+  .family-create-backdrop { position: absolute; inset: 0; width: 100%; height: 100%; background: rgba(0,0,0,.52); }
+  .family-create-panel { position: relative; z-index: 1; width: 100%; padding: 10px 18px calc(24px + env(safe-area-inset-bottom)); border-radius: 26px 26px 0 0; background: var(--card); color: var(--text); box-shadow: 0 -12px 40px rgba(0,0,0,.22); animation: family-sheet-up .24s ease-out both; }
+  .family-create-grabber { width: 38px; height: 4px; margin: 0 auto 18px; border-radius: 9px; background: var(--muted); opacity: .45; }
+  .family-create-heading { display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:12px; }
+  .family-create-heading div { display:grid; gap:3px; }
+  .family-create-heading span { color:var(--accent); font-size:.68rem; font-weight:800; letter-spacing:.1em; }
+  .family-create-heading strong { font-size:1.2rem; }
+  .family-create-heading button { width:36px; height:36px; border:1px solid var(--card-line); border-radius:50%; font-size:24px; }
+  .family-create-panel > button:not(.family-create-backdrop) { display:flex; align-items:center; gap:12px; width:100%; min-height:72px; padding:10px 4px; border-top:1px solid var(--card-line); text-align:left; }
+  .family-create-panel > button > span:nth-child(2) { display:grid; gap:3px; flex:1; }
+  .family-create-panel > button strong { font-size:.96rem; }
+  .family-create-panel > button small { color:var(--muted); font-size:.8rem; }
+  .family-create-icon { display:grid; place-items:center; width:44px; height:44px; border-radius:15px; background:var(--v2-soft); color:var(--accent); }
+  .family-create-icon .ico { width:22px; height:22px; }
+  .family-create-panel > button > .ico:last-child { color:var(--muted); transform:rotate(-90deg); }
+  @keyframes family-sheet-up { from { opacity:0; transform:translateY(18px); } to { opacity:1; transform:translateY(0); } }
+}
