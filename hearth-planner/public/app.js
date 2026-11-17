@@ -3132,14 +3132,15 @@
       (!q || [s.title, s.params && s.params.cls, s.params && s.params.subject, s.params && s.params.week, s.params && s.params.resourceType].join(' ').toLowerCase().includes(q)));
     const resultCount = $('#libraryResultsCount'); if (resultCount) resultCount.textContent = list.length + (list.length === 1 ? ' item' : ' items');
     const resultsTitle = $('#libraryResultsTitle'); if (resultsTitle) resultsTitle.textContent = q ? 'Search results' : libType === 'all' ? 'Your saved work' : TYPE_LABEL[libType] || 'Your saved work';
-    const kindIcon = (s) => typeOf(s) === 'plan' ? 'clipboard' : typeOf(s) === 'Study notes' ? 'book' : typeOf(s) === 'Learner worksheet' ? 'pencil' : typeOf(s) === 'Teaching slides' ? 'layers' : typeOf(s) === 'BECE practice' ? 'chart' : 'library';
+    const kindIcon = (s) => typeOf(s) === 'plan' ? 'clipboard' : typeOf(s) === 'Study notes' ? 'book' : typeOf(s) === 'Learner worksheet' ? 'pencil' : typeOf(s) === 'Homework pack' ? 'calendar' : typeOf(s) === 'Teaching slides' ? 'layers' : typeOf(s) === 'BECE practice' ? 'chart' : 'library';
+    const kindClass = (type) => ({ plan: 'plan', 'Study notes': 'notes', 'Learner worksheet': 'worksheet', 'Homework pack': 'homework', 'BECE practice': 'exam', 'Teaching slides': 'slides' }[type] || 'resource');
     grid.replaceChildren(...list.map((s) => {
-      const type = typeOf(s), p = s.params || {};
+      const type = typeOf(s), p = s.params || {}, kind = kindClass(type);
       const heading = p.subject || s.title || TYPE_LABEL[type];
       const meta = p.cls ? [p.cls, p.term ? termWord(p.cls) + ' ' + p.term : '', p.week ? 'Week ' + p.week : ''].filter(Boolean).join(' · ') : (s.title || 'Saved teaching resource');
-      return h('article', { class: 'lib-item' },
-        h('button', { type: 'button', class: 'lib-card', 'data-id': s.id, 'aria-label': 'Open ' + heading },
-          h('span', { class: 'lib-card-top' }, h('span', { class: 'lib-card-icon lib-icon-' + (type === 'plan' ? 'plan' : 'resource') }, icon(kindIcon(s))), h('span', { class: 'lib-card-type', text: TYPE_LABEL[type] || type })),
+      return h('article', { class: 'lib-item lib-kind-' + kind },
+        h('button', { type: 'button', class: 'lib-card', 'data-id': s.id, 'aria-label': 'Open ' + (TYPE_LABEL[type] || type) + ': ' + heading },
+          h('span', { class: 'lib-card-top' }, h('span', { class: 'lib-card-icon lib-icon-' + (type === 'plan' ? 'plan' : 'resource') + ' lib-type-icon-' + kind }, icon(kindIcon(s))), h('span', { class: 'lib-card-type', text: TYPE_LABEL[type] || type })),
           h('span', { class: 'lib-name', text: heading }),
           h('span', { class: 'lib-description', text: s.title && s.title !== heading ? s.title : type === 'plan' ? 'Lesson plan and teaching sequence' : 'Saved teaching resource' }),
           h('span', { class: 'lib-meta', text: meta }),
