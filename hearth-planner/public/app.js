@@ -2893,6 +2893,7 @@
   });
 
   /* Settings and My Library are pages inside the main area; the sidebar keeps one link to each. */
+  const studioLink = $('#studioLink');
   const PAGES = [['settings', 'Settings', $('#settingsPage'), $('#settingsLink')], ['dashboard', 'Teacher Dashboard', $('#dashboardPage'), $('#dashboardLink')], ['library', 'My Library', $('#libraryPage'), $('#libraryLink')]];
   const pageOpen = () => PAGES.find((x) => x[2] && !x[2].hidden);
   function showPage(name) {
@@ -2906,11 +2907,13 @@
       if (on) { const pageTitle = key === 'dashboard' && accountRole === 'parent' ? 'Parent Dashboard' : title; if (isMobile()) setNav(false); el.scrollTop = 0; topTitle.textContent = pageTitle; document.title = pageTitle + ' · GuidEd'; }
     });
     document.body.classList.toggle('on-page', !!name);
+    if (studioLink) studioLink.setAttribute('aria-current', !name && accountRole !== 'parent' ? 'page' : 'false');
     if (!name) updateTopbar();
     if (name === 'library') renderLibrary();
     if (name === 'dashboard') renderDashboard();
   }
   const showSettings = (on) => showPage(on ? 'settings' : null);
+  if (studioLink) studioLink.addEventListener('click', () => { showPage(null); if (isMobile()) setNav(false); });
   PAGES.forEach(([key, , el, link]) => { if (el && link) link.addEventListener('click', () => showPage(key)); });
   [['#settingsBack'], ['#dashboardBack'], ['#libraryBack']].forEach(([sel]) => { const b = $(sel); if (b) b.addEventListener('click', () => showPage(null)); });
   // Anything that goes back to planning leaves the page first.
