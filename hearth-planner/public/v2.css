@@ -1155,7 +1155,7 @@ body[data-studio-tab="resources"]:has(#studyNotesCurriculum:not([hidden])) .sche
 @media (max-width: 760px) {
   body.role-parent .pd-tabs { display: none !important; }
   .v2-tabbar-family { gap: 10px; }
-  .v2-tabbar-family .v2-tabbar-pill { grid-template-columns: repeat(4,minmax(0,1fr)); }
+  .v2-tabbar-family .v2-tabbar-pill { grid-template-columns: repeat(5,minmax(0,1fr)); }
   .v2-tabbar-family .v2-tabbar-create { position: absolute; left: 50%; bottom: 76px; transform: translateX(-50%); width: 58px; height: 58px; min-height: 58px; flex: none; border-radius: 50%; box-shadow: 0 8px 26px rgba(20,45,90,.28); }
   .v2-tabbar-family .v2-tabbar-create:active { transform: translateX(-50%) scale(.92); }
   body.family-create-open { overflow: hidden; }
