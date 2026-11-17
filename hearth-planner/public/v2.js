@@ -212,6 +212,6 @@
     label(); set(open, false);
   }
 
-  function init() { resourceCards(); tabBar(); foldPills(); }
+  function init() { resourceCards(); notificationCenter(); tabBar(); foldPills(); }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init); else init();
 })();
