@@ -78,6 +78,8 @@ module.exports = async (req, res) => {
     });
     if (json.length > 140000) return sendJson(res, 413, { error: 'too_large', message: 'This learning resource is too large to save.' });
     const updatedAt = Date.now();
+    const [previous] = await db.query('select data from parent_learning where user_id = $1 and id = $2 and deleted = false', [me.uid, id]);
+    const wasCompleted = !!(previous && previous.data && previous.data.status === 'completed');
     const [exists] = await db.query('select 1 as x from parent_learning where user_id = $1 and id = $2 and deleted = false', [me.uid, id]);
     if (!exists) {   // a new record: respect the cap
       const [count] = await db.query('select count(*)::int as n from parent_learning where user_id = $1 and deleted = false', [me.uid]);
@@ -89,6 +91,12 @@ module.exports = async (req, res) => {
       'insert into parent_learning (user_id, id, kind, data, updated_at, deleted) values ($1, $2, $3, $4::jsonb, $5, false) on conflict (user_id, id) do update set kind = excluded.kind, data = excluded.data, updated_at = excluded.updated_at, deleted = false',
       [me.uid, id, kind, json, updatedAt]
     );
+    if (data.status === 'completed' && !wasCompleted) {
+      const notificationId = require('crypto').randomUUID();
+      const title = 'Learning activity completed';
+      const message = clean(child.name, 80) + ' completed ' + (subject ? subject + ': ' : '') + (clean(data.topic || data.title, 120) || 'a home-learning activity') + '.';
+      await db.query('insert into notifications (id, user_id, dedupe_key, type, title, body, url, created_at) values ($1,$2,$3,$4,$5,$6,$7,$8) on conflict (user_id, dedupe_key) do nothing', [notificationId, me.uid, 'parent-completed:' + id, 'learning', title, message, '/?view=parent', Date.now()]);
+    }
     return sendJson(res, 200, { ok: true, record: { id, kind, data: JSON.parse(json), updatedAt } });
   } catch (e) {
     console.error('parent learning sync failed:', e && e.message);
