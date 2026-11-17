@@ -44,6 +44,51 @@
     new MutationObserver(sync).observe(opt, { childList: true, characterData: true, subtree: true });
   }
 
+  function notificationCenter() {
+    var trigger = $('#notificationBell'); if (!trigger || $('#notificationPanel')) return;
+    var KEY = 'guided.notifications.v1', items = [];
+    try { items = JSON.parse(localStorage.getItem(KEY) || '[]'); if (!Array.isArray(items)) items = []; } catch (e) { items = []; }
+    var panel = document.createElement('section'); panel.className = 'notification-panel'; panel.id = 'notificationPanel';
+    panel.hidden = true; panel.setAttribute('role','dialog'); panel.setAttribute('aria-label','Notifications');
+    panel.innerHTML = '<div class="notification-head"><div><strong>Notifications</strong><span class="notification-subtitle">Updates and activity alerts</span></div><button type="button" class="notification-mark-read" id="notificationMarkRead">Mark all read</button></div><div class="notification-list" id="notificationList"></div>';
+    trigger.insertAdjacentElement('afterend',panel);
+    function save() { try { localStorage.setItem(KEY,JSON.stringify(items.slice(0,40))); } catch(e) {} }
+    function render() {
+      var unread=items.filter(function(x){return !x.read;}).length, count=$('#notificationCount');
+      count.textContent=unread>9?'9+':String(unread); count.hidden=!unread;
+      trigger.setAttribute('aria-label',unread?('Notifications, '+unread+' unread'):'Notifications');
+      var list=$('#notificationList'); list.replaceChildren();
+      if(!items.length) {
+        var empty=document.createElement('div'); empty.className='notification-empty';
+        empty.innerHTML='<span class="notification-empty-icon">'+svg('i-bell')+'</span><strong>You’re all caught up</strong><span>Important updates and learning activity alerts will appear here.</span>';
+        list.appendChild(empty); return;
+      }
+      items.forEach(function(item){
+        var row=document.createElement('button'); row.type='button'; row.className='notification-item'+(item.read?' is-read':'');
+        var dot=document.createElement('span'); dot.className='notification-item-dot';
+        var copy=document.createElement('span'); copy.className='notification-item-copy';
+        var title=document.createElement('strong'); title.textContent=item.title||'GuidEd update';
+        var body=document.createElement('span'); body.textContent=item.body||'';
+        var time=document.createElement('small'); time.textContent=new Date(item.createdAt||Date.now()).toLocaleString();
+        copy.append(title,body,time); row.append(dot,copy); list.appendChild(row);
+        row.addEventListener('click',function(){ item.read=true; save(); render(); if(item.url && /^https:\/\//.test(item.url)) window.open(item.url,'_blank','noopener'); });
+      });
+    }
+    function add(item) {
+      if(!item || typeof item!=='object') return;
+      var entry={id:String(item.id||Date.now()+'-'+Math.random().toString(36).slice(2,7)),title:String(item.title||'GuidEd update').slice(0,100),body:String(item.body||'').slice(0,300),createdAt:Number(item.createdAt)||Date.now(),read:false,url:item.url||''};
+      items.unshift(entry); items=items.slice(0,40); save(); render();
+    }
+    function close() { panel.hidden=true; trigger.setAttribute('aria-expanded','false'); }
+    trigger.addEventListener('click',function(){ panel.hidden=!panel.hidden; trigger.setAttribute('aria-expanded',String(!panel.hidden)); if(!panel.hidden) render(); });
+    $('#notificationMarkRead').addEventListener('click',function(){items.forEach(function(x){x.read=true;});save();render();});
+    document.addEventListener('click',function(e){if(!panel.contains(e.target)&&!trigger.contains(e.target))close();});
+    document.addEventListener('keydown',function(e){if(e.key==='Escape')close();});
+    document.addEventListener('guided:notification',function(e){add(e.detail);});
+    window.GuidedNotifications={add:add, list:function(){return items.slice();}, markAllRead:function(){items.forEach(function(x){x.read=true;});save();render();}, clear:function(){items=[];save();render();}};
+    render();
+  }
+
   function tabBar() {
     var studio = $('.teaching-studio'); if (!studio) return;
     var nav = $('.v2-tabbar'), sheet = $('.family-create-sheet'), currentRole = '';
