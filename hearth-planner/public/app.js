@@ -368,6 +368,18 @@
     updateView(); updateTopbar(); renderSessions(); updateSend(); scrollBottom(true);
   }
 
+  // Open a saved item directly in the planner's editor from Dashboard or Library actions.
+  function editSavedSession(id) {
+    const session = state.sessions.find((s) => s.id === id);
+    if (!session || !session.messages.length) return;
+    showPage(null);
+    showSession(id);
+    const bot = state.bots[state.bots.length - 1];
+    const edit = bot && bot.root.querySelector('[data-act="edit"]');
+    if (edit && !edit.disabled && !edit.hidden) edit.click();
+    else toast('This saved item is not ready to edit yet.');
+  }
+
   // Saved lessons open in the dedicated reader while the originating page stays underneath.
   // Closing the reader therefore returns to the dashboard or Library, never to the Studio.
   function openSavedSession(id) {
@@ -3024,6 +3036,7 @@
       h('button', { type: 'button', class: 'dash-recent-more', 'data-dash-more': s.id, 'aria-label': 'More options for ' + (s.title || 'lesson plan'), 'aria-expanded': 'false', text: '···' }),
       h('div', { class: 'dash-plan-menu', hidden: true },
         h('button', { type: 'button', 'data-dash-menu-action': 'open', 'data-plan-id': s.id, text: 'Open lesson plan' }),
+        h('button', { type: 'button', 'data-dash-menu-action': 'edit', 'data-plan-id': s.id, text: 'Edit plan' }),
         h('button', { type: 'button', 'data-dash-menu-action': 'delete', 'data-plan-id': s.id, text: 'Delete plan' })
       )
     )));
@@ -3053,6 +3066,7 @@
       if (menuAction) {
         const id = menuAction.dataset.planId, session = state.sessions.find((s) => s.id === id);
         if (menuAction.dataset.dashMenuAction === 'open' && session) { openSavedSession(id); return; }
+        if (menuAction.dataset.dashMenuAction === 'edit' && session) { editSavedSession(id); return; }
         if (menuAction.dataset.dashMenuAction === 'delete' && session && window.confirm('Delete this saved lesson plan? This cannot be undone.')) { deleteSession(id); renderDashboard(); }
         return;
       }
@@ -3143,7 +3157,10 @@
           h('span', { class: 'lib-meta', text: meta }),
           h('span', { class: 'lib-card-footer' }, h('span', { class: 'lib-time' }, icon('calendar'), h('span', { text: rel(s.updatedAt) })), h('span', { class: 'lib-open-label' }, 'Open', icon('chevron')))
         ),
-        h('button', { type: 'button', class: 'lib-del', 'data-del-id': s.id, 'aria-label': 'Delete ' + heading, title: 'Delete' }, icon('trash'))
+        h('div', { class: 'lib-item-actions' },
+          h('button', { type: 'button', class: 'lib-edit', 'data-edit-id': s.id, 'aria-label': 'Edit ' + heading, title: 'Edit' }, icon('pencil')),
+          h('button', { type: 'button', class: 'lib-del', 'data-del-id': s.id, 'aria-label': 'Delete ' + heading, title: 'Delete' }, icon('trash'))
+        )
       );
     }));
     const empty = $('#libEmpty');
@@ -3166,6 +3183,8 @@
     $('#libraryEmptyCreate').addEventListener('click', () => { showPage(null); const b = $('#newSession'); if (b) b.click(); });
     $('#libChips').addEventListener('click', (e) => { const b = e.target.closest('.lib-chip'); if (b) { libType = b.dataset.type; renderLibrary(); } });
     $('#libGrid').addEventListener('click', (e) => {
+      const edit = e.target.closest('.lib-edit');
+      if (edit) { editSavedSession(edit.dataset.editId); return; }
       const d = e.target.closest('.lib-del');
       if (d) { const s = state.sessions.find((x) => x.id === d.dataset.delId); if (s && window.confirm('Delete "' + (s.params ? s.params.subject + ' · ' + s.params.cls + ' · Week ' + s.params.week : s.title) + '"? This cannot be undone.')) { deleteSession(s.id); renderLibrary(); } return; }
       const c = e.target.closest('.lib-card'); if (c) { openSavedSession(c.dataset.id); }
