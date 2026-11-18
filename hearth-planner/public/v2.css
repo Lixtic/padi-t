@@ -375,13 +375,16 @@ body.on-settings .v2-tabbar { display: none !important; }
 /* Plans live in My Library: sidebar keeps its footer at the bottom; library cards carry a delete button */
 .sidebar .sb-foot { margin-top: auto; }
 .lib-item { position: relative; min-width: 0; }
-.lib-item .lib-card { width: 100%; height: 100%; padding-right: 82px; }
-.lib-item-actions { position: absolute; top: 10px; right: 10px; display: flex; gap: 3px; z-index: 2; }
-.lib-item-actions button { position: static; width: 28px; height: 28px; display: grid; place-items: center; border-radius: 9px; border: 0; background: transparent; color: var(--muted); cursor: pointer; }
-.lib-item-actions .ico { width: 14px; height: 14px; }
-.lib-edit:hover, .lib-edit:focus-visible { background: color-mix(in srgb, var(--accent) 14%, transparent); color: var(--accent); }
-.lib-del:hover, .lib-del:focus-visible { background: color-mix(in srgb, var(--del, #c0392b) 14%, transparent); color: var(--del, #c0392b); }
-@media (max-width: 560px) { .lib-item .lib-card { padding-right: 76px; } }
+.lib-item .lib-card { width: 100%; height: 100%; }
+.lib-item-menu { position: absolute; z-index: 5; right: 12px; bottom: 12px; display: flex; align-items: center; gap: 5px; padding: 7px; border: 1px solid var(--line); border-radius: 14px; background: var(--card); box-shadow: 0 12px 32px rgba(15, 35, 65, .18); }
+.lib-item-menu[hidden] { display: none; }
+.lib-item-menu button { min-height: 36px; padding: 0 12px; border: 0; border-radius: 9px; background: var(--surface, var(--bg)); color: var(--text); font: 600 13px var(--font-ui); cursor: pointer; white-space: nowrap; }
+.lib-item-menu button:active { transform: scale(.97); }
+.lib-item-menu .lib-menu-delete { color: var(--del, #b3261e); }
+@media (max-width: 560px) {
+  .lib-item-menu { right: 8px; bottom: 8px; left: 8px; justify-content: stretch; }
+  .lib-item-menu button { flex: 1; padding: 0 8px; }
+}
 
 /* Sidebar: main links sit right under New Plan; only account/admin stay at the bottom */
 .sb-nav { display: flex; flex-direction: column; gap: 2px; padding: 6px 12px; }
