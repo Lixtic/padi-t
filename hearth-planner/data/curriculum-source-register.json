@@ -1,0 +1,73 @@
+{
+  "schemaVersion": 1,
+  "programme": "Common Core Programme (CCP)",
+  "levelRange": ["Basic 7", "Basic 8", "Basic 9"],
+  "publisher": "National Council for Curriculum and Assessment (NaCCA), Ministry of Education, Ghana",
+  "officialIndexUrl": "https://nacca.gov.gh/common-core-programme-ccp/",
+  "policy": {
+    "sourceMustBeOfficial": true,
+    "recordStatusBeforeReconciliation": "pending_source_reconciliation",
+    "doNotAutoRewriteCurriculumText": true,
+    "verificationRequires": ["exact indicator code match", "source document title", "publisher", "printed page number", "official source URL", "human reviewer"],
+    "databaseExportIsNotOfficialEvidence": true
+  },
+  "sources": [
+    {
+      "subject": "English Language",
+      "documentTitle": "English Language Curriculum for JHS1 (B7) - JHS3 (B9)",
+      "sourceUrl": "https://nacca.gov.gh/wp-content/uploads/2023/06/ENGLISH-LANGUAGE.pdf",
+      "listedOnOfficialIndex": true,
+      "retrievalStatus": "listed_on_official_index_pending_full_document_reconciliation"
+    },
+    {
+      "subject": "Mathematics",
+      "documentTitle": "Mathematics Curriculum for JHS1 (B7) - JHS3 (B9)",
+      "sourceUrl": "https://nacca.gov.gh/wp-content/uploads/2023/06/MATHEMATICS.pdf",
+      "listedOnOfficialIndex": true,
+      "retrievalStatus": "listed_on_official_index_pending_full_document_reconciliation"
+    },
+    {
+      "subject": "Science",
+      "documentTitle": "Science Curriculum for JHS1 (B7) - JHS3 (B9)",
+      "sourceUrl": "https://nacca.gov.gh/wp-content/uploads/2023/06/SCIENCE.pdf",
+      "listedOnOfficialIndex": true,
+      "retrievalStatus": "listed_on_official_index_pending_full_document_reconciliation"
+    },
+    {
+      "subject": "Social Studies",
+      "documentTitle": "Social Studies CCP Curriculum JHS 1-3 (Revised)",
+      "sourceUrl": "https://nacca.gov.gh/wp-content/uploads/2024/04/Social-Studies_CCP_JHS-1-3_Revised-1.pdf",
+      "listedOnOfficialIndex": true,
+      "retrievalStatus": "listed_on_official_index_pending_full_document_reconciliation",
+      "note": "Use this revised document rather than the older 2023 Social Studies PDF."
+    },
+    {
+      "subject": "Religious and Moral Education",
+      "documentTitle": "Religious and Moral Education Curriculum for JHS1 (B7) - JHS3 (B9)",
+      "sourceUrl": "https://nacca.gov.gh/wp-content/uploads/2023/06/Religious-and-Moral-Education.pdf",
+      "listedOnOfficialIndex": true,
+      "retrievalStatus": "listed_on_official_index_pending_full_document_reconciliation"
+    },
+    {
+      "subject": "Creative Arts and Design",
+      "documentTitle": "Creative Arts and Design Curriculum for JHS1 (B7) - JHS3 (B9)",
+      "sourceUrl": "https://nacca.gov.gh/wp-content/uploads/2023/06/CREATIVE-ARTS-AND-DESIGN.pdf",
+      "listedOnOfficialIndex": true,
+      "retrievalStatus": "listed_on_official_index_pending_full_document_reconciliation"
+    },
+    {
+      "subject": "Career Technology",
+      "documentTitle": "Career Technology Curriculum for Kindergarten to Basic 9",
+      "sourceUrl": "https://nacca.gov.gh/wp-content/uploads/2023/06/Career-Technology-k-9-3rd-Aug.08.2021.pdf",
+      "listedOnOfficialIndex": true,
+      "retrievalStatus": "listed_on_official_index_pending_full_document_reconciliation"
+    },
+    {
+      "subject": "Computing",
+      "documentTitle": "Computing Curriculum for JHS1 (B7) - JHS3 (B9)",
+      "sourceUrl": "https://nacca.gov.gh/wp-content/uploads/2023/06/COMPUTING.pdf",
+      "listedOnOfficialIndex": true,
+      "retrievalStatus": "listed_on_official_index_pending_full_document_reconciliation"
+    }
+  ]
+}
