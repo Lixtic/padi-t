@@ -74,7 +74,7 @@
   function watch() {
     if (!window.GuidedConsent || !window.GuidedConsent.allowed('marketing')) {
       if (window.GuidedConsent && window.GuidedConsent.open) window.GuidedConsent.open();
-      say('Optional advertising is off. Allow advertising in Cookie Settings if you want to watch a video.', null, false); show(); return;
+      return;
     }
     var GP = window.GuidedPlans, r = GP && GP.reward();
     if (busy || !r) return;
