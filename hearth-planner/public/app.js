@@ -2039,7 +2039,7 @@
       const j = await res.json();
       state.config = { loaded: true, demo: !!j.demo, provider: j.provider || null, accessRequired: !!j.accessRequired };
       if (window.GuidedAds) { window.GuidedAds.init(j.ads); showNotice(j.notice); updateView(); }
-      initAccount(Object.assign({}, j.sync || {}, { enabled: !!(j.auth && j.auth.enabled), syncEnabled: !!j.sync, authUrl: j.auth && j.auth.url }));
+      initAccount(Object.assign({}, j.sync || {}, { enabled: !!(j.auth && j.auth.enabled), syncEnabled: !!j.sync, authUrl: j.auth && j.auth.url, authDirectUrl: j.auth && j.auth.direct }));
     } catch (e) {
       state.config = { loaded: true, demo: true, provider: null, accessRequired: false };   // static preview, no server
     }
@@ -2060,7 +2060,7 @@
     who: $('#acctWho'), avatar: $('#acctAvatar'), status: $('#acctStatus'), now: $('#acctSyncNow'), msg: $('#acctMsg'),
   };
   const sheet = {
-    dlg: $('#acctSheet'), form: $('#asForm'), acct: $('#asAccount'), panel: $('#asPanel'), close: $('#asClose'),
+    social: $('#asSocial'), google: $('#asGoogle'), dlg: $('#acctSheet'), form: $('#asForm'), acct: $('#asAccount'), panel: $('#asPanel'), close: $('#asClose'),
     tabIn: $('#asTabIn'), tabUp: $('#asTabUp'), title: $('#asTitle'), sub: $('#asSub'),
     email: $('#asEmail'), emailErr: $('#asEmailErr'), pw: $('#asPassword'), pwErr: $('#asPwErr'), pwHint: $('#asPwHint'), show: $('#asShow'),
     banner: $('#asBanner'), bannerText: $('#asBannerText'), bannerAct: $('#asBannerAct'), help: $('#asHelp'), helpList: $('#asHelpList'),
@@ -2209,6 +2209,13 @@
       refreshAcct();
       if (signedIn() && window.PadiSync.syncAvailable()) { syncNow(); watchLive(); }
       openResetFromLink();
+      setMode(mode);   // the Google button shows once sign-in is known to be available
+      try {
+        if (sessionStorage.getItem('guided.googleBack') === '1') {
+          sessionStorage.removeItem('guided.googleBack');
+          if (!signedIn()) { openSheet(); showBanner('Google sign-in did not finish. Try again, or use your email and password.'); }
+        }
+      } catch (e) { /* storage blocked */ }
       refreshPlans();
       setTimeout(maybeAskAudience, 400);   // only once the saved sign-in has been restored, so returning users are never asked
     }).catch((e) => acctMsg(e.message, true));
@@ -2259,6 +2266,7 @@
   const submitLabel = () => (mode === 'signup' ? 'Create account' : mode === 'forgot' ? 'Send reset link' : mode === 'reset' ? 'Set new password' : 'Sign in');
   function setMode(m) {
     mode = m; const up = m === 'signup', forgot = m === 'forgot', reset = m === 'reset', special = forgot || reset;
+    if (sheet.social) sheet.social.hidden = special || !(window.PadiSync && window.PadiSync.googleAvailable && window.PadiSync.googleAvailable());
     sheet.tabs.hidden = special; sheet.emailField.hidden = reset; sheet.forgot.hidden = reset || up;
     sheet.pwField.hidden = forgot; sheet.foot.hidden = special;
     sheet.forgot.textContent = forgot ? 'Back to sign in' : 'Forgot password?';
@@ -2515,6 +2523,11 @@
     } catch (err) { setBusy(false); handleAuthError(err); }
   });
 
+  if (sheet.google) sheet.google.addEventListener('click', async () => {
+    sheet.google.disabled = true; $('#asGoogleText').textContent = 'Opening Google…';
+    try { await window.PadiSync.signInWithGoogle(); }
+    catch (err) { sheet.google.disabled = false; $('#asGoogleText').textContent = 'Continue with Google'; handleAuthError(err); }
+  });
   sheet.view.addEventListener('click', () => { closeSheet(); setNav(true); if (isMobile()) newBtn.focus(); });
   sheet.syncNow.addEventListener('click', async () => {
     sheet.syncNow.disabled = true; sheet.result.textContent = 'Syncing…';

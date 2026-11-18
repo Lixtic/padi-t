@@ -4,7 +4,7 @@
 (function () {
   'use strict';
   var AUTH_KEY = 'schoolpadi.auth';
-  var authBase = '', trace = [], lastDetail = '';
+  var authBase = '', directBase = '', trace = [], lastDetail = '';
   var enabled = false, syncEnabled = false, realtime = false, session = null, live = null, authClient = null;
 
   function load() { try { session = JSON.parse(localStorage.getItem(AUTH_KEY)); } catch (e) { session = null; } }
@@ -129,6 +129,7 @@
       if (enabled) {
         authBase = c.authUrl.charAt(0) === '/' ? location.origin + c.authUrl : c.authUrl;
         authClient = window.NeonAuth.createAuthClient(authBase);
+        directBase = c.authDirectUrl || '';
         try {
           var current = await authClient.getSession();
           session = current && current.data && current.data.user ? { user: current.data.user } : null;
@@ -181,6 +182,20 @@
       session = null; store();
       window.dispatchEvent(new Event('guided:auth-changed'));
       return r;
+    },
+    // Google sign-in. The Google round trip starts straight against the sign-in service (its security cookie has to live on that
+    // domain), then comes back here with a one-time code that the normal, proxied client trades for a first-party session.
+    googleAvailable: function () { return !!(enabled && authClient && directBase && window.NeonAuth); },
+    signInWithGoogle: async function () {
+      if (!this.googleAvailable()) throw problem('Google sign-in is not available right now. Use your email and password.', 'config');
+      var direct = window.NeonAuth.createAuthClient(directBase);
+      var res;
+      try { res = await direct.signIn.social({ provider: 'google', callbackURL: location.origin + '/', disableRedirect: true }); }
+      catch (e) { throw problem('Could not reach Google sign-in. Check your connection and try again.', 'network'); }
+      var url = res && res.data && res.data.url;
+      if (!url) throw problem('Google sign-in could not start. Use your email and password, or try again.', 'google');
+      try { sessionStorage.setItem('guided.googleBack', '1'); } catch (e) { /* ignore */ }
+      location.assign(url);
     },
     signOut: async function () { try { if (authClient) await authClient.signOut(); } catch (e) { /* signing out locally is enough */ } session = null; store(); window.dispatchEvent(new Event('guided:auth-changed')); },
     watch: async function (onChange) {

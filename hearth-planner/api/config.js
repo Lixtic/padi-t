@@ -14,7 +14,7 @@ module.exports = async (req, res) => {
   const sync = syncConfigured() ? { enabled: true, realtime: require('./_auth').realtimeConfigured() } : null;
   // Sign-in goes through this site's own /api/neon-auth proxy so phones keep the session cookie (set NEON_AUTH_DIRECT=1 to bypass).
   const auth = process.env.NEON_AUTH_BASE_URL
-    ? { enabled: true, url: process.env.NEON_AUTH_DIRECT === '1' ? process.env.NEON_AUTH_BASE_URL : '/api/neon-auth', proxied: process.env.NEON_AUTH_DIRECT !== '1' }
+    ? { enabled: true, url: process.env.NEON_AUTH_DIRECT === '1' ? process.env.NEON_AUTH_BASE_URL : '/api/neon-auth', proxied: process.env.NEON_AUTH_DIRECT !== '1', direct: process.env.NEON_AUTH_BASE_URL }
     : null;
   // Ads on the Free plan: only when both ids are set and well formed. Personalised ads are off unless ADS_PERSONALIZED=1.
   const client = String(process.env.ADSENSE_CLIENT || '').trim(), slot = String(process.env.ADSENSE_SLOT || '').trim();
