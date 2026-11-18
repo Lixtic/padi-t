@@ -18,6 +18,7 @@ function audit(data, manifest) {
   const bySubject = {};
   const issues = [];
   const seen = new Set();
+  const issueCounts = {};
 
   for (const [key, value] of records) {
     const parts = key.split('|');
@@ -53,6 +54,7 @@ function audit(data, manifest) {
     }
     if (recordIssues.length) {
       row.suspiciousRecords++;
+      for (const issue of new Set(recordIssues)) issueCounts[issue] = (issueCounts[issue] || 0) + 1;
       issues.push({
         key,
         subject,
@@ -88,7 +90,8 @@ function audit(data, manifest) {
       for (const key of Object.keys(row)) sum[key] = (sum[key] || 0) + row[key];
       return sum;
     }, {}),
-    issues
+    issues,
+    issueCounts
   };
 }
 
@@ -125,8 +128,20 @@ function markdown(report) {
 if (require.main === module) {
   const data = JSON.parse(fs.readFileSync(DATA_PATH, 'utf8'));
   const manifest = JSON.parse(fs.readFileSync(MANIFEST_PATH, 'utf8'));
+  const sourceRegister = JSON.parse(fs.readFileSync(path.join(__dirname, '..', 'data', 'curriculum-source-register.json'), 'utf8'));
   const report = audit(data, manifest);
-  if (process.argv.includes('--check')) {
+  const sourceSubjects = new Set((sourceRegister.sources || []).map((item) => item.subject));
+  const indexSubjects = Object.keys(report.subjects);
+  const missingSources = indexSubjects.filter((subject) => !sourceSubjects.has(subject));
+  if (sourceRegister.publisher !== 'National Council for Curriculum and Assessment (NaCCA), Ministry of Education, Ghana' || !String(sourceRegister.officialIndexUrl || '').startsWith('https://nacca.gov.gh/')) report.structuralErrors.push('Curriculum source register does not identify the official NaCCA publisher and index.');
+  if (missingSources.length) report.structuralErrors.push('Missing official source-register entries for: ' + missingSources.join(', '));
+  for (const source of sourceRegister.sources || []) {
+    if (!source.listedOnOfficialIndex || !String(source.sourceUrl || '').startsWith('https://nacca.gov.gh/')) report.structuralErrors.push('Source is not confirmed as an official NaCCA index entry: ' + source.subject);
+  }
+  if (process.argv.includes('--json')) {
+    process.stdout.write(JSON.stringify({ ...report, sourceRegister }, null, 2) + '\\n');
+    if (report.structuralErrors.length) process.exitCode = 1;
+  } else if (process.argv.includes('--check')) {
     console.log('Curriculum index: ' + report.actualCount + ' records; declared count ' + (report.countMatches ? 'matches' : 'DOES NOT MATCH') + '.');
     console.log('Verification manifest: ' + manifest.status + '; ' + manifest.verifiedIndicators.length + ' verified indicators.');
     if (report.structuralErrors.length) { report.structuralErrors.forEach((x) => console.error('- ' + x)); process.exitCode = 1; }
