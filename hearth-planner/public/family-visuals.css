@@ -65,16 +65,16 @@
   .splash-art { animation:none; }
 }
 
-:root[data-theme="dark"] .guided-parent-fields { background:linear-gradient(145deg,#292a29,#242c2a); border-color:#454a46; }
+:root[data-theme="dark"] .guided-parent-fields { background:linear-gradient(145deg,#191919,#191919); border-color:#2b2b2b; }
 :root[data-theme="dark"] .guided-parent-fields h3 { color:#f2ebdc; }
-:root[data-theme="dark"] .guided-role-card:first-child { background:linear-gradient(145deg,#30332f,#292929); }
-:root[data-theme="dark"] .parent-dashboard-content .pd-welcome { border-color:#3f3f3f; background:linear-gradient(115deg,#2d302f 0%,#272727 100%); }
+:root[data-theme="dark"] .guided-role-card:first-child { background:linear-gradient(145deg,#1e1e1e,#191919); }
+:root[data-theme="dark"] .parent-dashboard-content .pd-welcome { border-color:#262626; background:linear-gradient(115deg,#1c1c1c 0%,#171717 100%); }
 :root[data-theme="dark"] .parent-dashboard-content .pd-welcome-copy h2 { color:#f2ebdc; }
 :root[data-theme="dark"] .parent-dashboard-content .pd-welcome-copy p { color:#c2cbd3; }
-:root[data-theme="dark"] .parent-dashboard-content .pd-stats article { border-color:#414541; background:linear-gradient(160deg,#292a29,#2e302e); }
-:root[data-theme="dark"] .parent-dashboard-content .pd-quick-grid button { border-color:#414541; background:linear-gradient(150deg,#292a29,#262626); }
-:root[data-theme="dark"] .parent-dashboard-content .pd-room-card { border-color:#414541; background:linear-gradient(160deg,#292a29,#2e302e); }
-:root[data-theme="dark"] .parent-dashboard-content .pd-empty-illustrated { border-color:#414541; background:linear-gradient(145deg,#292a29,#272727); }
+:root[data-theme="dark"] .parent-dashboard-content .pd-stats article { border-color:#282828; background:linear-gradient(160deg,#191919,#1c1c1c); }
+:root[data-theme="dark"] .parent-dashboard-content .pd-quick-grid button { border-color:#282828; background:linear-gradient(150deg,#191919,#171717); }
+:root[data-theme="dark"] .parent-dashboard-content .pd-room-card { border-color:#282828; background:linear-gradient(160deg,#191919,#1c1c1c); }
+:root[data-theme="dark"] .parent-dashboard-content .pd-empty-illustrated { border-color:#282828; background:linear-gradient(145deg,#191919,#171717); }
 :root[data-theme="dark"] .parent-dashboard-content .pd-empty-illustrated strong { color:#f2ebdc; }
 
 
@@ -137,10 +137,10 @@
   .parent-dashboard-content .pd-task-art { flex-basis:86px; width:86px; }
 }
 :root[data-theme="dark"] .parent-dashboard-content .pd-quick-grid button strong { color:#f2ebdc; }
-:root[data-theme="dark"] .parent-dashboard-content .pd-task-art-head { border-color:#414541; background:linear-gradient(110deg,#2d302f,#272727); }
+:root[data-theme="dark"] .parent-dashboard-content .pd-task-art-head { border-color:#282828; background:linear-gradient(110deg,#1c1c1c,#171717); }
 :root[data-theme="dark"] .parent-dashboard-content .pd-task-art-head p { color:#c2cbd3; }
-:root[data-theme="dark"] .parent-dashboard-content .pd-child-avatar-art { background:#3b342e; }
-:root[data-theme="dark"] .parent-dashboard-content .pd-activity-art { background:#292929; }
+:root[data-theme="dark"] .parent-dashboard-content .pd-child-avatar-art { background:#231f1c; }
+:root[data-theme="dark"] .parent-dashboard-content .pd-activity-art { background:#191919; }
 @media(prefers-reduced-motion:reduce) {
   .parent-dashboard-content .pd-quick-grid button { transition:none; }
 }
@@ -152,7 +152,7 @@
 .parent-dashboard-content .pd-progress-filter{display:flex;align-items:center;justify-content:space-between;gap:14px;margin:16px 0;padding:12px 14px;border:1px solid #e9e1d8;border-radius:14px;background:#fffdf9}.parent-dashboard-content .pd-progress-filter label{font-weight:650;color:var(--text)}.parent-dashboard-content .pd-progress-filter select{width:min(58%,240px);min-height:42px;padding:8px 34px 8px 12px;border:1px solid #d9dfe7;border-radius:10px;background:#fff;color:#26364a}
 .parent-dashboard-content .pd-progress-stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}.parent-dashboard-content .pd-progress-stats article{display:grid;gap:4px;padding:15px;border:1px solid #e8e3dc;border-radius:16px;background:linear-gradient(160deg,#fff,#fffaf4)}.parent-dashboard-content .pd-progress-stats strong{color:var(--family-ink);font-size:1.55rem;line-height:1}.parent-dashboard-content .pd-progress-stats span{color:var(--muted);font-size:.8rem}
 .parent-dashboard-content .pd-milestone-section{margin-top:22px}.parent-dashboard-content .pd-milestone-section .pd-section-head,.parent-dashboard-content .pd-progress-activity-head{margin-bottom:12px}.parent-dashboard-content .pd-milestone-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}.parent-dashboard-content .pd-milestone{display:flex;flex-direction:column;align-items:flex-start;gap:8px;min-width:0;padding:13px;border:1px solid #e9e1d8;border-radius:17px;background:#fffdf9}.parent-dashboard-content .pd-milestone-art{display:grid;place-items:center;width:100%;min-height:78px;border-radius:13px;background:#f8f0e6}.parent-dashboard-content .pd-milestone-illustration{width:100px;max-height:74px;object-fit:contain}.parent-dashboard-content .pd-milestone>div{display:grid;gap:3px}.parent-dashboard-content .pd-milestone>div strong{color:var(--text);font-size:.88rem}.parent-dashboard-content .pd-milestone>div span{color:var(--muted);font-size:.75rem;line-height:1.4}.parent-dashboard-content .pd-milestone-state{margin-top:auto;color:#4c8a68;font-size:.72rem;font-weight:700}.parent-dashboard-content .pd-milestone.is-locked{opacity:.72}.parent-dashboard-content .pd-milestone.is-locked .pd-milestone-art{filter:saturate(.55);background:#f1f0ed}.parent-dashboard-content .pd-progress-activity-head{margin-top:24px}
-:root[data-theme="dark"] .parent-dashboard-content .pd-progress-hero{border-color:#3f3f3f;background:linear-gradient(115deg,#2d302f,#272727 65%,#29382f)}:root[data-theme="dark"] .parent-dashboard-content .pd-progress-hero-copy h2{color:#f2ebdc}:root[data-theme="dark"] .parent-dashboard-content .pd-progress-hero-copy p{color:#c2cbd3}:root[data-theme="dark"] .parent-dashboard-content .pd-progress-filter,:root[data-theme="dark"] .parent-dashboard-content .pd-milestone{border-color:#414541;background:#292d2c}:root[data-theme="dark"] .parent-dashboard-content .pd-progress-filter select{border-color:#464646;background:#202020;color:#f2ebdc}:root[data-theme="dark"] .parent-dashboard-content .pd-progress-stats article{border-color:#414541;background:linear-gradient(160deg,#292a29,#2e302e)}:root[data-theme="dark"] .parent-dashboard-content .pd-progress-stats strong{color:#f2ebdc}:root[data-theme="dark"] .parent-dashboard-content .pd-milestone-art{background:#38332d}
+:root[data-theme="dark"] .parent-dashboard-content .pd-progress-hero{border-color:#262626;background:linear-gradient(115deg,#1c1c1c,#171717 65%,#19221c)}:root[data-theme="dark"] .parent-dashboard-content .pd-progress-hero-copy h2{color:#f2ebdc}:root[data-theme="dark"] .parent-dashboard-content .pd-progress-hero-copy p{color:#c2cbd3}:root[data-theme="dark"] .parent-dashboard-content .pd-progress-filter,:root[data-theme="dark"] .parent-dashboard-content .pd-milestone{border-color:#282828;background:#1a1a1a}:root[data-theme="dark"] .parent-dashboard-content .pd-progress-filter select{border-color:#2a2a2a;background:#131313;color:#f2ebdc}:root[data-theme="dark"] .parent-dashboard-content .pd-progress-stats article{border-color:#282828;background:linear-gradient(160deg,#191919,#1c1c1c)}:root[data-theme="dark"] .parent-dashboard-content .pd-progress-stats strong{color:#f2ebdc}:root[data-theme="dark"] .parent-dashboard-content .pd-milestone-art{background:#1f1f1f}
 @media(max-width:700px){.parent-dashboard-content .pd-progress-hero{min-height:125px;padding:15px;gap:8px}.parent-dashboard-content .pd-progress-hero-art{flex-basis:100px;width:100px;max-height:92px}.parent-dashboard-content .pd-progress-stats{gap:7px}.parent-dashboard-content .pd-progress-stats article{padding:12px 10px}.parent-dashboard-content .pd-progress-stats strong{font-size:1.35rem}.parent-dashboard-content .pd-progress-stats span{font-size:.72rem}.parent-dashboard-content .pd-milestone-grid{grid-template-columns:1fr}.parent-dashboard-content .pd-milestone{flex-direction:row;align-items:center;gap:12px;padding:10px 12px}.parent-dashboard-content .pd-milestone-art{flex:0 0 66px;width:66px;min-height:58px}.parent-dashboard-content .pd-milestone-illustration{width:64px;max-height:54px}.parent-dashboard-content .pd-milestone-state{margin-left:auto;white-space:nowrap}}
 @media(max-width:390px){.parent-dashboard-content .pd-progress-hero{align-items:flex-start}.parent-dashboard-content .pd-progress-hero-art{flex-basis:82px;width:82px;margin-top:8px}.parent-dashboard-content .pd-progress-filter{align-items:flex-start;flex-direction:column}.parent-dashboard-content .pd-progress-filter select{width:100%}}
 @media(prefers-reduced-motion:reduce){.parent-dashboard-content .pd-milestone{transition:none}}

@@ -1018,11 +1018,11 @@ body[data-studio-tab="resources"]:has(#studyNotesCurriculum:not([hidden])) .sche
 
 /* Dashboard dark mode v2: theme the page shell itself, not only its inner cards. */
 :root[data-theme="dark"] body:has(#dashboardPage:not([hidden])) {
-  background: #121212;
+  background: #000000;
   color: #edf3fb;
 }
 :root[data-theme="dark"] #dashboardPage.settings-page {
-  background: #121212 !important;
+  background: #000000 !important;
   color: #edf3fb !important;
 }
 :root[data-theme="dark"] #dashboardPage > .dash-inner {
