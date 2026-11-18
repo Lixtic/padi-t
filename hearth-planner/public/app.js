@@ -2569,6 +2569,28 @@
       continueWeek();
     }
 
+    // Public lesson-plan catalogue links can preselect a validated JHS plan.
+    // Apply after saved/profile defaults so an explicit teacher choice in the link wins.
+    try {
+      const q = new URLSearchParams(location.search);
+      const linkedClass = q.get('class');
+      const linkedSubject = q.get('subject');
+      const linkedTerm = Number(q.get('term'));
+      const linkedWeek = Number(q.get('week'));
+      if (['Basic 7', 'Basic 8', 'Basic 9'].includes(linkedClass) &&
+          subjectsOf(linkedClass).includes(linkedSubject) &&
+          termsFor(linkedClass).includes(linkedTerm) &&
+          weeksFor(linkedClass).includes(linkedWeek)) {
+        state.params.cls = linkedClass;
+        state.params.subject = linkedSubject;
+        state.params.term = linkedTerm;
+        state.params.week = linkedWeek;
+        state.params.mode = 'plan';
+        termSet(linkedTerm);
+        store.save(true);
+      }
+    } catch (e) { /* ignore invalid or unavailable catalogue links */ }
+
     applyTheme(document.documentElement.getAttribute('data-theme') === 'dark' ? 'dark' : 'light', false);
 
     const ddSubject = makeDropdown($('#ddSubject'), { name: 'Subject', items: () => {

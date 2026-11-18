@@ -20,6 +20,36 @@
 </div>
 <p class="upd">Sample only. Your plans follow the class, subject and week you choose. A Word file also carries your name and school.</p>
 
+<section class="jhs-downloads" aria-labelledby="jhs-download-title">
+<h2 id="jhs-download-title">Free downloadable JHS lesson plans</h2>
+<p>Choose a Basic 7, 8 or 9 class, subject and week. GuidEd will open the planner with your choices, build the two-lesson plan from the curriculum scheme available for that week, and let you export it as an editable Word document.</p>
+<form action="/" method="get" class="jhs-plan-form">
+<label for="jhs-class">Class</label>
+<select id="jhs-class" name="class">
+<option>Basic 7</option><option>Basic 8</option><option>Basic 9</option>
+</select>
+<label for="jhs-subject">Subject</label>
+<select id="jhs-subject" name="subject">
+<option>Integrated Science</option><option>Mathematics</option><option>English Language</option><option>Social Studies</option><option>Religious and Moral Education</option><option>Computing</option><option>Career Technology</option><option>Creative Arts and Design</option><option>Ghanaian Language</option><option>French</option><option>Physical Education and Health</option>
+</select>
+<label for="jhs-term">Term</label>
+<select id="jhs-term" name="term"><option value="1">Term 1</option><option value="2">Term 2</option><option value="3">Term 3</option></select>
+<label for="jhs-week">Week</label>
+<select id="jhs-week" name="week"><option value="1">Week 1</option><option value="2">Week 2</option><option value="3">Week 3</option><option value="4">Week 4</option><option value="5">Week 5</option><option value="6">Week 6</option><option value="7">Week 7</option><option value="8">Week 8</option><option value="9">Week 9</option><option value="10">Week 10</option><option value="11">Week 11</option><option value="12">Week 12</option><option value="13">Week 13</option><option value="14">Week 14</option></select>
+<button type="submit">Create my free lesson plan</button>
+</form>
+<p class="upd">A free account is required to download the editable Word file. Availability depends on the curriculum scheme loaded for the selected class, subject and week; GuidEd will show a notice if a week has no scheme or is an examination week.</p>
+</section>
+<style>
+.jhs-downloads{margin:2rem 0;padding:1.25rem;border:1px solid #d8e1dc;border-radius:18px;background:#f7faf8}
+.jhs-downloads h2{margin-top:0}
+.jhs-plan-form{display:grid;grid-template-columns:1fr 1fr;gap:.65rem 1rem;max-width:680px}
+.jhs-plan-form label{font-weight:650;font-size:.92rem;align-self:end}
+.jhs-plan-form select{width:100%;min-height:44px;padding:.65rem;border:1px solid #bdcbc4;border-radius:10px;background:white;color:#17231d;font:inherit}
+.jhs-plan-form button{grid-column:1/-1;min-height:48px;border:0;border-radius:12px;background:#006a4e;color:white;font:inherit;font-weight:700;padding:.75rem 1rem;cursor:pointer}
+@media(max-width:520px){.jhs-plan-form{grid-template-columns:1fr}.jhs-plan-form button{grid-column:auto}}
+</style>
+
 <!--CLASSES-->
 <h2>Find your class</h2>
 <ul>
