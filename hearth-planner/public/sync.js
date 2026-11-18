@@ -192,12 +192,13 @@
     },
     // Google sign-in. The Google round trip starts straight against the sign-in service (its security cookie has to live on that
     // domain), then comes back here with a one-time code that the normal, proxied client trades for a first-party session.
-    googleAvailable: function () { return !!(enabled && authClient && directBase && window.NeonAuth); },
+    googleAvailable: function () { return !!(enabled && authClient && window.NeonAuth); },
     signInWithGoogle: async function () {
       if (!this.googleAvailable()) throw problem('Google sign-in is not available right now. Use your email and password.', 'config');
-      var direct = window.NeonAuth.createAuthClient(directBase);
+      // Started through this site's own address (not directly against Neon) so the sign-in challenge cookie is first-party and
+      // comes back with the verifier exchange when Google returns.
       var res;
-      try { res = await direct.signIn.social({ provider: 'google', callbackURL: location.origin + '/', disableRedirect: true }); }
+      try { res = await authClient.signIn.social({ provider: 'google', callbackURL: location.origin + '/', disableRedirect: true }); }
       catch (e) { throw problem('Could not reach Google sign-in. Check your connection and try again.', 'network'); }
       var url = res && res.data && res.data.url;
       if (!url) throw problem('Google sign-in could not start. Use your email and password, or try again.', 'google');

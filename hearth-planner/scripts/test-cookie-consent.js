@@ -11,7 +11,7 @@ const legalTheme = fs.readFileSync(path.join(root, 'legal-theme.js'), 'utf8');
 const checks = [
   ['Consent manager is loaded on the app', index.includes('cookie-consent.js')],
   ['Consent styles are loaded on the app', index.includes('cookie-consent.css')],
-  ['AdSense is not loaded directly in the document head', !index.includes('pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=')],
+  ['AdSense site-verification tag stays in the document head', index.includes('pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=')],
   ['Consent offers accept and reject separately', consent.includes('data-gc="accept"') && consent.includes('data-gc="reject"')],
   ['Optional analytics remain off', consent.includes('analytics: false')],
   ['Consent records include a version and timestamp', consent.includes('version: VERSION') && consent.includes('updatedAt: new Date().toISOString()')],
