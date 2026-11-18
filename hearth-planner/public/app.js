@@ -3178,9 +3178,10 @@
           h('span', { class: 'lib-meta', text: meta }),
           h('span', { class: 'lib-card-footer' }, h('span', { class: 'lib-time' }, icon('calendar'), h('span', { text: rel(s.updatedAt) })), h('span', { class: 'lib-open-label' }, 'Open', icon('chevron')))
         ),
-        h('div', { class: 'lib-item-actions' },
-          h('button', { type: 'button', class: 'lib-edit', 'data-edit-id': s.id, 'aria-label': 'Edit ' + heading, title: 'Edit' }, icon('pencil')),
-          h('button', { type: 'button', class: 'lib-del', 'data-del-id': s.id, 'aria-label': 'Delete ' + heading, title: 'Delete' }, icon('trash'))
+        h('div', { class: 'lib-item-menu', hidden: true, role: 'group', 'aria-label': 'Plan actions' },
+          h('button', { type: 'button', 'data-lib-action': 'open', 'data-plan-id': s.id, text: 'Open' }),
+          h('button', { type: 'button', 'data-lib-action': 'edit', 'data-plan-id': s.id, text: 'Edit' }),
+          h('button', { type: 'button', class: 'lib-menu-delete', 'data-lib-action': 'delete', 'data-plan-id': s.id, text: 'Delete' })
         )
       );
     }));
@@ -3203,12 +3204,36 @@
     $('#libraryCreate').addEventListener('click', () => { showPage(null); const b = $('#newSession'); if (b) b.click(); });
     $('#libraryEmptyCreate').addEventListener('click', () => { showPage(null); const b = $('#newSession'); if (b) b.click(); });
     $('#libChips').addEventListener('click', (e) => { const b = e.target.closest('.lib-chip'); if (b) { libType = b.dataset.type; renderLibrary(); } });
-    $('#libGrid').addEventListener('click', (e) => {
-      const edit = e.target.closest('.lib-edit');
-      if (edit) { editSavedSession(edit.dataset.editId); return; }
-      const d = e.target.closest('.lib-del');
-      if (d) { const s = state.sessions.find((x) => x.id === d.dataset.delId); if (s && window.confirm('Delete "' + (s.params ? s.params.subject + ' · ' + s.params.cls + ' · Week ' + s.params.week : s.title) + '"? This cannot be undone.')) { deleteSession(s.id); renderLibrary(); } return; }
-      const c = e.target.closest('.lib-card'); if (c) { openSavedSession(c.dataset.id); }
+    const libGrid = $('#libGrid');
+    let pressTimer = null, pressedItem = null, suppressCardClick = false;
+    const closeLibraryMenus = (except) => libGrid.querySelectorAll('.lib-item-menu').forEach((menu) => { if (!except || menu !== except) menu.hidden = true; });
+    const revealLibraryMenu = (card) => {
+      const item = card && card.closest('.lib-item'); if (!item) return;
+      const menu = item.querySelector('.lib-item-menu');
+      closeLibraryMenus(menu); if (menu) menu.hidden = false;
+      suppressCardClick = true;
+    };
+    libGrid.addEventListener('pointerdown', (e) => {
+      const card = e.target.closest('.lib-card'); if (!card || e.target.closest('.lib-item-menu')) return;
+      pressedItem = card;
+      if (e.pointerType === 'touch' || e.pointerType === 'pen') pressTimer = setTimeout(() => { revealLibraryMenu(pressedItem); pressTimer = null; }, 520);
+    });
+    ['pointerup','pointercancel','pointerleave'].forEach((name) => libGrid.addEventListener(name, () => { if (pressTimer) clearTimeout(pressTimer); pressTimer = null; pressedItem = null; }));
+    libGrid.addEventListener('contextmenu', (e) => { const card = e.target.closest('.lib-card'); if (card) { e.preventDefault(); revealLibraryMenu(card); } });
+    libGrid.addEventListener('click', (e) => {
+      const action = e.target.closest('[data-lib-action]');
+      if (action) {
+        const id = action.dataset.planId, session = state.sessions.find((x) => x.id === id);
+        closeLibraryMenus();
+        if (!session) return;
+        if (action.dataset.libAction === 'open') openSavedSession(id);
+        else if (action.dataset.libAction === 'edit') editSavedSession(id);
+        else if (action.dataset.libAction === 'delete' && window.confirm('Delete "' + (session.params ? session.params.subject + ' · ' + session.params.cls + ' · Week ' + session.params.week : session.title) + '"? This cannot be undone.')) { deleteSession(id); renderLibrary(); }
+        return;
+      }
+      const card = e.target.closest('.lib-card');
+      if (card) { if (suppressCardClick) { suppressCardClick = false; return; } closeLibraryMenus(); openSavedSession(card.dataset.id); return; }
+      if (!e.target.closest('.lib-item-menu')) closeLibraryMenus();
     });
   }
 
