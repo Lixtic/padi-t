@@ -1,5 +1,4 @@
 'use strict';
-// Guards the public JHS catalogue against drifting from the app's supported levels.
 const assert = require('node:assert/strict');
 const fs = require('node:fs');
 const path = require('node:path');
@@ -9,14 +8,16 @@ const page = fs.readFileSync(path.join(root, 'public/lesson-plans.html'), 'utf8'
 const app = fs.readFileSync(path.join(root, 'public/app.js'), 'utf8');
 const jhs = levels.LEVELS.find((level) => level.id === 'jhs');
 assert.ok(jhs, 'JHS level must exist');
-for (const cls of jhs.classes) assert.match(page, new RegExp('<option>' + cls.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '</option>'), cls + ' must be selectable');
-const subjectBlock = page.match(/<select id="jhs-subject" name="subject">([\\s\\S]*?)<\\/select>/);
-assert.ok(subjectBlock, 'JHS subject selector must exist');
-for (const subject of jhs.subjects) assert.ok(subjectBlock[1].includes('<option>' + subject + '</option>'), subject + ' must be selectable');
-assert.match(page, /name="term"/, 'Term selector must exist');
-assert.match(page, /name="week"/, 'Week selector must exist');
-assert.match(app, /subjectsOf\(linkedClass\)\.includes\(linkedSubject\)/, 'App must validate the linked subject against the selected class');
-assert.match(app, /termsFor\(linkedClass\)\.includes\(linkedTerm\)/, 'App must validate the linked term');
-assert.match(app, /weeksFor\(linkedClass\)\.includes\(linkedWeek\)/, 'App must validate the linked week');
-assert.match(app, /state\.params\.mode = 'plan'/, 'Catalogue links must open plan-only mode');
+for (const cls of jhs.classes) assert.ok(page.includes('<option>' + cls + '</option>'), cls + ' must be selectable');
+const start = page.indexOf('<select id="jhs-subject" name="subject">');
+const end = page.indexOf('</select>', start);
+assert.ok(start >= 0 && end > start, 'JHS subject selector must exist');
+const subjectBlock = page.slice(start, end);
+for (const subject of jhs.subjects) assert.ok(subjectBlock.includes('<option>' + subject + '</option>'), subject + ' must be selectable');
+assert.ok(page.includes('name="term"'), 'Term selector must exist');
+assert.ok(page.includes('name="week"'), 'Week selector must exist');
+assert.ok(app.includes('subjectsOf(linkedClass).includes(linkedSubject)'), 'App must validate the linked subject');
+assert.ok(app.includes('termsFor(linkedClass).includes(linkedTerm)'), 'App must validate the linked term');
+assert.ok(app.includes('weeksFor(linkedClass).includes(linkedWeek)'), 'App must validate the linked week');
+assert.ok(app.includes("state.params.mode = 'plan'"), 'Catalogue links must open plan-only mode');
 console.log('JHS free lesson-plan catalogue checks passed.');
