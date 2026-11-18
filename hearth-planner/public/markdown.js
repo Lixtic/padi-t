@@ -52,6 +52,11 @@
     if (head && cols >= 6) cls.push('wide');
     const pad = (r) => r.concat(Array(Math.max(0, cols - r.length)).fill(''));
     const isPhaseRow = (r) => /^\**\s*phase\s*\/\s*duration/i.test(r[0] || '');
+    // In a joined metadata/lesson table, only the actual column-label row belongs in <th>.
+    // A generated Phase 1/2/3 row is lesson content and must remain in the action/body area.
+    const isPhaseHeaderRow = (r) => /^\**\s*phase\s*\/\s*duration\s*\**$/i.test(r[0] || '')
+      && /^\**\s*learning activities\s*\**$/i.test(r[1] || '')
+      && /^\**\s*resources\s*\**$/i.test(r[2] || '');
     const joined = !head && rows.some(isPhaseRow);               // Metadata + Lesson 1 + Lesson 2 as one table
     if (joined) cls.push('joined');
     let html = '<div class="tbl-wrap"><table class="' + cls.join(' ') + '">';
@@ -60,7 +65,7 @@
       html += '<tbody>' + rows.slice(1).map((r) => {
         const only = r[0] && cols > 1 && r.slice(1).every((c) => !c);
         if (only) return '<tr class="' + (/^\**\s*lesson\s*(\d|one|two)\b/i.test(r[0]) ? 'lt' : 'sp') + '"><td colspan="' + cols + '">' + cellHtml(r[0]) + '</td></tr>';
-        if (isPhaseRow(r)) { inLesson = true; return '<tr class="ph">' + pad(r).map((c) => '<th>' + cellHtml(c) + '</th>').join('') + '</tr>'; }
+        if (isPhaseHeaderRow(r)) { inLesson = true; return '<tr class="ph">' + pad(r).map((c) => '<th>' + cellHtml(c) + '</th>').join('') + '</tr>'; }
         const names = ['', 'Learning activities', 'Resources'];
         return '<tr' + (inLesson ? ' class="phase"' : '') + '>' + pad(r).map((c, ci) => '<td' + (inLesson && names[ci] ? ' data-l="' + names[ci] + '"' : '') + '>' + cellHtml(c) + '</td>').join('') + '</tr>';
       }).join('') + '</tbody></table></div>';
