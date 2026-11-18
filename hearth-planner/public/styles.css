@@ -2132,3 +2132,19 @@ main[data-view="chat"] .notice-bar { display: none; }
 :root[data-theme="dark"] .md.worksheet p:has(> strong:first-child) { border-color: #2e2e2e; border-left-color: var(--worksheet-blue); background: #1d1d1d; color: #e6edf9; }
 :root[data-theme="dark"] .md.worksheet ol li { border-color: #2e2e2e; background: #191919; color: #e6edf9; }
 :root[data-theme="dark"] .md.worksheet .tbl-wrap { --label: #232323; }
+
+/* Parent dashboard in dark mode: the guided lesson wizard and forms were built from fixed light colours. */
+:root[data-theme="dark"] .parent-dashboard-content { --pd-surface: #111111; --pd-border: #2a2a2a; --pd-ink: #f2f2f2; --pd-muted: #a8a8a8; }
+:root[data-theme="dark"] .pd-wizard-card, :root[data-theme="dark"] .pd-wizard-progress { box-shadow: none; }
+:root[data-theme="dark"] .pd-wizard-progress > div:first-child strong, :root[data-theme="dark"] .pd-wizard-card h3, :root[data-theme="dark"] .pd-wizard-field label,
+:root[data-theme="dark"] .pd-review-list strong, :root[data-theme="dark"] .pd-suggest-title, :root[data-theme="dark"] .pd-suggest-group button, :root[data-theme="dark"] .pd-topic-examples button { color: #f2f2f2; }
+:root[data-theme="dark"] .pd-wizard-icon, :root[data-theme="dark"] .pd-wizard-context .pd-icon, :root[data-theme="dark"] .pd-wizard-tip .pd-icon, :root[data-theme="dark"] .pd-topic-examples button:hover { color: #8ca9f5; }
+:root[data-theme="dark"] .pd-wizard-icon { background: rgba(108,147,240,.16); }
+:root[data-theme="dark"] .pd-wizard-context, :root[data-theme="dark"] .pd-wizard-tip { background: rgba(108,147,240,.1); }
+:root[data-theme="dark"] .pd-wizard-field select, :root[data-theme="dark"] .pd-wizard-field input, :root[data-theme="dark"] .pd-wizard-field textarea { color: #f2f2f2; background: #1a1a1a; border-color: #333; }
+:root[data-theme="dark"] .pd-error { color: #ff8f84; }
+:root[data-theme="dark"] .pd-score input { color: #f2f2f2; background: #1a1a1a; }
+:root[data-theme="dark"] .pr-setup-banner button { color: #f2f2f2; }
+:root[data-theme="dark"] .pd-allowance { background: rgba(76,199,154,.12); color: #bfeedd; }
+:root[data-theme="dark"] .pd-allowance-out { background: rgba(240,150,70,.14); color: #ffd2a8; }
+:root[data-theme="dark"] .pd-delete-record, :root[data-theme="dark"] .pd-room-del { color: #ff8f84; }
