@@ -388,6 +388,27 @@
     if (bot && typeof bot.openFullScreen === 'function') bot.openFullScreen();
   }
 
+  // Resolve teaching notifications to the matching saved lesson instead of reloading the home page.
+  window.GuidedOpenNotification = function (item) {
+    if (!item) return false;
+    if (item.type === 'teaching') {
+      const bits = String(item.body || '').split(' · ');
+      const subject = (bits[0] || '').trim(), cls = (bits[1] || '').trim();
+      const weekMatch = String(item.body || '').match(/Week\s+(\d+)/i);
+      const match = state.sessions.filter((s) => s.messages.length && typeOf(s) === 'plan' && s.params &&
+        s.params.subject === subject && s.params.cls === cls && (!weekMatch || Number(s.params.week) === Number(weekMatch[1])))
+        .sort((x, y) => y.updatedAt - x.updatedAt)[0];
+      if (match) { openSavedSession(match.id); return true; }
+      showPage('library');
+      toast('The lesson is not synced on this device yet. Check My Library after syncing.');
+      return true;
+    }
+    const target = item.url;
+    if (target && target !== '/' && target !== location.pathname + location.search) { location.href = target; return true; }
+    toast('This notification has been marked as read.');
+    return true;
+  };
+
   function newSession() {
     setComposer(false, true);
     state.params.mode = 'full';

@@ -71,11 +71,11 @@
         var time=document.createElement('small'); time.textContent=new Date(item.createdAt||Date.now()).toLocaleString();
         copy.append(title,body,time); row.append(dot,copy); list.appendChild(row);
         row.addEventListener('click',function(){
-          if(item.read) { if(item.url && item.url.charAt(0)==='/') location.href=item.url; return; }
           var S=window.PadiSync;
-          if(S && S.markNotificationsRead) S.markNotificationsRead([item.id]).then(refresh).catch(function(){});
+          if(!item.read && S && S.markNotificationsRead) S.markNotificationsRead([item.id]).then(refresh).catch(function(){});
           item.read=true; render();
-          if(item.url && item.url.charAt(0)==='/') location.href=item.url;
+          if(window.GuidedOpenNotification) { window.GuidedOpenNotification(item); return; }
+          if(item.url && item.url.charAt(0)==='/' && item.url !== location.pathname + location.search) location.href=item.url;
         });
       });
     }
