@@ -2148,3 +2148,12 @@ main[data-view="chat"] .notice-bar { display: none; }
 :root[data-theme="dark"] .pd-allowance { background: rgba(76,199,154,.12); color: #bfeedd; }
 :root[data-theme="dark"] .pd-allowance-out { background: rgba(240,150,70,.14); color: #ffd2a8; }
 :root[data-theme="dark"] .pd-delete-record, :root[data-theme="dark"] .pd-room-del { color: #ff8f84; }
+
+/* Continue with Google */
+.as-social { margin: 0 0 6px; }
+.as-google { display: flex; align-items: center; justify-content: center; gap: 10px; width: 100%; min-height: 48px; padding: 0 16px; border: 1px solid #dadce0; border-radius: 12px; background: #fff; color: #1f1f1f; font: inherit; font-weight: 600; cursor: pointer; }
+.as-google:hover { background: #f8f9fa; }
+.as-google:disabled { opacity: .6; cursor: default; }
+.as-or { display: flex; align-items: center; gap: 12px; margin: 16px 0 4px; color: var(--muted); font-size: .85rem; }
+.as-or::before, .as-or::after { content: ""; flex: 1; height: 1px; background: var(--line); }
+:root[data-theme="dark"] .as-google { background: #fff; color: #1f1f1f; border-color: #3c4043; }
