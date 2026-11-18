@@ -403,6 +403,7 @@
       toast('The lesson is not synced on this device yet. Check My Library after syncing.');
       return true;
     }
+    if (item.type === 'welcome' && window.GuidedTour) { window.GuidedTour.start(); return true; }
     const target = item.url;
     if (target && target !== '/' && target !== location.pathname + location.search) { location.href = target; return true; }
     toast('This notification has been marked as read.');
@@ -2395,6 +2396,7 @@
     vf.submit.disabled = true; vf.note.textContent = 'Checking…';
     try {
       await window.PadiSync.verifyEmail(verifyEmail, vf.code.value, verifyPassword);
+      try { localStorage.setItem('guided.tourPending', '1'); } catch (e) { /* ignore */ }
       verifyPassword = ''; vf.sec.hidden = true; problemKind = ''; refreshAcct(); watchLive(); refreshPlans();
       showAccountView('Email confirmed', 'Checking your plans…');
       await syncAndReport(true);
@@ -2426,6 +2428,8 @@
     else showBanner((err && err.message) || 'Something went wrong. Please try again.');
   }
 
+  const tourBtn = $('#settingsTour'); if (tourBtn) tourBtn.addEventListener('click', () => { if (window.GuidedTour) window.GuidedTour.start(); });
+  try { if (/[?&]tour=1\b/.test(location.search)) { const u = new URL(location.href); u.searchParams.delete('tour'); history.replaceState(null, '', u.pathname + u.search + u.hash); setTimeout(() => window.GuidedTour && window.GuidedTour.start(), 800); } } catch (e) { /* ignore */ }
   acct.open.addEventListener('click', () => openSheet('signin'));
   acct.top.addEventListener('click', () => openSheet('signin'));
   acct.manage.addEventListener('click', () => openSheet());
@@ -2538,6 +2542,11 @@
     const r = sheet.dlg.getBoundingClientRect();
     if (e.clientX < r.left || e.clientX > r.right || e.clientY < r.top || e.clientY > r.bottom) closeSheet();
   });
+  sheet.dlg.addEventListener('close', () => {
+    try {
+      if (localStorage.getItem('guided.tourPending') === '1' && signedIn() && window.GuidedTour) { localStorage.removeItem('guided.tourPending'); setTimeout(() => window.GuidedTour.start(), 350); }
+    } catch (e) { /* ignore */ }
+  });
   sheet.dlg.addEventListener('close', () => { sheet.pw.value = ''; sheet.pw.type = 'password'; sheet.show.textContent = 'Show'; sheet.show.setAttribute('aria-pressed', 'false'); setBusy(false); });
   sheet.tabIn.addEventListener('click', () => setMode('signin'));
   sheet.tabUp.addEventListener('click', () => setMode('signup'));
@@ -2590,6 +2599,7 @@
     setBusy(true, signup ? 'Creating your account…' : 'Signing in…');
     try {
       if (signup) await window.PadiSync.signUp(email, password); else await window.PadiSync.signIn(email, password);
+      if (signup) { try { localStorage.setItem('guided.tourPending', '1'); } catch (e) { /* ignore */ } }
       sheet.pw.value = ''; problemKind = ''; refreshAcct(); watchLive(); refreshPlans();
       showAccountView(signup ? 'Account created' : 'Welcome back', 'Checking your plans…');
       setBusy(false);
