@@ -2316,7 +2316,7 @@
     clearErrors();
   }
 
-  function showFormView() { sheet.acct.hidden = true; sheet.form.hidden = false; }
+  function showFormView() { sheet.acct.hidden = true; sheet.form.hidden = false; const v = $('#asVerify'); if (v) v.hidden = true; }
   function showAccountView(heading, resultText) {
     const u = window.PadiSync.user();
     sheet.form.hidden = true; sheet.acct.hidden = false;
@@ -2372,13 +2372,54 @@
   }
   const closeSheet = () => { if (sheet.dlg.open) sheet.dlg.close(); };
 
+  // Email confirmation by one-time code (new accounts, and existing accounts that were never confirmed).
+  let verifyEmail = '', verifyPassword = '', resendAt = 0, resendTimer = 0;
+  const vf = { sec: $('#asVerify'), sub: $('#asVerifySub'), form: $('#asVerifyForm'), code: $('#asCode'), err: $('#asCodeErr'), note: $('#asVerifyNote'), submit: $('#asVerifySubmit'), resend: $('#asResend'), back: $('#asVerifyBack') };
+  function resendTick() {
+    const left = Math.ceil((resendAt - Date.now()) / 1000);
+    vf.resend.disabled = left > 0; vf.resend.textContent = left > 0 ? 'Send a new code (' + left + 's)' : 'Send a new code';
+    if (left > 0) resendTimer = setTimeout(resendTick, 1000);
+  }
+  function showVerifyView(email, note) {
+    verifyEmail = email; verifyPassword = sheet.pw.value || verifyPassword; sheet.pw.value = '';
+    sheet.form.hidden = true; sheet.acct.hidden = true; vf.sec.hidden = false;
+    vf.sub.textContent = 'We sent a 6-digit code to ' + email + '. It can take a minute; check your spam folder too.';
+    vf.note.textContent = note || ''; vf.err.hidden = true; vf.code.value = '';
+    clearTimeout(resendTimer); resendAt = Date.now() + 30000; resendTick();
+    if (!isMobile()) vf.code.focus();
+  }
+  vf.code.addEventListener('input', () => { vf.code.value = vf.code.value.replace(/\D/g, '').slice(0, 6); vf.err.hidden = true; });
+  vf.form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    if (vf.code.value.length !== 6) { vf.err.textContent = 'Enter the 6-digit code.'; vf.err.hidden = false; vf.code.focus(); return; }
+    vf.submit.disabled = true; vf.note.textContent = 'Checking…';
+    try {
+      await window.PadiSync.verifyEmail(verifyEmail, vf.code.value, verifyPassword);
+      verifyPassword = ''; vf.sec.hidden = true; problemKind = ''; refreshAcct(); watchLive(); refreshPlans();
+      showAccountView('Email confirmed', 'Checking your plans…');
+      await syncAndReport(true);
+    } catch (err) {
+      vf.note.textContent = '';
+      if (err && err.code === 'verified') { verifyPassword = ''; vf.sec.hidden = true; showFormView(); setMode('signin'); sheet.email.value = verifyEmail; showBanner(err.message, { ok: true }); }
+      else { vf.err.textContent = (err && err.message) || 'That code is not right.'; vf.err.hidden = false; vf.code.select(); }
+    } finally { vf.submit.disabled = false; }
+  });
+  vf.resend.addEventListener('click', async () => {
+    vf.resend.disabled = true; vf.err.hidden = true;
+    try { await window.PadiSync.sendVerifyCode(verifyEmail); vf.note.textContent = 'A new code is on its way.'; resendAt = Date.now() + 30000; }
+    catch (err) { vf.note.textContent = ''; vf.err.textContent = (err && err.message) || 'Could not send the code.'; vf.err.hidden = false; resendAt = 0; }
+    resendTick();
+  });
+  vf.back.addEventListener('click', () => { verifyPassword = ''; vf.sec.hidden = true; showFormView(); setMode('signup'); sheet.email.focus(); });
+
   function handleAuthError(err) {
     refreshAcct();
     const code = err && err.code;
     if (code === 'cookies') {
       problemKind = 'cookies'; refreshAcct();
       showBanner((err.created ? 'Your account was created. ' : '') + err.message, { help: browserSteps(), detail: err.detail, action: { label: 'Continue without syncing', run: closeSheet } });
-    } else if (code === 'exists') showBanner(err.message, { action: { label: 'Sign in instead', run: () => setMode('signin') } });
+    } else if (code === 'verify' && err.email) showVerifyView(err.email, err.created ? 'Your account was created. Enter the code we emailed you.' : 'Your email is not confirmed yet. Enter the code we emailed you.');
+    else if (code === 'exists') showBanner(err.message, { action: { label: 'Sign in instead', run: () => setMode('signin') } });
     else if (code === 'badlogin') showBanner(err.message, { action: { label: 'New here? Create an account', run: () => setMode('signup') } });
     else if (code === 'password') fieldError(sheet.pw, sheet.pwErr, err.message);
     else if (code === 'email') fieldError(sheet.email, sheet.emailErr, err.message);

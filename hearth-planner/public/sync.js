@@ -89,7 +89,7 @@
     if (/PASSWORD_TOO_SHORT|too short/i.test(code + ' ' + msg)) return out('Use at least 8 characters for your password.', 'password');
     if (/PASSWORD_TOO_LONG|too long/i.test(code + ' ' + msg)) return out('That password is too long. Use fewer characters.', 'password');
     if (/INVALID_EMAIL|invalid email/i.test(code + ' ' + msg)) return out('That email address does not look right.', 'email');
-    if (/EMAIL_NOT_VERIFIED|not verified|verify your email/i.test(code + ' ' + msg)) return out('Please confirm your email address first. Check your inbox for the link, then sign in.', 'verify');
+    if ((/EMAIL_NOT_VERIFIED|EMAIL_NOT_CONFIRMED|EmailNotConfirmed|not verified|verify your email|verification required|confirm your email/i.test(code + ' ' + msg) || (status === 403 && action === 'signin'))) return out('Confirm your email address first. Enter the code we sent you.', 'verify');
     if (status === 429 || /too many|rate limit/i.test(msg)) return out('Too many attempts. Wait a minute and try again.', 'rate');
     if (status >= 500) return out('The sign-in service had a problem. Try again in a moment.', 'server');
     return out(msg && msg.length < 140 ? msg : (action === 'signup' ? 'Could not create the account. Please try again.' : 'Could not sign in. Please try again.'), 'other');
@@ -159,7 +159,7 @@
       var user = result.data && result.data.user;
       if (!user || !(result.data.token || result.data.session)) {      // no session yet (e.g. email check on): sign in right away
         try { user = (await authCall(function () { return authClient.signIn.email({ email: email, password: password }); }, 'signin')).data.user; }
-        catch (e) { if (!user) throw e; throw problem('Account created. Check your email to confirm it, then sign in.', 'verify'); }
+        catch (e) { if (!user) throw e; throw problem('Account created. Enter the code we emailed you to confirm it.', 'verify', { email: email, created: true }); }
       }
       session = { user: user };
       try { await confirmSession(); } catch (e) { e.created = true; throw e; }
@@ -167,7 +167,9 @@
       return user;
     },
     signIn: async function (email, password) {
-      var result = await authCall(function () { return authClient.signIn.email({ email: email, password: password }); }, 'signin');
+      var result;
+      try { result = await authCall(function () { return authClient.signIn.email({ email: email, password: password }); }, 'signin'); }
+      catch (e) { if (e && e.code === 'verify') e.email = email; throw e; }
       if (!result.data || !result.data.user) throw problem('Could not sign in. Please try again.', 'other');
       session = { user: result.data.user };
       await confirmSession();
@@ -204,6 +206,32 @@
       if (!url) throw problem('Google sign-in could not start. Use your email and password, or try again.', 'google');
       try { sessionStorage.setItem('guided.googleBack', '1'); } catch (e) { /* ignore */ }
       location.assign(url);
+    },
+    // Email confirmation by one-time code. New accounts get the code on sign-up; an unconfirmed account gets one when it tries to sign in.
+    sendVerifyCode: async function (email) {
+      var r = await fetch(authBase + '/email-otp/send-verification-otp', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ email: email, type: 'email-verification' }) });
+      if (r.status === 429) throw problem('Too many requests. Wait a minute and try again.', 'rate');
+      if (!r.ok) throw problem('We could not send the code. Please try again.', 'other');
+    },
+    verifyEmail: async function (email, otp, password) {
+      var r, j = {};
+      try { r = await fetch(authBase + '/email-otp/verify-email', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ email: email, otp: otp }) }); j = await r.json().catch(function () { return {}; }); }
+      catch (e) { throw problem('Could not reach the sign-in service. Check your connection and try again.', 'network'); }
+      if (!r.ok) {
+        var c = String(j.code || '') + ' ' + String(j.message || '');
+        if (/EXPIRED/i.test(c)) throw problem('That code has expired. Send a new one.', 'expired');
+        if (/TOO_MANY/i.test(c) || r.status === 429) throw problem('Too many wrong tries. Send a new code.', 'expired');
+        throw problem('That code is not right. Check it and try again.', 'badcode');
+      }
+      var cur = null;
+      try { cur = await authClient.getSession(); } catch (e) { /* fall through to password sign-in */ }
+      var user = cur && cur.data && cur.data.user;
+      if (!user && password) { try { var si = await authClient.signIn.email({ email: email, password: password }); user = si && si.data && si.data.user; } catch (e) { /* handled below */ } }
+      if (!user) throw problem('Your email is confirmed. Now sign in with your password.', 'verified');
+      session = { user: user };
+      await confirmSession();
+      window.dispatchEvent(new Event('guided:auth-changed'));
+      return user;
     },
     signOut: async function () { try { if (authClient) await authClient.signOut(); } catch (e) { /* signing out locally is enough */ } session = null; store(); window.dispatchEvent(new Event('guided:auth-changed')); },
     watch: async function (onChange) {
