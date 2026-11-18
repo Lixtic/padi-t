@@ -2213,7 +2213,7 @@
       try {
         if (sessionStorage.getItem('guided.googleBack') === '1') {
           sessionStorage.removeItem('guided.googleBack');
-          if (!signedIn()) { openSheet(); showBanner('Google sign-in did not finish. Try again, or use your email and password.'); }
+          if (!signedIn()) { openSheet(); showBanner('Google sign-in did not finish. Try again, or use your email and password. ' + (window.PadiSync.lastDetail() || '')); }
         }
       } catch (e) { /* storage blocked */ }
       refreshPlans();

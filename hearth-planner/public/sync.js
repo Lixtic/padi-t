@@ -131,9 +131,16 @@
         authClient = window.NeonAuth.createAuthClient(authBase);
         directBase = c.authDirectUrl || '';
         try {
+          var qs = new URLSearchParams(location.search), hadVerifier = qs.has('neon_auth_session_verifier'), oerr = qs.get('error') || '';
           var current = await authClient.getSession();
           session = current && current.data && current.data.user ? { user: current.data.user } : null;
-        } catch (e) { session = null; }                                // a failed check just means "not signed in"
+          if (hadVerifier && !session) {                               // returning from Google: one more try, then keep the reason
+            var again = await authClient.getSession().catch(function () { return null; });
+            session = again && again.data && again.data.user ? { user: again.data.user } : null;
+            if (!session) lastDetail = 'Technical details: returned with verifier, no session' + (current && current.error ? ' (' + (current.error.status || '') + ' ' + (current.error.message || '') + ')' : '');
+          } else if (oerr) lastDetail = 'Technical details: Google returned error ' + oerr;
+          else if (!hadVerifier && sessionStorage.getItem('guided.googleBack')) lastDetail = 'Technical details: returned without a session verifier';
+        } catch (e) { session = null; lastDetail = 'Technical details: ' + (e && e.message); }                                // a failed check just means "not signed in"
       }
       return enabled;
     },
