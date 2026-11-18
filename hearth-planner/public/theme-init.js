@@ -30,8 +30,16 @@
       // the bottom-navigation reservation while the keyboard owns that space.
       var keyboardOpen = !!(vv && window.innerHeight - height > 120);
       if (document.body) document.body.classList.toggle('keyboard-open', keyboardOpen);
-      root.style.setProperty('--app-top', Math.round(top) + 'px');
-      root.style.setProperty('--app-h', Math.round(height) + 'px');
+      // Only follow the visual viewport while the keyboard is open. With the keyboard closed, iOS Chrome and Safari report an
+      // offset and height that change as their toolbars collapse and expand; following them pushed the whole app down and cut
+      // it short. Closed, the app simply fills the screen (top 0, 100dvh from the stylesheet).
+      if (keyboardOpen) {
+        root.style.setProperty('--app-top', Math.round(top) + 'px');
+        root.style.setProperty('--app-h', Math.round(height) + 'px');
+      } else {
+        root.style.removeProperty('--app-top');
+        root.style.removeProperty('--app-h');
+      }
     }
   }
   function queue() { if (!raf) raf = requestAnimationFrame(size); }
