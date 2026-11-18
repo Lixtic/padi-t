@@ -1900,8 +1900,8 @@
     if (!e) {
       const last = S.span(p.subject, p.cls, p.term || termNow());
       schemeStrip.replaceChildren(h('p', { class: 'scheme-note', text: last
-        ? 'Your ' + termWord(p.cls) + ' ' + (p.term || termNow()) + ' scheme covers Weeks 1 to ' + last + '. Claude will choose the topic for Week ' + p.week + '.'
-        : 'No scheme is loaded for this subject and class yet. Claude will choose the strand and topic.' }));
+        ? 'Your ' + termWord(p.cls) + ' ' + (p.term || termNow()) + ' scheme covers Weeks 1 to ' + last + '. GuidEd will choose the topic for Week ' + p.week + '.'
+        : 'No scheme is loaded for this subject and class yet. GuidEd will choose the strand and topic.' }));
     } else if (e.type === 'exam') {
       schemeStrip.replaceChildren(h('div', { class: 'scheme-top' }, h('span', { class: 'scheme-tag', text: e.term }), h('span', { class: 'scheme-line', text: 'Week ' + e.weeks.join(' and ') + ': examinations' })),
         h('p', { class: 'scheme-note', text: 'There is no lesson plan for examination weeks. Choose another week.' }));
@@ -1915,7 +1915,7 @@
     } else if (!e.strand && !e.standard) {            // the school gave only the indicator
       schemeStrip.replaceChildren(h('div', { class: 'scheme-top' }, tag(p.week)),
         h('p', { class: 'scheme-line', text: e.indicators.join(' ') }),
-        h('p', { class: 'scheme-note', text: 'Your scheme gives the indicator only. Claude will match the NaCCA strand and content standard to its code.' }));
+        h('p', { class: 'scheme-note', text: 'Your scheme gives the indicator only. GuidEd will match the NaCCA strand and content standard to its code.' }));
     } else {
       const n = e.indicators.length;
       schemeStrip.replaceChildren(
