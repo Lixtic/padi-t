@@ -1,4 +1,16 @@
 (function () {
+  // iPhone Chrome, Firefox and Edge draw their own toolbars above and below the page, yet still report the notch and home-bar
+  // safe areas, so the app padded for them a second time and left black bands above the header and below the nav. Those browsers
+  // never need viewport-fit=cover in a normal tab (the installed app and Safari do), so drop it there and the insets become 0.
+  try {
+    var standalone = window.navigator.standalone === true || (window.matchMedia && window.matchMedia('(display-mode: standalone)').matches);
+    if (!standalone && /\b(CriOS|FxiOS|EdgiOS|OPiOS)\//.test(navigator.userAgent)) {
+      var m = document.querySelector('meta[name="viewport"]');
+      if (m) m.setAttribute('content', m.getAttribute('content').replace(/,?\s*viewport-fit=cover/, ''));
+    }
+  } catch (e) { /* keep the default viewport */ }
+})();
+(function () {
   try {
     var t = localStorage.getItem('schoolpadi.theme');
     if (t !== 'light' && t !== 'dark') {
