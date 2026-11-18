@@ -10,7 +10,7 @@ const FLAGS = [
   ['embedded_section_heading', /content\s+indicators?|core\s+competencies|curriculum\s+indicators/i],
   ['competency_code_in_content', /\b(?:CC|CI|CP)\d+\.\d+\b/i],
   ['document_control_text', /critical\s+thinking|communication\s+and\s+collaboration/i],
-  ['repeated_whitespace_or_punctuation', /(?:\s{3,}|(?:\b\w+\b)(?:\s+\1){2,})/i]
+  ['repeated_whitespace_or_punctuation', /(?:\s{3,}|(\b\w+\b)(?:\s+\1){2,})/i]
 ];
 
 function audit(data, manifest) {
@@ -139,7 +139,7 @@ if (require.main === module) {
     if (!source.listedOnOfficialIndex || !String(source.sourceUrl || '').startsWith('https://nacca.gov.gh/')) report.structuralErrors.push('Source is not confirmed as an official NaCCA index entry: ' + source.subject);
   }
   if (process.argv.includes('--json')) {
-    process.stdout.write(JSON.stringify({ ...report, sourceRegister }, null, 2) + '\\n');
+    process.stdout.write(JSON.stringify({ ...report, sourceRegister }, null, 2) + '\n');
     if (report.structuralErrors.length) process.exitCode = 1;
   } else if (process.argv.includes('--check')) {
     console.log('Curriculum index: ' + report.actualCount + ' records; declared count ' + (report.countMatches ? 'matches' : 'DOES NOT MATCH') + '.');
