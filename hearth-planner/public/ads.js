@@ -6,6 +6,7 @@
   'use strict';
   var cfg = null, failed = false;
   var started = {};                                           // per slot: an ad is only requested once for each box
+  var mainVisible = false, parentVisible = false;
   var el = function () { return document.getElementById('adSlot'); };
   var parentEl = function () { return document.getElementById('adSlotParent'); };
   var isParent = function () { return document.body.classList.contains('role-parent'); };
@@ -59,14 +60,16 @@
   // show: whether the start screen is showing and nothing is being written.
   function sync(show) {
     var slot = el(); if (!slot) return;
-    var on = !!show && eligible() && !isParent();               // a parent never sees the teacher start screen
+    mainVisible = !!show;
+    var on = mainVisible && eligible() && !isParent();               // a parent never sees the teacher start screen
     slot.hidden = !on;
     if (on) start(slot);
   }
   // The parent dashboard's one banner: its home tab only. show is false inside a lesson, a result, My Children or Progress.
   function syncParent(show) {
     var slot = parentEl(); if (!slot) return;
-    var on = !!show && eligible() && isParent();
+    parentVisible = !!show;
+    var on = parentVisible && eligible() && isParent();
     slot.hidden = !on;
     if (on) start(slot);
   }
@@ -76,6 +79,6 @@
     syncParent: syncParent,
     enabled: function () { return !!cfg && !!(window.GuidedConsent && window.GuidedConsent.allowed('marketing')); },
   };
-  document.addEventListener('guided:consentchange', function () { sync(!!el() && !el().hidden); syncParent(!!parentEl() && !parentEl().hidden); });
+  document.addEventListener('guided:consentchange', function () { sync(mainVisible); syncParent(parentVisible); });
   guard();
 })();
