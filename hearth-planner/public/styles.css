@@ -2164,3 +2164,14 @@ main[data-view="chat"] .notice-bar { display: none; }
 #asCode { font-size: 24px; font-weight: 700; letter-spacing: .4em; text-align: center; padding-left: .4em; font-variant-numeric: tabular-nums; }
 #asVerify .as-result { min-height: 20px; margin: 6px 0 10px; }
 #asVerify .as-link { display: block; }
+
+/* Welcome tour */
+.tour-sheet { text-align: center; }
+.tour-icon { font-size: 44px; line-height: 1; margin: 6px 0 10px; }
+.tour-body h2 { margin: 0 0 6px; }
+.tour-dots { display: flex; justify-content: center; gap: 7px; margin: 16px 0 18px; }
+.tour-dots span { width: 7px; height: 7px; border-radius: 50%; background: var(--line); }
+.tour-dots span.on { width: 20px; border-radius: 4px; background: var(--accent); }
+.tour-actions { display: flex; gap: 10px; }
+.tour-actions .as-submit { flex: 1; }
+.tour-actions .as-second { min-width: 88px; }

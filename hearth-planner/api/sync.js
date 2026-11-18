@@ -34,6 +34,17 @@ module.exports = async (req, res) => {
             ['notice-' + notice.id + '-' + me.uid, me.uid, 'announcement:' + notice.id, 'announcement', notice.kind === 'warn' ? 'Important GuidEd announcement' : 'GuidEd announcement', notice.text, '/', Date.now()]
           );
         }
+        // One welcome message for accounts made in the last week (older accounts are not greeted again).
+        try {
+          const [u] = await db.query('select "createdAt" as made from neon_auth."user" where id = $1', [me.uid]);
+          const made = u && u.made ? new Date(u.made).getTime() : 0;
+          if (made && Date.now() - made < 7 * 24 * 60 * 60 * 1000) {
+            await db.query(
+              'insert into notifications (id,user_id,dedupe_key,type,title,body,url,created_at) values ($1,$2,$3,$4,$5,$6,$7,$8) on conflict (user_id,dedupe_key) do nothing',
+              ['welcome-' + me.uid, me.uid, 'welcome', 'welcome', 'Welcome to GuidEd 👋', 'Your account is ready. Tap here for a one-minute tour of the app.', '/?tour=1', made]
+            );
+          }
+        } catch (e) { /* no Neon Auth schema here: skip the welcome */ }
         const rows = await db.query(
           'select id,type,title,body,url,created_at,read_at from notifications where user_id = $1 order by created_at desc limit 50',
           [me.uid]
