@@ -12,7 +12,7 @@
 
   function eligible() {
     var GP = window.GuidedPlans, t = GP && GP.tier && GP.tier();
-    return !!cfg && !failed && (t === 'free' || t === 'guest');          // Pro, and installs with no plans, see nothing
+    return !!cfg && !failed && window.GuidedConsent && window.GuidedConsent.allowed('marketing') && (t === 'free' || t === 'guest');          // Pro, and installs with no plans, see nothing
   }
   function start(slot) {
     if (!slot || started[slot.id]) return; started[slot.id] = true;
@@ -74,7 +74,8 @@
     init: function (c) { cfg = c && c.client && c.slot ? c : null; if (window.GuidedParentDashboard && window.GuidedParentDashboard.syncAds) setTimeout(window.GuidedParentDashboard.syncAds, 0); ['adUpgrade', 'adUpgradeParent'].forEach(function (id) { var up = document.getElementById(id); if (up) up.addEventListener('click', function () { if (window.GuidedPlans) window.GuidedPlans.openUpgrade('', 'GuidEd Pro has no ads.'); }); }); },
     sync: sync,
     syncParent: syncParent,
-    enabled: function () { return !!cfg; },
+    enabled: function () { return !!cfg && !!(window.GuidedConsent && window.GuidedConsent.allowed('marketing')); },
   };
-  guard();   // the AdSense snippet sits in <head> for site verification, so watch from the start
+  document.addEventListener('guided:consentchange', function () { sync(!!el() && !el().hidden); syncParent(!!parentEl() && !parentEl().hidden); });
+  guard();
 })();
