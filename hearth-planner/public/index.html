@@ -168,6 +168,23 @@
     <p class="as-foot" id="asFoot">You can use GuidEd without an account. Signing in only adds sync between your devices. <a href="privacy">Privacy</a> · <a href="about">About</a> · <a href="lesson-plans">Free GES lesson plans</a> · <a href="/product">Discover GuidED</a></p>
   </section>
 
+  <section id="asVerify" hidden>
+    <div class="as-badge" aria-hidden="true"><svg class="ico"><use href="#i-check"/></svg></div>
+    <h2 id="asVerifyTitle">Check your email</h2>
+    <p class="as-sub" id="asVerifySub">We sent a 6-digit code to your email.</p>
+    <form id="asVerifyForm" novalidate>
+      <div class="as-field">
+        <label for="asCode">Confirmation code</label>
+        <input id="asCode" name="code" type="text" inputmode="numeric" autocomplete="one-time-code" pattern="[0-9]*" placeholder="123456" autocapitalize="off" autocorrect="off" spellcheck="false" enterkeyhint="go">
+        <p class="as-err" id="asCodeErr" role="alert" hidden></p>
+      </div>
+      <p class="as-result" id="asVerifyNote" role="status" aria-live="polite"></p>
+      <button type="submit" class="as-submit" id="asVerifySubmit"><span>Confirm email</span></button>
+    </form>
+    <button type="button" class="as-link" id="asResend">Send a new code</button>
+    <button type="button" class="as-link" id="asVerifyBack">Use a different email</button>
+  </section>
+
   <section id="asAccount" hidden>
     <div class="as-badge" id="asBadge" aria-hidden="true"><svg class="ico"><use href="#i-check"/></svg></div>
     <h2 id="asAcctTitle">You are signed in</h2>
