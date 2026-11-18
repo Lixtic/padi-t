@@ -2039,7 +2039,7 @@
       const j = await res.json();
       state.config = { loaded: true, demo: !!j.demo, provider: j.provider || null, accessRequired: !!j.accessRequired };
       if (window.GuidedAds) { window.GuidedAds.init(j.ads); showNotice(j.notice); updateView(); }
-      initAccount(Object.assign({}, j.sync || {}, { enabled: !!(j.auth && j.auth.enabled), syncEnabled: !!j.sync, authUrl: j.auth && j.auth.url }));
+      await initAccount(Object.assign({}, j.sync || {}, { enabled: !!(j.auth && j.auth.enabled), syncEnabled: !!j.sync, authUrl: j.auth && j.auth.url }));
     } catch (e) {
       state.config = { loaded: true, demo: true, provider: null, accessRequired: false };   // static preview, no server
     }
@@ -2204,14 +2204,14 @@
     else { setMode('forgot'); showBanner('This reset link has expired or was already used. Enter your email to get a new one.'); }
   }
   function initAccount(cfg) {
-    if (!window.PadiSync || !cfg) return;
-    window.PadiSync.init(cfg).then(() => {
+    if (!window.PadiSync || !cfg) return Promise.resolve();
+    return window.PadiSync.init(cfg).then(() => {
       refreshAcct();
       if (signedIn() && window.PadiSync.syncAvailable()) { syncNow(); watchLive(); }
       openResetFromLink();
       refreshPlans();
       setTimeout(maybeAskAudience, 400);   // only once the saved sign-in has been restored, so returning users are never asked
-    }).catch((e) => acctMsg(e.message, true));
+    }).catch((e) => { acctMsg(e.message, true); });
   }
 
   /* ── Sign in / create account sheet ── */
