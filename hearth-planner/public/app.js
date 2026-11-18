@@ -2039,7 +2039,7 @@
       const j = await res.json();
       state.config = { loaded: true, demo: !!j.demo, provider: j.provider || null, accessRequired: !!j.accessRequired };
       if (window.GuidedAds) { window.GuidedAds.init(j.ads); showNotice(j.notice); updateView(); }
-      initAccount(Object.assign({}, j.sync || {}, { enabled: !!(j.auth && j.auth.enabled), syncEnabled: !!j.sync, authUrl: j.auth && j.auth.url, authDirectUrl: j.auth && j.auth.direct }));
+      await initAccount(Object.assign({}, j.sync || {}, { enabled: !!(j.auth && j.auth.enabled), syncEnabled: !!j.sync, authUrl: j.auth && j.auth.url, authDirectUrl: j.auth && j.auth.direct }));
     } catch (e) {
       state.config = { loaded: true, demo: true, provider: null, accessRequired: false };   // static preview, no server
     }
@@ -2204,8 +2204,8 @@
     else { setMode('forgot'); showBanner('This reset link has expired or was already used. Enter your email to get a new one.'); }
   }
   function initAccount(cfg) {
-    if (!window.PadiSync || !cfg) return;
-    window.PadiSync.init(cfg).then(() => {
+    if (!window.PadiSync || !cfg) return Promise.resolve();
+    return window.PadiSync.init(cfg).then(() => {
       refreshAcct();
       if (signedIn() && window.PadiSync.syncAvailable()) { syncNow(); watchLive(); }
       openResetFromLink();
@@ -2218,7 +2218,7 @@
       } catch (e) { /* storage blocked */ }
       refreshPlans();
       setTimeout(maybeAskAudience, 400);   // only once the saved sign-in has been restored, so returning users are never asked
-    }).catch((e) => acctMsg(e.message, true));
+    }).catch((e) => { acctMsg(e.message, true); });
   }
 
   /* ── Sign in / create account sheet ── */
@@ -2583,9 +2583,11 @@
     }
 
     // Public lesson-plan catalogue links can preselect a validated JHS plan.
-    // Apply after saved/profile defaults so an explicit teacher choice in the link wins.
+    // The catalogue flag additionally starts the standard shared weekly package automatically.
+    let catalogueAuto = false, catalogueSelectionValid = false;
     try {
       const q = new URLSearchParams(location.search);
+      catalogueAuto = q.get('catalogue') === '1';
       const linkedClass = q.get('class');
       const linkedSubject = q.get('subject');
       const linkedTerm = Number(q.get('term'));
@@ -2594,11 +2596,15 @@
           subjectsOf(linkedClass).includes(linkedSubject) &&
           termsFor(linkedClass).includes(linkedTerm) &&
           weeksFor(linkedClass).includes(linkedWeek)) {
+        catalogueSelectionValid = true;
         state.params.cls = linkedClass;
         state.params.subject = linkedSubject;
         state.params.term = linkedTerm;
         state.params.week = linkedWeek;
-        state.params.mode = 'plan';
+        // Use the normal shared lesson-plan package, not the lesson-plan-only output override.
+        state.params.mode = 'full';
+        state.params.studyNotes = true;
+        state.params.bece = true;
         termSet(linkedTerm);
         store.save(true);
       }
@@ -2642,7 +2648,23 @@
     state.sessions.unshift(s);
     showSession(s.id);
     if (!coarse && !isMobile()) promptEl.focus();
-    loadConfig();
+    loadConfig().then(() => {
+      if (!catalogueAuto) return;
+      // Remove the one-shot flag before starting so refreshes never generate duplicates.
+      try { const u = new URL(location.href); u.searchParams.delete('catalogue'); history.replaceState(null, '', u.pathname + u.search + u.hash); } catch (e) { /* ignore */ }
+      if (!catalogueSelectionValid) {
+        toast('That lesson-plan selection is not valid. Please return to the catalogue and choose it again.');
+        return;
+      }
+      state.params.mode = 'full';
+      state.params.studyNotes = true;
+      state.params.bece = true;
+      promptEl.value = 'Create the complete weekly lesson plan package using GuidEd’s standard shared lesson-plan output format for the selected class, subject, term and week. Follow the selected week’s curriculum scheme. Include the lesson metadata, both lessons, study notes, BECE practice and assessment rubric required by the standard JHS format.';
+      autoGrow();
+      submit();
+    }).catch(() => {
+      if (catalogueAuto) toast('GuidEd could not start the lesson plan. Please try again.');
+    });
     setInterval(() => { renderSessions(); updateTopbar(); }, 30000);
   }
 
