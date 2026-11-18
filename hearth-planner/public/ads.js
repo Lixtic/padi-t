@@ -6,13 +6,14 @@
   'use strict';
   var cfg = null, failed = false;
   var started = {};                                           // per slot: an ad is only requested once for each box
+  var mainVisible = false, parentVisible = false;
   var el = function () { return document.getElementById('adSlot'); };
   var parentEl = function () { return document.getElementById('adSlotParent'); };
   var isParent = function () { return document.body.classList.contains('role-parent'); };
 
   function eligible() {
     var GP = window.GuidedPlans, t = GP && GP.tier && GP.tier();
-    return !!cfg && !failed && (t === 'free' || t === 'guest');          // Pro, and installs with no plans, see nothing
+    return !!cfg && !failed && window.GuidedConsent && window.GuidedConsent.allowed('marketing') && (t === 'free' || t === 'guest');          // Pro, and installs with no plans, see nothing
   }
   function start(slot) {
     if (!slot || started[slot.id]) return; started[slot.id] = true;
@@ -59,14 +60,16 @@
   // show: whether the start screen is showing and nothing is being written.
   function sync(show) {
     var slot = el(); if (!slot) return;
-    var on = !!show && eligible() && !isParent();               // a parent never sees the teacher start screen
+    mainVisible = !!show;
+    var on = mainVisible && eligible() && !isParent();               // a parent never sees the teacher start screen
     slot.hidden = !on;
     if (on) start(slot);
   }
   // The parent dashboard's one banner: its home tab only. show is false inside a lesson, a result, My Children or Progress.
   function syncParent(show) {
     var slot = parentEl(); if (!slot) return;
-    var on = !!show && eligible() && isParent();
+    parentVisible = !!show;
+    var on = parentVisible && eligible() && isParent();
     slot.hidden = !on;
     if (on) start(slot);
   }
@@ -74,7 +77,8 @@
     init: function (c) { cfg = c && c.client && c.slot ? c : null; if (window.GuidedParentDashboard && window.GuidedParentDashboard.syncAds) setTimeout(window.GuidedParentDashboard.syncAds, 0); ['adUpgrade', 'adUpgradeParent'].forEach(function (id) { var up = document.getElementById(id); if (up) up.addEventListener('click', function () { if (window.GuidedPlans) window.GuidedPlans.openUpgrade('', 'GuidEd Pro has no ads.'); }); }); },
     sync: sync,
     syncParent: syncParent,
-    enabled: function () { return !!cfg; },
+    enabled: function () { return !!cfg && !!(window.GuidedConsent && window.GuidedConsent.allowed('marketing')); },
   };
-  guard();   // the AdSense snippet sits in <head> for site verification, so watch from the start
+  document.addEventListener('guided:consentchange', function () { sync(mainVisible); syncParent(parentVisible); });
+  guard();
 })();
