@@ -4,3 +4,4 @@ Allow: /api/config
 Disallow: /api/
 
 Sitemap: https://www.guidedgh.site/sitemap.xml
+Sitemap: https://www.guidedgh.site/news-sitemap.xml

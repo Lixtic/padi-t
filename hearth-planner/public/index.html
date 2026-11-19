@@ -327,7 +327,7 @@
 <dialog class="acct-sheet up-sheet fb-inbox" id="adminSheet" aria-labelledby="adTitle">
   <button type="button" class="icon-btn as-close" id="adClose" aria-label="Close"><svg class="ico"><use href="#i-x"/></svg></button>
   <section>
-    <h2 id="adTitle" tabindex="-1" autofocus>Admin: teachers, announcements, knowledge</h2>
+    <h2 id="adTitle" tabindex="-1" autofocus>Admin: teachers, announcements, news, knowledge</h2>
     <p class="as-sub">Look up a teacher, give or take off Pro days, pause an account, or post a message everyone sees.</p>
     <div class="us-sec">
       <h3 class="ps-h">Find a teacher</h3>
@@ -345,6 +345,23 @@
         </div>
         <div class="ad-row"><button type="submit" class="primary" id="adPost">Show to everyone</button><button type="button" id="adOff">Turn off</button></div>
         <p class="us-note" id="adNoticeState"></p>
+      </form>
+    </div>
+    <div class="us-sec">
+      <h3 class="ps-h">News</h3>
+      <p class="us-note">Posts appear at <a href="/news" target="_blank" rel="noopener">/news</a> as soon as you publish. Write your own short summary and link the official source. Do not paste other websites' articles.</p>
+      <ul class="us-rows news-list" id="newsList"></ul>
+      <form class="ad-notice" id="newsForm">
+        <input type="hidden" id="newsId">
+        <div class="ad-row"><label class="kb-file">Headline <input type="text" id="newsTitle" maxlength="140" placeholder="WAEC releases the 2027 BECE timetable" required></label></div>
+        <div class="ad-row"><label class="kb-file">Summary <small>(one or two sentences, shown in search results)</small> <textarea id="newsSummary" rows="2" maxlength="300" required></textarea></label></div>
+        <div class="ad-row"><label class="kb-file">Post <small>(blank line = new paragraph, "## " = heading, "- " = bullet, [text](https://link) = link)</small> <textarea id="newsBody" rows="9" maxlength="20000" required></textarea></label></div>
+        <div class="ad-row">
+          <label class="kb-file">Source name <input type="text" id="newsSourceName" maxlength="120" placeholder="WAEC"></label>
+          <label class="kb-file">Source link <input type="url" id="newsSourceUrl" placeholder="https://waecgh.org/..."></label>
+        </div>
+        <div class="ad-row"><button type="submit" class="primary" id="newsPublish">Publish</button><button type="button" id="newsDraft">Save as draft</button><button type="button" id="newsNew" hidden>New post</button></div>
+        <p class="us-note" id="newsState" role="status"></p>
       </form>
     </div>
     <div class="us-sec">
@@ -523,6 +540,9 @@
       </button>
       <a class="foot-link" href="/guides" aria-label="Guides">
         <svg class="ico"><use href="#i-book"/></svg><span>Guides</span>
+      </a>
+      <a class="foot-link" href="/news" aria-label="News">
+        <svg class="ico"><use href="#i-book"/></svg><span>News</span>
       </a>
       <a class="foot-link" href="/product" aria-label="Discover GuidED">
         <svg class="ico"><use href="#i-book"/></svg><span>Discover GuidED</span>
@@ -718,7 +738,7 @@
         <h1>Which week are we planning?</h1>
         <p>Choose a subject, class and week. GuidEd writes two 60-minute lessons, study notes and BECE practice, ready for Word.</p>
         <p class="hero-more">GuidEd is a free lesson-planning assistant for Ghana teachers, Basic 1 to SHS 3, following the GES and NaCCA scheme of learning. It also helps parents follow what their children are learning.</p>
-        <p class="hero-links"><a href="/guides">Teaching guides</a><span aria-hidden="true">·</span><a href="/lesson-plans">Free lesson plans</a><span aria-hidden="true">·</span><a href="/product">How GuidEd works</a></p>
+        <p class="hero-links"><a href="/guides">Teaching guides</a><span aria-hidden="true">·</span><a href="/news">News</a><span aria-hidden="true">·</span><a href="/lesson-plans">Free lesson plans</a><span aria-hidden="true">·</span><a href="/product">How GuidEd works</a></p>
       </div>
       <aside class="ad-slot" id="adSlot" aria-label="Advertisement" data-nosnippet hidden>
         <small>Advertisement</small>

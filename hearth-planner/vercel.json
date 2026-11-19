@@ -76,6 +76,9 @@
   "rewrites": [
     { "source": "/parents", "destination": "/index.html" },
     { "source": "/teachers", "destination": "/index.html" },
+    { "source": "/news", "destination": "/api/sync?what=news" },
+    { "source": "/news/:slug", "destination": "/api/sync?what=news&slug=:slug" },
+    { "source": "/news-sitemap.xml", "destination": "/api/sync?what=news-sitemap" },
     {
       "source": "/api/export-docx",
       "destination": "/api/export_docx"
