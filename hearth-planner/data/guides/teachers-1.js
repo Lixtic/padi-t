@@ -1,0 +1,100 @@
+'use strict';
+// Original guides for teachers. Plain text only; the build script turns each into a page.
+module.exports = [
+  {
+    slug: 'how-to-write-a-ges-lesson-plan', audience: 'Teachers',
+    title: 'How to Write a GES Lesson Plan, Step by Step',
+    desc: 'A practical walkthrough of the parts of a lesson plan used in Ghanaian schools, with tips for writing each part so the lesson runs smoothly.',
+    intro: 'A lesson plan is your own map for one lesson. It tells you what learners should be able to do by the end, how you will get them there, and how you will know it worked. Ghana Education Service (GES) schools usually expect a written plan, and head teachers and circuit supervisors often ask to see it. Here is a simple way to write one without spending your whole evening on it.',
+    sections: [
+      { h: 'Start with the details at the top', p: ['Write the date, class, subject, number of learners, the strand and sub-strand from your scheme of learning, and the length of the lesson. This looks like paperwork, but it helps you and anyone who reads the plan later to see exactly which part of the curriculum you were covering.'] },
+      { h: 'Write the content standard and the learning indicator', p: ['The content standard is the broad statement of what learners should know or do, and it comes straight from the curriculum. The indicator is the small, testable piece of it that you will teach today. Copy the standard as written, then write the indicator in your own words so it is clear what success looks like in this one lesson.'], ul: ['Keep to one indicator for a short lesson, or two at most for a double period.', 'Check the indicator against the scheme of learning so you do not skip ahead or repeat last week.'] },
+      { h: 'Choose a clear objective', p: ['Begin with the words "By the end of the lesson, learners will be able to" and then use a verb you can observe, such as list, sort, measure, explain, draw or compare. Avoid verbs like "understand" or "know" on their own, because you cannot see them. If you cannot tell whether a learner has reached the objective, rewrite it.'] },
+      { h: 'List your resources before you plan the activities', p: ['Write down what you will actually use: the textbook page, a chart, real objects from the community, bottle tops for counting, a story on the board. Resources that cost nothing are fine. Planning them first stops you from writing an activity you cannot carry out on the day.'] },
+      { h: 'Plan the three phases', p: ['Most lessons run in three parts. In the starter you get attention and connect to what learners already know, usually in about ten minutes. In the main part you teach and learners practise. In the closure you check what was learned and tie it back to the objective.'], ul: ['Starter: a quick question, a song, a picture or a recap game linked to the topic.', 'Main instruction: explain one idea, show an example, then let learners try it in pairs or small groups before they work alone.', 'Closure: ask two or three learners to say what they learned, and give a short task as an exit check.'] },
+      { h: 'Say what learners will be doing, not only what you will do', p: ['A weak plan lists only what the teacher says. A good plan has a column for learner activities too. If you can picture learners talking, sorting, drawing or solving, the lesson will be livelier and you will see problems sooner.'] },
+      { h: 'Decide how you will check understanding', p: ['Write one or two questions you will ask, or a small task you will mark. Include one question that needs thinking, not only recall. This is your evidence for the next lesson, so keep it short and honest.'] },
+      { h: 'Leave room for reflection', p: ['After the lesson, write two lines: what worked, and what you will change. This habit is the quickest way to improve, and it makes your next plan easier because you are not starting from nothing.'] }
+    ],
+    takeaway: 'A good plan is short enough to use and clear enough that another teacher could pick it up and teach from it. Start with the indicator, plan the learner activities, and check your plan against the scheme of learning.',
+    related: ['what-is-a-scheme-of-learning', 'starter-main-closure-lesson-phases', 'writing-good-learning-indicators']
+  },
+  {
+    slug: 'what-is-a-scheme-of-learning', audience: 'Teachers',
+    title: 'What Is a Scheme of Learning, and How Do You Use It?',
+    desc: 'Understand how a scheme of learning differs from a lesson plan, what it contains, and how to turn each week of it into real teaching.',
+    intro: 'Teachers in Ghana hear the terms scheme of learning, scheme of work, syllabus and lesson plan used almost interchangeably. They are related but not the same, and knowing the difference saves time and mistakes. This guide explains what a scheme of learning is and how to use it well.',
+    sections: [
+      { h: 'The big picture: curriculum, scheme, lesson plan', p: ['The curriculum sets out what learners are expected to learn in each subject and class. The scheme of learning takes a year of that curriculum and spreads it across the terms and weeks. A lesson plan then takes one week, or one lesson, and says how you will teach it. Think of it as a journey: the curriculum is the destination, the scheme is the route with stops, and the lesson plan is the detailed directions for one leg.'] },
+      { h: 'What you usually find in a scheme of learning', ul: ['The term and week number.', 'The strand and sub-strand, which name the topic area.', 'The content standard and the indicators for that stretch of teaching.', 'Sometimes suggested resources or notes on assessment.', 'Weeks set aside for revision, exams or school activities, so you can see real teaching time.'] },
+      { h: 'Why not just follow your own order?', p: ['It is tempting to teach the topics you like first. The trouble is that learners move between classes and schools, and many ideas build on earlier ones. Following the scheme keeps your class in step with the curriculum and with the exam, and it makes a handover easy if another teacher takes over your class.'] },
+      { h: 'How to use it each week', p: ['Open the scheme on Sunday evening or at the start of the week. Find the row for the coming week and read the indicators out loud to yourself. Ask what learners must already know to manage them. If a gap shows up, plan a short recap in the starter.'], ul: ['Mark any week that your school calendar shortens, such as a holiday, a sports day or an exam week.', 'If you fall behind, merge two closely related indicators rather than dropping a whole topic.', 'Keep a simple tick list so you can see at a glance what has been covered.'] },
+      { h: 'When the scheme and the real class do not match', p: ['Sometimes learners are not ready for the week on the page. The scheme is a guide, not a command. It is reasonable to spend an extra day on a hard idea, provided you plan the catch-up and tell your head teacher. What matters is that you can explain why you changed the order.'] },
+      { h: 'Using your own scheme', p: ['Some schools prepare their own scheme, or a teacher adapts the official one to local needs. That is fine, as long as it still covers the content of the curriculum for the year. GuidEd lets a teacher upload their own scheme file so that weekly plans follow it instead of the built-in one.'] }
+    ],
+    takeaway: 'The scheme of learning tells you what to teach and when. The lesson plan tells you how. Use the scheme as your calendar, and plan each week from its row.',
+    related: ['how-to-write-a-ges-lesson-plan', 'term-planning-and-teacher-workload', 'writing-good-learning-indicators']
+  },
+  {
+    slug: 'nacca-core-competencies-explained', audience: 'Teachers',
+    title: 'The Core Competencies in the Ghanaian Curriculum, Explained Simply',
+    desc: 'What the core competencies are, why they appear in lesson plans, and easy classroom examples for each one.',
+    intro: 'If you have looked at a recent lesson plan template, you have seen a line for core competencies. These are the skills the national curriculum wants learners to build in every subject, not only the facts of that subject. This guide describes them in plain language and shows how to bring them into an ordinary lesson.',
+    sections: [
+      { h: 'Why competencies matter', p: ['A learner who can recite a definition but cannot use it has not really learned it. The competencies are about using knowledge: thinking, working with others, communicating and growing as a person. They are meant to run through every lesson, from mathematics to creative arts.'] },
+      { h: 'The competencies and what they look like in class', ul: ['Critical thinking and problem solving: learners work out how to solve something rather than being told. Example: ask how many ways they can share 24 oranges fairly.', 'Creativity and innovation: learners make or design something new. Example: invent a game that practises today\'s spelling words.', 'Communication and collaboration: learners explain ideas and work in groups. Example: pairs take turns to explain a method to each other.', 'Cultural identity and global citizenship: learners connect lessons to Ghanaian culture and the wider world. Example: use local proverbs, foods or festivals in a story or a measurement task.', 'Personal development and leadership: learners take responsibility and reflect on their own learning. Example: group leaders keep time and report back.', 'Digital literacy: learners use technology safely where it is available. Example: look up a picture with the teacher, or practise typing a short sentence.'] },
+      { h: 'You do not need all of them in every lesson', p: ['Choose the one or two that fit the activity you have already planned. Trying to tick all of them leads to forced, shallow tasks. A group discussion naturally builds communication and collaboration. A "find a better way" problem builds critical thinking.'] },
+      { h: 'How to write them in your plan', p: ['Name the competency and add a few words saying how it appears. "Communication and collaboration: learners explain their sorting rule to a partner" is better than the bare label, because it shows that you have thought about it.'] },
+      { h: 'Noticing them in learners', p: ['Watch for small signs: who asks a good question, who helps a classmate, who tries a second method after the first fails. Note these on a class list. They help when you write reports and talk to parents, and they remind you that marks are not the only measure of progress.'] }
+    ],
+    takeaway: 'Competencies are habits of thinking and working. Pick one or two for each lesson, build them into the activity, and say in your plan how learners will show them.',
+    related: ['how-to-write-a-ges-lesson-plan', 'questioning-techniques-and-depth-of-knowledge', 'assessment-as-for-and-of-learning']
+  },
+  {
+    slug: 'writing-good-learning-indicators', audience: 'Teachers',
+    title: 'Writing Learning Indicators and Objectives That You Can Actually Measure',
+    desc: 'How to turn a curriculum indicator into a clear, testable lesson objective, with before-and-after examples.',
+    intro: 'The learning indicator is the heart of a lesson plan. If it is vague, the whole lesson drifts. If it is clear, the activities and the check at the end almost write themselves. Here is how to write indicators and objectives that work.',
+    sections: [
+      { h: 'Indicator and objective: what is the difference?', p: ['The indicator comes from the curriculum and describes what a learner should show at the end of a stretch of teaching. Your lesson objective is how that looks in today\'s lesson, in your words, for your class. They should point in the same direction.'] },
+      { h: 'Use a verb you can see', p: ['Replace "understand" and "know" with an action that produces evidence. Learners can name, list, match, sort, draw, measure, calculate, retell, compare, explain in their own words, or give an example.'], ul: ['Weak: Learners will understand fractions.', 'Better: Learners will be able to shade one half and one quarter of a shape and explain which part is larger.', 'Weak: Learners will know the parts of a plant.', 'Better: Learners will be able to label the root, stem, leaf and flower on a drawing and state one job of each.'] },
+      { h: 'Make it small enough for one lesson', p: ['If your objective needs three different activities and two kinds of marking, it is probably two objectives. Split it. A realistic lesson teaches one main idea well. Learners remember more when you slow down.'] },
+      { h: 'Add the condition and the standard when it helps', p: ['Sometimes it is useful to say how well or under what condition. "Using bottle tops, learners will be able to group numbers up to 20 in tens and ones, getting at least four of five examples right." This gives you a clear success mark for your exit task.'] },
+      { h: 'Test your objective with two questions', ul: ['Could I tell, by looking at a learner\'s work, whether they reached it?', 'Does it fit inside the time I have, with practice and not only explanation?'], p: ['If the answer to either is no, rewrite it before you plan the activities.'] },
+      { h: 'Match the objective to your check', p: ['Your closing question or task should test exactly what the objective says. If the objective is to compare two numbers, the exit question asks them to compare, not to recite a rule. Aligning the two is the quickest way to improve the quality of your teaching.'] }
+    ],
+    takeaway: 'Choose an observable verb, keep the objective small, and make sure the closing task tests the same thing. A clear objective makes the rest of the plan easier.',
+    related: ['how-to-write-a-ges-lesson-plan', 'assessment-as-for-and-of-learning', 'questioning-techniques-and-depth-of-knowledge']
+  },
+  {
+    slug: 'starter-main-closure-lesson-phases', audience: 'Teachers',
+    title: 'Starter, Main Instruction and Closure: Running the Three Phases of a Lesson',
+    desc: 'Practical ideas and timing for the three phases of a lesson, with examples that work in large or low-resource classrooms.',
+    intro: 'Most lesson plans in Ghana divide a lesson into a starter, a main instruction phase and a closure. Used well, this structure keeps lessons focused and gives learners time to practise. Here is how to use each phase and roughly how long to give it.',
+    sections: [
+      { h: 'Phase 1: the starter (about 10 minutes)', p: ['The starter wakes up the class and links the lesson to what learners already know. It is not a time to introduce new content. Keep it light and quick.'], ul: ['Ask two or three questions about last lesson.', 'Show a real object or picture and ask what learners notice.', 'Play a short recall game, such as "stand up if your answer is..."', 'Tell a one-minute story that leads into the topic.'] },
+      { h: 'Phase 2: main instruction (about 25 to 40 minutes)', p: ['This is where the new learning happens, and it is where many plans are too teacher-heavy. A useful pattern is: explain one idea briefly, show a worked example, try one together, and then let learners practise.'], ul: ['Teach in short chunks. After each chunk, learners do something: answer, sort, draw, write.', 'Use pair and group work so that more learners speak. Groups of four to six work in a large class if you give each member a role.', 'Walk around while learners work. This is your best chance to catch mistakes early.', 'Prepare a harder extension for fast finishers and a simpler version for learners who struggle.'] },
+      { h: 'Phase 3: closure (about 5 to 10 minutes)', p: ['Closure is often skipped when time runs out, but it is where you find out what learners took away. Protect it.'], ul: ['Ask learners to say what they learned in one sentence.', 'Give an exit question and collect or glance at answers.', 'Link back to the objective: "Today we wanted to... can we now do it?"', 'Set a short follow-up task if you give homework, and make sure learners can do it alone.'] },
+      { h: 'Adjusting for double periods and short lessons', p: ['In a 30-minute lesson, shorten the starter to about five minutes and focus the main part on a single idea. In a double period, add a second practice cycle rather than a second new topic.'] },
+      { h: 'Watching the clock without rushing', p: ['Write approximate times beside each phase in your plan. They are a guide, not a rule. If learners are clearly stuck, it is better to stay with the idea and trim the closure than to move on with half the class lost.'] }
+    ],
+    takeaway: 'A short, lively starter, a main phase where learners do most of the work, and a protected closure make a lesson that learners can follow and you can assess.',
+    related: ['how-to-write-a-ges-lesson-plan', 'teaching-large-classes-in-ghana', 'classroom-management-for-new-teachers']
+  },
+  {
+    slug: 'assessment-as-for-and-of-learning', audience: 'Teachers',
+    title: 'Assessment as, for and of Learning: What Each Means in Your Classroom',
+    desc: 'A clear explanation of the three purposes of assessment and simple ways to use each in everyday teaching.',
+    intro: 'Assessment is more than a test at the end of term. The Ghanaian curriculum talks about assessment as learning, assessment for learning and assessment of learning. They sound alike, but each has a different job. This guide explains them with examples you can use tomorrow.',
+    sections: [
+      { h: 'Assessment for learning: help the teacher teach better', p: ['This is checking during the lesson so that you can adjust. If many learners are lost, you reteach. If most have it, you move on. Nothing is recorded as a final mark.'], ul: ['Ask a question and have everyone answer on a slate or in the air with fingers.', 'Walk around and look at work in progress.', 'Use a thumbs up, sideways or down to show confidence.', 'Give a three-question mini quiz at the start of the next lesson.'] },
+      { h: 'Assessment as learning: help learners manage their own learning', p: ['Here learners look at their own work and think about it. They learn what good work looks like and what to do next.'], ul: ['Give learners a short checklist for a piece of writing and let them tick it.', 'Ask them to write one thing they did well and one thing to improve.', 'Pair learners to check each other\'s work against an example.'] },
+      { h: 'Assessment of learning: sum up what has been learned', p: ['This is the class test, end-of-term exam or school-based assessment task that produces a mark or grade. It tells learners, parents and the school where each child stands. Keep it fair by testing what you taught, and in the form you taught it.'] },
+      { h: 'A balance for a normal week', p: ['Most of your assessing should be for and as learning, because these change what happens next. A few well-designed tasks of learning are enough for the record. If your week is mostly marking, you may be spending effort where it helps least.'] },
+      { h: 'Feedback that works', ul: ['Say what is right before what is wrong.', 'Point to one or two things to fix, not twenty.', 'Give learners a chance to correct the work, because correction is where learning happens.', 'Keep a short note of common errors and use it to plan the next starter.'] },
+      { h: 'Fairness and recording', p: ['Use a marking scheme for written tasks so that marks do not depend on mood. Record marks soon after marking and keep copies of key tasks. These records protect you if a parent or supervisor asks how a grade was reached.'] }
+    ],
+    takeaway: 'Check during lessons so you can adjust, let learners reflect on their own work, and keep a small number of fair, well-marked tasks for the record.',
+    related: ['writing-good-learning-indicators', 'questioning-techniques-and-depth-of-knowledge', 'how-to-write-a-ges-lesson-plan']
+  }
+];
