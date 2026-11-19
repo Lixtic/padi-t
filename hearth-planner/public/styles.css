@@ -2237,6 +2237,7 @@ button:not(:disabled):not(.v2-tabbar button):active, [role="button"]:active, sum
   .acct-sheet[open]::backdrop, .page-in { animation: none !important; }
   .v2-tab-ind.glide { transition: none; }
   button:active, [role="button"]:active { scale: 1; }
+}
 
 /* Tour motion */
 .tour-body { position: relative; }
