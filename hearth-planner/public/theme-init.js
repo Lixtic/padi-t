@@ -46,8 +46,9 @@
       // offset and height that change as their toolbars collapse and expand; following them pushed the whole app down and cut
       // it short. Closed, the app simply fills the screen (top 0, 100dvh from the stylesheet).
       if (keyboardOpen) {
-        root.style.setProperty('--app-top', Math.round(top) + 'px');
-        root.style.setProperty('--app-h', Math.round(height) + 'px');
+        var z = parseFloat(getComputedStyle(root).getPropertyValue('--ui-zoom')) || 1;   // the page is scaled (styles.css), so measure in its units
+        root.style.setProperty('--app-top', Math.round(top / z) + 'px');
+        root.style.setProperty('--app-h', Math.round(height / z) + 'px');
       } else {
         root.style.removeProperty('--app-top');
         root.style.removeProperty('--app-h');

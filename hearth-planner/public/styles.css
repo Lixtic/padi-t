@@ -2196,3 +2196,14 @@ main[data-view="chat"] .notice-bar { display: none; }
 .ms-sheet select { padding: 11px 12px; border: 1px solid var(--line); border-radius: 12px; background: var(--card, #fff); color: inherit; font: inherit; }
 .ms-sheet .ms-help .as-link { display: inline; padding: 0; }
 .ms-sheet .tour-actions .as-submit { white-space: nowrap; }
+
+/* Display size: the app was drawn a little large, so the whole page is scaled down a notch (phones 92%, wide screens 90%).
+   Full-screen pieces are sized from the screen, so they are divided by the same number to still fill it. */
+@supports (zoom: 1) {
+  :root { --ui-zoom: .92; }
+  @media (min-width: 900px) { :root { --ui-zoom: .9; } }
+  html { zoom: var(--ui-zoom); }
+  :root { --app-h: calc(100dvh / var(--ui-zoom)); }          /* every rule that sizes the app from --app-h now gets the scaled screen height */
+  .reader-full, .deck-full { width: calc(100vw / var(--ui-zoom)); height: calc(100dvh / var(--ui-zoom)); }
+  input, select, textarea { font-size: max(16px, calc(16px / var(--ui-zoom))); }   /* iPhones zoom into fields smaller than 16px */
+}
