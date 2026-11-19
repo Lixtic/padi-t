@@ -1213,3 +1213,56 @@ body[data-studio-tab="resources"]:has(#studyNotesCurriculum:not([hidden])) .sche
 .notification-item-copy > span { color:var(--muted); font-size:.8rem; line-height:1.4; }
 .notification-item-copy small { color:var(--muted); font-size:.7rem; }
 @media (max-width:600px) { .notification-panel { position:fixed; top:calc(var(--app-top,0px) + 74px); right:12px; } }
+
+
+/* ───────── Unified account and notifications control ───────── */
+.account-cluster {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  flex: none;
+  gap: 4px;
+  min-height: 48px;
+  padding: 4px 6px 4px 5px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: var(--card);
+  color: var(--text);
+  box-shadow: 0 1px 2px rgba(0,0,0,.08);
+}
+.account-cluster > button { flex: none; }
+.account-cluster > button[hidden] { display: none !important; }
+.account-cluster .plan-badge {
+  height: 38px;
+  min-width: 0;
+  padding: 0 17px;
+  border: 0;
+  border-radius: 999px;
+  background: var(--sb-hover);
+  color: var(--text);
+  font-size: 12px;
+  letter-spacing: .08em;
+}
+.account-cluster .plan-badge[data-tier="pro"] { background: linear-gradient(135deg,#FFD54A,var(--gold)); }
+.account-cluster .acct-top,
+.account-cluster .notification-bell {
+  width: 40px;
+  height: 40px;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--muted);
+}
+.account-cluster .acct-top .ico { width: 21px; height: 21px; }
+.account-cluster .notification-bell .ico { width: 22px; height: 22px; }
+.account-cluster .acct-top:hover,
+.account-cluster .notification-bell:hover { background: var(--sb-hover); color: var(--text); }
+.account-cluster .acct-dot { top: 5px; right: 5px; }
+.account-cluster .notification-count { top: 0; right: 0; }
+.account-cluster .notification-panel { top: calc(100% + 10px); right: 0; }
+@media (max-width: 520px) {
+  .account-cluster { min-height: 44px; gap: 2px; padding: 3px 4px; }
+  .account-cluster .plan-badge { height: 34px; padding: 0 13px; }
+  .account-cluster .acct-top,
+  .account-cluster .notification-bell { width: 36px; height: 36px; }
+}
