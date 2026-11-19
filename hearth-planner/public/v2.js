@@ -122,6 +122,22 @@
       sheet.hidden = true;
       document.body.classList.remove('family-create-open');
     }
+    // A highlight that glides to the active tab instead of each tab lighting up by itself.
+    function slideIndicator(pill) {
+      var ind = document.createElement('span'); ind.className = 'v2-tab-ind'; ind.setAttribute('aria-hidden', 'true'); pill.insertBefore(ind, pill.firstChild);
+      function place(animate) {
+        var on = pill.querySelector('button[aria-current="page"]');
+        if (!on || !on.offsetWidth) { ind.style.opacity = '0'; return; }
+        ind.style.width = on.offsetWidth + 'px'; ind.style.transform = 'translateX(' + on.offsetLeft + 'px)'; ind.style.opacity = '1';
+        if (!animate) { ind.classList.remove('glide'); void ind.offsetWidth; }
+        requestAnimationFrame(function () { ind.classList.add('glide'); });
+      }
+      new MutationObserver(function () { place(true); }).observe(pill, { attributes: true, attributeFilter: ['aria-current'], subtree: true });
+      window.addEventListener('resize', function () { place(false); });
+      requestAnimationFrame(function () { place(false); setTimeout(function () { place(false); }, 400); });
+      if (document.fonts && document.fonts.ready) document.fonts.ready.then(function () { place(false); });
+    }
+
     function build() {
       var isParent = parentMode(), role = isParent ? 'parent' : 'teacher';
       if (nav && currentRole === role) return;
@@ -143,6 +159,7 @@
         });
         pill.appendChild(b);
       });
+      slideIndicator(pill);
       if (isParent) {
         var create = document.createElement('button'); create.type = 'button'; create.className = 'v2-tabbar-create';
         create.setAttribute('aria-label','Start a learning activity'); create.innerHTML = svg('i-plus');
