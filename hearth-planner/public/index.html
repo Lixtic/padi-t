@@ -39,7 +39,7 @@
   <script src="theme-init.js"></script>
   <script src="cookie-consent.js" defer></script>
   <link rel="stylesheet" href="cookie-consent.css">
-  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="styles.css?v=auth175">
   <link rel="stylesheet" href="parent-registration.css">
   <link rel="stylesheet" href="v2.css">
   <link rel="stylesheet" href="family-visuals.css">
@@ -127,10 +127,13 @@
   <button type="button" class="icon-btn as-close" id="asClose" aria-label="Close"><svg class="ico"><use href="#i-x"/></svg></button>
 
   <section id="asForm">
-    <svg class="as-logo" aria-hidden="true"><use href="#i-logo"/></svg>
-    <p class="as-kicker">LEARN. TEACH. GROW.</p>
-    <h2 id="asTitle">Sign in to GuidEd</h2>
-    <p class="as-sub" id="asSub">Your plans follow you to any phone or computer.</p>
+    <header class="as-welcome">
+      <div class="as-brand-row"><svg class="as-logo" aria-hidden="true"><use href="#i-logo"/></svg><span class="as-brand-name">GuidEd</span></div>
+      <p class="as-kicker">YOUR LEARNING SPACE</p>
+      <h2 id="asTitle">Sign in to GuidEd</h2>
+      <p class="as-sub" id="asSub">Your plans follow you to any phone or computer.</p>
+      <div class="as-promise"><span>Learn</span><i></i><span>Teach</span><i></i><span>Grow</span></div>
+    </header>
 
     <div class="as-tabs" id="asTabs" role="tablist" aria-label="Account">
       <button type="button" role="tab" id="asTabIn" aria-selected="true" aria-controls="asPanel">Sign in</button>

@@ -190,3 +190,83 @@
   .parent-dashboard-content .pd-child-card,
   .parent-dashboard-content .pd-activity { box-shadow:none; }
 }
+
+
+/* Auth screen visual reset — cache-busted stylesheet v175 */
+#acctSheet {
+  width: min(520px, calc(100vw - 28px));
+  max-height: min(92vh, 880px);
+  padding: 0;
+  overflow: auto;
+  border: 1px solid var(--card-line);
+  border-radius: 28px;
+  background: var(--card);
+  box-shadow: 0 28px 90px rgba(0,0,0,.42);
+}
+#acctSheet #asForm { max-width: none; }
+#acctSheet .as-welcome {
+  position: relative;
+  overflow: hidden;
+  padding: 28px 30px 24px;
+  color: #fff;
+  background:
+    radial-gradient(circle at 92% 8%, rgba(244,180,0,.24) 0 5%, transparent 5.5%),
+    radial-gradient(circle at 100% 0%, rgba(47,165,127,.4), transparent 54%),
+    linear-gradient(135deg, #073c31 0%, #0b5744 58%, #123b36 100%);
+}
+#acctSheet .as-welcome::after {
+  content: "";
+  position: absolute;
+  width: 190px; height: 190px;
+  right: -85px; bottom: -125px;
+  border: 1px solid rgba(255,255,255,.16);
+  border-radius: 50%;
+  box-shadow: 0 0 0 22px rgba(255,255,255,.035), 0 0 0 45px rgba(255,255,255,.025);
+  pointer-events: none;
+}
+#acctSheet .as-brand-row { display:flex; align-items:center; gap:11px; margin-bottom:24px; }
+#acctSheet .as-logo {
+  display:block; width:42px; height:42px; margin:0; padding:6px;
+  border-radius:13px; background:#fff; color:#0b5744;
+}
+#acctSheet .as-brand-name { font-size:19px; font-weight:800; letter-spacing:-.04em; }
+#acctSheet .as-kicker {
+  margin:0 0 8px; color:#f4c84f;
+  font-size:10px; font-weight:850; letter-spacing:.19em;
+}
+#acctSheet h2 { margin:0; color:#fff; font-size:clamp(28px,5vw,35px); line-height:1.12; letter-spacing:-.04em; }
+#acctSheet .as-sub { max-width:34ch; margin:10px 0 18px; color:rgba(255,255,255,.78); font-size:14px; line-height:1.5; }
+#acctSheet .as-promise { display:flex; align-items:center; gap:9px; color:rgba(255,255,255,.9); font-size:11px; font-weight:700; letter-spacing:.04em; text-transform:uppercase; }
+#acctSheet .as-promise i { width:4px; height:4px; border-radius:50%; background:#f4c84f; }
+#acctSheet .as-tabs { margin:22px 26px 18px; padding:5px; border:1px solid var(--card-line); border-radius:14px; background:var(--bg); }
+#acctSheet .as-tabs button { height:45px; border-radius:10px; font-size:14px; font-weight:700; }
+#acctSheet .as-tabs button[aria-selected="true"] { background:var(--accent); color:var(--on-accent); box-shadow:none; }
+#acctSheet #asPanel { padding:0 26px; }
+#acctSheet .as-social { display:grid; gap:9px; margin:0 0 18px; }
+#acctSheet .as-google { min-height:50px; border-radius:13px; font-size:14px; font-weight:700; }
+#acctSheet .as-phone { background:var(--bg); color:var(--text); border-color:var(--card-line); }
+#acctSheet .as-or { margin:16px 0 12px; font-size:11px; font-weight:650; letter-spacing:.03em; }
+#acctSheet .as-field { margin-bottom:15px; }
+#acctSheet .as-field label { margin-bottom:7px; font-size:12px; font-weight:750; color:var(--text); }
+#acctSheet .as-field input { height:52px; padding:0 15px; border:1px solid var(--card-line); border-radius:13px; background:var(--bg); font-size:15px; }
+#acctSheet .as-pw .as-eye { height:52px; }
+#acctSheet .as-forgot { margin:0 0 14px; font-size:12px; }
+#acctSheet .as-submit { min-height:53px; border-radius:13px; font-size:15px; font-weight:800; }
+#acctSheet .as-foot { margin:17px 26px 24px; font-size:11px; line-height:1.6; }
+#acctSheet .as-close { top:16px; right:16px; color:#fff; background:rgba(255,255,255,.13); border:1px solid rgba(255,255,255,.22); }
+#acctSheet :focus-visible { outline:3px solid #f4c84f; outline-offset:3px; }
+@media (max-width:560px) {
+  #acctSheet {
+    inset:0; margin:0; width:100%; max-width:none;
+    height:100dvh; height:100svh; max-height:100dvh;
+    border:0; border-radius:0; padding:0;
+    display:block; overflow-y:auto; overscroll-behavior:contain;
+  }
+  #acctSheet .as-welcome { padding: max(30px,env(safe-area-inset-top)) 26px 22px; }
+  #acctSheet .as-brand-row { margin-bottom:19px; }
+  #acctSheet .as-tabs { margin:20px 22px 17px; }
+  #acctSheet #asPanel { padding:0 22px; }
+  #acctSheet .as-foot { margin:16px 22px calc(22px + env(safe-area-inset-bottom)); }
+  #acctSheet .as-close { top:max(14px,env(safe-area-inset-top)); right:16px; }
+}
+@media (prefers-reduced-motion:reduce) { #acctSheet[open] { animation:none; } }
