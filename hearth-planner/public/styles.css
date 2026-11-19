@@ -2265,3 +2265,84 @@ button:not(:disabled):not(.v2-tabbar button):active, [role="button"]:active, sum
 .phone-sheet { text-align: left; }
 .phone-sheet #phCode { font-size: 24px; font-weight: 700; letter-spacing: .4em; text-align: center; padding-left: .4em; font-variant-numeric: tabular-nums; }
 .phone-sheet .as-link { display: block; }
+
+
+/* GuidEd account access refresh — mobile-first, welcoming and accessible */
+#acctSheet {
+  width: min(480px, calc(100vw - 32px));
+  max-height: min(90vh, 820px);
+  padding: 34px 30px 28px;
+  border-radius: 28px;
+  border: 1px solid var(--card-line);
+  background:
+    radial-gradient(ellipse at 100% 0%, color-mix(in srgb, var(--accent) 13%, transparent), transparent 48%),
+    var(--card);
+}
+#acctSheet #asForm { max-width: 100%; }
+#acctSheet .as-logo {
+  width: 48px; height: 48px; margin: 0 0 15px;
+  padding: 7px; border-radius: 15px;
+  background: var(--accent); color: var(--on-accent);
+}
+#acctSheet .as-kicker {
+  margin: 0 0 7px; color: var(--accent);
+  font-size: 10px; font-weight: 800; letter-spacing: .16em;
+}
+#acctSheet h2 { font-size: clamp(27px, 5vw, 32px); letter-spacing: -.035em; }
+#acctSheet .as-sub { margin: 8px 0 22px; max-width: 36ch; font-size: 15px; }
+#acctSheet .as-tabs {
+  padding: 5px; gap: 5px; margin-bottom: 20px;
+  border: 1px solid var(--card-line); border-radius: 15px;
+  background: var(--bg);
+}
+#acctSheet .as-tabs button { height: 46px; border-radius: 11px; font-size: 14px; }
+#acctSheet .as-tabs button[aria-selected="true"] {
+  background: var(--accent); color: var(--on-accent); box-shadow: none;
+}
+#acctSheet .as-social { display: grid; gap: 9px; margin-bottom: 18px; }
+#acctSheet .as-google {
+  min-height: 52px; border-radius: 14px; font-size: 15px;
+  border-color: var(--card-line); box-shadow: none;
+}
+#acctSheet .as-phone {
+  margin-top: 0; background: transparent; color: var(--text);
+  border-color: var(--card-line);
+}
+#acctSheet .as-or { margin: 17px 0 12px; font-size: 12px; }
+#acctSheet .as-field { margin-bottom: 16px; }
+#acctSheet .as-field label { margin-bottom: 7px; font-size: 13px; }
+#acctSheet .as-field input { height: 54px; border-radius: 14px; background: var(--bg); }
+#acctSheet .as-pw .as-eye { height: 54px; }
+#acctSheet .as-forgot { margin-top: 1px; margin-bottom: 14px; }
+#acctSheet .as-submit {
+  min-height: 54px; height: auto; border-radius: 15px;
+  font-size: 16px; font-weight: 750; letter-spacing: -.01em;
+}
+#acctSheet .as-foot { margin-top: 17px; font-size: 11.5px; line-height: 1.65; }
+#acctSheet .as-close { z-index: 2; border-radius: 50%; }
+#acctSheet :focus-visible {
+  outline: 3px solid color-mix(in srgb, var(--accent) 48%, transparent);
+  outline-offset: 2px;
+}
+@media (max-width: 560px) {
+  #acctSheet {
+    inset: 0; margin: auto; width: 100%; max-width: none;
+    max-height: 100dvh; height: 100dvh; height: 100svh;
+    padding: max(34px, env(safe-area-inset-top)) 24px calc(24px + env(safe-area-inset-bottom));
+    border: 0; border-radius: 0;
+    display: flex; flex-direction: column; justify-content: center;
+  }
+  #acctSheet[open] { animation: auth-enter .24s ease-out; }
+  #acctSheet::before { display: none; }
+  #acctSheet #asForm { width: 100%; max-width: 440px; margin: auto; }
+  #acctSheet .as-close { top: max(12px, env(safe-area-inset-top)); right: 16px; }
+  #acctSheet .as-logo { width: 46px; height: 46px; }
+  #acctSheet .as-sub { margin-bottom: 20px; }
+}
+@keyframes auth-enter {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@media (prefers-reduced-motion: reduce) {
+  #acctSheet[open] { animation: none; }
+}
