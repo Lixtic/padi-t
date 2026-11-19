@@ -1304,7 +1304,6 @@ body[data-studio-tab="resources"]:has(#studyNotesCurriculum:not([hidden])) .sche
   border-radius: 14px; font-size: 14px; font-weight: 650;
 }
 #acctSheet #asAccount #asView { grid-column: 1 / -1; grid-row: 2; min-height: 56px; font-size: 15px; }
-#acctSheet #asAccount #asSyncNow { grid-column: 1; grid-row: 3; }
 #acctSheet #asAccount #asSignOut {
   grid-column: 1 / -1; grid-row: 3; color: var(--del);
   border-color: color-mix(in srgb, var(--del) 28%, var(--card-line));
