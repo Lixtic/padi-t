@@ -206,6 +206,10 @@ Set up:
 
 The code itself is never logged. Arkesel server errors are answered with 502 so Neon retries; refused numbers get 422.
 
+## News (admins publish from the app)
+
+Admins (anyone in `ADMIN_EMAILS`) open Admin > News, write a headline, summary and post, and press Publish. It is live straight away at `/news/<slug>` as plain server-rendered HTML (so search engines can read it), listed at `/news`, and added to `/news-sitemap.xml` (named in `robots.txt`). Drafts stay private. Posts are stored in the `news_posts` table. Format: a blank line starts a new paragraph, `## ` is a heading, `- ` a bullet, `[text](https://link)` a link; everything else is escaped. The pages are served by `api/_news.js` through the existing sync function, because the Hobby plan allows 12 functions.
+
 ## Word export
 
 Word files are built in the browser (`public/vendor/docx.iife.js` + `public/docx-export.js`), so export works even if the Python function is unavailable. The server route `api/export_docx.py` is kept as a fallback.

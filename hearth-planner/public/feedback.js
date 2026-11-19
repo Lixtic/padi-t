@@ -262,7 +262,7 @@
     var q = $('#adQ').value.trim(); if (q.length < 3) { $('#adResults').replaceChildren(el2('p', 'us-note', 'Type at least 3 letters of the email.')); return Promise.resolve(); }
     return getA('find&q=' + encodeURIComponent(q)).then(function (j) { if (j.results) renderTeachers(j.results); else $('#adResults').replaceChildren(el2('p', 'us-note', j.message || 'Could not search.')); loadLog(); });
   }
-  var ACTIONS = { knowledge_approved: 'Approved a document', knowledge_rejected: 'Rejected a document', grant: 'Gave Pro days', remove: 'Took Pro days off', block: 'Paused', unblock: 'Restored', notice_on: 'Posted announcement', notice_off: 'Turned off announcement' };
+  var ACTIONS = { news_published: 'Published news', news_draft: 'Saved a news draft', news_delete: 'Deleted news', knowledge_approved: 'Approved a document', knowledge_rejected: 'Rejected a document', grant: 'Gave Pro days', remove: 'Took Pro days off', block: 'Paused', unblock: 'Restored', notice_on: 'Posted announcement', notice_off: 'Turned off announcement' };
   function loadLog() {
     return getA('log').then(function (j) {
       var ul = $('#adLog'); ul.replaceChildren();
@@ -365,12 +365,62 @@
       }).catch(function (err) { state.textContent = err.message || 'Could not add the document.'; }).then(function () { btn.disabled = false; });
     });
   }
+
+  /* ───────── Admin: news (write, publish, edit, delete) ───────── */
+  var newsPosts = [];
+  function newsReset() {
+    ['newsId', 'newsTitle', 'newsSummary', 'newsBody', 'newsSourceName', 'newsSourceUrl'].forEach(function (i) { $('#' + i).value = ''; });
+    $('#newsNew').hidden = true; $('#newsPublish').textContent = 'Publish';
+  }
+  function newsEdit(p) {
+    $('#newsId').value = p.id; $('#newsTitle').value = p.title; $('#newsSummary').value = p.summary; $('#newsBody').value = p.body;
+    $('#newsSourceName').value = p.source_name || ''; $('#newsSourceUrl').value = p.source_url || '';
+    $('#newsNew').hidden = false; $('#newsPublish').textContent = p.status === 'published' ? 'Update' : 'Publish';
+    $('#newsState').textContent = 'Editing "' + p.title + '".'; $('#newsTitle').focus();
+  }
+  function loadNews() {
+    return getA('news-list').then(function (j) {
+      newsPosts = j.posts || [];
+      var ul = $('#newsList'); ul.replaceChildren();
+      newsPosts.forEach(function (p) {
+        var li = el2('li', 'kb-item'), top = el2('span', '');
+        top.append(el2('b', '', p.title), el2('span', 'tag' + (p.status === 'published' ? ' pro' : ''), p.status === 'published' ? 'Live' : 'Draft'));
+        li.append(top, el2('small', '', day(p.published_at) + (p.status === 'published' ? ' · /news/' + p.slug : '')));
+        var acts = el2('div', 'ad-acts');
+        function btn(label, cls, fn) { var b = el2('button', cls || '', label); b.type = 'button'; b.addEventListener('click', fn); acts.append(b); }
+        btn('Edit', '', function () { newsEdit(p); });
+        if (p.status === 'published') { var a = el2('a', '', 'View'); a.href = '/news/' + p.slug; a.target = '_blank'; a.rel = 'noopener'; acts.append(a); }
+        btn('Delete', 'danger', function () {
+          if (!window.confirm('Delete "' + p.title + '"? This cannot be undone.')) return;
+          post('news-delete', { id: p.id }).then(function (r) { if (!r || !r.ok) window.alert((r && r.message) || 'That did not work.'); if ($('#newsId').value === p.id) newsReset(); loadNews(); loadLog(); });
+        });
+        li.append(acts); ul.append(li);
+      });
+      if (!newsPosts.length) ul.append(el2('li', '', 'No posts yet.'));
+    });
+  }
+  function setupNews() {
+    var form = $('#newsForm'); if (!form) return;
+    function save(status) {
+      if (!form.reportValidity()) return;
+      var state = $('#newsState'), btns = [$('#newsPublish'), $('#newsDraft')]; btns.forEach(function (b) { b.disabled = true; });
+      post('news-save', { id: $('#newsId').value, title: $('#newsTitle').value, summary: $('#newsSummary').value, body: $('#newsBody').value, source_name: $('#newsSourceName').value, source_url: $('#newsSourceUrl').value, status: status })
+        .then(function (r) {
+          if (r && r.ok) { state.textContent = status === 'published' ? 'Published. It is live at /news/' + r.slug + '.' : 'Saved as a draft. It is not public yet.'; newsReset(); loadNews(); loadLog(); }
+          else state.textContent = (r && r.message) || 'Could not save the post.';
+        }).catch(function (e) { state.textContent = e.message || 'Could not save the post.'; })
+        .then(function () { btns.forEach(function (b) { b.disabled = false; }); });
+    }
+    form.addEventListener('submit', function (e) { e.preventDefault(); save('published'); });
+    $('#newsDraft').addEventListener('click', function () { save('draft'); });
+    $('#newsNew').addEventListener('click', function () { newsReset(); $('#newsState').textContent = ''; });
+  }
   function setupAdmin() {
     var dlg = $('#adminSheet'), btn = $('#adminBtn'); if (!dlg || !btn) return;
     backdropClose(dlg);
     $('#adClose').addEventListener('click', function () { close(dlg); });
-    btn.addEventListener('click', function () { open(dlg); loadNotice(); loadLog(); loadKnowledge(); });
-    setupKnowledge();
+    btn.addEventListener('click', function () { open(dlg); loadNotice(); loadLog(); loadKnowledge(); loadNews(); });
+    setupKnowledge(); setupNews();
     $('#adFind').addEventListener('submit', function (e) { e.preventDefault(); findTeacher(); });
     $('#adNotice').addEventListener('submit', function (e) {
       e.preventDefault();

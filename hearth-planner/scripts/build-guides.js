@@ -25,7 +25,7 @@ const head = (title, desc, url, ld) => `<!doctype html>
 </head>
 <body><main class="lg"><div class="lg-top"><a class="lg-back" href="/guides">← All guides</a><span class="lg-brand">Guid<em>Ed</em></span><a class="lg-back" href="/">Open GuidEd</a></div>
 `;
-const foot = `<div class="lg-foot"><a href="/guides">Guides</a><a href="/lesson-plans">Lesson plans</a><a href="/about">About</a><a href="/terms">Terms</a><a href="/privacy">Privacy</a><a href="/refunds">Refunds</a><a href="/">Open the app</a></div>
+const foot = `<div class="lg-foot"><a href="/news">News</a><a href="/guides">Guides</a><a href="/lesson-plans">Lesson plans</a><a href="/about">About</a><a href="/terms">Terms</a><a href="/privacy">Privacy</a><a href="/refunds">Refunds</a><a href="/">Open the app</a></div>
 </main></body></html>
 `;
 

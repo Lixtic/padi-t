@@ -301,10 +301,10 @@ body.on-settings .v2-tabbar { display: none !important; }
 .kb-item small { overflow-wrap: anywhere; }
 .kb-file { display: grid; gap: 4px; font-size: 13px; }
 .kb-file input { max-width: 100%; }
-#kbForm { margin-top: 14px; padding-top: 12px; border-top: 1px solid var(--card-line); display: grid; gap: 2px; }
-#kbForm .ad-row > label { flex: 1 1 200px; display: grid; gap: 4px; font-size: 13px; }
-#kbForm input[type="text"], #kbForm input[type="url"] { width: 100%; min-width: 0; box-sizing: border-box; font: 500 14px var(--font-ui); padding: 9px 11px; border-radius: 10px; border: 1px solid var(--card-line); background: var(--card); color: var(--ink); }
-#kbForm input::placeholder { color: var(--muted); }
+#kbForm, #newsForm { margin-top: 14px; padding-top: 12px; border-top: 1px solid var(--card-line); display: grid; gap: 2px; }
+#kbForm .ad-row > label, #newsForm .ad-row > label { flex: 1 1 200px; display: grid; gap: 4px; font-size: 13px; }
+#kbForm input[type="text"], #kbForm input[type="url"], #newsForm input[type="text"], #newsForm input[type="url"], #newsForm textarea { width: 100%; min-width: 0; box-sizing: border-box; font: 500 14px var(--font-ui); padding: 9px 11px; border-radius: 10px; border: 1px solid var(--card-line); background: var(--card); color: var(--ink); }
+#kbForm input::placeholder, #newsForm input::placeholder, #newsForm textarea::placeholder { color: var(--muted); }
 
 
 /* ───────── Teacher Dashboard ───────── */
