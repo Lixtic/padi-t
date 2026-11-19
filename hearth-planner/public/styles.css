@@ -2197,6 +2197,12 @@ main[data-view="chat"] .notice-bar { display: none; }
 .ms-sheet .ms-help .as-link { display: inline; padding: 0; }
 .ms-sheet .tour-actions .as-submit { white-space: nowrap; }
 
+/* Tour and own-scheme buttons: a fixed-size secondary button beside a main button that takes the rest of the row */
+.tour-actions { display: flex; gap: 10px; align-items: stretch; }
+.tour-actions .as-second { flex: 0 0 auto; width: auto; min-width: 92px; padding-inline: 18px; white-space: nowrap; }
+.tour-actions .as-submit { flex: 1 1 0; width: auto; min-width: 0; white-space: nowrap; }
+.tour-actions [hidden] { display: none; }
+
 /* Display size: the app was drawn a little large, so the whole page is scaled down a notch (phones 92%, wide screens 90%).
    Full-screen pieces are sized from the screen, so they are divided by the same number to still fill it. */
 @supports (zoom: 1) {
