@@ -2426,3 +2426,9 @@ button:not(:disabled):not(.v2-tabbar button):active, [role="button"]:active, sum
   #acctSheet .as-close { top:max(14px,env(safe-area-inset-top)); right:16px; }
 }
 @media (prefers-reduced-motion:reduce) { #acctSheet[open] { animation:none; } }
+
+/* Home: a short description and links to the guides, visible to everyone (and to search engines) */
+.hero-more { max-width: 46ch; margin: 10px 0 0; font-size: 13.5px; line-height: 1.55; color: var(--muted); }
+.hero-links { display: flex; flex-wrap: wrap; gap: 4px 12px; margin: 8px 0 0; font-size: 13.5px; color: var(--muted); }
+.hero-links a { color: var(--accent); font-weight: 600; text-decoration: none; white-space: nowrap; }
+.hero-links span { display: none; }

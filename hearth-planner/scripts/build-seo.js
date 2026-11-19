@@ -23,7 +23,7 @@ const head = (title, desc, url) => `<!doctype html>
 </head>
 <body><main class="lg"><div class="lg-top"><a class="lg-back" href="/lesson-plans">← All lesson plans</a><span class="lg-brand">Guid<em>Ed</em></span></div>
 `;
-const foot = `<div class="lg-foot"><a href="/about">About</a><a href="/terms">Terms</a><a href="/privacy">Privacy</a><a href="/refunds">Refunds</a><a href="/">Open the app</a></div>
+const foot = `<div class="lg-foot"><a href="/guides">Guides</a><a href="/about">About</a><a href="/terms">Terms</a><a href="/privacy">Privacy</a><a href="/refunds">Refunds</a><a href="/">Open the app</a></div>
 </main></body></html>
 `;
 
@@ -89,9 +89,11 @@ const list = '<!--CLASSES-->\n<h2>Find your class</h2>\n<ul>\n' + L.LEVELS.map((
 hub = /<!--CLASSES-->/.test(hub) ? hub.replace(/<!--CLASSES-->[\s\S]*<!--\/CLASSES-->/, list) : hub.replace('<h2>What you get each week</h2>', list + '\n\n<h2>What you get each week</h2>');
 fs.writeFileSync(hubFile, hub);
 // sitemap
-const core = [['/', '1.0'], ['/lesson-plans', '0.9'], ['/about', '0.5'], ['/terms', '0.2'], ['/privacy', '0.2'], ['/refunds', '0.2'], ['/ads-policy', '0.2']];
+const guides = require('./build-guides.js').articles;                   // also (re)writes public/guides*
+const core = [['/', '1.0'], ['/lesson-plans', '0.9'], ['/guides', '0.8'], ['/about', '0.5'], ['/terms', '0.2'], ['/privacy', '0.2'], ['/refunds', '0.2'], ['/ads-policy', '0.2']];
 const xml = ['<?xml version="1.0" encoding="UTF-8"?>', '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">']
   .concat(core.map(([p, pr]) => `  <url><loc>${SITE}${p}</loc><lastmod>${DATE}</lastmod><priority>${pr}</priority></url>`))
+  .concat(guides.map((g) => `  <url><loc>${SITE}/guides/${g.slug}</loc><lastmod>${DATE}</lastmod><priority>0.6</priority></url>`))
   .concat(urls.map((u) => `  <url><loc>${u}</loc><lastmod>${DATE}</lastmod><priority>0.7</priority></url>`)).concat('</urlset>', '');
 fs.writeFileSync(path.join(root, 'public/sitemap.xml'), xml.join('\n'));
 console.log(pages + ' pages, ' + (urls.length + core.length) + ' sitemap URLs');
