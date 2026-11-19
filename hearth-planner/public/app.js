@@ -2959,6 +2959,7 @@
   // Settings can be opened from the dashboard, Library or Studio. Remember its origin
   // so the Settings back button returns to the screen the user came from.
   let settingsReturnPage = null;
+  const fadeOk = () => performance.now() > 1500;   // pages shown while the app is still launching do not fade in
   function showPage(name) {
     if (name === 'settings') {
       const current = pageOpen();
@@ -2968,7 +2969,9 @@
     PAGES.forEach(([key, title, el, link]) => {
       if (!el) return;
       const on = key === name;
+      const wasHidden = el.hidden;
       el.hidden = !on;
+      if (on && wasHidden && fadeOk()) { el.classList.remove('page-in'); void el.offsetWidth; el.classList.add('page-in'); }
       if (link) link.setAttribute('aria-current', on ? 'page' : 'false');
       document.body.classList.toggle('on-' + key, on);
       if (on) { const pageTitle = key === 'dashboard' && accountRole === 'parent' ? 'Parent Dashboard' : title; if (isMobile()) setNav(false); el.scrollTop = 0; topTitle.textContent = pageTitle; document.title = pageTitle + ' · GuidEd'; }
