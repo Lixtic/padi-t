@@ -2432,3 +2432,8 @@ button:not(:disabled):not(.v2-tabbar button):active, [role="button"]:active, sum
 .hero-links { display: flex; flex-wrap: wrap; gap: 4px 12px; margin: 8px 0 0; font-size: 13.5px; color: var(--muted); }
 .hero-links a { color: var(--accent); font-weight: 600; text-decoration: none; white-space: nowrap; }
 .hero-links span { display: none; }
+
+/* Admin news editor: text areas match the other fields */
+.ad-notice textarea { width: 100%; font: inherit; padding: 10px 12px; border: 1px solid var(--card-line); border-radius: 12px; background: var(--card); color: var(--text); resize: vertical; }
+.news-list { margin-bottom: 12px; }
+.ad-acts a { color: var(--accent); font-weight: 600; font-size: 13.5px; align-self: center; text-decoration: none; }

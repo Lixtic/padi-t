@@ -6,6 +6,7 @@
 //   POST /api/admin?action=grant           { user_id, days, note }  Adds Pro days (or takes them off with a negative number).
 //   POST /api/admin?action=block           { user_id, blocked, reason }  Pauses or restores a teacher's account.
 //   GET/POST /api/admin?action=notice      The announcement banner everyone sees: { text, kind, on, days }.
+//   GET  /api/admin?action=news-list, POST news-save { id?, title, summary, body, source_name, source_url, status }, POST news-delete { id }   News posts shown at /news.
 //   GET  /api/admin?action=log             What admins have done recently.
 const { sendJson, readJson } = require('./_lib');
 const A = require('./_auth');
@@ -15,6 +16,7 @@ const billing = require('./billing');
 const Quota = require('./_quota');
 const crypto = require('crypto');
 const Knowledge = require('./_knowledge');
+const News = require('./_news');
 
 const DAY = 86400000;
 const money = (pesewas) => Math.round(Number(pesewas || 0)) / 100;
@@ -203,6 +205,9 @@ module.exports = async (req, res) => {
     if (req.method === 'GET' && action === 'find') { const r = await find(url.searchParams.get('q')); return sendJson(res, r.status, r.body); }
     if (req.method === 'POST' && action === 'grant') { const b = await readJson(req); const r = await grant(me, String(b.user_id || '').slice(0, 120), b.days, String(b.note || '').slice(0, 200)); return sendJson(res, r.status, r.body); }
     if (req.method === 'POST' && action === 'block') { const b = await readJson(req); const r = await block(me, String(b.user_id || '').slice(0, 120), !!b.blocked, b.reason); return sendJson(res, r.status, r.body); }
+    if (action === 'news-list' && req.method === 'GET') return sendJson(res, 200, await News.list());
+    if (action === 'news-save' && req.method === 'POST') { const r = await News.save(me, await readJson(req, 120000)); if (r.body && r.body.ok) await logAction(me, 'news_' + r.body.status, r.body.slug, ''); return sendJson(res, r.status, r.body); }
+    if (action === 'news-delete' && req.method === 'POST') { const b = await readJson(req); const r = await News.remove(b.id); if (r.body && r.body.ok) await logAction(me, 'news_delete', r.body.slug, ''); return sendJson(res, r.status, r.body); }
     if (action === 'notice' && req.method === 'GET') return sendJson(res, 200, await getNotice());
     if (action === 'notice' && req.method === 'POST') return sendJson(res, 200, await setNotice(me, await readJson(req)));
     if (req.method === 'GET' && action === 'log') {

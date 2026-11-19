@@ -12,6 +12,8 @@ const MAX_ROWS = 20, MAX_ROW_BYTES = 400000;
 // /api/account-profile is rewritten here and delegated to the same authenticated sync service.
 module.exports = async (req, res) => {
   const route = new URL(req.url, 'http://x');
+  if (route.searchParams.get('what') === 'news') return require('./_news').page(req, res);                  // public pages: /news and /news/<slug>
+  if (route.searchParams.get('what') === 'news-sitemap') return require('./_news').sitemap(req, res);
   if (route.searchParams.get('what') === 'parent-learning') return require('./_parent-learning')(req, res);
   if (route.searchParams.get('what') === 'account-profile') {
     return require('./_account-profile')(req, res);
