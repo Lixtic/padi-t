@@ -85,6 +85,10 @@
       "destination": "/api/sync?what=account-profile"
     },
     {
+      "source": "/api/neon-webhook",
+      "destination": "/api/neon-auth?path=__webhook"
+    },
+    {
       "source": "/api/neon-auth/:path*",
       "destination": "/api/neon-auth?path=:path*"
     }
