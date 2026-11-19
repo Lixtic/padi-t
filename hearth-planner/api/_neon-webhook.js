@@ -125,5 +125,4 @@ async function handler(req, res) {
 }
 
 module.exports = handler;
-module.exports.config = { api: { bodyParser: false } };
 module.exports._test = { verifySignature, toE164, deliver, smsText, sendSms, resetKeys() { keyCache = { at: 0, keys: [] }; seen.clear(); } };

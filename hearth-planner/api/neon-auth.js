@@ -31,7 +31,18 @@ function bodyOf(req) {
   return JSON.stringify(b);
 }
 
+async function readRaw(req) {
+  if (req.body !== undefined) return req.body;
+  const chunks = []; let n = 0;
+  for await (const c of req) { n += c.length; if (n > 1e6) break; chunks.push(c); }
+  return Buffer.concat(chunks);
+}
+
+// Bodies are left unparsed so the Neon webhook (served from here to stay within the Hobby plan's 12 functions) can check its signature over the exact bytes.
 module.exports = async (req, res) => {
+  const first = new URL(req.url, 'http://x').searchParams.get('path');
+  if (first === '__webhook') return require('./_neon-webhook')(req, res);
+  if (!['GET', 'HEAD'].includes(req.method)) req.body = await readRaw(req);
   const upstream = base();
   if (!upstream) { res.statusCode = 404; res.setHeader('content-type', 'application/json'); return res.end('{"error":"not_configured"}'); }
   const url = new URL(req.url, 'http://x');
@@ -63,3 +74,5 @@ module.exports = async (req, res) => {
   res.setHeader('cache-control', 'no-store');
   res.end(Buffer.from(await r.arrayBuffer()));
 };
+
+module.exports.config = { api: { bodyParser: false } };

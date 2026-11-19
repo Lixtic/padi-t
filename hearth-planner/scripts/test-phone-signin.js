@@ -1,7 +1,7 @@
 'use strict';
 // Phone sign-in: Neon's signature is checked, codes are texted through Arkesel or emailed, and numbers are read the Ghana way.
 const crypto = require('crypto');
-const W = require('../api/neon-webhook.js'), T = W._test, Phone = require('../public/phone-auth.js');
+const W = require('../api/_neon-webhook.js'), T = W._test, Phone = require('../public/phone-auth.js');
 
 const { publicKey, privateKey } = crypto.generateKeyPairSync('ed25519');
 const jwk = { ...publicKey.export({ format: 'jwk' }), kid: 'k1', alg: 'EdDSA', use: 'sig' };

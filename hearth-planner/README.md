@@ -197,7 +197,7 @@ Managed Auth controls password sessions and email delivery. Use Neon’s product
 
 ## Phone sign-in (SMS codes through Arkesel)
 
-People add their number in Settings > Phone sign-in (a texted code confirms it). After that, "Continue with phone" on the sign-in sheet signs them in with a code sent to that number. Neon Auth hands every code (SMS and email) to `api/neon-webhook.js`, which checks Neon's signature and sends it: SMS through Arkesel, email through `SMTP_URL`.
+People add their number in Settings > Phone sign-in (a texted code confirms it). After that, "Continue with phone" on the sign-in sheet signs them in with a code sent to that number. Neon Auth hands every code (SMS and email) to `api/_neon-webhook.js (served at /api/neon-webhook)`, which checks Neon's signature and sends it: SMS through Arkesel, email through `SMTP_URL`.
 
 Set up:
 1. In Vercel add `ARKESEL_API_KEY` and, optionally, `ARKESEL_SENDER` (a sender ID registered in Arkesel, 11 characters or fewer; default `GuidEd`). Keep SMS credits topped up.

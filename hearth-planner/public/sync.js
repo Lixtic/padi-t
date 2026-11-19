@@ -207,7 +207,7 @@
       try { sessionStorage.setItem('guided.googleBack', '1'); } catch (e) { /* ignore */ }
       location.assign(url);
     },
-    // Phone sign-in by one-time code (Neon Auth's phone plugin; the text message is sent by api/neon-webhook.js).
+    // Phone sign-in by one-time code (Neon Auth's phone plugin; the text message is sent by api/_neon-webhook.js (served at /api/neon-webhook)).
     phoneSend: async function (phone) {
       var r, j = {};
       try { r = await fetch(authBase + '/phone-number/send-otp', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ phoneNumber: phone }) }); j = await r.json().catch(function () { return {}; }); }
