@@ -3,6 +3,7 @@
 const crypto = require('crypto');
 
 const Schemes = require('./_schemes');
+const MyScheme = require('./_myscheme');
 const Levels = require('./_levels');
 const Curriculum = require('./_curriculum');
 const Inclusive = require('./_inclusive');
@@ -105,7 +106,12 @@ function validate(body) {
     return { error: 'Please choose a valid term (1–' + maxTerm + ') for ' + cls + '.' };
   }
   const term = hasTerm ? parsedTerm : Schemes.currentTerm(undefined, cls);
-  let scheme = Schemes.lookup(subject, cls, term, week);   // looked up here, never taken from the browser
+  let scheme = Schemes.lookup(subject, cls, term, week);   // looked up here, never taken from the browser...
+  if (p.customScheme !== undefined && p.customScheme !== null) {   // ...except a teacher's own scheme, which is rebuilt field by field and limited
+    const own = MyScheme.fromRequest(p.customScheme, term, week);
+    if (!own) return { error: 'Your own scheme does not cover Week ' + week + '. Check the scheme or remove it to use the built-in one.' };
+    scheme = own;
+  }
   let indicatorCodes = [];
   const hasIndicatorCodes = Object.prototype.hasOwnProperty.call(p, 'indicatorCodes');
   if (mode === 'resources' && resourceType === 'Study notes' && hasIndicatorCodes) {
