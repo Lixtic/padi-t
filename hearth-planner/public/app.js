@@ -2453,6 +2453,16 @@
     });
     const ownBtn = $('#settingsOwnScheme'); if (ownBtn) ownBtn.addEventListener('click', () => window.GuidedMyScheme.open());
   }
+  if (window.GuidedPhone) {
+    window.GuidedPhone.init({ toast });
+    const phoneBtn = $('#asPhone'); if (phoneBtn) phoneBtn.addEventListener('click', () => window.GuidedPhone.open({ mode: 'signin' }));
+    const phoneSet = $('#settingsPhone');
+    if (phoneSet) phoneSet.addEventListener('click', () => {
+      if (!signedIn()) { toast('Sign in first, then add your phone number.'); openSheet('signin'); return; }
+      window.GuidedPhone.open({ mode: 'link', phone: ($('#epPhone') && $('#epPhone').value) || '' });
+    });
+    window.addEventListener('guided:phone-signed-in', async () => { problemKind = ''; refreshAcct(); watchLive(); refreshPlans(); toast('Signed in.'); await syncAndReport(true); });
+  }
   const tourBtn = $('#settingsTour'); if (tourBtn) tourBtn.addEventListener('click', () => { if (window.GuidedTour) window.GuidedTour.start(); });
   try { if (/[?&]tour=1\b/.test(location.search)) { const u = new URL(location.href); u.searchParams.delete('tour'); history.replaceState(null, '', u.pathname + u.search + u.hash); setTimeout(() => window.GuidedTour && window.GuidedTour.start(), 800); } } catch (e) { /* ignore */ }
   acct.open.addEventListener('click', () => openSheet('signin'));

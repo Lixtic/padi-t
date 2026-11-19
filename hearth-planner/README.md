@@ -195,6 +195,17 @@ Managed Auth stores identity and sessions in Neon's `neon_auth` schema. The appl
 
 Managed Auth controls password sessions and email delivery. Use Neon’s production SMTP configuration before launch.
 
+## Phone sign-in (SMS codes through Arkesel)
+
+People add their number in Settings > Phone sign-in (a texted code confirms it). After that, "Continue with phone" on the sign-in sheet signs them in with a code sent to that number. Neon Auth hands every code (SMS and email) to `api/neon-webhook.js`, which checks Neon's signature and sends it: SMS through Arkesel, email through `SMTP_URL`.
+
+Set up:
+1. In Vercel add `ARKESEL_API_KEY` and, optionally, `ARKESEL_SENDER` (a sender ID registered in Arkesel, 11 characters or fewer; default `GuidEd`). Keep SMS credits topped up.
+2. Redeploy, then in Neon Auth enable the webhook for the `send.otp` event pointing at `https://www.guidedgh.site/api/neon-webhook`.
+3. Check that an email verification code and a phone code both arrive.
+
+The code itself is never logged. Arkesel server errors are answered with 502 so Neon retries; refused numbers get 422.
+
 ## Word export
 
 Word files are built in the browser (`public/vendor/docx.iife.js` + `public/docx-export.js`), so export works even if the Python function is unavailable. The server route `api/export_docx.py` is kept as a fallback.

@@ -2258,3 +2258,10 @@ button:not(:disabled):not(.v2-tabbar button):active, [role="button"]:active, sum
 @media (prefers-reduced-motion: reduce) {
   .tour-body h2, .tour-body .as-sub, .tour-icon, .tour-dots span.on, .tour-confetti span { animation: none !important; }
 }
+
+/* Phone sign-in */
+.as-phone { margin-top: 8px; }
+.as-phone svg { flex: none; }
+.phone-sheet { text-align: left; }
+.phone-sheet #phCode { font-size: 24px; font-weight: 700; letter-spacing: .4em; text-align: center; padding-left: .4em; font-variant-numeric: tabular-nums; }
+.phone-sheet .as-link { display: block; }

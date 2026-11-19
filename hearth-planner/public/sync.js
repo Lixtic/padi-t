@@ -207,6 +207,33 @@
       try { sessionStorage.setItem('guided.googleBack', '1'); } catch (e) { /* ignore */ }
       location.assign(url);
     },
+    // Phone sign-in by one-time code (Neon Auth's phone plugin; the text message is sent by api/neon-webhook.js).
+    phoneSend: async function (phone) {
+      var r, j = {};
+      try { r = await fetch(authBase + '/phone-number/send-otp', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ phoneNumber: phone }) }); j = await r.json().catch(function () { return {}; }); }
+      catch (e) { throw problem('Could not reach the sign-in service. Check your connection and try again.', 'network'); }
+      if (r.status === 429) throw problem('Too many tries. Wait a minute and try again.', 'rate');
+      if (!r.ok) throw problem(/not.?found|no user|invalid.*phone/i.test(String(j.code) + ' ' + String(j.message)) ? 'We could not find an account with that number. Sign in with email or Google first, then add your number in Settings.' : 'We could not send the code. Please try again.', 'phone-send');
+    },
+    phoneVerify: async function (phone, code, linking) {
+      var r, j = {};
+      try { r = await fetch(authBase + '/phone-number/verify', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(linking ? { phoneNumber: phone, code: code, updatePhoneNumber: true } : { phoneNumber: phone, code: code }) }); j = await r.json().catch(function () { return {}; }); }
+      catch (e) { throw problem('Could not reach the sign-in service. Check your connection and try again.', 'network'); }
+      if (!r.ok) {
+        var c = String(j.code || '') + ' ' + String(j.message || '');
+        if (r.status === 429) throw problem('Too many tries. Wait a minute and try again.', 'rate');
+        if (/EXPIRED|TOO_MANY|NOT_FOUND.*OTP|OTP.*NOT_FOUND/i.test(c)) throw problem('That code has expired or was tried too many times. Send a new one.', 'expired');
+        throw problem('That code is not right. Check it and try again.', 'badcode');
+      }
+      if (linking) return null;
+      var cur = null; try { cur = await authClient.getSession(); } catch (e) { /* handled below */ }
+      var user = cur && cur.data && cur.data.user;
+      if (!user) throw problem('Your phone is confirmed but we could not sign you in. Please try again.', 'other');
+      session = { user: user };
+      await confirmSession();
+      window.dispatchEvent(new Event('guided:auth-changed'));
+      return user;
+    },
     // Email confirmation by one-time code. New accounts get the code on sign-up; an unconfirmed account gets one when it tries to sign in.
     sendVerifyCode: async function (email) {
       var r = await fetch(authBase + '/email-otp/send-verification-otp', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ email: email, type: 'email-verification' }) });
