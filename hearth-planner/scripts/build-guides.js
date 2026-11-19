@@ -18,7 +18,7 @@ const head = (title, desc, url, ld) => `<!doctype html>
 <title>${esc(title)}</title>
 <meta name="description" content="${esc(desc)}">
 <link rel="canonical" href="${url}">
-<meta property="og:type" content="article"><meta property="og:site_name" content="GuidEd"><meta property="og:title" content="${esc(title)}"><meta property="og:description" content="${esc(desc)}"><meta property="og:url" content="${url}">
+<meta property="og:type" content="article"><meta property="og:site_name" content="GuidEd"><meta property="og:title" content="${esc(title)}"><meta property="og:description" content="${esc(desc)}"><meta property="og:url" content="${url}"><meta property="og:image" content="${SITE}/icons/icon-512.png"><meta name="twitter:card" content="summary_large_image"><meta name="twitter:title" content="${esc(title)}"><meta name="twitter:description" content="${esc(desc)}"><meta name="twitter:image" content="${SITE}/icons/icon-512.png">
 <script type="application/ld+json">${JSON.stringify(ld)}</script>
   <link rel="stylesheet" href="/cookie-consent.css">
   <script src="/cookie-consent.js" defer></script>
@@ -33,7 +33,7 @@ function list(items) { return '<ul>\n' + items.map((x) => '<li>' + esc(x) + '</l
 
 function articlePage(a) {
   const url = `${SITE}/guides/${a.slug}`;
-  const ld = { '@context': 'https://schema.org', '@type': 'Article', headline: a.title, description: a.desc, inLanguage: 'en-GH', datePublished: DATE, dateModified: DATE, mainEntityOfPage: url, author: { '@type': 'Organization', name: 'GuidEd' }, publisher: { '@type': 'Organization', name: 'GuidEd', url: SITE + '/' } };
+  const ld = { '@context': 'https://schema.org', '@graph': [{ '@type': 'Article', headline: a.title, description: a.desc, inLanguage: 'en-GH', datePublished: DATE, dateModified: DATE, mainEntityOfPage: url, author: { '@type': 'Organization', name: 'GuidEd' }, publisher: { '@type': 'Organization', name: 'GuidEd', url: SITE + '/' } }, { '@type': 'BreadcrumbList', itemListElement: [{ '@type': 'ListItem', position: 1, name: 'Home', item: SITE + '/' }, { '@type': 'ListItem', position: 2, name: 'Guides', item: SITE + '/guides' }, { '@type': 'ListItem', position: 3, name: a.title, item: url }] }] };
   let h = head(`${a.title} · GuidEd`, a.desc, url, ld);
   h += `<p class="upd">${esc(a.audience)} · ${minutes(a)} min read · Updated ${DATE}</p>\n<h1>${esc(a.title)}</h1>\n<p class="lede">${esc(a.intro)}</p>\n`;
   for (const s of a.sections) {
@@ -48,18 +48,33 @@ function articlePage(a) {
   return h;
 }
 
+function topicOf(a) {
+  const slug = a.slug;
+  if (/lesson-plan|scheme-of-learning|term-planning|learning-indicator/.test(slug)) return 'Lesson planning';
+  if (/assessment|questioning|depth-of-knowledge/.test(slug)) return 'Assessment';
+  if (/bece|wassce/.test(slug)) return 'Exam preparation';
+  if (/homework|study-routine|maths/.test(slug)) return 'Learning at home';
+  if (/ai-for-lesson/.test(slug)) return 'AI & technology';
+  return 'Classroom practice';
+}
+
 function indexPage() {
-  const url = `${SITE}/guides`;
+  const url = \`\${SITE}/guides\`;
   const ld = { '@context': 'https://schema.org', '@type': 'CollectionPage', name: 'GuidEd Guides', url, description: 'Practical guides for teachers and families in Ghana.', inLanguage: 'en-GH' };
   let h = head('Guides for Ghana Teachers and Parents · GuidEd', 'Practical guides on lesson planning, classroom teaching, BECE and WASSCE preparation, and supporting learning at home in Ghana.', url, ld).replace('og:type" content="article"', 'og:type" content="website"');
-  h += `<h1>Guides for teachers and families</h1>\n<p class="lede">Plain-language help with lesson planning, teaching and learning at home, written for the Ghanaian classroom. Each guide is short, practical and free to read.</p>\n`;
-  const groups = [['For teachers', (a) => a.audience === 'Teachers'], ['For parents and students', (a) => a.audience !== 'Teachers']];
-  for (const [name, f] of groups) {
-    h += `<h2>${name}</h2>\n<ul class="guide-list">\n`;
-    for (const a of articles.filter(f)) h += `<li><a href="/guides/${a.slug}"><strong>${esc(a.title)}</strong></a><br><span class="upd">${esc(a.desc)}</span></li>\n`;
-    h += `</ul>\n`;
+  h = h.replace('</head>', '  <script src="/guides.js" defer></script>\n</head>');
+  h += \`<section class="guides-hero"><p class="guides-kicker">THE GUIDED KNOWLEDGE HUB</p><h1>Learn. Teach. Grow.</h1><p class="lede">Practical guidance for Ghanaian classrooms and families. Find a useful idea, put it into practice, and keep learning.</p><a class="guides-primary" href="/">Open GuidEd <span aria-hidden="true">→</span></a></section>\n\`;
+  h += \`<section class="guides-discovery" aria-label="Find a guide"><label class="guides-search-label" for="guide-search">What would you like help with?</label><div class="guides-search"><span aria-hidden="true">⌕</span><input id="guide-search" type="search" placeholder="Search lesson planning, BECE, homework…" autocomplete="off"><button type="button" id="guide-search-clear" aria-label="Clear search">×</button></div><div class="guide-filters" role="group" aria-label="Filter guides by audience"><button type="button" class="guide-filter is-active" data-audience="all" aria-pressed="true">Everyone</button><button type="button" class="guide-filter" data-audience="Teachers" aria-pressed="false">Teachers</button><button type="button" class="guide-filter" data-audience="family" aria-pressed="false">Parents & students</button></div></section>\n\`;
+  const topics = [...new Set(articles.map(topicOf))];
+  h += \`<section class="guides-results"><div class="guides-results-head"><div><h2>Explore the guides</h2><p class="upd">Short, practical reads you can use in real life.</p></div><span id="guide-count" class="guide-count">\${articles.length} guides</span></div><div class="guide-topic-filters" role="group" aria-label="Filter by topic"><button type="button" class="guide-topic is-active" data-topic="all" aria-pressed="true">All topics</button>\${topics.map((t) => \`<button type="button" class="guide-topic" data-topic="\${esc(t)}" aria-pressed="false">\${esc(t)}</button>\`).join('')}</div>\n<div class="guide-card-grid" id="guide-grid">\n\`;
+  for (const a of articles) {
+    const topic = topicOf(a);
+    const audience = a.audience === 'Teachers' ? 'Teachers' : 'family';
+    const audienceLabel = a.audience === 'Teachers' ? 'For teachers' : a.audience === 'Parents' ? 'For parents' : a.audience === 'Students' ? 'For students' : 'For parents & students';
+    h += \`<article class="guide-card" data-title="\${esc(a.title.toLowerCase())}" data-search="\${esc((a.title + ' ' + a.desc + ' ' + a.audience + ' ' + topic).toLowerCase())}" data-audience="\${audience}" data-topic="\${esc(topic)}"><div class="guide-card-meta"><span class="guide-category">\${esc(topic)}</span><span>\${esc(audienceLabel)}</span></div><h3><a href="/guides/\${a.slug}">\${esc(a.title)}</a></h3><p>\${esc(a.desc)}</p><div class="guide-card-foot"><span>\${minutes(a)} min read</span><a href="/guides/\${a.slug}" aria-label="Read \${esc(a.title)}">Read guide <span aria-hidden="true">→</span></a></div></article>\n\`;
   }
-  h += `<p class="upd">GuidEd is an independent tool and is not an official product of the Ghana Education Service, NaCCA or WAEC. Guides are general advice.</p>\n` + foot;
+  h += \`</div><p id="guide-empty" class="guide-empty" hidden>No guides match that search. Try another word or clear the filters.</p></section>\n\`;
+  h += \`<p class="upd guides-disclaimer">GuidEd is an independent tool and is not an official product of the Ghana Education Service, NaCCA or WAEC. Guides are general guidance; check official sources for current curriculum and examination requirements.</p>\n\` + foot;
   return h;
 }
 
