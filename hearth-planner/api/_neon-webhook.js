@@ -114,9 +114,11 @@ async function handler(req, res) {
   for (const [k, t] of seen) if (now - t > DEDUPE_MS) seen.delete(k);
   if (id && seen.has(id)) return send(200, { ok: true, duplicate: true });
   try {
-    const how = await deliver(event);
+    const t0 = Date.now(), how = await deliver(event);
     if (id) seen.set(id, now);
-    console.log('[neon-webhook] send.otp ' + (event.event_data && event.event_data.otp_type) + ' via ' + how);
+    // Timing only (never the code): how long Neon took to reach us, and how long the sender took. Tells us where a slow text lost its time.
+    const sent = Number(req.headers['x-neon-timestamp']) || 0, sentMs = sent && sent < 1e12 ? sent * 1000 : sent;
+    console.log('[neon-webhook] send.otp ' + (event.event_data && event.event_data.otp_type) + ' via ' + how + ' neonToUs=' + (sentMs ? Math.max(0, t0 - sentMs) + 'ms' : 'n/a') + ' sendTook=' + (Date.now() - t0) + 'ms');
     return send(200, { ok: true });
   } catch (e) {
     console.error('[neon-webhook] delivery failed:', e.message, '(' + ((event.event_data || {}).delivery_preference || 'email') + ')');

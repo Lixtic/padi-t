@@ -204,7 +204,7 @@ Set up:
 2. Redeploy, then in Neon Auth enable the webhook for the `send.otp` event pointing at `https://www.guidedgh.site/api/neon-webhook`.
 3. Check that an email verification code and a phone code both arrive.
 
-The code itself is never logged. Arkesel server errors are answered with 502 so Neon retries; refused numbers get 422.
+The code itself is never logged. Phone codes last 10 minutes (Neon's `otp_expires_in`, 600 s, the maximum) so a late text still works; each delivery logs `neonToUs` and `sendTook` timings so a slow text can be traced to Neon, our server or Arkesel. If texts are slow, check the Arkesel delivery report and that `ARKESEL_SENDER` is an approved sender ID. Arkesel server errors are answered with 502 so Neon retries; refused numbers get 422.
 
 ## News (admins publish from the app)
 
