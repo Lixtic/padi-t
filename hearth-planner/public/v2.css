@@ -1259,7 +1259,7 @@ body[data-studio-tab="resources"]:has(#studyNotesCurriculum:not([hidden])) .sche
 .account-cluster .notification-bell:hover { background: var(--sb-hover); color: var(--text); }
 .account-cluster .acct-dot { top: 5px; right: 5px; }
 .account-cluster .notification-count { top: 0; right: 0; }
-.account-cluster .notification-panel { top: calc(100% + 10px); right: 0; }
+.account-cluster .notification-panel { position: absolute; top: calc(100% + 10px); right: 0; left: auto; }
 @media (max-width: 520px) {
   .account-cluster { min-height: 44px; gap: 2px; padding: 3px 4px; }
   .account-cluster .plan-badge { height: 34px; padding: 0 13px; }
