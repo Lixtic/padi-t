@@ -2265,3 +2265,76 @@ button:not(:disabled):not(.v2-tabbar button):active, [role="button"]:active, sum
 .phone-sheet { text-align: left; }
 .phone-sheet #phCode { font-size: 24px; font-weight: 700; letter-spacing: .4em; text-align: center; padding-left: .4em; font-variant-numeric: tabular-nums; }
 .phone-sheet .as-link { display: block; }
+
+
+/* ── GuidEd account experience refresh ─────────────────────────────
+   A calmer, welcoming account surface with a mobile-first layout.
+   Keeps the existing auth flow and controls; presentation only. */
+.acct-sheet {
+  width: min(480px, calc(100vw - 28px));
+  max-height: min(90vh, 820px);
+  max-height: min(90dvh, 820px);
+  padding: 34px 30px 26px;
+  border: 1px solid color-mix(in srgb, var(--accent) 18%, var(--card-line));
+  border-radius: 28px;
+  background:
+    radial-gradient(ellipse at 8% 0%, color-mix(in srgb, var(--accent) 10%, transparent), transparent 48%),
+    var(--card);
+  box-shadow: 0 24px 80px rgba(0,0,0,.24);
+}
+.acct-sheet::backdrop { background: rgba(10, 22, 17, .62); backdrop-filter: blur(5px); }
+.acct-sheet h2 { font-size: clamp(27px, 5vw, 32px); letter-spacing: -.035em; }
+.as-close { top: 14px; right: 14px; border-radius: 50%; background: var(--sb); }
+.as-logo {
+  width: 54px; height: 54px; margin: 0 0 18px; padding: 10px;
+  border-radius: 17px; background: color-mix(in srgb, var(--accent) 13%, var(--card));
+  color: var(--accent);
+}
+.as-sub { max-width: 38ch; margin: 9px 0 22px; font-size: 15px; line-height: 1.55; }
+.as-tabs { margin-bottom: 20px; padding: 5px; border: 1px solid var(--card-line); border-radius: 15px; }
+.as-tabs button { min-height: 46px; height: auto; border-radius: 11px; font-size: 14px; }
+.as-tabs button[aria-selected="true"] { background: var(--accent); color: var(--on-accent); box-shadow: none; }
+.as-field { margin-bottom: 16px; }
+.as-field label { margin-bottom: 8px; font-size: 13px; letter-spacing: .01em; }
+.as-field input { height: 52px; padding-inline: 15px; border-radius: 14px; background: var(--bg); }
+.as-pw input { padding-right: 78px; }
+.as-eye { height: 52px; }
+.as-social { display: grid; gap: 9px; margin-bottom: 17px; }
+.as-google, :root[data-theme="dark"] .as-google {
+  min-height: 51px; border: 1px solid var(--card-line); border-radius: 14px;
+  background: var(--bg); color: var(--text); font-size: 15px; font-weight: 650;
+  transition: border-color .15s, transform .15s, background .15s;
+}
+.as-google:hover { border-color: var(--accent); background: var(--sb); }
+.as-google:active { transform: scale(.99); }
+.as-phone { margin-top: 0; }
+.as-or { margin: 17px 0 2px; font-size: 12px; letter-spacing: .04em; text-transform: uppercase; }
+.as-submit, .as-second { min-height: 53px; height: auto; border-radius: 15px; font-size: 15px; }
+.as-submit { box-shadow: 0 5px 14px color-mix(in srgb, var(--accent) 20%, transparent); }
+.as-forgot { margin-top: 1px; margin-bottom: 10px; }
+.as-foot { margin-top: 18px; font-size: 12px; line-height: 1.65; }
+.as-banner { border-radius: 14px; }
+.as-badge { width: 52px; height: 52px; }
+#asVerify .as-submit { margin-top: 14px; }
+#asAccount .as-actions { gap: 10px; }
+#asAccount .as-actions > button { min-height: 49px; border-radius: 14px; }
+@media (max-width: 700px) {
+  .acct-sheet {
+    inset: auto 0 0; margin: auto 0 0; width: 100%;
+    max-width: none; max-height: min(94vh, 900px); max-height: min(94dvh, 900px);
+    padding: 38px 22px max(24px, env(safe-area-inset-bottom));
+    border: 1px solid var(--card-line); border-bottom: 0;
+    border-radius: 28px 28px 0 0;
+  }
+  .acct-sheet::before { top: 11px; width: 42px; height: 4px; margin-left: -21px; background: var(--line); }
+  .as-logo { width: 50px; height: 50px; margin-bottom: 15px; }
+  .acct-sheet h2 { font-size: 29px; }
+  .as-sub { margin-bottom: 19px; }
+  .as-tabs { margin-bottom: 17px; }
+  .as-google { min-height: 52px; }
+  .as-foot { padding-bottom: 3px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .acct-sheet[open] { animation: none; }
+  .as-google { transition: none; }
+}
