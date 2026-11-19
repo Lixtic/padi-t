@@ -2196,3 +2196,9 @@ main[data-view="chat"] .notice-bar { display: none; }
 .ms-sheet select { padding: 11px 12px; border: 1px solid var(--line); border-radius: 12px; background: var(--card, #fff); color: inherit; font: inherit; }
 .ms-sheet .ms-help .as-link { display: inline; padding: 0; }
 .ms-sheet .tour-actions .as-submit { white-space: nowrap; }
+
+/* Tour and own-scheme buttons: a fixed-size secondary button beside a main button that takes the rest of the row */
+.tour-actions { display: flex; gap: 10px; align-items: stretch; }
+.tour-actions .as-second { flex: 0 0 auto; width: auto; min-width: 92px; padding-inline: 18px; white-space: nowrap; }
+.tour-actions .as-submit { flex: 1 1 0; width: auto; min-width: 0; white-space: nowrap; }
+.tour-actions [hidden] { display: none; }

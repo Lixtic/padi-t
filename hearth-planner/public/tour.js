@@ -39,7 +39,7 @@
       steps.map(function (_, n) { return '<span' + (n === i ? ' class="on"' : '') + '></span>'; }).join('') + '</div>';
     dlg.querySelector('[data-tour="back"]').hidden = i === 0;
     dlg.querySelector('[data-tour="skip"]').hidden = last;
-    dlg.querySelector('[data-tour="next"]').textContent = last ? 'Start using GuidEd' : 'Next';
+    dlg.querySelector('[data-tour="next"]').textContent = last ? 'Get started' : 'Next';
   }
 
   function build() {
