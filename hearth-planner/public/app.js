@@ -2324,8 +2324,8 @@
     sheet.tabIn.setAttribute('aria-selected', String(!up)); sheet.tabUp.setAttribute('aria-selected', String(up));
     sheet.tabIn.tabIndex = up ? -1 : 0; sheet.tabUp.tabIndex = up ? 0 : -1;
     sheet.panel.setAttribute('aria-labelledby', up ? 'asTabUp' : 'asTabIn');
-    sheet.title.textContent = forgot ? 'Reset your password' : reset ? 'Choose a new password' : up ? 'Create your GuidEd account' : 'Sign in to GuidEd';
-    sheet.sub.textContent = forgot ? 'Enter your email and we will send you a link to set a new password.' : reset ? 'Pick a password you have not used here before.' : up ? 'Keep your plans safe and open them on any phone or computer.' : 'Your plans follow you to any phone or computer.';
+    sheet.title.textContent = forgot ? 'Reset your password' : reset ? 'Choose a new password' : up ? 'Your GuidEd space starts here' : 'Welcome back';
+    sheet.sub.textContent = forgot ? 'Enter your email and we will send you a link to set a new password.' : reset ? 'Pick a password you have not used here before.' : up ? 'Save your lessons, learning plans and progress in one place.' : 'Pick up where your teaching and learning left off.';
     sheet.pw.autocomplete = (up || reset) ? 'new-password' : 'current-password';
     sheet.pw.placeholder = (up || reset) ? 'At least 8 characters' : 'Your password';
     sheet.pwHint.hidden = !(up || reset);
