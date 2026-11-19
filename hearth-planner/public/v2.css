@@ -1266,3 +1266,78 @@ body[data-studio-tab="resources"]:has(#studyNotesCurriculum:not([hidden])) .sche
   .account-cluster .acct-top,
   .account-cluster .notification-bell { width: 36px; height: 36px; }
 }
+
+
+/* ───────── Account sheet refresh ───────── */
+#acctSheet #asAccount { padding-top: 8px; }
+#acctSheet #asAccount .as-badge {
+  width: 42px; height: 42px; margin: 0 0 14px;
+  border: 1px solid color-mix(in srgb, var(--ok) 22%, transparent);
+  background: color-mix(in srgb, var(--ok) 13%, var(--card)); color: var(--ok);
+}
+#acctSheet #asAccount h2 {
+  margin: 0; font-family: var(--font-ui); font-size: clamp(25px, 6vw, 31px);
+  font-weight: 750; letter-spacing: -.045em; line-height: 1.12;
+}
+#acctSheet #asAccount .as-who {
+  margin: 7px 52px 20px 0; color: var(--muted); font-size: 14px;
+  font-weight: 500; line-height: 1.45; overflow-wrap: anywhere;
+}
+#acctSheet #asAccount .as-result:empty { display: none; }
+#acctSheet #asAccount .as-result:not(:empty) {
+  margin: 0 0 14px; padding: 11px 13px; border: 1px solid var(--card-line);
+  border-radius: 13px; background: var(--sb);
+}
+#acctSheet #asAccount .plan-row {
+  min-height: 76px; margin: 0 0 18px; padding: 13px 14px;
+  border-radius: 17px; background: var(--sb); border-color: var(--line);
+}
+#acctSheet #asAccount .plan-text { gap: 4px; }
+#acctSheet #asAccount .plan-text strong { font-size: 15px; font-weight: 750; }
+#acctSheet #asAccount .plan-text small { font-size: 13px; line-height: 1.35; }
+#acctSheet #asAccount .plan-cta { padding: 9px 15px; font-size: 13px; }
+#acctSheet #asAccount .as-actions {
+  display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 9px;
+}
+#acctSheet #asAccount .as-actions > button {
+  min-width: 0; min-height: 52px; height: auto; padding: 10px 12px;
+  border-radius: 14px; font-size: 14px; font-weight: 650;
+}
+#acctSheet #asAccount #asView { grid-column: 1 / -1; grid-row: 2; min-height: 56px; font-size: 15px; }
+#acctSheet #asAccount #asSyncNow { grid-column: 1; grid-row: 3; }
+#acctSheet #asAccount #asSignOut {
+  grid-column: 2; grid-row: 3; color: var(--del);
+  border-color: color-mix(in srgb, var(--del) 28%, var(--card-line));
+}
+#acctSheet #asAccount #asRole {
+  display: block; width: fit-content; max-width: 100%; min-height: 42px;
+  margin: 12px auto 0; font-size: 13.5px; text-align: center; text-decoration: none;
+}
+#acctSheet #asAccount #asRole[hidden] { display: none; }
+#acctSheet #asAccount #asDelete {
+  display: block; width: fit-content; min-height: 36px; margin: 12px auto 0;
+  color: var(--muted); font-size: 12.5px; text-decoration: underline; text-underline-offset: 3px;
+}
+#acctSheet #asAccount .as-actions > button:focus-visible,
+#acctSheet #asAccount #asRole:focus-visible,
+#acctSheet #asAccount #asDelete:focus-visible {
+  outline: 3px solid color-mix(in srgb, var(--accent) 45%, transparent); outline-offset: 2px;
+}
+@media (max-width: 560px) {
+  #acctSheet.acct-sheet {
+    inset: max(12px, env(safe-area-inset-top)) 0 0; width: 100%; max-width: none;
+    max-height: calc(100dvh - max(12px, env(safe-area-inset-top))); height: auto; margin: 0;
+    padding: 30px 18px calc(18px + env(safe-area-inset-bottom));
+    border: 1px solid var(--card-line); border-bottom: 0; border-radius: 24px 24px 0 0;
+    overflow-y: auto;
+  }
+  #acctSheet #asAccount { padding-top: 4px; }
+  #acctSheet .as-close {
+    top: 14px; right: 14px; width: 42px; height: 42px;
+    border: 1px solid var(--line); border-radius: 50%; background: var(--sb);
+  }
+}
+@media (max-width: 360px) {
+  #acctSheet #asAccount .as-actions { gap: 7px; }
+  #acctSheet #asAccount .as-actions > button { padding-inline: 8px; font-size: 13px; }
+}
