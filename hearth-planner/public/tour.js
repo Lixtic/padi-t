@@ -37,9 +37,23 @@
       '<p class="as-sub">' + esc(s.text) + '</p>' +
       '<div class="tour-dots" role="img" aria-label="Step ' + (i + 1) + ' of ' + steps.length + '">' +
       steps.map(function (_, n) { return '<span' + (n === i ? ' class="on"' : '') + '></span>'; }).join('') + '</div>';
+    if (last) confetti(dlg.querySelector('.tour-body'));
     dlg.querySelector('[data-tour="back"]').hidden = i === 0;
     dlg.querySelector('[data-tour="skip"]').hidden = last;
     dlg.querySelector('[data-tour="next"]').textContent = last ? 'Get started' : 'Next';
+  }
+
+  // A small burst of confetti on the last step. Plain spans moved by CSS; removed again when the animation ends.
+  function confetti(box) {
+    if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    var colors = ['#f5b301', '#3b82f6', '#22c55e', '#ef4444', '#a855f7', '#ec4899'], wrap = document.createElement('div');
+    wrap.className = 'tour-confetti'; wrap.setAttribute('aria-hidden', 'true');
+    for (var n = 0; n < 18; n++) {
+      var bit = document.createElement('span'), a = (n / 18) * 2 * Math.PI + Math.random() * 0.4, d = 70 + Math.random() * 70;
+      bit.style.cssText = '--x:' + Math.round(Math.cos(a) * d) + 'px;--y:' + Math.round(Math.sin(a) * d - 30) + 'px;--r:' + Math.round(Math.random() * 540 - 270) + 'deg;background:' + colors[n % colors.length] + ';animation-delay:' + (Math.random() * 0.12).toFixed(2) + 's';
+      wrap.appendChild(bit);
+    }
+    box.appendChild(wrap); setTimeout(function () { if (wrap.parentNode) wrap.remove(); }, 1600);
   }
 
   function build() {
@@ -54,15 +68,15 @@
       var b = e.target.closest && e.target.closest('[data-tour]'); if (!b) return;
       var k = b.getAttribute('data-tour');
       if (k === 'skip') close();
-      else if (k === 'back') { i = Math.max(0, i - 1); render(); }
-      else if (i >= steps.length - 1) close(); else { i++; render(); }
+      else if (k === 'back') { i = Math.max(0, i - 1); dlg.dataset.dir = 'back'; render(); }
+      else if (i >= steps.length - 1) close(); else { i++; dlg.dataset.dir = 'next'; render(); }
     });
     dlg.addEventListener('cancel', done);
   }
 
   function start() {
     if (!dlg) build();
-    steps = stepsFor(document.body.classList.contains('role-parent')); i = 0; render();
+    steps = stepsFor(document.body.classList.contains('role-parent')); i = 0; dlg.dataset.dir = 'next'; render();
     var open = document.querySelectorAll('dialog[open]');
     open.forEach(function (d) { if (d !== dlg) d.close(); });
     if (!dlg.open) dlg.showModal();
