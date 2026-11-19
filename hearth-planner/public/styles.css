@@ -2237,4 +2237,24 @@ button:not(:disabled):not(.v2-tabbar button):active, [role="button"]:active, sum
   .acct-sheet[open]::backdrop, .page-in { animation: none !important; }
   .v2-tab-ind.glide { transition: none; }
   button:active, [role="button"]:active { scale: 1; }
+
+/* Tour motion */
+.tour-body { position: relative; }
+@keyframes tour-in-next { from { opacity: 0; transform: translateX(32px); } to { opacity: 1; transform: none; } }
+@keyframes tour-in-back { from { opacity: 0; transform: translateX(-32px); } to { opacity: 1; transform: none; } }
+@keyframes tour-pop { 0% { opacity: 0; transform: scale(.3) rotate(-14deg); } 60% { opacity: 1; transform: scale(1.2) rotate(6deg); } 100% { opacity: 1; transform: none; } }
+@keyframes tour-float { 0%, 100% { translate: 0 0; } 50% { translate: 0 -5px; } }
+@keyframes tour-dot { from { width: 7px; opacity: .5; } to { width: 20px; opacity: 1; } }
+@keyframes tour-bit { 0% { opacity: 1; transform: translate(0, 0) rotate(0) scale(1); } 100% { opacity: 0; transform: translate(var(--x), calc(var(--y) + 60px)) rotate(var(--r)) scale(.6); } }
+.tour-body h2 { animation: tour-in-next .38s cubic-bezier(.2, .8, .2, 1) both; }
+.tour-body .as-sub { animation: tour-in-next .38s cubic-bezier(.2, .8, .2, 1) .07s both; }
+.tour-sheet[data-dir="back"] .tour-body h2, .tour-sheet[data-dir="back"] .tour-body .as-sub { animation-name: tour-in-back; }
+.tour-icon { animation: tour-pop .55s cubic-bezier(.34, 1.56, .64, 1) both, tour-float 3.2s ease-in-out .7s infinite; }
+.tour-dots span.on { animation: tour-dot .4s cubic-bezier(.2, .8, .2, 1) both; }
+.tour-actions .as-submit { transition: transform .15s ease, filter .15s ease; }
+.tour-actions .as-submit:active { transform: scale(.97); }
+.tour-confetti { position: absolute; left: 50%; top: 34px; width: 0; height: 0; pointer-events: none; z-index: 2; }
+.tour-confetti span { position: absolute; width: 8px; height: 12px; border-radius: 2px; opacity: 0; animation: tour-bit 1.2s cubic-bezier(.15, .7, .3, 1) forwards; }
+@media (prefers-reduced-motion: reduce) {
+  .tour-body h2, .tour-body .as-sub, .tour-icon, .tour-dots span.on, .tour-confetti span { animation: none !important; }
 }
