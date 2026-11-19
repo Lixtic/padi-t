@@ -2175,3 +2175,24 @@ main[data-view="chat"] .notice-bar { display: none; }
 .tour-actions { display: flex; gap: 10px; }
 .tour-actions .as-submit { flex: 1; }
 .tour-actions .as-second { min-width: 88px; }
+
+/* Use your own scheme */
+.scheme-own { margin-top: 8px; padding: 0; background: none; border: 0; color: var(--accent); font: inherit; font-size: 13px; font-weight: 600; text-decoration: underline; text-underline-offset: 3px; cursor: pointer; }
+.ms-sheet { text-align: left; max-height: 90dvh; overflow-y: auto; }
+.ms-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.ms-grid .as-field:first-child { grid-column: 1 / -1; }
+.ms-sheet select, .ms-sheet input[type="file"] { width: 100%; }
+.ms-help { font-size: 13px; color: var(--muted); margin: 6px 0 12px; }
+.ms-ok { font-size: 14px; font-weight: 600; margin: 8px 0 6px; }
+.ms-rows { list-style: none; margin: 0 0 14px; padding: 0; font-size: 13px; border: 1px solid var(--line); border-radius: 12px; overflow: hidden; }
+.ms-rows li { padding: 8px 12px; border-top: 1px solid var(--line); }
+.ms-rows li:first-child { border-top: 0; }
+.ms-rows li b { margin-right: 6px; color: var(--muted); }
+.ms-more { color: var(--muted); }
+#msSaved h3 { margin: 18px 0 6px; font-size: 14px; }
+.ms-saved { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 8px 0; border-top: 1px solid var(--line); font-size: 13px; }
+.ms-saved small { display: block; color: var(--muted); }
+.ms-del { background: none; border: 0; color: var(--danger, #b42318); font: inherit; font-weight: 600; cursor: pointer; }
+.ms-sheet select { padding: 11px 12px; border: 1px solid var(--line); border-radius: 12px; background: var(--card, #fff); color: inherit; font: inherit; }
+.ms-sheet .ms-help .as-link { display: inline; padding: 0; }
+.ms-sheet .tour-actions .as-submit { white-space: nowrap; }

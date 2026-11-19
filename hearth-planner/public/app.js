@@ -966,6 +966,13 @@
     return session.messages.slice(1).map((m) => ({ role: m.role, content: m.content }));
   }
 
+  // The teacher's own scheme for this plan's subject, class, term and week (myscheme.js), or undefined when the built-in one is used.
+  function ownScheme(p) {
+    const M = window.GuidedMyScheme; if (!M) return undefined;
+    const q = { subject: p.subject, cls: p.cls, term: p.term || termNow(), week: p.week };
+    return M.requestScheme(q) || undefined;
+  }
+
   async function* apiStream(session, signal) {
     if (window.SchoolPadiArtifact) { yield* window.SchoolPadiArtifact.stream(session, signal); return; }
     const p = session.params;
@@ -974,7 +981,7 @@
     const res = await fetch('/api/generate', {
       method: 'POST', signal,
       headers: Object.assign({ 'content-type': 'application/json', 'x-access-code': state.access || '' }, who),
-      body: JSON.stringify({ params: { subject: p.subject, cls: p.cls, week: p.week, term: p.term || termNow(), hook: p.hook !== false, light: p.light === true, studyNotes: p.studyNotes !== false, bece: p.bece !== false, size: p.size || '', inc: incOf(p), mode: p.mode || 'full', resourceType: p.resourceType || 'Study notes', indicatorCodes: p.mode === 'resources' && p.resourceType === 'Study notes' ? (p.indicatorCodes || []) : undefined, notes: session.messages[0].content || '' }, thread: threadOf(session), fresh }),
+      body: JSON.stringify({ params: { subject: p.subject, cls: p.cls, week: p.week, term: p.term || termNow(), hook: p.hook !== false, light: p.light === true, studyNotes: p.studyNotes !== false, bece: p.bece !== false, size: p.size || '', inc: incOf(p), mode: p.mode || 'full', resourceType: p.resourceType || 'Study notes', indicatorCodes: p.mode === 'resources' && p.resourceType === 'Study notes' && !ownScheme(p) ? (p.indicatorCodes || []) : undefined, notes: session.messages[0].content || '', customScheme: ownScheme(p) }, thread: threadOf(session), fresh }),
     });
     if (!res.ok) {
       let j = {};
@@ -1557,6 +1564,10 @@
       return;
     }
     const p = state.params, selectedTerm = Number(p.term), term = termsFor(p.cls).includes(selectedTerm) ? selectedTerm : termNow();
+    if (window.GuidedMyScheme && window.GuidedMyScheme.isCustom({ subject: p.subject, cls: p.cls, term })) {   // the picker lists the built-in indicators only
+      studyCurriculumRequest++; studyCurriculumPendingKey = ''; studyCurriculumLoading = false;
+      p.indicatorCodes = []; studyNotesCurriculum.hidden = true; return;
+    }
     const key = [p.subject, p.cls, term, p.week].join('|');
     const savedContextKey = state.params.indicatorContextKey || studyCurriculumKey;
     if (savedContextKey !== key) {
@@ -1946,6 +1957,9 @@
         : 'Two revision lessons on this term\'s ' + (names.length <= 5 ? 'topics: ' + names.join('; ') + '.' : names.length + ' topics.');
       schemeStrip.replaceChildren(h('div', { class: 'scheme-top' }, tag(p.week), h('span', { class: 'scheme-line', text: e.focus || 'Revision' })),
         h('p', { class: 'scheme-note', text: what }));
+    } else if (e.custom && !e.strand && !e.standard && !e.indicators.length) {   // an own scheme with only a topic for the week
+      schemeStrip.replaceChildren(h('div', { class: 'scheme-top' }, tag(p.week), h('span', { class: 'scheme-line', text: e.focus })),
+        h('p', { class: 'scheme-note', text: 'From your own scheme. GuidEd will match the NaCCA strand and indicators to this topic.' }));
     } else if (!e.strand && !e.standard) {            // the school gave only the indicator
       schemeStrip.replaceChildren(h('div', { class: 'scheme-top' }, tag(p.week)),
         h('p', { class: 'scheme-line', text: e.indicators.join(' ') }),
@@ -1958,6 +1972,8 @@
           e.standard ? h('p', { class: 'scheme-std', text: e.standard }) : null,
           h('ul', null, ...e.indicators.map((x) => h('li', { text: x })))));
     }
+    const own = window.GuidedMyScheme && window.GuidedMyScheme.isCustom({ subject: p.subject, cls: p.cls, term: p.term || termNow() });
+    schemeStrip.appendChild(h('button', { type: 'button', class: 'scheme-own', text: own ? 'Using your own scheme · Change' : 'Use my own scheme', onclick: () => window.GuidedMyScheme && window.GuidedMyScheme.open() }));
     schemeStrip.hidden = false;
     if ($('#studioTabMedia') && $('#studioTabMedia').getAttribute('aria-selected') === 'true') loadMediaContext();
   }
@@ -2428,6 +2444,15 @@
     else showBanner((err && err.message) || 'Something went wrong. Please try again.');
   }
 
+  if (window.GuidedMyScheme) {
+    window.GuidedMyScheme.init({
+      toast,
+      context: () => ({ subject: state.params.subject, cls: state.params.cls, term: state.params.term || termNow(), classes: CLASSES,
+        get: (cls) => ({ subjects: levelOf(cls).subjects, terms: termsFor(cls) }) }),
+      changed: () => { syncPills(); refreshStudyCurriculum(); }
+    });
+    const ownBtn = $('#settingsOwnScheme'); if (ownBtn) ownBtn.addEventListener('click', () => window.GuidedMyScheme.open());
+  }
   const tourBtn = $('#settingsTour'); if (tourBtn) tourBtn.addEventListener('click', () => { if (window.GuidedTour) window.GuidedTour.start(); });
   try { if (/[?&]tour=1\b/.test(location.search)) { const u = new URL(location.href); u.searchParams.delete('tour'); history.replaceState(null, '', u.pathname + u.search + u.hash); setTimeout(() => window.GuidedTour && window.GuidedTour.start(), 800); } } catch (e) { /* ignore */ }
   acct.open.addEventListener('click', () => openSheet('signin'));
