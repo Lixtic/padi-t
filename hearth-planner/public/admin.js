@@ -331,7 +331,7 @@
       var state = $('#newsState'), btns = [$('#newsPublish'), $('#newsDraft')]; btns.forEach(function (b) { b.disabled = true; });
       post('news-save', { id: $('#newsId').value, title: $('#newsTitle').value, summary: $('#newsSummary').value, body: $('#newsBody').value, source_name: $('#newsSourceName').value, source_url: $('#newsSourceUrl').value, status: status })
         .then(function (r) {
-          if (r && r.ok) { state.textContent = status === 'published' ? 'Published. It is live at /news/' + r.slug + '.' : 'Saved as a draft. It is not public yet.'; newsReset(); loadNews(); loadLog(); }
+          if (r && r.ok) { state.textContent = status === 'published' ? 'Published. It is live at /news/' + r.slug + (r.notified ? '. In-app notifications sent to ' + r.notified + ' accounts.' : '.') : 'Saved as a draft. It is not public yet.'; newsReset(); loadNews(); loadLog(); }
           else state.textContent = (r && r.message) || 'Could not save the post.';
         }).catch(function (e) { state.textContent = e.message || 'Could not save the post.'; })
         .then(function () { btns.forEach(function (b) { b.disabled = false; }); });
