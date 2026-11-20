@@ -78,7 +78,7 @@
   }
 
   /* Full-screen reader: the plan as it is on screen, with the whole display to read it. Text size can be raised for a classroom. */
-  function openReader(title, source, onShare) {
+  function openReader(title, source, onShare, canTeach) {
     const dlg = document.createElement('dialog'); dlg.className = 'reader-full'; dlg.setAttribute('aria-label', title || 'Reading view');
     const bar = h('div', { class: 'reader-bar' });
     const heading = h('strong', { class: 'reader-title', text: title || '' });
@@ -90,13 +90,71 @@
     const close = h('button', { type: 'button', class: 'reader-btn reader-close', text: 'Close' });
     const body = h('div', { class: 'reader-body md', tabindex: '-1' });
     body.append(...Array.from(source.childNodes).map((n) => n.cloneNode(true)));
+    const deliveryView = h('section', { class: 'reader-delivery-view', hidden: true, 'aria-live': 'polite' });
+    let deliveryActive = false, deliveryIndex = 0, deliverySections = [];
+    function buildDeliverySections() {
+      const nodes = Array.from(body.childNodes);
+      const sections = [];
+      let current = [];
+      function flush() {
+        if (!current.length) return;
+        const headingNode = current.find((node) => node.nodeType === 1 && /^H[1-3]$/.test(node.tagName));
+        sections.push({ title: headingNode ? headingNode.textContent.trim() : 'Lesson content', nodes: current });
+        current = [];
+      }
+      nodes.forEach((node) => {
+        if (node.nodeType === 1 && /^H[12]$/.test(node.tagName) && current.length) flush();
+        current.push(node);
+      });
+      flush();
+      return sections.length ? sections : [{ title: 'Lesson content', nodes: nodes }];
+    }
+    function renderDelivery(index) {
+      deliverySections = deliverySections.length ? deliverySections : buildDeliverySections();
+      deliveryIndex = Math.max(0, Math.min(deliverySections.length - 1, index));
+      const section = deliverySections[deliveryIndex];
+      const heading = h('div', { class: 'reader-delivery-heading' },
+        h('span', { class: 'reader-delivery-kicker', text: 'TEACHING VIEW · SECTION ' + (deliveryIndex + 1) + ' OF ' + deliverySections.length }),
+        h('h2', { text: section.title }),
+        h('progress', { class: 'reader-delivery-progress', max: String(deliverySections.length), value: String(deliveryIndex + 1), 'aria-label': 'Lesson section progress' })
+      );
+      const content = h('article', { class: 'reader-delivery-content' });
+      section.nodes.forEach((node) => content.append(node.cloneNode(true)));
+      const previous = h('button', { type: 'button', class: 'reader-btn reader-delivery-secondary', disabled: deliveryIndex === 0, onclick: () => renderDelivery(deliveryIndex - 1) }, 'Previous');
+      const next = h('button', { type: 'button', class: 'reader-btn reader-delivery-next', onclick: () => {
+        if (deliveryIndex >= deliverySections.length - 1) exitDelivery();
+        else renderDelivery(deliveryIndex + 1);
+      } }, deliveryIndex >= deliverySections.length - 1 ? 'Back to lesson' : 'Next section');
+      const actions = h('div', { class: 'reader-delivery-actions' }, previous,
+        h('span', { class: 'reader-delivery-count', text: (deliveryIndex + 1) + ' / ' + deliverySections.length }), next);
+      deliveryView.replaceChildren(heading, content, actions);
+      deliveryView.hidden = false; body.hidden = true; dlg.classList.add('is-teaching'); deliveryActive = true;
+      if (teach) { teach.textContent = 'Reading view'; teach.setAttribute('aria-pressed', 'true'); }
+      deliveryView.scrollTop = 0; content.scrollIntoView({ block: 'start' });
+    }
+    function exitDelivery() {
+      deliveryActive = false; deliveryView.hidden = true; body.hidden = false; dlg.classList.remove('is-teaching');
+      if (teach) { teach.textContent = 'Teach'; teach.setAttribute('aria-pressed', 'false'); teach.focus(); }
+      body.focus({ preventScroll: true });
+    }
+    const teach = canTeach ? h('button', { type: 'button', class: 'reader-btn reader-teach', 'aria-pressed': 'false', title: 'Present the lesson one section at a time' }, 'Teach') : null;
+    if (teach) teach.addEventListener('click', () => {
+      if (deliveryActive) exitDelivery();
+      else { deliverySections = buildDeliverySections(); renderDelivery(0); }
+    });
+    dlg.addEventListener('keydown', (event) => {
+      if (!deliveryActive || event.altKey || event.ctrlKey || event.metaKey) return;
+      if (event.key === 'ArrowRight' && deliveryIndex < deliverySections.length - 1) { event.preventDefault(); renderDelivery(deliveryIndex + 1); }
+      else if (event.key === 'ArrowLeft' && deliveryIndex > 0) { event.preventDefault(); renderDelivery(deliveryIndex - 1); }
+      else if (event.key === 'Escape') exitDelivery();
+    });
     const apply = () => { body.style.fontSize = size + 'em'; };
     bigger.addEventListener('click', () => { size = Math.min(size + 0.15, 2); apply(); });
     smaller.addEventListener('click', () => { size = Math.max(size - 0.15, 0.8); apply(); });
     const returnFocus = document.activeElement;
     close.addEventListener('click', () => dlg.close());
-    bar.append(heading, smaller, bigger, ...(share ? [share] : []), close);
-    dlg.append(bar, body);
+    bar.append(heading, smaller, bigger, ...(share ? [share] : []), ...(teach ? [teach] : []), close);
+    dlg.append(bar, body, deliveryView);
     body.scrollTop = 0;
     // Back (browser, Android or swipe) closes the reader and lands on the page it was opened from.
     let viaBack = false, pushed = false;
@@ -598,7 +656,7 @@
             return;
           }
           sharePlan(api.text, baseTitle, btnShare);
-        } : null);
+        } : null, canSharePlan && accountRole !== 'parent');
       },
       setKind(k) { kind = KIND_TITLE[k] !== undefined ? k : 'plan'; titleEl.textContent = api.title; bodyEl.classList.toggle('worksheet', kind === 'worksheet' || !!(session.params && session.params.resourceType === 'Learner worksheet')); btnShare.hidden = kind !== 'plan' || !!(session.params && session.params.mode === 'resources'); },
       set(raw, final, msg) {
