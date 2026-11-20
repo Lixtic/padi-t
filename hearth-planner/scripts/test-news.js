@@ -1,10 +1,19 @@
 'use strict';
 // News: admin-written posts become safe, readable pages; drafts stay private; only admins can write.
 const rows = [];
+const notificationRows = [];
+const recipients = [{ user_id: 'teacher-1' }, { user_id: 'parent-1' }];
 const squash = (s) => String(s).replace(/\s+/g, ' ').trim();
 global.__PADI_SQL__ = { query: async (text, p) => {
   const t = squash(text);
   if (/^(create|alter|insert into accounts|insert into users)/.test(t) && !/^insert into news_posts/.test(t)) return [];
+  if (/^insert into notifications/.test(t)) {
+    if (/from accounts/.test(t)) {
+      recipients.forEach((r) => notificationRows.push({ user_id: r.user_id, id: 'news-' + p[0] + '-' + r.user_id, title: p[1], body: p[2], url: p[3] }));
+      return recipients;
+    }
+    return [];
+  }
   if (/^insert into news_posts/.test(t)) { rows.push({ id: p[0], slug: p[1], title: p[2], summary: p[3], body: p[4], source_name: p[5], source_url: p[6], status: p[7], published_at: p[8], updated_at: p[8], author: p[9] }); return []; }
   if (/^select published_at, status from news_posts where id/.test(t)) return rows.filter((r) => r.id === p[0]);
   if (/^update news_posts set title/.test(t)) { const r = rows.find((x) => x.id === p[0]); Object.assign(r, { title: p[1], summary: p[2], body: p[3], source_name: p[4], source_url: p[5], status: p[6], updated_at: p[7] }); if (p[8]) r.published_at = p[7]; return []; }
@@ -33,7 +42,9 @@ const good = { title: 'WAEC releases the BECE timetable', summary: 'The timetabl
 
   const created = await News.save({ email: 'boss@x.test' }, good);
   check('Save: a new post is created with a readable slug', created.status === 201 && /^waec-releases-the-bece-timetable-[a-f0-9]{5}$/.test(created.body.slug));
+  check('Publish: sends one in-app news notification to each registered account', created.body.notified === 2 && notificationRows.length === 2 && notificationRows.every((n) => n.title === good.title && n.url === '/news/' + created.body.slug));
   const draft = await News.save({ email: 'boss@x.test' }, { ...good, title: 'A draft that nobody should see yet', status: 'draft' });
+  check('Draft: does not notify users', draft.body.notified === 0 && notificationRows.length === 2);
   const idx = await run(News.page, '/api/sync?what=news');
   check('Index: lists live posts only', idx.statusCode === 200 && idx.body.includes(created.body.slug) && !idx.body.includes(draft.body.slug) && /s-maxage=60/.test(idx.headers['cache-control']));
   const art = await run(News.page, '/api/sync?what=news&slug=' + created.body.slug);
@@ -49,6 +60,9 @@ const good = { title: 'WAEC releases the BECE timetable', summary: 'The timetabl
   const edited = await News.save({ email: 'boss@x.test' }, { ...good, id: draft.body.id, title: 'A draft that is now ready to publish', status: 'published' });
   const row = rows.find((r) => r.id === draft.body.id);
   check('Edit: the address stays the same; publishing a draft sets the date', edited.body.slug === draft.body.slug && row.published_at > before && (await run(News.page, '/x?what=news&slug=' + draft.body.slug)).statusCode === 200);
+  check('Draft publish: sends notifications once when it first goes live', edited.body.notified === 2 && notificationRows.length === 4);
+  const republished = await News.save({ email: 'boss@x.test' }, { ...good, id: draft.body.id, title: 'An updated headline for a live post' });
+  check('Edit live post: does not send duplicate news notifications', republished.body.notified === 0 && notificationRows.length === 4);
   check('Edit: an unknown post is refused', (await News.save({}, { ...good, id: 'abcdef123456' })).status === 404);
   const hidden = await News.save({}, { ...good, title: 'Hidden unpublished post', status: 'draft' });
   const sm = await run(News.sitemap, '/news-sitemap.xml');

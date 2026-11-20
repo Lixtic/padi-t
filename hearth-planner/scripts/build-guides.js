@@ -41,6 +41,7 @@ function articlePage(a) {
     for (const p of s.p || []) h += `<p>${esc(p)}</p>\n`;
     if (s.ul) h += list(s.ul);
   }
+  if (a.sourceUrl) h += `<section class="guide-source" aria-label="Official source"><h2>Official source document</h2><p>${esc(a.sourceNote || "Source document provided by the Ghana Education Service.")}</p><p><a class="guides-primary" href="${esc(a.sourceUrl)}" target="_blank" rel="noopener noreferrer">${esc(a.sourceLabel || "Open source document")} <span aria-hidden="true">↗</span></a></p></section>\n`;
   h += `<h2>In short</h2>\n<p>${esc(a.takeaway)}</p>\n`;
   const rel = (a.related || []).map((r) => bySlug.get(r));
   if (rel.length) h += `<h2>Keep reading</h2>\n<ul>\n${rel.map((r) => `<li><a href="/guides/${r.slug}">${esc(r.title)}</a></li>`).join('\n')}\n</ul>\n`;

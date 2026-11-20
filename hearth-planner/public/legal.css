@@ -76,3 +76,231 @@ a { color: var(--accent); }
   .guide-card { transition: border-color .18s ease, transform .18s ease; }
   .guide-card:hover { border-color: var(--accent); transform: translateY(-2px); }
 }
+
+
+
+/* GuidED public-site identity — shared by About, Guides, Lesson Plans and policy pages. */
+:root {
+  color-scheme: light dark;
+  --font-ui: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --font-serif: Inter, ui-sans-serif, system-ui, sans-serif;
+  --bg: #FBF8F0;
+  --text: #253247;
+  --muted: #667386;
+  --line: #E5E8E1;
+  --card: #FFFFFF;
+  --accent: #006A4E;
+  --accent-strong: #004D39;
+  --brand-indigo: #1B365D;
+  --brand-gold: #F4B400;
+  --soft-green: #E7F2ED;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
+    --bg: #10251F;
+    --text: #F1F5F1;
+    --muted: #B2C2B8;
+    --line: #2B493D;
+    --card: #17352B;
+    --accent: #8ED1B0;
+    --accent-strong: #B1E3C8;
+    --brand-indigo: #E7EEF5;
+    --soft-green: #24483A;
+  }
+}
+:root[data-theme="light"] {
+  color-scheme: light;
+  --bg: #FBF8F0;
+  --text: #253247;
+  --muted: #667386;
+  --line: #E5E8E1;
+  --card: #FFFFFF;
+  --accent: #006A4E;
+  --accent-strong: #004D39;
+  --brand-indigo: #1B365D;
+  --soft-green: #E7F2ED;
+}
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --bg: #10251F;
+  --text: #F1F5F1;
+  --muted: #B2C2B8;
+  --line: #2B493D;
+  --card: #17352B;
+  --accent: #8ED1B0;
+  --accent-strong: #B1E3C8;
+  --brand-indigo: #E7EEF5;
+  --soft-green: #24483A;
+}
+html { scroll-behavior: smooth; scroll-padding-top: 24px; }
+body {
+  background:
+    radial-gradient(ellipse at 100% 0%, rgba(131,201,210,.12), transparent 30%),
+    var(--bg);
+  color: var(--text);
+  font-family: var(--font-ui);
+  -webkit-font-smoothing: antialiased;
+}
+.lg { max-width: 860px; padding: 24px 22px calc(58px + env(safe-area-inset-bottom)); }
+.lg:has(.guides-hero) { max-width: 1120px; }
+.lg-top {
+  min-height: 58px;
+  padding: 8px 0 18px;
+  border-bottom: 1px solid var(--line);
+  margin-bottom: 24px;
+}
+.lg-back {
+  color: var(--accent);
+  font-size: 13px;
+  font-weight: 800;
+  transition: color .18s ease, transform .18s ease;
+}
+.lg-back:hover { color: var(--accent-strong); transform: translateY(-1px); }
+.lg-brand {
+  color: var(--brand-indigo);
+  font: 850 21px/1 var(--font-ui);
+  letter-spacing: -.8px;
+}
+.lg-brand em { color: var(--accent); font-style: normal; }
+h1 {
+  color: var(--brand-indigo);
+  font: 850 clamp(34px, 5vw, 48px)/1.08 var(--font-ui);
+  letter-spacing: -.05em;
+  margin: 15px 0 12px;
+}
+h2 {
+  color: var(--brand-indigo);
+  font-size: 19px;
+  font-weight: 820;
+  letter-spacing: -.025em;
+  margin: 32px 0 9px;
+}
+h3 { color: var(--brand-indigo); }
+p, li { color: var(--text); }
+.lede { color: var(--muted); font-size: 16px; line-height: 1.8; margin: 0 0 12px; }
+.upd { color: var(--muted); font-size: 12px; }
+a { color: var(--accent); text-underline-offset: 3px; }
+a:hover { color: var(--accent-strong); }
+.card {
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  padding: 8px 22px 18px;
+  margin-top: 20px;
+  box-shadow: 0 10px 30px rgba(27,54,93,.045);
+}
+.lg-foot {
+  margin-top: 44px;
+  padding-top: 20px;
+  border-top: 1px solid var(--line);
+  color: var(--muted);
+  font-size: 12px;
+  gap: 12px 20px;
+}
+.lg-foot a { font-weight: 700; }
+.shots { gap: 18px; margin: 22px 0 8px; }
+.shots a {
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  box-shadow: 0 14px 35px rgba(27,54,93,.09);
+  transition: transform .2s ease, box-shadow .2s ease;
+}
+.shots a:hover { transform: translateY(-3px); box-shadow: 0 20px 42px rgba(27,54,93,.13); }
+
+/* Guides discovery and article cards */
+.guides-hero {
+  position: relative;
+  overflow: hidden;
+  padding: 36px 30px 32px;
+  border: 0;
+  border-radius: 22px;
+  background:
+    radial-gradient(circle at 92% 12%, rgba(131,201,210,.2), transparent 30%),
+    linear-gradient(125deg, #004D39, #006A4E 72%, #0A7057);
+  color: #fff;
+}
+.guides-hero h1 { color: #fff; max-width: 760px; }
+.guides-hero .lede { color: rgba(255,255,255,.82); max-width: 700px; }
+.guides-kicker { color: #F4C84F; font-size: 10px; font-weight: 900; letter-spacing: .16em; }
+.guides-primary {
+  min-height: 44px;
+  padding: 11px 18px;
+  border-radius: 12px;
+  background: var(--brand-gold);
+  color: #263449;
+  font-size: 13px;
+  font-weight: 850;
+  box-shadow: 0 8px 20px rgba(0,0,0,.12);
+  transition: transform .2s ease, box-shadow .2s ease;
+}
+.guides-primary:hover { color: #263449; transform: translateY(-2px); box-shadow: 0 12px 24px rgba(0,0,0,.18); }
+.guides-discovery { padding: 28px 0 18px; }
+.guides-search-label { color: var(--brand-indigo); font-weight: 800; }
+.guides-search {
+  border-radius: 14px;
+  border-color: var(--line);
+  background: var(--card);
+  box-shadow: 0 5px 18px rgba(27,54,93,.035);
+}
+.guide-filter, .guide-topic {
+  border-color: var(--line);
+  background: var(--card);
+  color: var(--muted);
+  font-weight: 750;
+  transition: background .18s ease, border-color .18s ease, color .18s ease;
+}
+.guide-filter.is-active, .guide-topic.is-active {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #fff;
+}
+.guides-results h2 { color: var(--brand-indigo); font-size: 24px; }
+.guide-card {
+  border-color: var(--line);
+  border-radius: 18px;
+  background: var(--card);
+  box-shadow: 0 6px 22px rgba(27,54,93,.035);
+}
+.guide-category { color: var(--accent); }
+.guide-card h3 { font: 800 18px/1.35 var(--font-ui); letter-spacing: -.025em; }
+.guide-card h3 a { color: var(--brand-indigo); }
+.guide-card h3 a:hover, .guide-card-foot a:hover { color: var(--accent); }
+.guide-card-foot { border-color: var(--line); }
+.guide-empty { border-color: var(--line); background: var(--card); }
+.guides-disclaimer { color: var(--muted); }
+
+/* Lesson-plan download and preview area */
+.jhs-plan-form, .jhs-downloads {
+  border-radius: 18px;
+}
+.jhs-plan-form {
+  background: var(--card);
+  border: 1px solid var(--line);
+  box-shadow: 0 12px 32px rgba(27,54,93,.06);
+}
+.jhs-plan-form button, .jhs-downloads a, .lg button[type="submit"] {
+  border-radius: 12px;
+}
+input, select, textarea {
+  accent-color: var(--accent);
+}
+input:focus-visible, select:focus-visible, textarea:focus-visible, button:focus-visible {
+  outline: 3px solid var(--brand-gold);
+  outline-offset: 3px;
+}
+@media (max-width: 620px) {
+  .lg { width: 100%; padding: 14px 17px calc(44px + env(safe-area-inset-bottom)); }
+  .lg-top { gap: 8px; margin-bottom: 18px; }
+  .lg-back { font-size: 12px; }
+  .lg-brand { font-size: 19px; }
+  h1 { font-size: clamp(32px, 9vw, 40px); }
+  .lede { font-size: 15px; }
+  .guides-hero { padding: 26px 20px 24px; border-radius: 18px; }
+  .guides-hero h1 { font-size: 36px; }
+  .card { padding: 5px 16px 14px; border-radius: 16px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after { transition-duration: .01ms !important; animation-duration: .01ms !important; }
+}
