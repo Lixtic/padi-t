@@ -71,14 +71,15 @@
   // Only admins (ADMIN_EMAILS) get the inbox entry. Checked again whenever the sign-in state changes.
   function checkAdmin() {
     headers().then(function (h) {
-      if (!h || !h.authorization && !h.Authorization) { $('#adminBtn').hidden = true; return; }
-      api('?action=me').then(function (j) { $('#adminBtn').hidden = !j.admin; }, function () {});
+      if (!h || !h.authorization && !h.Authorization) { $('#adminBtn').hidden = true; $('#settingsAdmin').hidden = true; return; }
+      api('?action=me').then(function (j) { $('#adminBtn').hidden = !j.admin; $('#settingsAdmin').hidden = !j.admin; }, function () {});
     });
   }
 
   function init() {
     setupForm(); checkAdmin();
     if (window.GuidedPlans && window.GuidedPlans.onChange) window.GuidedPlans.onChange(checkAdmin);
+    window.addEventListener('guided:auth-changed', checkAdmin);
   }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init); else init();
 })();

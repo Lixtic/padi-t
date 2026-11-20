@@ -14,6 +14,6 @@ assert(v.redirects.some((r) => r.source === '/admin' && r.destination === 'https
 const panels = [...html.matchAll(/data-panel="([a-z]+)" hidden/g)].map((m) => m[1]);
 for (const p of panels) assert(html.includes('class="bo-nav" data-panel="' + p + '"'), 'nav for ' + p);
 const idx = fs.readFileSync('public/index.html', 'utf8'), fb = fs.readFileSync('public/feedback.js', 'utf8');
-assert(/id="adminBtn" href="\/admin"/.test(idx), 'app links to /admin');
+assert(/id="adminBtn" href="\/admin"/.test(idx) && /id="settingsAdmin" href="\/admin"/.test(idx), 'app links to /admin from the menu and from Settings (More)');
 assert(!/id="(adminSheet|usageSheet|inboxSheet)"/.test(idx) && !/\/api\/admin/.test(fb), 'admin tools no longer ship inside the app');
 console.log('PASS admin page');
