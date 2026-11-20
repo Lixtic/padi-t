@@ -1,6 +1,8 @@
 // GuidEd notice emails: a clean branded HTML version with a plain-text twin for mail apps that do not show HTML.
 // Email clients ignore most modern CSS, so this uses tables and inline styles on purpose.
 const SITE = () => String(process.env.SITE_URL || 'https://www.guidedgh.site').replace(/\/+$/, '');
+// Buttons that open the app go to the app address; logos, legal links and unsubscribe stay on the main site.
+const APP = () => String(process.env.APP_URL || 'https://app.guidedgh.site').replace(/\/+$/, '');
 const esc = (s) => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 const GREEN = '#006A4E';
 
@@ -46,7 +48,7 @@ function freePlanText() {
 const fmtDate = (ms) => new Date(Number(ms)).toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric', timeZone: 'UTC' });
 
 function proEnding(left, expiresAt) {
-  const url = SITE() + '/?upgrade=1';
+  const url = APP() + '/?upgrade=1';
   return {
     subject: 'Your GuidEd Pro ends in ' + left + (left === 1 ? ' day' : ' days'),
     ...layout({
@@ -81,7 +83,7 @@ function familyWeekly(o) {
         return [k.name, any ? (done.length ? 'Finished ' + joinList(done) + more + '. ' : 'Nothing finished yet. ') + next : k.subject + ' (' + k.class + ', about ' + k.minutes + ' minutes)'];
       }),
       paragraphs: ['Open My Children, pick the suggested subject and GuidEd will guide you through a short lesson step by step.'],
-      button: { label: 'Start this week', url: site + '/' },
+      button: { label: 'Start this week', url: APP() + '/' },
       closing: 'You can stop these emails any time with the link below.',
       unsubscribe: o.unsubscribeUrl,
     }),
@@ -99,7 +101,7 @@ function teacherWeekly(o) {
       intro: 'This week you made ' + o.plans + ' lesson ' + (o.plans === 1 ? 'plan' : 'plans') + ' with GuidEd. Thank you for the work you put in for your learners.',
       facts: (o.items || []).map((x) => ['Planned', x]).concat(o.next ? [['Next week', o.next]] : []),
       paragraphs: [o.next ? 'Your next plan is one tap away: choose the class and week and GuidEd fills in the scheme of learning for you.' : 'Choose your class and week and GuidEd fills in the scheme of learning for you.'],
-      button: { label: 'Plan next week', url: site + '/' },
+      button: { label: 'Plan next week', url: APP() + '/' },
       closing: 'You can stop these emails any time with the link below.',
       unsubscribe: o.unsubscribeUrl,
       unsubscribeLabel: 'Unsubscribe from weekly summaries',
@@ -116,7 +118,7 @@ function welcome() {
       intro: 'Your account is ready. GuidEd turns the NaCCA scheme of learning into a lesson plan you can teach from.',
       facts: [['Your plan', 'Free: ' + freePlanText().short], ['Need more?', 'Pro gives you every class, unlimited plans and Word files without a footer']],
       paragraphs: ['Choose your class and subject, pick the week, and tap Generate. You get a lesson plan table with the curriculum indicators, activities and assessment, and you can download it as a Word file.', 'Tip: add GuidEd to your phone\'s home screen so it opens like an app.'],
-      button: { label: 'Open GuidEd', url: SITE() + '/' },
+      button: { label: 'Open GuidEd', url: APP() + '/' },
       closing: 'Questions? Just reply to this email and we will help.',
     }),
   };
