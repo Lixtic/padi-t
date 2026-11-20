@@ -46,6 +46,22 @@ async function list() {
   const rows = await db.query('select id, slug, title, summary, body, source_name, source_url, status, published_at, updated_at from news_posts order by published_at desc limit 200');
   return { posts: rows.map((r) => ({ ...r, published_at: Number(r.published_at), updated_at: Number(r.updated_at) })) };
 }
+async function notifyPublished(post) {
+  try {
+    const rows = await db.query(
+      "insert into notifications (id,user_id,dedupe_key,type,title,body,url,created_at) " +
+      "select 'news-' || $1 || '-' || user_id, user_id, 'news:' || $1, 'news', $2, $3, $4, $5 from accounts " +
+      "on conflict (user_id,dedupe_key) do nothing returning user_id",
+      [post.id, post.title, post.summary, '/news/' + post.slug, Date.now()]
+    );
+    return rows.length;
+  } catch (e) {
+    // Publishing the article must still succeed if the notification fan-out has a temporary issue.
+    console.error('[news] notification fan-out failed', e && e.message);
+    return 0;
+  }
+}
+
 async function save(me, b) {
   await db.ensure();
   const v = validate(b || {}); if (!v.ok) return { status: 400, body: v };
@@ -57,12 +73,14 @@ async function save(me, b) {
     const firstLive = cur[0].status === 'draft' && p.status === 'published';
     await db.query('update news_posts set title = $2, summary = $3, body = $4, source_name = $5, source_url = $6, status = $7, updated_at = $8, published_at = case when $9 then $8 else published_at end where id = $1', [id, p.title, p.summary, p.body, p.source_name, p.source_url, p.status, now, firstLive]);
     const row = (await db.query('select slug from news_posts where id = $1', [id]))[0];
-    return { status: 200, body: { ok: true, id, slug: row.slug, status: p.status } };
+    const notified = firstLive ? await notifyPublished({ id, slug: row.slug, title: p.title, summary: p.summary }) : 0;
+    return { status: 200, body: { ok: true, id, slug: row.slug, status: p.status, notified } };
   }
   const nid = crypto.randomBytes(6).toString('hex');
   const slug = (slugify(p.title) || 'post') + '-' + nid.slice(0, 5);
   await db.query('insert into news_posts (id, slug, title, summary, body, source_name, source_url, status, published_at, updated_at, author) values ($1, $2, $3, $4, $5, $6, $7, $8, $9, $9, $10)', [nid, slug, p.title, p.summary, p.body, p.source_name, p.source_url, p.status, now, String((me && me.email) || '').slice(0, 200)]);
-  return { status: 201, body: { ok: true, id: nid, slug, status: p.status } };
+  const notified = p.status === 'published' ? await notifyPublished({ id: nid, slug, title: p.title, summary: p.summary }) : 0;
+  return { status: 201, body: { ok: true, id: nid, slug, status: p.status, notified } };
 }
 async function remove(id) {
   await db.ensure();
