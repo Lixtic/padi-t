@@ -12,7 +12,7 @@
   },
   "headers": [
     {
-      "source": "/(.*)",
+      "source": "/((?!migrate\\.html$).*)",
       "headers": [
         {
           "key": "X-Content-Type-Options",
@@ -32,7 +32,24 @@
         },
         {
           "key": "Content-Security-Policy",
-          "value": "default-src 'self'; img-src 'self' data: blob: https://upload.wikimedia.org https://thumb.wikimedia.org https://i.ytimg.com https://cdn.pixabay.com https://pixabay.com https://images.pexels.com https://live.staticflickr.com https://*.staticflickr.com https://api.openverse.org https://pagead2.googlesyndication.com https://*.googlesyndication.com https://*.doubleclick.net https://*.google.com https://*.gstatic.com https://*.adtrafficquality.google; style-src 'self'; style-src-attr 'unsafe-inline'; script-src 'self' https://*.googletagservices.com https://*.googleadservices.com https://securepubads.g.doubleclick.net https://pagead2.googlesyndication.com https://*.googlesyndication.com https://*.adtrafficquality.google https://*.doubleclick.net https://www.googletagservices.com; connect-src 'self' https://*.neon.tech https://*.neon.com wss://*.neon.tech wss://*.neon.com https://upload.wikimedia.org https://thumb.wikimedia.org https://cdn.pixabay.com https://pixabay.com https://images.pexels.com https://live.staticflickr.com https://*.staticflickr.com https://api.openverse.org https://pagead2.googlesyndication.com https://*.adtrafficquality.google https://*.google.com https://*.doubleclick.net; frame-src https://googleads.g.doubleclick.net https://*.googlesyndication.com https://*.doubleclick.net https://*.adtrafficquality.google; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'"
+          "value": "default-src 'self'; img-src 'self' data: blob: https://upload.wikimedia.org https://thumb.wikimedia.org https://i.ytimg.com https://cdn.pixabay.com https://pixabay.com https://images.pexels.com https://live.staticflickr.com https://*.staticflickr.com https://api.openverse.org https://pagead2.googlesyndication.com https://*.googlesyndication.com https://*.doubleclick.net https://*.google.com https://*.gstatic.com https://*.adtrafficquality.google; style-src 'self'; style-src-attr 'unsafe-inline'; script-src 'self' https://*.googletagservices.com https://*.googleadservices.com https://securepubads.g.doubleclick.net https://pagead2.googlesyndication.com https://*.googlesyndication.com https://*.adtrafficquality.google https://*.doubleclick.net https://www.googletagservices.com; connect-src 'self' https://*.neon.tech https://*.neon.com wss://*.neon.tech wss://*.neon.com https://upload.wikimedia.org https://thumb.wikimedia.org https://cdn.pixabay.com https://pixabay.com https://images.pexels.com https://live.staticflickr.com https://*.staticflickr.com https://api.openverse.org https://pagead2.googlesyndication.com https://*.adtrafficquality.google https://*.google.com https://*.doubleclick.net; frame-src https://www.guidedgh.site https://googleads.g.doubleclick.net https://*.googlesyndication.com https://*.doubleclick.net https://*.adtrafficquality.google; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'"
+        }
+      ]
+    },
+    {
+      "source": "/migrate.html",
+      "headers": [
+        {
+          "key": "X-Content-Type-Options",
+          "value": "nosniff"
+        },
+        {
+          "key": "Referrer-Policy",
+          "value": "no-referrer"
+        },
+        {
+          "key": "Content-Security-Policy",
+          "value": "default-src 'none'; script-src 'self'; frame-ancestors https://app.guidedgh.site"
         }
       ]
     },
@@ -74,11 +91,26 @@
     }
   ],
   "rewrites": [
-    { "source": "/parents", "destination": "/index.html" },
-    { "source": "/teachers", "destination": "/index.html" },
-    { "source": "/news", "destination": "/api/sync?what=news" },
-    { "source": "/news/:slug", "destination": "/api/sync?what=news&slug=:slug" },
-    { "source": "/news-sitemap.xml", "destination": "/api/sync?what=news-sitemap" },
+    {
+      "source": "/parents",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/teachers",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/news",
+      "destination": "/api/sync?what=news"
+    },
+    {
+      "source": "/news/:slug",
+      "destination": "/api/sync?what=news&slug=:slug"
+    },
+    {
+      "source": "/news-sitemap.xml",
+      "destination": "/api/sync?what=news-sitemap"
+    },
     {
       "source": "/api/export-docx",
       "destination": "/api/export_docx"
