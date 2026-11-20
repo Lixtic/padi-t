@@ -7,7 +7,7 @@
     "node": ">=20"
   },
   "scripts": {
-    "build": "npm run build:prompt && node scripts/build-levels.js && node scripts/build-schemes.js && node scripts/build-realtime.js && node scripts/build-auth.js && node scripts/build-seo.js && node scripts/build-guides.js",
+    "build": "npm run build:prompt && node scripts/build-levels.js && node scripts/build-schemes.js && node scripts/build-realtime.js && node scripts/build-auth.js && node scripts/build-seo.js",
     "build:prompt": "node scripts/build-prompt.js",
     "build:realtime": "node scripts/build-realtime.js",
     "dev": "vercel dev",
