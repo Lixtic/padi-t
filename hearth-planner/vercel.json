@@ -117,12 +117,16 @@
       "destination": "/home.html"
     },
     {
+      "source": "/",
+      "destination": "/app.html"
+    },
+    {
       "source": "/parents",
-      "destination": "/index.html"
+      "destination": "/app.html"
     },
     {
       "source": "/teachers",
-      "destination": "/index.html"
+      "destination": "/app.html"
     },
     {
       "source": "/news",
@@ -191,6 +195,17 @@
       "source": "/product",
       "destination": "https://www.guidedgh.site/",
       "permanent": true
+    },
+    {
+      "source": "/(app|app.html)",
+      "has": [
+        {
+          "type": "host",
+          "value": "(www\\.guidedgh\\.site|guidedgh\\.site)"
+        }
+      ],
+      "destination": "https://app.guidedgh.site/",
+      "permanent": false
     }
   ]
 }

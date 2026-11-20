@@ -8,7 +8,7 @@ const read = (f) => fs.readFileSync(path.join(root, f), 'utf8').replace(/\r\n/g,
 
 const prompt = read('prompts/ges-lesson-plans.md').replace(/^---\n[\s\S]*?\n---\n/, '').trim();
 
-let html = read('public/index.html');
+let html = read('public/app.html');
 let body = html.slice(html.indexOf('<body>') + 6, html.indexOf('</body>'));
 body = body.replace(/<script\b[^>]*>\s*<\/script>/g, '');
 body = body.replace(/<strong>Demo mode\.<\/strong>[\s\S]*?<\/div>/,
