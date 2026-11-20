@@ -387,7 +387,7 @@
   function init() {
     gate('Checking your sign-in…');
     fetch('/api/config', { headers: { accept: 'application/json' } }).then(function (r) { return r.json(); })
-      .then(function (cfg) { return window.PadiSync.init(cfg); })
+      .then(function (j) { return window.PadiSync.init(Object.assign({}, j.sync || {}, { enabled: !!(j.auth && j.auth.enabled), syncEnabled: !!j.sync, authUrl: j.auth && j.auth.url, authDirectUrl: j.auth && j.auth.direct })); })   // same settings the app builds from /api/config
       .then(function () {
         var u = window.PadiSync.user && window.PadiSync.user();
         if (!u) { gate('Sign in to GuidEd with your admin account first, then come back here.', true); return; }

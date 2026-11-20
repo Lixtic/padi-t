@@ -11,6 +11,7 @@ assert(/name="robots" content="noindex/.test(html), 'noindex meta');
 assert(/Disallow: \/admin/.test(fs.readFileSync('public/robots.txt', 'utf8')), 'robots disallows /admin');
 const v = JSON.parse(fs.readFileSync('vercel.json', 'utf8'));
 assert(v.redirects.some((r) => r.source === '/admin' && r.destination === 'https://app.guidedgh.site/admin'), 'www /admin goes to the app host');
+assert(/enabled: !!\(j\.auth && j\.auth\.enabled\)/.test(js) && /authUrl: j\.auth && j\.auth\.url/.test(js), 'admin.js passes sign-in settings the way the app does');
 const panels = [...html.matchAll(/data-panel="([a-z]+)" hidden/g)].map((m) => m[1]);
 for (const p of panels) assert(html.includes('class="bo-nav" data-panel="' + p + '"'), 'nav for ' + p);
 const idx = fs.readFileSync('public/index.html', 'utf8'), fb = fs.readFileSync('public/feedback.js', 'utf8');
