@@ -581,10 +581,6 @@ a { color: inherit; }
 .install-hint { margin: 0 0 10px; font-size: 12.5px; line-height: 1.45; color: var(--muted); }
 .brand .logo { color: var(--accent); }
 html { overscroll-behavior-y: none; }
-@media (display-mode: standalone) {
-  .topbar { padding-top: max(0px, env(safe-area-inset-top)); }
-  .sb-head { padding-top: max(0px, env(safe-area-inset-top)); }
-}
 
 /* ───────── Teacher details and multi-class ───────── */
 .profile-row { margin-bottom: 12px; }
@@ -1108,7 +1104,7 @@ main[data-view="chat"] .notice-bar { display: none; }
     z-index: 10;
     height: 56px;
     min-height: 56px;
-    padding: max(4px, env(safe-area-inset-top)) 10px 4px;
+    padding: 4px 10px 4px;
     gap: 6px;
     background: var(--bg);
     border-bottom: 1px solid color-mix(in srgb, var(--line) 65%, transparent);
@@ -2438,3 +2434,12 @@ button:not(:disabled):not(.v2-tabbar button):active, [role="button"]:active, sum
 .ad-notice textarea { width: 100%; font: inherit; padding: 10px 12px; border: 1px solid var(--card-line); border-radius: 12px; background: var(--card); color: var(--text); resize: vertical; }
 .news-list { margin-bottom: 12px; }
 .ad-acts a { color: var(--accent); font-weight: 600; font-size: 13.5px; align-self: center; text-decoration: none; }
+
+/* iPhone home-screen app: the app runs edge to edge and the status bar floats over the top with white text, so the strip
+   behind it is painted in the brand blue (the app background in dark mode) and the app starts just below it.
+   --sat is 0 in a normal browser tab, so nothing changes there. Divided by --ui-zoom because the page is scaled. */
+:root { --sat: env(safe-area-inset-top, 0px); --status-band: #1B45A8; --sat-z: calc(var(--sat) / var(--ui-zoom, 1)); }
+:root[data-theme="dark"] { --status-band: var(--bg); }
+body::before { content: ''; position: fixed; top: 0; left: 0; right: 0; height: var(--sat-z); background: var(--status-band); z-index: 5000; pointer-events: none; }
+.app { box-sizing: border-box; padding-top: var(--sat-z); }
+.reader-full { box-shadow: inset 0 var(--sat-z) 0 var(--status-band); }
