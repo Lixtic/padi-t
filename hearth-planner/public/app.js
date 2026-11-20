@@ -90,7 +90,7 @@
     const close = h('button', { type: 'button', class: 'reader-btn reader-close', text: 'Close' });
     const body = h('div', { class: 'reader-body md', tabindex: '-1' });
     body.append(...Array.from(source.childNodes).map((n) => n.cloneNode(true)));
-    const deliveryView = h('section', { class: 'reader-delivery-view', hidden: true, 'aria-live': 'polite' });
+    const deliveryView = h('section', { class: 'reader-delivery-view', hidden: true, 'aria-live': 'polite', tabindex: '-1' });
     let deliveryActive = false, deliveryIndex = 0, deliverySections = [];
     function buildDeliverySections() {
       const nodes = Array.from(body.childNodes);
@@ -120,6 +120,7 @@
       );
       const content = h('article', { class: 'reader-delivery-content' });
       section.nodes.forEach((node) => content.append(node.cloneNode(true)));
+      content.style.fontSize = size + 'em';
       const previous = h('button', { type: 'button', class: 'reader-btn reader-delivery-secondary', disabled: deliveryIndex === 0, onclick: () => renderDelivery(deliveryIndex - 1) }, 'Previous');
       const next = h('button', { type: 'button', class: 'reader-btn reader-delivery-next', onclick: () => {
         if (deliveryIndex >= deliverySections.length - 1) exitDelivery();
@@ -130,7 +131,7 @@
       deliveryView.replaceChildren(heading, content, actions);
       deliveryView.hidden = false; body.hidden = true; dlg.classList.add('is-teaching'); deliveryActive = true;
       if (teach) { teach.textContent = 'Reading view'; teach.setAttribute('aria-pressed', 'true'); }
-      deliveryView.scrollTop = 0; content.scrollIntoView({ block: 'start' });
+      deliveryView.scrollTop = 0; deliveryView.focus({ preventScroll: true });
     }
     function exitDelivery() {
       deliveryActive = false; deliveryView.hidden = true; body.hidden = false; dlg.classList.remove('is-teaching');
@@ -148,7 +149,7 @@
       else if (event.key === 'ArrowLeft' && deliveryIndex > 0) { event.preventDefault(); renderDelivery(deliveryIndex - 1); }
       else if (event.key === 'Escape') exitDelivery();
     });
-    const apply = () => { body.style.fontSize = size + 'em'; };
+    const apply = () => { body.style.fontSize = size + 'em'; const active = deliveryView.querySelector('.reader-delivery-content'); if (active) active.style.fontSize = size + 'em'; };
     bigger.addEventListener('click', () => { size = Math.min(size + 0.15, 2); apply(); });
     smaller.addEventListener('click', () => { size = Math.max(size - 0.15, 0.8); apply(); });
     const returnFocus = document.activeElement;
