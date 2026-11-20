@@ -2529,7 +2529,8 @@
       report((err && err.message) || 'Could not send the password reset email.', true);
     } finally { button.disabled = false; }
   }
-  $('#asResetPassword').addEventListener('click', () => sendPasswordReset($('#asResetPassword'), (message) => { sheet.result.textContent = message; }));
+  const accountResetButton = $('#asResetPassword');
+  if (accountResetButton) accountResetButton.addEventListener('click', () => sendPasswordReset(accountResetButton, (message) => { sheet.result.textContent = message; }));
   $('#settingsResetPassword').addEventListener('click', () => sendPasswordReset($('#settingsResetPassword'), acctMsg));
   ep.close.addEventListener('click', () => ep.dlg.close());
   ep.dlg.addEventListener('click', (event) => {
@@ -2648,7 +2649,7 @@
     catch (err) { sheet.google.disabled = false; $('#asGoogleText').textContent = 'Continue with Google'; handleAuthError(err); }
   });
   sheet.view.addEventListener('click', () => { closeSheet(); setNav(true); if (isMobile()) newBtn.focus(); });
-  sheet.syncNow.addEventListener('click', async () => {
+  if (sheet.syncNow) sheet.syncNow.addEventListener('click', async () => {
     sheet.syncNow.disabled = true; sheet.result.textContent = 'Syncing…';
     try { await syncAndReport(false); } finally { sheet.syncNow.disabled = false; }
   });

@@ -207,9 +207,7 @@
       </button>
     <div class="as-actions">
       <button type="button" class="as-second" id="asEditProfile"><span>Edit profile</span></button>
-      <button type="button" class="as-second" id="asResetPassword"><span>Reset password</span></button>
       <button type="button" class="as-submit" id="asView"><span>View my plans</span></button>
-      <button type="button" class="as-second" id="asSyncNow"><span>Sync now</span></button>
       <button type="button" class="as-second as-danger" id="asSignOut"><span>Sign out</span></button>
     </div>
     <button type="button" class="as-link" id="asRole" hidden></button>
@@ -594,11 +592,13 @@
       </button>
       <div class="tb-title" id="topTitle">New plan</div>
       <button type="button" class="role-chip" id="roleChip" aria-label="Switch between Teacher and Parent view" hidden><span id="roleChipText"></span><svg class="ico" aria-hidden="true"><use href="#i-swap"/></svg></button>
-      <button type="button" class="plan-badge" id="planBadge" data-tier="" aria-haspopup="dialog" aria-label="Your plan" hidden></button>
-      <button type="button" class="icon-btn acct-top" id="acctTop" aria-label="Sign in or create account" aria-haspopup="dialog" data-state="out" hidden>
-        <svg class="ico"><use href="#i-user"/></svg><span class="acct-initial" aria-hidden="true"></span><span class="acct-dot" aria-hidden="true"></span>
-      </button>
-      <button type="button" class="notification-bell" id="notificationBell" aria-label="Notifications" aria-haspopup="dialog" aria-expanded="false" title="Notifications"><svg class="ico"><use href="#i-bell"/></svg><span class="notification-count" id="notificationCount" hidden></span></button>
+      <div class="account-cluster" aria-label="Account and notifications">
+        <button type="button" class="plan-badge" id="planBadge" data-tier="" aria-haspopup="dialog" aria-label="Your plan" hidden></button>
+        <button type="button" class="icon-btn acct-top" id="acctTop" aria-label="Sign in or create account" aria-haspopup="dialog" data-state="out" hidden>
+          <svg class="ico"><use href="#i-user"/></svg><span class="acct-initial" aria-hidden="true"></span><span class="acct-dot" aria-hidden="true"></span>
+        </button>
+        <button type="button" class="notification-bell" id="notificationBell" aria-label="Notifications" aria-haspopup="dialog" aria-expanded="false" title="Notifications"><svg class="ico"><use href="#i-bell"/></svg><span class="notification-count" id="notificationCount" hidden></span></button>
+      </div>
     </header>
     <div class="pro-banner profile-ask" id="termBar" role="status" hidden></div>
     <div class="pro-banner profile-ask" id="profileAsk" role="status" hidden></div>
