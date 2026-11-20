@@ -1,0 +1,19 @@
+// Back office page: every element the script looks up exists, no inline code (CSP), kept out of search and off www, and the app only links to it.
+const fs = require('fs'), assert = require('assert');
+const html = fs.readFileSync('public/admin.html', 'utf8'), js = fs.readFileSync('public/admin.js', 'utf8');
+const ids = new Set([...html.matchAll(/\sid="([^"]+)"/g)].map((m) => m[1]));
+const used = new Set([...js.matchAll(/\$\('#([A-Za-z0-9_-]+)'/g)].map((m) => m[1]));
+for (const m of js.matchAll(/\['(news[A-Za-z]+(?:', '[A-Za-z]+)*)'\]\.forEach/g)) m[1].split("', '").forEach((i) => used.add(i));
+const missing = [...used].filter((i) => !ids.has(i));
+assert.deepStrictEqual(missing, [], 'admin.js looks for missing elements: ' + missing);
+assert(!/<style|\sstyle=|<script(?![^>]*\ssrc=)/i.test(html), 'no inline style/script (CSP)');
+assert(/name="robots" content="noindex/.test(html), 'noindex meta');
+assert(/Disallow: \/admin/.test(fs.readFileSync('public/robots.txt', 'utf8')), 'robots disallows /admin');
+const v = JSON.parse(fs.readFileSync('vercel.json', 'utf8'));
+assert(v.redirects.some((r) => r.source === '/admin' && r.destination === 'https://app.guidedgh.site/admin'), 'www /admin goes to the app host');
+const panels = [...html.matchAll(/data-panel="([a-z]+)" hidden/g)].map((m) => m[1]);
+for (const p of panels) assert(html.includes('class="bo-nav" data-panel="' + p + '"'), 'nav for ' + p);
+const idx = fs.readFileSync('public/index.html', 'utf8'), fb = fs.readFileSync('public/feedback.js', 'utf8');
+assert(/id="adminBtn" href="\/admin"/.test(idx), 'app links to /admin');
+assert(!/id="(adminSheet|usageSheet|inboxSheet)"/.test(idx) && !/\/api\/admin/.test(fb), 'admin tools no longer ship inside the app');
+console.log('PASS admin page');

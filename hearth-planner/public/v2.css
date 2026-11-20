@@ -471,19 +471,16 @@ body:not(.role-parent) .parent-only { display: none !important; }
 .role-chip .ico { width: 14px; height: 14px; }
 .set-select { max-width: 55%; min-height: 40px; padding: 0 10px; border: 1px solid var(--line); border-radius: 10px; background: var(--card); color: var(--text); font: inherit; font-size: 14px; }
 
-/* Admin sheet: heading clears the close button, announcement box shows its text, controls are easy to tap */
-#adminSheet h2 { padding-right: 52px; font-size: 22px; }
-#adminSheet .as-close:focus:not(:focus-visible) { outline: none; box-shadow: none; }
-#adminSheet .ad-notice textarea { min-height: 112px; line-height: 1.4; resize: vertical; }
-#adminSheet .ad-row > label:not(.kb-file) { display: flex; align-items: center; gap: 8px; }
-#adminSheet .ad-row select { font-size: 16px; padding: 9px 10px; min-height: 44px; }
-#adminSheet .ad-row .primary, #adminSheet .ad-row button { min-height: 44px; }
+/* Back office (/admin): announcement box shows its text, controls are easy to tap */
+.bo-main .ad-notice textarea { min-height: 112px; line-height: 1.4; resize: vertical; }
+.bo-main .ad-row > label:not(.kb-file) { display: flex; align-items: center; gap: 8px; }
+.bo-main .ad-row select { font-size: 16px; padding: 9px 10px; min-height: 44px; }
+.bo-main .ad-row .primary, .bo-main .ad-row button { min-height: 44px; }
 @media (max-width: 520px) {
-  #adminSheet .ad-row > label:not(.kb-file) { flex: 1 1 100%; justify-content: space-between; }
-  #adminSheet .ad-row select { flex: 1 1 auto; max-width: 62%; }
-  #adminSheet .ad-row:has(> button) > button { flex: 1 1 auto; }
+  .bo-main .ad-row > label:not(.kb-file) { flex: 1 1 100%; justify-content: space-between; }
+  .bo-main .ad-row select { flex: 1 1 auto; max-width: 62%; }
+  .bo-main .ad-row:has(> button) > button { flex: 1 1 auto; }
 }
-#adminSheet h2:focus { outline: none; }
 
 /* Parents: delete a saved activity */
 .pd-delete-record, .pd-room-delete { font: 600 13px var(--font-ui, inherit); color: var(--del, #b42318); background: none; border: 0; padding: 8px 4px; min-height: 40px; cursor: pointer; text-decoration: underline; }

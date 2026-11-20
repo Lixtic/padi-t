@@ -1,0 +1,128 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>GuidEd back office</title>
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<script src="/theme-init.js"></script>
+<link rel="stylesheet" href="/styles.css">
+<link rel="stylesheet" href="/v2.css">
+<link rel="stylesheet" href="/admin.css">
+<script src="/vendor/neon-auth.js" defer></script>
+<script src="/sync.js" defer></script>
+<script src="/admin.js" defer></script>
+</head>
+<body class="bo">
+<div class="bo-gate" id="boGate" hidden><div class="bo-gate-card"><h1>GuidEd back office</h1><p id="boGateMsg">Checking your sign-in…</p><a class="bo-btn" id="boGateLink" href="/" hidden>Open GuidEd to sign in</a></div></div>
+<div class="bo-shell" id="boShell" hidden>
+  <aside class="bo-side">
+    <a class="bo-brand" href="/admin">Guid<em>Ed</em> <span>back office</span></a>
+    <nav class="bo-navs" aria-label="Back office"><button type="button" class="bo-nav" data-panel="overview">Overview</button><button type="button" class="bo-nav" data-panel="teachers">Teachers</button><button type="button" class="bo-nav" data-panel="feedback">Feedback</button><button type="button" class="bo-nav" data-panel="announcement">Announcement</button><button type="button" class="bo-nav" data-panel="news">News</button><button type="button" class="bo-nav" data-panel="knowledge">Knowledge base</button><button type="button" class="bo-nav" data-panel="activity">Activity</button></nav>
+    <div class="bo-side-foot"><span id="boUser"></span><a href="/">Open the app</a></div>
+  </aside>
+  <main class="bo-main" id="boMain">
+    <section class="bo-panel" id="p-overview" data-panel="overview" hidden>
+      <h2 class="bo-h">Overview</h2>
+      <div class="bo-card">
+    <p class="bo-sub" id="usSub"></p>
+    <div class="fb-filter" id="usRange" role="group" aria-label="Period">
+      <button type="button" data-d="7" aria-pressed="false">7 days</button>
+      <button type="button" data-d="30" aria-pressed="true">30 days</button>
+      <button type="button" data-d="90" aria-pressed="false">90 days</button>
+    </div>
+    <div id="usBody"></div>
+  </div>
+    </section>
+    <section class="bo-panel" id="p-teachers" data-panel="teachers" hidden>
+      <h2 class="bo-h">Teachers</h2>
+      <p class="bo-sub">Find a teacher, give or take Pro days, pause an account</p>
+      <div class="bo-card">
+      <form class="ad-find" id="adFind"><input type="search" id="adQ" placeholder="Part of their email" autocomplete="off" aria-label="Part of the teacher's email" minlength="3"><button type="submit" class="primary">Find</button></form>
+      <div id="adResults"></div>
+    </div>
+    </section>
+    <section class="bo-panel" id="p-feedback" data-panel="feedback" hidden>
+      <h2 class="bo-h">Feedback</h2>
+      <div class="bo-card">
+    <p class="bo-sub" id="ibSub"></p>
+    <div class="fb-filter" id="ibFilter" role="group" aria-label="Filter">
+      <button type="button" data-f="new" aria-pressed="true">New</button>
+      <button type="button" data-f="done" aria-pressed="false">Done</button>
+      <button type="button" data-f="" aria-pressed="false">All</button>
+    </div>
+    <ul class="fb-list" id="ibList"></ul>
+    <p class="as-foot" id="ibEmpty" hidden>Nothing here yet.</p>
+  </div>
+    </section>
+    <section class="bo-panel" id="p-announcement" data-panel="announcement" hidden>
+      <h2 class="bo-h">Announcement</h2>
+      <div class="bo-card">
+      <p class="us-note">One short message shown at the top of the start screen to every teacher. Teachers can dismiss it.</p>
+      <form class="ad-notice" id="adNotice">
+        <textarea id="adText" rows="4" maxlength="200" placeholder="For example: Term 2 schemes for Basic 7 to 9 are now in." aria-label="Announcement text"></textarea>
+        <div class="ad-row">
+          <label>Style <select id="adKind"><option value="info">Information</option><option value="warn">Important</option></select></label>
+          <label>Show for <select id="adDays"><option value="0">Until I turn it off</option><option value="1">1 day</option><option value="3">3 days</option><option value="7">7 days</option><option value="14">14 days</option></select></label>
+        </div>
+        <div class="ad-row"><button type="submit" class="primary" id="adPost">Show to everyone</button><button type="button" id="adOff">Turn off</button></div>
+        <p class="us-note" id="adNoticeState"></p>
+      </form>
+    </div>
+    </section>
+    <section class="bo-panel" id="p-news" data-panel="news" hidden>
+      <h2 class="bo-h">News</h2>
+      <div class="bo-card">
+      <p class="us-note">Posts appear at <a href="/news" target="_blank" rel="noopener">/news</a> as soon as you publish. Write your own short summary and link the official source. Do not paste other websites' articles.</p>
+      <ul class="us-rows news-list" id="newsList"></ul>
+      <form class="ad-notice" id="newsForm">
+        <input type="hidden" id="newsId">
+        <div class="ad-row"><label class="kb-file">Headline <input type="text" id="newsTitle" maxlength="140" placeholder="WAEC releases the 2027 BECE timetable" required></label></div>
+        <div class="ad-row"><label class="kb-file">Summary <small>(one or two sentences, shown in search results)</small> <textarea id="newsSummary" rows="2" maxlength="300" required></textarea></label></div>
+        <div class="ad-row"><label class="kb-file">Post <small>(blank line = new paragraph, "## " = heading, "- " = bullet, [text](https://link) = link)</small> <textarea id="newsBody" rows="9" maxlength="20000" required></textarea></label></div>
+        <div class="ad-row">
+          <label class="kb-file">Source name <input type="text" id="newsSourceName" maxlength="120" placeholder="WAEC"></label>
+          <label class="kb-file">Source link <input type="url" id="newsSourceUrl" placeholder="https://waecgh.org/..."></label>
+        </div>
+        <div class="ad-row"><button type="submit" class="primary" id="newsPublish">Publish</button><button type="button" id="newsDraft">Save as draft</button><button type="button" id="newsNew" hidden>New post</button></div>
+        <p class="us-note" id="newsState" role="status"></p>
+      </form>
+    </div>
+    </section>
+    <section class="bo-panel" id="p-knowledge" data-panel="knowledge" hidden>
+      <h2 class="bo-h">Knowledge base</h2>
+      <div class="bo-card">
+      <p class="us-note">Curriculum documents GuidEd can draw on. A new document waits here until you approve it; nothing is used before that.</p>
+      <ul class="us-rows kb-list" id="kbList"></ul>
+      <form class="ad-notice" id="kbForm">
+        <label class="kb-file">Document file <small>(prepared .json from scripts/prepare-knowledge.py, or plain .txt / .md)</small>
+          <input type="file" id="kbFile" accept=".json,.txt,.md,application/json,text/plain,text/markdown" required></label>
+        <div class="ad-row"><label>Title <input type="text" id="kbTitle" maxlength="200" placeholder="Social Studies Teacher Manual, SHS Year 2"></label></div>
+        <div class="ad-row"><label>Publisher <input type="text" id="kbPublisher" maxlength="160" placeholder="NaCCA, Ministry of Education"></label></div>
+        <div class="ad-row"><label>Link to the original <input type="url" id="kbUrl" placeholder="https://nacca.gov.gh/..."></label></div>
+        <div class="ad-row">
+          <label>Subject <input type="text" id="kbSubject" maxlength="100" placeholder="Social Studies"></label>
+          <label>Classes <input type="text" id="kbClasses" maxlength="100" placeholder="SHS 2, SHS 3"></label>
+        </div>
+        <div class="ad-row">
+          <label>Kind <select id="kbType"><option value="curriculum">Curriculum</option><option value="teacher_guide">Teacher manual</option><option value="approved_textbook">NaCCA-approved textbook</option><option value="approved_supplementary">NaCCA-approved supplementary material</option><option value="teacher_resource">Teacher resource</option></select></label>
+          <label>Licence <input type="text" id="kbLicense" maxlength="160" placeholder="Who may use it"></label>
+        </div>
+        <div class="ad-row" id="kbApprovalRow" hidden><label>NaCCA approval-register reference <input type="text" id="kbApprovalReference" maxlength="240" placeholder="Enter the exact register reference" autocomplete="off"></label></div>
+        <div class="ad-row"><button type="submit" class="primary" id="kbAdd">Add for review</button></div>
+        <p class="us-note" id="kbState" role="status"></p>
+      </form>
+    </div>
+    </section>
+    <section class="bo-panel" id="p-activity" data-panel="activity" hidden>
+      <h2 class="bo-h">Activity</h2>
+      <p class="bo-sub">What admins have done recently</p>
+      <div class="bo-card">
+      <ul class="us-rows" id="adLog"></ul>
+    </div>
+    </section>
+  </main>
+</div>
+</body>
+</html>

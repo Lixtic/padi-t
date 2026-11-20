@@ -309,105 +309,6 @@
   </section>
 </dialog>
 
-<dialog class="acct-sheet up-sheet fb-inbox" id="usageSheet" aria-labelledby="usTitle">
-  <button type="button" class="icon-btn as-close" id="usClose" aria-label="Close"><svg class="ico"><use href="#i-x"/></svg></button>
-  <section>
-    <h2 id="usTitle">Usage and payments</h2>
-    <p class="as-sub" id="usSub"></p>
-    <div class="fb-filter" id="usRange" role="group" aria-label="Period">
-      <button type="button" data-d="7" aria-pressed="false">7 days</button>
-      <button type="button" data-d="30" aria-pressed="true">30 days</button>
-      <button type="button" data-d="90" aria-pressed="false">90 days</button>
-    </div>
-    <div id="usBody"></div>
-  </section>
-</dialog>
-
-<dialog class="acct-sheet up-sheet fb-inbox" id="adminSheet" aria-labelledby="adTitle">
-  <button type="button" class="icon-btn as-close" id="adClose" aria-label="Close"><svg class="ico"><use href="#i-x"/></svg></button>
-  <section>
-    <h2 id="adTitle" tabindex="-1" autofocus>Admin: teachers, announcements, news, knowledge</h2>
-    <p class="as-sub">Look up a teacher, give or take off Pro days, pause an account, or post a message everyone sees.</p>
-    <div class="us-sec">
-      <h3 class="ps-h">Find a teacher</h3>
-      <form class="ad-find" id="adFind"><input type="search" id="adQ" placeholder="Part of their email" autocomplete="off" aria-label="Part of the teacher's email" minlength="3"><button type="submit" class="primary">Find</button></form>
-      <div id="adResults"></div>
-    </div>
-    <div class="us-sec">
-      <h3 class="ps-h">Announcement</h3>
-      <p class="us-note">One short message shown at the top of the start screen to every teacher. Teachers can dismiss it.</p>
-      <form class="ad-notice" id="adNotice">
-        <textarea id="adText" rows="4" maxlength="200" placeholder="For example: Term 2 schemes for Basic 7 to 9 are now in." aria-label="Announcement text"></textarea>
-        <div class="ad-row">
-          <label>Style <select id="adKind"><option value="info">Information</option><option value="warn">Important</option></select></label>
-          <label>Show for <select id="adDays"><option value="0">Until I turn it off</option><option value="1">1 day</option><option value="3">3 days</option><option value="7">7 days</option><option value="14">14 days</option></select></label>
-        </div>
-        <div class="ad-row"><button type="submit" class="primary" id="adPost">Show to everyone</button><button type="button" id="adOff">Turn off</button></div>
-        <p class="us-note" id="adNoticeState"></p>
-      </form>
-    </div>
-    <div class="us-sec">
-      <h3 class="ps-h">News</h3>
-      <p class="us-note">Posts appear at <a href="/news" target="_blank" rel="noopener">/news</a> as soon as you publish. Write your own short summary and link the official source. Do not paste other websites' articles.</p>
-      <ul class="us-rows news-list" id="newsList"></ul>
-      <form class="ad-notice" id="newsForm">
-        <input type="hidden" id="newsId">
-        <div class="ad-row"><label class="kb-file">Headline <input type="text" id="newsTitle" maxlength="140" placeholder="WAEC releases the 2027 BECE timetable" required></label></div>
-        <div class="ad-row"><label class="kb-file">Summary <small>(one or two sentences, shown in search results)</small> <textarea id="newsSummary" rows="2" maxlength="300" required></textarea></label></div>
-        <div class="ad-row"><label class="kb-file">Post <small>(blank line = new paragraph, "## " = heading, "- " = bullet, [text](https://link) = link)</small> <textarea id="newsBody" rows="9" maxlength="20000" required></textarea></label></div>
-        <div class="ad-row">
-          <label class="kb-file">Source name <input type="text" id="newsSourceName" maxlength="120" placeholder="WAEC"></label>
-          <label class="kb-file">Source link <input type="url" id="newsSourceUrl" placeholder="https://waecgh.org/..."></label>
-        </div>
-        <div class="ad-row"><button type="submit" class="primary" id="newsPublish">Publish</button><button type="button" id="newsDraft">Save as draft</button><button type="button" id="newsNew" hidden>New post</button></div>
-        <p class="us-note" id="newsState" role="status"></p>
-      </form>
-    </div>
-    <div class="us-sec">
-      <h3 class="ps-h">Knowledge base</h3>
-      <p class="us-note">Curriculum documents GuidEd can draw on. A new document waits here until you approve it; nothing is used before that.</p>
-      <ul class="us-rows kb-list" id="kbList"></ul>
-      <form class="ad-notice" id="kbForm">
-        <label class="kb-file">Document file <small>(prepared .json from scripts/prepare-knowledge.py, or plain .txt / .md)</small>
-          <input type="file" id="kbFile" accept=".json,.txt,.md,application/json,text/plain,text/markdown" required></label>
-        <div class="ad-row"><label>Title <input type="text" id="kbTitle" maxlength="200" placeholder="Social Studies Teacher Manual, SHS Year 2"></label></div>
-        <div class="ad-row"><label>Publisher <input type="text" id="kbPublisher" maxlength="160" placeholder="NaCCA, Ministry of Education"></label></div>
-        <div class="ad-row"><label>Link to the original <input type="url" id="kbUrl" placeholder="https://nacca.gov.gh/..."></label></div>
-        <div class="ad-row">
-          <label>Subject <input type="text" id="kbSubject" maxlength="100" placeholder="Social Studies"></label>
-          <label>Classes <input type="text" id="kbClasses" maxlength="100" placeholder="SHS 2, SHS 3"></label>
-        </div>
-        <div class="ad-row">
-          <label>Kind <select id="kbType"><option value="curriculum">Curriculum</option><option value="teacher_guide">Teacher manual</option><option value="approved_textbook">NaCCA-approved textbook</option><option value="approved_supplementary">NaCCA-approved supplementary material</option><option value="teacher_resource">Teacher resource</option></select></label>
-          <label>Licence <input type="text" id="kbLicense" maxlength="160" placeholder="Who may use it"></label>
-        </div>
-        <div class="ad-row" id="kbApprovalRow" hidden><label>NaCCA approval-register reference <input type="text" id="kbApprovalReference" maxlength="240" placeholder="Enter the exact register reference" autocomplete="off"></label></div>
-        <div class="ad-row"><button type="submit" class="primary" id="kbAdd">Add for review</button></div>
-        <p class="us-note" id="kbState" role="status"></p>
-      </form>
-    </div>
-    <div class="us-sec">
-      <h3 class="ps-h">Recent admin actions</h3>
-      <ul class="us-rows" id="adLog"></ul>
-    </div>
-  </section>
-</dialog>
-
-<dialog class="acct-sheet up-sheet fb-inbox" id="inboxSheet" aria-labelledby="ibTitle">
-  <button type="button" class="icon-btn as-close" id="ibClose" aria-label="Close"><svg class="ico"><use href="#i-x"/></svg></button>
-  <section>
-    <h2 id="ibTitle">Feedback inbox</h2>
-    <p class="as-sub" id="ibSub"></p>
-    <div class="fb-filter" id="ibFilter" role="group" aria-label="Filter">
-      <button type="button" data-f="new" aria-pressed="true">New</button>
-      <button type="button" data-f="done" aria-pressed="false">Done</button>
-      <button type="button" data-f="" aria-pressed="false">All</button>
-    </div>
-    <ul class="fb-list" id="ibList"></ul>
-    <p class="as-foot" id="ibEmpty" hidden>Nothing here yet.</p>
-  </section>
-</dialog>
-
 <dialog class="acct-sheet up-sheet" id="planSheet" aria-labelledby="psTitle">
   <button type="button" class="icon-btn as-close" id="psClose" aria-label="Close"><svg class="ico"><use href="#i-x"/></svg></button>
   <section>
@@ -570,15 +471,9 @@
 
       <div class="foot-group foot-admin" aria-label="Admin">
         <p class="foot-label">Admin</p>
-        <button type="button" class="foot-link" id="usageBtn" hidden>
-          <svg class="ico"><use href="#i-sliders"/></svg><span>Usage and payments</span>
-        </button>
-        <button type="button" class="foot-link" id="adminBtn" hidden>
-          <svg class="ico"><use href="#i-user"/></svg><span>Teachers and knowledge</span>
-        </button>
-        <button type="button" class="foot-link" id="inboxBtn" hidden>
-          <svg class="ico"><use href="#i-layers"/></svg><span>Feedback inbox</span>
-        </button>
+        <a class="foot-link" id="adminBtn" href="/admin" hidden>
+          <svg class="ico"><use href="#i-sliders"/></svg><span>Back office</span>
+        </a>
       </div>
     </div>
   </aside>
