@@ -119,9 +119,7 @@ module.exports = [
     ],
     takeaway: 'Use AI to get a quick first draft, then review it against your scheme, your facts and your class. The responsibility for the lesson stays with the teacher.',
     related: ['term-planning-and-teacher-workload', 'how-to-write-a-ges-lesson-plan', 'what-is-a-scheme-of-learning']
-  }
-,
-
+  },
   {
     slug: 'understanding-the-ges-scheme-of-service', audience: 'Teachers',
     title: 'Understanding the GES Scheme of Service: Grades, Roles and Career Progression',
