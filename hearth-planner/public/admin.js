@@ -376,6 +376,22 @@
   function start(user) {
     $('#boGate').hidden = true; $('#boShell').hidden = false; $('#boUser').textContent = user && user.email ? user.email : '';
     document.querySelector('#boDock').addEventListener('click', function (e) { var b = e.target.closest('button[data-panel]'); if (b) show(b.dataset.panel); });
+    var themeButton = $('#boThemeToggle');
+    function syncThemeButton() {
+      var dark = document.documentElement.getAttribute('data-theme') === 'dark';
+      themeButton.setAttribute('aria-pressed', String(dark));
+      themeButton.setAttribute('aria-label', dark ? 'Switch to light mode' : 'Switch to dark mode');
+      themeButton.title = dark ? 'Switch to light mode' : 'Switch to dark mode';
+      themeButton.querySelector('.bo-theme-icon').textContent = dark ? '☀' : '☾';
+      themeButton.querySelector('.bo-theme-label').textContent = dark ? 'Light mode' : 'Dark mode';
+    }
+    themeButton.addEventListener('click', function () {
+      var next = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+      document.documentElement.setAttribute('data-theme', next);
+      try { localStorage.setItem('schoolpadi.theme', next); } catch (e) { /* theme still applies for this session */ }
+      syncThemeButton();
+    });
+    syncThemeButton();
     $('#usRange').addEventListener('click', function (e) {
       var b = e.target.closest('button[data-d]'); if (!b) return;
       usageDays = parseInt(b.dataset.d, 10); $('#usRange').querySelectorAll('button').forEach(function (x) { x.setAttribute('aria-pressed', String(x === b)); });
