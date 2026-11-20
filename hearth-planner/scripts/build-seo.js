@@ -90,7 +90,7 @@ hub = /<!--CLASSES-->/.test(hub) ? hub.replace(/<!--CLASSES-->[\s\S]*<!--\/CLASS
 fs.writeFileSync(hubFile, hub);
 // sitemap
 const guides = require('./build-guides.js').articles;                   // also (re)writes public/guides*
-const core = [['/', '1.0'], ['/lesson-plans', '0.9'], ['/guides', '0.8'], ['/news', '0.7'], ['/about', '0.5'], ['/terms', '0.2'], ['/privacy', '0.2'], ['/refunds', '0.2'], ['/ads-policy', '0.2']];
+const core = [['/home', '1.0'], ['/lesson-plans', '0.9'], ['/guides', '0.8'], ['/news', '0.7'], ['/about', '0.5'], ['/terms', '0.2'], ['/privacy', '0.2'], ['/refunds', '0.2'], ['/ads-policy', '0.2']];
 const xml = ['<?xml version="1.0" encoding="UTF-8"?>', '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">']
   .concat(core.map(([p, pr]) => `  <url><loc>${SITE}${p}</loc><lastmod>${DATE}</lastmod><priority>${pr}</priority></url>`))
   .concat(guides.map((g) => `  <url><loc>${SITE}/guides/${g.slug}</loc><lastmod>${DATE}</lastmod><priority>0.6</priority></url>`))

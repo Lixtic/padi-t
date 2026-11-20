@@ -30,7 +30,7 @@ check('Pages use the shared stylesheet and no inline style blocks or scripts', p
 check('No page shows "undefined" or leftover markup', pages.every(([, h]) => !/undefined|\[object/.test(h)));
 check('Every page is on the index and in the sitemap', articles.every((a) => index.includes('/guides/' + a.slug + '"') && map.includes('/guides/' + a.slug + '<')) && map.includes('/guides<'));
 check('Every page links back to the index and onward to other guides', pages.every(([, h]) => h.includes('href="/guides"') && (h.match(/href="\/guides\/[a-z0-9-]+"/g) || []).length >= 2));
-check('The home screen describes GuidEd in visible text and links to the guides', /class="hero-more"/.test(home) && /class="hero-links"[^>]*><a href="\/guides"/.test(home));
+check('The home screen describes GuidEd in visible text and links to the guides', /class="hero-more"/.test(home) && /class="set-action" href="\/guides"/.test(home));
 check('The robots file does not block the guides', !/Disallow:\s*\/(guides)?\s*$/m.test(fs.readFileSync(path.join(pub, 'robots.txt'), 'utf8')));
 check('Vercel stays within 12 functions', fs.readdirSync(path.join(root, 'api')).filter((f) => !f.startsWith('_')).length <= 12);
 

@@ -4,6 +4,10 @@ const html = fs.readFileSync('public/home.html', 'utf8');
 const v = JSON.parse(fs.readFileSync('vercel.json', 'utf8'));
 assert(!/<style|\sstyle=|<script(?![^>]*\ssrc=)(?![^>]*ld\+json)/i.test(html), 'no inline style/script (CSP)');
 assert(html.includes('rel="canonical" href="https://www.guidedgh.site/home"'), 'canonical is /home');
+{
+  const map = fs.readFileSync('public/sitemap.xml', 'utf8');
+  assert(map.includes('<loc>https://www.guidedgh.site/home</loc>') && !map.includes('<loc>https://www.guidedgh.site/</loc>'), 'sitemap lists /home, not the redirecting /');
+}
 assert(html.includes('href="https://app.guidedgh.site/"'), 'CTA opens the app host');
 for (const l of ['/guides', '/news', '/lesson-plans']) assert(html.includes('href="' + l + '"'), 'links ' + l);
 // Rewrites to static files are routed to the Python function on Vercel, so www / is a redirect, not a rewrite.
