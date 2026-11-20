@@ -1343,7 +1343,7 @@ body[data-studio-tab="resources"]:has(#studyNotesCurriculum:not([hidden])) .sche
 
 
 /* ───────── Office flow: curriculum first, generation second ───────── */
-#studioPanelPlan .scheme.scheme-in-plan {
+.teaching-studio .scheme.scheme-in-plan {
   display: block;
   margin: 0 0 14px;
   padding: 14px 15px;
@@ -1353,15 +1353,15 @@ body[data-studio-tab="resources"]:has(#studyNotesCurriculum:not([hidden])) .sche
   background: var(--v2-soft);
   color: var(--text);
 }
-#studioPanelPlan .scheme.scheme-in-plan[hidden] { display: none !important; }
-#studioPanelPlan .scheme-in-plan .scheme-top {
+.teaching-studio .scheme.scheme-in-plan[hidden] { display: none !important; }
+.teaching-studio .scheme-in-plan .scheme-top {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
   gap: 7px;
   margin-bottom: 7px;
 }
-#studioPanelPlan .scheme-in-plan .scheme-tag {
+.teaching-studio .scheme-in-plan .scheme-tag {
   display: inline-flex;
   align-items: center;
   min-height: 23px;
@@ -1372,21 +1372,21 @@ body[data-studio-tab="resources"]:has(#studyNotesCurriculum:not([hidden])) .sche
   font-size: 11px;
   font-weight: 750;
 }
-#studioPanelPlan .scheme-in-plan .scheme-line {
+.teaching-studio .scheme-in-plan .scheme-line {
   color: var(--text);
   font-size: 13px;
   font-weight: 700;
   line-height: 1.45;
 }
-#studioPanelPlan .scheme-in-plan .scheme-note,
-#studioPanelPlan .scheme-in-plan .scheme-std,
-#studioPanelPlan .scheme-in-plan li {
+.teaching-studio .scheme-in-plan .scheme-note,
+.teaching-studio .scheme-in-plan .scheme-std,
+.teaching-studio .scheme-in-plan li {
   color: var(--muted);
   font-size: 12.5px;
   line-height: 1.5;
 }
-#studioPanelPlan .scheme-in-plan .scheme-note { margin: 5px 0 0; }
-#studioPanelPlan .scheme-in-plan .scheme-own {
+.teaching-studio .scheme-in-plan .scheme-note { margin: 5px 0 0; }
+.teaching-studio .scheme-in-plan .scheme-own {
   display: inline-flex;
   align-items: center;
   min-height: 34px;
@@ -1400,7 +1400,7 @@ body[data-studio-tab="resources"]:has(#studyNotesCurriculum:not([hidden])) .sche
   text-decoration: underline;
   text-underline-offset: 3px;
 }
-#studioPanelPlan .scheme-in-plan details summary {
+.teaching-studio .scheme-in-plan details summary {
   min-height: 34px;
   display: flex;
   align-items: center;
@@ -1409,11 +1409,11 @@ body[data-studio-tab="resources"]:has(#studyNotesCurriculum:not([hidden])) .sche
   font-weight: 700;
   cursor: pointer;
 }
-#studioPanelPlan .scheme-in-plan ul { margin: 8px 0 0; padding-left: 18px; }
+.teaching-studio .scheme-in-plan ul { margin: 8px 0 0; padding-left: 18px; }
 #studioPanelPlan .studio-panel-copy { margin-top: 2px; }
 #studioPanelPlan .tool-action { margin-top: 2px; }
 @media (max-width: 760px) {
-  #studioPanelPlan .scheme-in-plan { margin-bottom: 12px; padding: 12px; }
+  .teaching-studio .scheme-in-plan { margin-bottom: 12px; padding: 12px; }
   .teaching-studio { margin-top: 10px; padding: 14px 12px 12px; }
   .studio-heading { margin-bottom: 11px; }
   .studio-tabs { gap: 7px; }
@@ -1493,4 +1493,16 @@ body[data-studio-tab="resources"]:has(#studyNotesCurriculum:not([hidden])) .sche
 .teaching-studio, .library-page .lib-card, .library-page .library-search-wrap {
   border-color: color-mix(in srgb, var(--card-line) 82%, transparent);
 }
-:root[data-theme="dark"] #studioPanelPlan .scheme-in-plan { background: #1b2638; border-color: #35465f; border-left-color: var(--accent); }
+:root[data-theme="dark"] .teaching-studio .scheme-in-plan { background: #1b2638; border-color: #35465f; border-left-color: var(--accent); }
+
+
+/* The curriculum context is the first step in the Office flow, before tool choice. */
+.teaching-studio .studio-content > .scheme-in-plan {
+  display: block;
+  margin: 0 0 14px;
+}
+.teaching-studio .studio-content > .scheme-in-plan[hidden] { display: none !important; }
+.teaching-studio .studio-content > .studio-tabs { margin-top: 0; }
+@media (max-width:760px) {
+  .teaching-studio .studio-content > .scheme-in-plan { margin-bottom: 12px; }
+}
