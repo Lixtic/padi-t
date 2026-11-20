@@ -1598,3 +1598,30 @@ body[data-studio-tab="resources"]:has(#studyNotesCurriculum:not([hidden])) .sche
   .v2-tabbar button:focus-visible { outline: 3px solid color-mix(in srgb, var(--accent) 45%, transparent); outline-offset: 2px; }
 }
 .appearance-hint { margin: -4px 0 12px; color: var(--muted); font-size: 13px; line-height: 1.45; }
+
+/* Teacher lesson delivery mode inside the full-screen reader. */
+.reader-teach { border-color:var(--accent); color:var(--accent); }
+.reader-delivery-view { flex:1; min-height:0; overflow:auto; padding:clamp(18px,4vw,42px); box-sizing:border-box; background:var(--bg); -webkit-overflow-scrolling:touch; }
+.reader-delivery-view[hidden] { display:none !important; }
+.reader-delivery-heading,.reader-delivery-content,.reader-delivery-actions { width:min(100%,1000px); margin-left:auto; margin-right:auto; }
+.reader-delivery-heading { display:grid; gap:9px; margin-bottom:22px; }
+.reader-delivery-kicker { color:var(--accent); font-size:11px; font-weight:800; letter-spacing:.13em; }
+.reader-delivery-heading h2 { margin:0; font-size:clamp(23px,4vw,34px); line-height:1.2; letter-spacing:-.035em; }
+.reader-delivery-progress { width:100%; height:7px; margin-top:5px; accent-color:var(--accent); }
+.reader-delivery-content { min-height:42vh; padding:clamp(20px,4vw,42px); border:1px solid var(--card-line); border-radius:20px; background:var(--card); box-shadow:var(--shadow); box-sizing:border-box; font-size:clamp(17px,2vw,21px); line-height:1.7; }
+.reader-delivery-content > :first-child { margin-top:0; }
+.reader-delivery-content h1,.reader-delivery-content h2,.reader-delivery-content h3 { line-height:1.25; }
+.reader-delivery-content table { display:block; max-width:100%; overflow-x:auto; }
+.reader-delivery-actions { display:flex; align-items:center; justify-content:space-between; gap:12px; margin-top:18px; }
+.reader-delivery-actions button { min-width:112px; }
+.reader-delivery-next { background:var(--accent); border-color:var(--accent); color:var(--on-accent); }
+.reader-delivery-secondary { background:var(--card); color:var(--text); }
+.reader-delivery-count { color:var(--muted); font-size:13px; font-weight:700; font-variant-numeric:tabular-nums; }
+:root[data-theme="dark"] .reader-delivery-content { border-color:#303030; background:#111; }
+@media(max-width:560px) {
+  .reader-bar { gap:5px; padding-left:9px; padding-right:9px; }
+  .reader-bar .reader-btn { min-width:38px; padding:0 9px; font-size:12px; }
+  .reader-delivery-view { padding:16px 12px calc(24px + env(safe-area-inset-bottom)); }
+  .reader-delivery-content { min-height:48vh; padding:18px 15px; border-radius:15px; }
+  .reader-delivery-actions button { min-width:94px; }
+}
