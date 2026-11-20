@@ -2,6 +2,7 @@ User-agent: *
 Allow: /
 Allow: /api/config
 Disallow: /api/
+Disallow: /admin
 
 Sitemap: https://www.guidedgh.site/sitemap.xml
 Sitemap: https://www.guidedgh.site/news-sitemap.xml

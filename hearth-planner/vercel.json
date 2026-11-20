@@ -177,6 +177,17 @@
       "permanent": false
     },
     {
+      "source": "/admin",
+      "has": [
+        {
+          "type": "host",
+          "value": "(www\\.guidedgh\\.site|guidedgh\\.site)"
+        }
+      ],
+      "destination": "https://app.guidedgh.site/admin",
+      "permanent": false
+    },
+    {
       "source": "/product",
       "destination": "https://www.guidedgh.site/",
       "permanent": true

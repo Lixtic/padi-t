@@ -5,7 +5,7 @@ const path = require('node:path');
 const K = require('../api/_knowledge');
 
 // Keep the admin form's selectable types in lockstep with server validation.
-const html = fs.readFileSync(path.join(__dirname, '../public/index.html'), 'utf8');
+const html = fs.readFileSync(path.join(__dirname, '../public/admin.html'), 'utf8');
 const form = html.match(/<select id="kbType">([\s\S]*?)<\/select>/);
 assert.ok(form, 'Knowledge Base document type selector exists');
 const uiTypes = [...form[1].matchAll(/<option value="([^"]+)"/g)].map(match => match[1]);
