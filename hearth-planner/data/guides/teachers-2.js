@@ -119,5 +119,23 @@ module.exports = [
     ],
     takeaway: 'Use AI to get a quick first draft, then review it against your scheme, your facts and your class. The responsibility for the lesson stays with the teacher.',
     related: ['term-planning-and-teacher-workload', 'how-to-write-a-ges-lesson-plan', 'what-is-a-scheme-of-learning']
+  },
+  {
+    slug: 'understanding-the-ges-scheme-of-service', audience: 'Teachers',
+    title: 'Understanding the GES Scheme of Service: Grades, Roles and Career Progression',
+    desc: 'A practical orientation to the Ghana Education Service Scheme of Service, how to navigate its grade profiles, and how to verify progression requirements.',
+    intro: 'The Ghana Education Service Scheme of Service is a detailed reference for understanding the Service\'s structure, job grades and role expectations. It is useful when planning your professional development or preparing to discuss a career move with your supervisors or HR officers. This guide explains how to use the document carefully; it does not replace official HR decisions or current circulars.',
+    sections: [
+      { h: 'What the document contains', p: ['The 732-page document begins with an introduction to the GES, its object, vision, mission, critical behaviours and functions. It then sets out the structure of the Service and the composition of grades across divisions and units.', 'The later chapters describe individual grades and roles across areas such as teaching and school instructions, human resource management, finance, administration, ICT/EdTech, quality assurance and other operational divisions. The contents also point to summary notes on progression requirements, aptitude tests and selection interviews.'] },
+      { h: 'How to find the information you need', ul: ['Start with the table of contents to identify the chapter or division relevant to your current role or intended career path.', 'Use the grade composition section to understand how roles are grouped into professional and sub-professional tracks.', 'Open the specific grade profile and read the full entry rather than relying on a grade title alone.', 'Compare the stated qualifications, experience, competencies and responsibilities with your own verified records.', 'Keep a note of the printed page number and the section heading when discussing a requirement with your HR office.'] },
+      { h: 'Use progression requirements carefully', p: ['The Scheme of Service includes progression-related material, including aptitude tests and selection interviews. Do not assume that time in service alone guarantees promotion. Check the exact grade profile and any current GES or Public Services Commission circulars, administrative instructions and approved procedures that apply to the promotion exercise.', 'The implementation-date field in the copy reviewed for this guide is blank. For that reason, do not treat this copy by itself as proof of the date on which the scheme became operational or as confirmation that every provision is currently in force.'] },
+      { h: 'Build a professional development plan', ul: ['Identify the responsibilities and competencies associated with your current grade.', 'Choose one or two development areas that are relevant to your next career step.', 'Keep certificates, appointment and promotion letters, appraisal records and evidence of relevant duties organised.', 'Ask your district or regional HR office to confirm current eligibility, required documents and the applicable process before acting.'] },
+      { h: 'What this guide cannot determine', p: ['This overview cannot decide whether an individual is eligible for promotion, interpret a disputed appointment or establish a current salary or grade entitlement. Those decisions depend on the official version in force, your employment records and the competent GES authorities. Seek written clarification from the appropriate HR office when a requirement is unclear.'] }
+    ],
+    takeaway: 'Use the Scheme of Service as a structured reference: locate your grade, read the complete profile, organise evidence of your qualifications and experience, and confirm current progression rules with GES HR before making a decision.',
+    sourceUrl: 'https://ges.gov.gh/assets/uploads/documents/6ab15045a79a7_1790005317.pdf',
+    sourceLabel: 'Download the official GES Scheme of Service (PDF)',
+    sourceNote: 'Source: Ghana Education Service. The uploaded copy contains 732 pages. Its implementation-date field is blank; verify current applicability with GES.',
+    related: ['term-planning-and-teacher-workload', 'how-to-write-a-ges-lesson-plan', 'what-is-a-scheme-of-learning']
   }
 ];

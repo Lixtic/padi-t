@@ -14,6 +14,8 @@ check('The index loads filtering behaviour from an external script', /src="\/gui
 check('Guide filtering script supports search, audience and topic filters', /matchesQuery/.test(fs.readFileSync(path.join(pub, 'guides.js'), 'utf8')) && /matchesAudience/.test(fs.readFileSync(path.join(pub, 'guides.js'), 'utf8')) && /matchesTopic/.test(fs.readFileSync(path.join(pub, 'guides.js'), 'utf8')));
 check('Production build regenerates the SEO pages and guide sitemap', /node scripts\/build-seo\.js/.test(JSON.parse(fs.readFileSync(path.join(root, 'package.json'), 'utf8')).scripts.build));
 check('The lesson-plan guide preserves the official indicator and separates the lesson objective', /Keep the official content standard and learning indicator exactly as published/.test(require(path.join(root, 'data/guides/teachers-1.js'))[0].sections[1].p[0]));
+check('The GES Scheme of Service guide is included for teachers', articles.some((a) => a.slug === 'understanding-the-ges-scheme-of-service' && a.audience === 'Teachers'));
+check('The GES guide links to the official PDF and flags the blank implementation date', pages.some(([a, h]) => a.slug === 'understanding-the-ges-scheme-of-service' && h.includes('https://ges.gov.gh/assets/uploads/documents/6ab15045a79a7_1790005317.pdf') && /implementation-date field in this copy is blank/i.test(h)));
 check('There are at least 15 guides', articles.length >= 15);
 check('Slugs, titles and descriptions are all different', new Set(articles.map((a) => a.slug)).size === articles.length && new Set(articles.map((a) => a.title)).size === articles.length && new Set(articles.map((a) => a.desc)).size === articles.length);
 check('Slugs are plain URL words', articles.every((a) => /^[a-z0-9]+(-[a-z0-9]+)*$/.test(a.slug)));
