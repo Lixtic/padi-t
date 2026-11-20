@@ -13,7 +13,15 @@
       bar.className = 'update-bar'; bar.setAttribute('role', 'status');
       var msg = document.createElement('span'); msg.textContent = 'A new version of GuidEd is ready.';
       var go = document.createElement('button'); go.type = 'button'; go.textContent = 'Update now';
-      go.addEventListener('click', function () { location.reload(); });
+      go.addEventListener('click', function () {
+        if (go.disabled) return;
+        go.disabled = true;
+        go.classList.add('is-activating');
+        bar.classList.add('is-activating');
+        go.setAttribute('aria-label', 'Applying update');
+        msg.textContent = 'Applying your GuidEd update…';
+        window.setTimeout(function () { location.reload(); }, 560);
+      });
       var later = document.createElement('button'); later.type = 'button'; later.className = 'update-later'; later.setAttribute('aria-label', 'Dismiss'); later.textContent = '\u00d7';
       later.addEventListener('click', function () { bar.remove(); });
       bar.append(msg, go, later); document.body.appendChild(bar);
