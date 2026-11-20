@@ -35,6 +35,13 @@ const results = []; const check = (n, ok) => results.push([n, !!ok]);
   check('SMS: the code never appears in an error', !(await (async () => { try { await T.deliver(ev(), { fetch: failWith(401) }); } catch (e) { return /123456/.test(e.message); } return false; })()));
   process.env.SMTP_URL = 'json'; process.env.MAIL_FROM = 'GuidEd <no-reply@x.test>';
   check('Email: a verification code is emailed (Neon no longer sends it)', await T.deliver(ev({ delivery_preference: 'email', otp_type: 'email-verification' })) === 'email' && global.__lastMail.to === 'a@b.co' && /Confirm your GuidEd email/.test(global.__lastMail.info.message.includes('Confirm') ? global.__lastMail.info.message : 'Confirm your GuidEd email'));
+  process.env.RESEND_API_KEY = 're_test_key';
+  let resendRequest = null;
+  const resendFetch = async (url, init) => { resendRequest = { url, init }; return { ok: true, status: 200, json: async () => ({ id: 'email_test_123' }) }; };
+  check('Email: Resend API is preferred over SMTP for OTP delivery', await T.deliver(ev({ delivery_preference: 'email', otp_type: 'email-verification' }), { fetch: resendFetch }) === 'email' && resendRequest.url === 'https://api.resend.com/emails' && resendRequest.init.headers.authorization === 'Bearer re_test_key' && JSON.parse(resendRequest.init.body).to[0] === 'a@b.co' && /123456/.test(JSON.parse(resendRequest.init.body).text));
+  const resendFail = async () => ({ ok: false, status: 503, json: async () => ({ message: 'temporarily unavailable' }) });
+  check('Email: Resend temporary failures request a Neon retry', await statusOf(() => T.deliver(ev({ delivery_preference: 'email' }), { fetch: resendFail })) === 502);
+  delete process.env.RESEND_API_KEY;
   check('Event without a code is refused', await statusOf(() => T.deliver(ev({ otp_code: '' }))) === 400);
 
   const cases = [['024 123 4567', '+233241234567'], ['0241234567', '+233241234567'], ['+233 24 123 4567', '+233241234567'], ['233241234567', '+233241234567'], ['241234567', '+233241234567'], ['00233241234567', '+233241234567'], ['+14155552671', '+14155552671'], ['12345', ''], ['', ''], ['+0123456789', '']];

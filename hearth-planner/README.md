@@ -188,7 +188,7 @@ Set these environment variables in Vercel (Settings > Environment Variables), th
 | `NEON_REALTIME_URL` | The Realtime WebSocket URL provisioned by Neon. |
 | `NEON_REALTIME_SECRET` | The Realtime secret provisioned by Neon. Keep this server-only. |
 | `AUTH_SECRET` | Only for the old email-code sign-in. A long random string (24+ characters). Generate one with `openssl rand -base64 32`. Changing it signs everyone out. |
-| `SMTP_URL` | Only for the old email-code sign-in; not needed with Managed Auth. How to send the code emails, e.g. `smtps://USER:PASSWORD@smtp-relay.brevo.com:465` (Brevo free plan: 300 emails a day) or `smtps://you%40gmail.com:APP_PASSWORD@smtp.gmail.com:465` (Gmail with an app password). Any SMTP provider works. |
+| `RESEND_API_KEY` | Recommended for fast Managed Auth OTP delivery. When set, the `/api/neon-webhook` sender uses Resend's HTTP API instead of SMTP. Verify the sender domain and set `MAIL_FROM`. |\n| `SMTP_URL` | Only for the old email-code sign-in; not needed with Managed Auth. How to send the code emails, e.g. `smtps://USER:PASSWORD@smtp-relay.brevo.com:465` (Brevo free plan: 300 emails a day) or `smtps://you%40gmail.com:APP_PASSWORD@smtp.gmail.com:465` (Gmail with an app password). Any SMTP provider works. |
 | `MAIL_FROM` | The sender shown on the email, e.g. `GuidEd <hello@yourdomain.com>`. Most providers require this address to be verified. |
 
 Managed Auth stores identity and sessions in Neon's `neon_auth` schema. The application tables (`users`, `otp_codes`, `plans`, `profiles`) are created automatically when legacy database sync is used; `db/schema.sql` shows them if you prefer to create them yourself in the Neon SQL Editor. If the Realtime variables are also set, signed-in browsers receive live plan updates. Without the Neon variables, the app works in local/demo mode.
@@ -197,7 +197,7 @@ Managed Auth controls password sessions and email delivery. Use Neon’s product
 
 ## Phone sign-in (SMS codes through Arkesel)
 
-People add their number in Settings > Phone sign-in (a texted code confirms it). After that, "Continue with phone" on the sign-in sheet signs them in with a code sent to that number. Neon Auth hands every code (SMS and email) to `api/_neon-webhook.js (served at /api/neon-webhook)`, which checks Neon's signature and sends it: SMS through Arkesel, email through `SMTP_URL`.
+For email OTP delivery, set `RESEND_API_KEY` in Vercel and use a verified sender in `MAIL_FROM` (for example `GuidEd <auth@your-verified-domain.com>`). The webhook prefers Resend's HTTP API and falls back to `SMTP_URL` only when no Resend key is configured. SMTP fallback has connection/greeting/socket timeouts. After adding the key, redeploy and test a fresh sign-up.\n\nPeople add their number in Settings > Phone sign-in (a texted code confirms it). After that, "Continue with phone" on the sign-in sheet signs them in with a code sent to that number. Neon Auth hands every code (SMS and email) to `api/_neon-webhook.js (served at /api/neon-webhook)`, which checks Neon's signature and sends it: SMS through Arkesel, email through `SMTP_URL`.
 
 Set up:
 1. In Vercel add `ARKESEL_API_KEY` and, optionally, `ARKESEL_SENDER` (a sender ID registered in Arkesel, 11 characters or fewer; default `GuidEd`). Keep SMS credits topped up.
