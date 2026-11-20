@@ -356,14 +356,26 @@
     if (!LOADERS[name]) name = 'overview';
     document.querySelectorAll('.bo-panel').forEach(function (p) { p.hidden = p.dataset.panel !== name; });
     document.querySelectorAll('.bo-nav').forEach(function (b) { b.setAttribute('aria-current', b.dataset.panel === name ? 'page' : 'false'); });
+    placeLens(true);
     document.title = (name.charAt(0).toUpperCase() + name.slice(1)) + ' · GuidEd back office';
     if (push !== false) { try { history.replaceState(null, '', '#' + name); } catch (e) { /* ignore */ } }
     LOADERS[name](); window.scrollTo(0, 0);
   }
+  // The glass lens glides to the active tab, and the active tab is kept in view when the bar scrolls (phones).
+  function placeLens(animate) {
+    var pill = $('#boDock'), on = pill && pill.querySelector('[aria-current="page"]'), lens = pill && pill.querySelector('.bo-lens');
+    if (!on || !pill) return;
+    if (!lens) { lens = document.createElement('span'); lens.className = 'bo-lens'; lens.setAttribute('aria-hidden', 'true'); pill.insertBefore(lens, pill.firstChild); }
+    if (!on.offsetWidth) return;
+    lens.style.width = on.offsetWidth + 'px'; lens.style.transform = 'translateX(' + on.offsetLeft + 'px)'; lens.style.opacity = '1';
+    lens.classList.toggle('glide', !!animate);
+    try { on.scrollIntoView({ inline: 'center', block: 'nearest', behavior: animate ? 'smooth' : 'auto' }); } catch (e) { /* older browsers */ }
+  }
+  window.addEventListener('resize', function () { placeLens(false); });
   function gate(msg, link) { $('#boShell').hidden = true; $('#boGate').hidden = false; $('#boGateMsg').textContent = msg; $('#boGateLink').hidden = !link; }
   function start(user) {
     $('#boGate').hidden = true; $('#boShell').hidden = false; $('#boUser').textContent = user && user.email ? user.email : '';
-    document.querySelector('.bo-navs').addEventListener('click', function (e) { var b = e.target.closest('button[data-panel]'); if (b) show(b.dataset.panel); });
+    document.querySelector('#boDock').addEventListener('click', function (e) { var b = e.target.closest('button[data-panel]'); if (b) show(b.dataset.panel); });
     $('#usRange').addEventListener('click', function (e) {
       var b = e.target.closest('button[data-d]'); if (!b) return;
       usageDays = parseInt(b.dataset.d, 10); $('#usRange').querySelectorAll('button').forEach(function (x) { x.setAttribute('aria-pressed', String(x === b)); });

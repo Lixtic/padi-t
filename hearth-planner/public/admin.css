@@ -6,20 +6,16 @@ body.bo { background: var(--bg); color: var(--text); overflow: auto; display: bl
 .bo-gate-card { max-width: 420px; text-align: center; border: 1px solid var(--card-line); background: var(--card); border-radius: 18px; padding: 28px 24px; }
 .bo-gate-card h1 { font: 600 24px/1.2 var(--font-serif); margin: 0 0 10px; }
 .bo-btn { display: inline-block; margin-top: 12px; padding: 10px 16px; border-radius: 12px; background: var(--accent); color: #fff; text-decoration: none; font-weight: 600; }
-.bo-shell { display: grid; grid-template-columns: 240px minmax(0, 1fr); min-height: var(--app-h, 100vh); }
+.bo-shell { min-height: var(--app-h, 100vh); }
 .bo-shell > *, .bo-card, .bo-card * { min-width: 0; }
 .bo-card { overflow-wrap: anywhere; }
-.bo-side { position: sticky; top: 0; align-self: start; height: var(--app-h, 100vh); box-sizing: border-box; display: flex; flex-direction: column; gap: 18px; padding: 22px 14px; border-right: 1px solid var(--card-line); background: var(--card); }
-.bo-brand { font: 600 22px/1 var(--font-serif); color: inherit; text-decoration: none; padding: 0 8px; }
+.bo-top { max-width: 980px; margin: 0 auto; display: flex; align-items: flex-end; justify-content: space-between; gap: 12px; padding: calc(var(--sat-z, 0px) + 18px) clamp(16px, 4vw, 40px) 4px; }
+.bo-brand { font: 600 22px/1 var(--font-serif); color: inherit; text-decoration: none; }
 .bo-brand em { font-style: normal; color: var(--accent); }
 .bo-brand span { display: block; margin-top: 6px; font: 600 11px/1 var(--font-ui); letter-spacing: .12em; text-transform: uppercase; color: var(--muted); }
-.bo-navs { display: flex; flex-direction: column; gap: 2px; }
-.bo-nav { text-align: left; padding: 10px 12px; border: 0; border-radius: 10px; background: transparent; color: inherit; font: 500 15px/1.2 inherit; cursor: pointer; }
-.bo-nav:hover { background: var(--card-line); }
-.bo-nav[aria-current="page"] { background: var(--accent); color: #fff; }
-.bo-side-foot { margin-top: auto; display: flex; flex-direction: column; gap: 6px; padding: 0 8px; font-size: 12.5px; color: var(--muted); overflow-wrap: anywhere; }
-.bo-side-foot a { color: var(--accent); }
-.bo-main { padding: 28px clamp(16px, 4vw, 40px) 64px; max-width: 980px; width: 100%; }
+.bo-top-end { display: flex; flex-direction: column; align-items: flex-end; gap: 4px; font-size: 12.5px; color: var(--muted); overflow-wrap: anywhere; text-align: right; }
+.bo-top-end a { color: var(--accent); }
+.bo-main { padding: 18px clamp(16px, 4vw, 40px) calc(120px + env(safe-area-inset-bottom)); max-width: 980px; width: 100%; margin: 0 auto; }
 .bo-h { font: 600 28px/1.15 var(--font-serif); margin: 0 0 6px; }
 .bo-sub { margin: 0 0 16px; color: var(--muted); font-size: 14px; }
 .bo-card { border: 1px solid var(--card-line); background: var(--card); border-radius: 18px; padding: 18px; }
@@ -31,11 +27,33 @@ body.bo { background: var(--bg); color: var(--text); overflow: auto; display: bl
 .bo .kb-file { display: block; }
 .bo .kb-file input, .bo .kb-file textarea { width: 100%; }
 @media (max-width: 760px) {
-  .bo-shell { grid-template-columns: minmax(0, 1fr); }
   .bo .us-tiles { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-  .bo-side { position: static; height: auto; flex-direction: column; gap: 10px; padding: 12px; border-right: 0; border-bottom: 1px solid var(--card-line); }
-  .bo-navs { flex-direction: row; overflow-x: auto; gap: 6px; padding-bottom: 2px; }
-  .bo-nav { white-space: nowrap; flex: none; }
-  .bo-side-foot { display: none; }
-  .bo .us-tiles { grid-template-columns: 1fr 1fr; }
 }
+
+/* Floating Liquid Glass navigation: a frosted pill that hovers over the page, with a glass lens that glides to the active tab. */
+.bo-dock { position: fixed; left: 0; right: 0; bottom: calc(14px + env(safe-area-inset-bottom) / var(--ui-zoom, 1)); z-index: 100; display: flex; justify-content: center; padding: 0 12px; pointer-events: none; }
+.bo-dock-pill {
+  position: relative; display: flex; gap: 2px; max-width: 100%; padding: 6px; border-radius: 30px; overflow-x: auto; scrollbar-width: none; pointer-events: auto;
+  background: linear-gradient(180deg, rgba(255,255,255,.62), rgba(255,255,255,.30));
+  -webkit-backdrop-filter: blur(24px) saturate(185%); backdrop-filter: blur(24px) saturate(185%);
+  border: 1px solid rgba(255,255,255,.65);
+  box-shadow: 0 14px 38px rgba(20,40,90,.20), 0 2px 8px rgba(20,40,90,.10), inset 0 1.5px 0 rgba(255,255,255,.95), inset 0 -1px 0 rgba(255,255,255,.35);
+}
+.bo-dock-pill::-webkit-scrollbar { display: none; }
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) { .bo-dock-pill { background: var(--card); } }
+.bo-lens {
+  position: absolute; top: 6px; bottom: 6px; left: 0; border-radius: 24px; opacity: 0; pointer-events: none;
+  background: linear-gradient(180deg, rgba(255,255,255,.85), rgba(255,255,255,.35));
+  border: 1px solid rgba(255,255,255,.9);
+  box-shadow: 0 4px 14px rgba(27,69,168,.22), inset 0 1.5px 0 rgba(255,255,255,1), inset 0 -6px 12px rgba(27,69,168,.10);
+}
+.bo-lens.glide { transition: transform .38s cubic-bezier(.3,1.25,.5,1), width .3s ease; }
+.bo-dock .bo-nav { position: relative; z-index: 1; flex: none; display: flex; flex-direction: column; align-items: center; gap: 3px; min-width: 62px; padding: 8px 10px 7px; border: 0; border-radius: 24px; background: transparent; color: var(--muted); font: 600 11px/1.1 var(--font-ui); cursor: pointer; -webkit-tap-highlight-color: transparent; }
+.bo-dock .bo-nav svg { width: 22px; height: 22px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+.bo-dock .bo-nav:hover { background: transparent; color: var(--text); }
+.bo-dock .bo-nav[aria-current="page"] { background: transparent; color: var(--accent); }
+.bo-dock .bo-nav:focus-visible { outline: 2px solid var(--accent); outline-offset: -2px; }
+:root[data-theme="dark"] .bo-dock-pill { background: linear-gradient(180deg, rgba(60,66,82,.55), rgba(24,28,40,.42)); border-color: rgba(255,255,255,.16); box-shadow: 0 14px 38px rgba(0,0,0,.55), inset 0 1.5px 0 rgba(255,255,255,.22), inset 0 -1px 0 rgba(255,255,255,.06); }
+:root[data-theme="dark"] .bo-lens { background: linear-gradient(180deg, rgba(255,255,255,.26), rgba(255,255,255,.08)); border-color: rgba(255,255,255,.28); box-shadow: 0 4px 14px rgba(0,0,0,.35), inset 0 1.5px 0 rgba(255,255,255,.35); }
+:root[data-theme="dark"] .bo-dock .bo-nav[aria-current="page"] { color: #fff; }
+@media (prefers-reduced-motion: reduce) { .bo-lens.glide { transition: none; } }
