@@ -107,24 +107,6 @@
   ],
   "rewrites": [
     {
-      "source": "/",
-      "has": [
-        {
-          "type": "host",
-          "value": "(www\\.guidedgh\\.site|guidedgh\\.site)"
-        }
-      ],
-      "destination": "/home.html"
-    },
-    {
-      "source": "/parents",
-      "destination": "/index.html"
-    },
-    {
-      "source": "/teachers",
-      "destination": "/index.html"
-    },
-    {
       "source": "/news",
       "destination": "/api/sync?what=news"
     },
@@ -155,6 +137,17 @@
   ],
   "redirects": [
     {
+      "source": "/",
+      "has": [
+        {
+          "type": "host",
+          "value": "(www\\.guidedgh\\.site|guidedgh\\.site)"
+        }
+      ],
+      "destination": "/home",
+      "permanent": false
+    },
+    {
       "source": "/parents",
       "has": [
         {
@@ -162,7 +155,7 @@
           "value": "(www\\.guidedgh\\.site|guidedgh\\.site)"
         }
       ],
-      "destination": "https://app.guidedgh.site/parents",
+      "destination": "https://app.guidedgh.site/?for=parent",
       "permanent": false
     },
     {
@@ -173,7 +166,17 @@
           "value": "(www\\.guidedgh\\.site|guidedgh\\.site)"
         }
       ],
-      "destination": "https://app.guidedgh.site/teachers",
+      "destination": "https://app.guidedgh.site/?for=teacher",
+      "permanent": false
+    },
+    {
+      "source": "/parents",
+      "destination": "/?for=parent",
+      "permanent": false
+    },
+    {
+      "source": "/teachers",
+      "destination": "/?for=teacher",
       "permanent": false
     },
     {
@@ -189,7 +192,7 @@
     },
     {
       "source": "/product",
-      "destination": "https://www.guidedgh.site/",
+      "destination": "https://www.guidedgh.site/home",
       "permanent": true
     }
   ]
