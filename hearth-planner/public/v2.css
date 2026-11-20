@@ -1419,3 +1419,15 @@ body[data-studio-tab="resources"]:has(#studyNotesCurriculum:not([hidden])) .sche
   .library-page .library-create { grid-column: 1; grid-row: 2; justify-self: start; }
   .library-page .library-total { grid-row: 3; }
 }
+
+/* Restore the full-size floating button navigation on mobile. */
+@media (max-width: 760px) {
+  .v2-tabbar { display: flex; left: 12px; right: 12px; bottom: calc(10px + env(safe-area-inset-bottom)); gap: 12px; }
+  .v2-tabbar-pill { min-height: 68px; padding: 7px; }
+  .v2-tabbar button { min-height: 52px; gap: 3px; font-size: .68rem; }
+  .v2-tabbar button .ico { width: 21px; height: 21px; }
+  .v2-tabbar .v2-tabbar-create { flex-basis: 68px; width: 68px; height: 68px; min-height: 68px; }
+  .v2-tabbar .v2-tabbar-create .ico { width: 28px; height: 28px; }
+  .v2-tabbar button:focus-visible { outline: 3px solid color-mix(in srgb, var(--accent) 45%, transparent); outline-offset: 2px; }
+}
+.appearance-hint { margin: -4px 0 12px; color: var(--muted); font-size: 13px; line-height: 1.45; }
