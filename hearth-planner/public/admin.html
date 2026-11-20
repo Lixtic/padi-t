@@ -17,11 +17,10 @@
 <body class="bo">
 <div class="bo-gate" id="boGate" hidden><div class="bo-gate-card"><h1>GuidEd back office</h1><p id="boGateMsg">Checking your sign-in…</p><a class="bo-btn" id="boGateLink" href="/" hidden>Open GuidEd to sign in</a></div></div>
 <div class="bo-shell" id="boShell" hidden>
-  <aside class="bo-side">
+  <header class="bo-top">
     <a class="bo-brand" href="/admin">Guid<em>Ed</em> <span>back office</span></a>
-    <nav class="bo-navs" aria-label="Back office"><button type="button" class="bo-nav" data-panel="overview">Overview</button><button type="button" class="bo-nav" data-panel="teachers">Teachers</button><button type="button" class="bo-nav" data-panel="feedback">Feedback</button><button type="button" class="bo-nav" data-panel="announcement">Announcement</button><button type="button" class="bo-nav" data-panel="news">News</button><button type="button" class="bo-nav" data-panel="knowledge">Knowledge base</button><button type="button" class="bo-nav" data-panel="activity">Activity</button></nav>
-    <div class="bo-side-foot"><span id="boUser"></span><a href="/">Open the app</a></div>
-  </aside>
+    <div class="bo-top-end"><span id="boUser"></span><a href="/">Open the app</a></div>
+  </header>
   <main class="bo-main" id="boMain">
     <section class="bo-panel" id="p-overview" data-panel="overview" hidden>
       <h2 class="bo-h">Overview</h2>
@@ -123,6 +122,7 @@
     </div>
     </section>
   </main>
+  <nav class="bo-dock" aria-label="Back office"><div class="bo-dock-pill" id="boDock"><button type="button" class="bo-nav" data-panel="overview"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg><span>Overview</span></button><button type="button" class="bo-nav" data-panel="teachers"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="9" cy="8" r="3.2"/><path d="M3 20c.5-3.6 3-5.5 6-5.5s5.5 1.900 6 5.500"/><path d="M16.500 5.200a3 3 0 0 1 0 5.600M18 14.800c1.800.600 3.200 2.300 3.500 5.200"/></svg><span>Teachers</span></button><button type="button" class="bo-nav" data-panel="feedback"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h16v11H9l-5 4z"/></svg><span>Feedback</span></button><button type="button" class="bo-nav" data-panel="announcement"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 10v4h3l7 4V6L6 10zM17 9c1.200 1 1.200 5 0 6"/></svg><span>Notice</span></button><button type="button" class="bo-nav" data-panel="news"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 4h12v16H7a2 2 0 0 1-2-2zM17 8h3v10a2 2 0 0 1-2 2M8 8h6M8 12h6M8 16h4"/></svg><span>News</span></button><button type="button" class="bo-nav" data-panel="knowledge"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5a2 2 0 0 1 2-2h13v15H6a2 2 0 0 0-2 2zM4 20a2 2 0 0 0 2 2h13"/></svg><span>Knowledge</span></button><button type="button" class="bo-nav" data-panel="activity"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg><span>Activity</span></button></div></nav>
 </div>
 </body>
 </html>
