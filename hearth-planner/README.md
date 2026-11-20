@@ -147,7 +147,7 @@ npm i -g vercel
 vercel dev
 ```
 
-Use `vercel dev` so the API routes run. Opening `public/app.html` directly (or any static server) works in demo mode, but Word export is not available there.
+Use `vercel dev` so the API routes run. Opening `public/index.html` directly (or any static server) works in demo mode, but Word export is not available there.
 
 ## Notes and limits
 
@@ -292,7 +292,7 @@ The class menu is grouped by level, and the subjects change with the level. Each
 
 ## Icons and splash screens
 
-`node scripts/build-icons.js` draws the GuidEd mark (a white G ring with a gold guiding star, on green) into `public/favicon.svg`, `public/icons/*.png` (any, maskable and Apple touch) and `public/splash/ios-*.png` (iPhone and iPad portrait startup images, linked from `app.html`). Android builds its own launch screen from the manifest colour and icon. The installed app also shows a short in-app splash once per launch (`#splash`).
+`node scripts/build-icons.js` draws the GuidEd mark (a white G ring with a gold guiding star, on green) into `public/favicon.svg`, `public/icons/*.png` (any, maskable and Apple touch) and `public/splash/ios-*.png` (iPhone and iPad portrait startup images, linked from `index.html`). Android builds its own launch screen from the manifest colour and icon. The installed app also shows a short in-app splash once per launch (`#splash`).
 
 ## Share a plan
 
@@ -315,7 +315,7 @@ One banner on the start screen, shown only to Guest and Free teachers. Pro never
 - `ADSENSE_SLOT` – the ad unit id (digits) of a responsive display unit
 - `ADS_PERSONALIZED=1` – optional. Without it ads are requested as non-personalised.
 
-Notes: the `google-adsense-account` tag and the AdSense snippet sit in the `<head>` of `app.html` so Google can verify the site. Google Auto ads can rewrite the page layout and stop scrolling, so `ads.js` undoes those edits on `<html>` and `<body>`; turn Auto ads off in AdSense (Ads → By site) as well. After the site is verified the head snippet can be removed (the ad loader adds the script itself when an ad is shown). `vercel.json` now lets the page load AdSense (script, frames, images, connections for Google ad domains); nothing else changed. AdSense must approve the site first, and Google reviews the public pages (About, Privacy), so keep them live. `public/ads.txt` holds the Google line for publisher 4853272055022457. Teachers in the EEA/UK may need a consent banner (Google's Funding Choices). An ad blocker or an unfilled ad simply hides the slot. Tests: `e2e-ads.js`.
+Notes: the `google-adsense-account` tag and the AdSense snippet sit in the `<head>` of `index.html` so Google can verify the site. Google Auto ads can rewrite the page layout and stop scrolling, so `ads.js` undoes those edits on `<html>` and `<body>`; turn Auto ads off in AdSense (Ads → By site) as well. After the site is verified the head snippet can be removed (the ad loader adds the script itself when an ad is shown). `vercel.json` now lets the page load AdSense (script, frames, images, connections for Google ad domains); nothing else changed. AdSense must approve the site first, and Google reviews the public pages (About, Privacy), so keep them live. `public/ads.txt` holds the Google line for publisher 4853272055022457. Teachers in the EEA/UK may need a consent banner (Google's Funding Choices). An ad blocker or an unfilled ad simply hides the slot. Tests: `e2e-ads.js`.
 
 ## Curriculum Intelligence Engine (v1)
 
