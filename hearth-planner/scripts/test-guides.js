@@ -4,7 +4,7 @@ const fs = require('fs'), path = require('path');
 const root = path.join(__dirname, '..'), pub = path.join(root, 'public');
 const { articles } = require('./build-guides.js');
 const index = fs.readFileSync(path.join(pub, 'guides.html'), 'utf8'), map = fs.readFileSync(path.join(pub, 'sitemap.xml'), 'utf8');
-const home = fs.readFileSync(path.join(pub, 'index.html'), 'utf8'), vercel = JSON.parse(fs.readFileSync(path.join(root, 'vercel.json'), 'utf8'));
+const home = fs.readFileSync(path.join(pub, 'app.html'), 'utf8'), vercel = JSON.parse(fs.readFileSync(path.join(root, 'vercel.json'), 'utf8'));
 const results = []; const check = (n, ok) => results.push([n, !!ok]);
 const text = (h) => h.replace(/<script[\s\S]*?<\/script>/g, '').replace(/<[^>]+>/g, ' ').split(/\s+/).filter(Boolean).length;
 

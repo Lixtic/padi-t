@@ -1,7 +1,7 @@
 'use strict';
 // The motion pass: sheets leave, the tab highlight glides, pages fade, and all of it respects reduced motion.
 const fs = require('fs');
-const css = fs.readFileSync('public/styles.css', 'utf8'), motion = fs.readFileSync('public/motion.js', 'utf8'), index = fs.readFileSync('public/index.html', 'utf8');
+const css = fs.readFileSync('public/styles.css', 'utf8'), motion = fs.readFileSync('public/motion.js', 'utf8'), index = fs.readFileSync('public/app.html', 'utf8');
 const sw = fs.readFileSync('public/sw.js', 'utf8'), v2 = fs.readFileSync('public/v2.js', 'utf8'), app = fs.readFileSync('public/app.js', 'utf8');
 const checks = [
   ['Dialog exit motion is loaded and cached', index.includes('src="motion.js"') && sw.includes("'motion.js'")],

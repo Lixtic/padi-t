@@ -2,7 +2,7 @@ const fs = require('fs');
 const path = require('path');
 const root = path.join(__dirname, '..', 'public');
 const read = (name) => fs.readFileSync(path.join(root, name), 'utf8');
-const index = read('index.html');
+const index = read('app.html');
 const consent = read('cookie-consent.js');
 const ads = read('ads.js');
 const rewarded = read('rewarded.js');
