@@ -1598,3 +1598,37 @@ body[data-studio-tab="resources"]:has(#studyNotesCurriculum:not([hidden])) .sche
   .v2-tabbar button:focus-visible { outline: 3px solid color-mix(in srgb, var(--accent) 45%, transparent); outline-offset: 2px; }
 }
 .appearance-hint { margin: -4px 0 12px; color: var(--muted); font-size: 13px; line-height: 1.45; }
+
+/* Liquid Glass bottom navigation (phones). Frosted pill with a bright top edge and a soft sheen; a glass lens glides to the active
+   tab; the create button is tinted glass. Falls back to solid colour where backdrop-filter is missing. */
+@media (max-width: 760px) {
+  .v2-tabbar-pill {
+    background: linear-gradient(180deg, rgba(255,255,255,.60), rgba(255,255,255,.28));
+    -webkit-backdrop-filter: blur(26px) saturate(190%); backdrop-filter: blur(26px) saturate(190%);
+    border: 1px solid rgba(255,255,255,.7);
+    box-shadow: 0 14px 36px rgba(18,35,55,.20), 0 2px 8px rgba(18,35,55,.10), inset 0 1.5px 0 rgba(255,255,255,.95), inset 0 -1px 0 rgba(255,255,255,.35);
+    overflow: hidden;
+  }
+  .v2-tabbar-pill::before { content: ''; position: absolute; inset: 0; z-index: 0; border-radius: inherit; pointer-events: none;
+    background: radial-gradient(120% 90% at 18% -20%, rgba(255,255,255,.65), rgba(255,255,255,0) 55%), linear-gradient(115deg, rgba(255,255,255,0) 38%, rgba(255,255,255,.22) 50%, rgba(255,255,255,0) 62%); }
+  .v2-tab-ind {
+    background: linear-gradient(180deg, rgba(255,255,255,.88), rgba(255,255,255,.40));
+    border: 1px solid rgba(255,255,255,.95);
+    box-shadow: 0 5px 16px rgba(27,69,168,.22), inset 0 1.5px 0 #fff, inset 0 -7px 12px rgba(27,69,168,.10);
+  }
+  .v2-tabbar-pill button[aria-current="page"] { color: var(--accent); }
+  .v2-tabbar .v2-tabbar-create {
+    background: linear-gradient(180deg, color-mix(in srgb, var(--accent) 82%, #fff), var(--accent));
+    border: 1px solid rgba(255,255,255,.55);
+    -webkit-backdrop-filter: blur(18px) saturate(180%); backdrop-filter: blur(18px) saturate(180%);
+    box-shadow: 0 12px 28px rgba(27,69,168,.38), inset 0 1.5px 0 rgba(255,255,255,.65), inset 0 -8px 14px rgba(0,0,40,.18);
+  }
+  .v2-tabbar .v2-tabbar-search { background: linear-gradient(180deg, rgba(255,255,255,.62), rgba(255,255,255,.30)); -webkit-backdrop-filter: blur(26px) saturate(190%); backdrop-filter: blur(26px) saturate(190%); border-color: rgba(255,255,255,.7); box-shadow: 0 14px 36px rgba(18,35,55,.20), inset 0 1.5px 0 rgba(255,255,255,.95); }
+  @supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) { .v2-tabbar-pill { background: rgba(255,255,255,.92); } }
+  :root[data-theme="dark"] .v2-tabbar-pill { background: linear-gradient(180deg, rgba(62,68,86,.55), rgba(22,26,38,.42)); border-color: rgba(255,255,255,.16); box-shadow: 0 14px 36px rgba(0,0,0,.6), inset 0 1.5px 0 rgba(255,255,255,.22), inset 0 -1px 0 rgba(255,255,255,.06); }
+  :root[data-theme="dark"] .v2-tabbar-pill::before { background: radial-gradient(120% 90% at 18% -20%, rgba(255,255,255,.20), rgba(255,255,255,0) 55%), linear-gradient(115deg, rgba(255,255,255,0) 38%, rgba(255,255,255,.07) 50%, rgba(255,255,255,0) 62%); }
+  :root[data-theme="dark"] .v2-tab-ind { background: linear-gradient(180deg, rgba(255,255,255,.28), rgba(255,255,255,.08)); border-color: rgba(255,255,255,.3); box-shadow: 0 5px 16px rgba(0,0,0,.4), inset 0 1.5px 0 rgba(255,255,255,.4); }
+  :root[data-theme="dark"] .v2-tabbar-pill button[aria-current="page"] { background: transparent; color: #fff; box-shadow: none; }
+  :root[data-theme="dark"] .v2-tabbar .v2-tabbar-create { border-color: rgba(255,255,255,.3); color: #fff; box-shadow: 0 12px 28px rgba(0,0,0,.55), inset 0 1.5px 0 rgba(255,255,255,.4), inset 0 -8px 14px rgba(0,0,40,.25); }
+  :root[data-theme="dark"] .v2-tabbar .v2-tabbar-search { background: linear-gradient(180deg, rgba(62,68,86,.55), rgba(22,26,38,.42)); border-color: rgba(255,255,255,.16); }
+}
