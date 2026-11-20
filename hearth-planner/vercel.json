@@ -78,6 +78,21 @@
           "value": "no-cache"
         }
       ]
+    },
+    {
+      "source": "/(.*)",
+      "has": [
+        {
+          "type": "host",
+          "value": "app.guidedgh.site"
+        }
+      ],
+      "headers": [
+        {
+          "key": "X-Robots-Tag",
+          "value": "noindex, nofollow"
+        }
+      ]
     }
   ],
   "crons": [
@@ -91,6 +106,16 @@
     }
   ],
   "rewrites": [
+    {
+      "source": "/",
+      "has": [
+        {
+          "type": "host",
+          "value": "(www\\.guidedgh\\.site|guidedgh\\.site)"
+        }
+      ],
+      "destination": "/home.html"
+    },
     {
       "source": "/parents",
       "destination": "/index.html"
@@ -126,6 +151,35 @@
     {
       "source": "/api/neon-auth/:path*",
       "destination": "/api/neon-auth?path=:path*"
+    }
+  ],
+  "redirects": [
+    {
+      "source": "/parents",
+      "has": [
+        {
+          "type": "host",
+          "value": "(www\\.guidedgh\\.site|guidedgh\\.site)"
+        }
+      ],
+      "destination": "https://app.guidedgh.site/parents",
+      "permanent": false
+    },
+    {
+      "source": "/teachers",
+      "has": [
+        {
+          "type": "host",
+          "value": "(www\\.guidedgh\\.site|guidedgh\\.site)"
+        }
+      ],
+      "destination": "https://app.guidedgh.site/teachers",
+      "permanent": false
+    },
+    {
+      "source": "/product",
+      "destination": "https://www.guidedgh.site/",
+      "permanent": true
     }
   ]
 }
