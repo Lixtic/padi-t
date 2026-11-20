@@ -12,7 +12,7 @@ assert.match(app, /dashRecentList/);
 assert.match(app, /function openReader\(title, source, onShare, canTeach\)/);
 assert.match(app, /reader-delivery-view/);
 assert.match(app, /Next section/);
-assert.match(app, /canSharePlan && accountRole !== 'parent'/);
+assert.match(app, /kind === 'Study notes' && accountRole !== 'parent'/);
 assert.match(css, /\.reader-delivery-content/);
 
 assert.match(parent, /function renderLessonWizard\(\)/);
