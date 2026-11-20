@@ -103,7 +103,22 @@
   }
 
   function tabBar() {
-    var studio = $('.teaching-studio'); if (!studio) return;
+    var studio = $('.teaching-studio');
+    if (!studio) {
+      // The teaching workspace may mount after DOM ready. Wait instead of
+      // silently losing the mobile navigation for the rest of the session.
+      if (!window.__guidedTabBarWaiter && document.body) {
+        window.__guidedTabBarWaiter = new MutationObserver(function () {
+          if ($('.teaching-studio')) {
+            window.__guidedTabBarWaiter.disconnect();
+            window.__guidedTabBarWaiter = null;
+            tabBar();
+          }
+        });
+        window.__guidedTabBarWaiter.observe(document.body, { childList: true, subtree: true });
+      }
+      return;
+    }
     var nav = $('.v2-tabbar'), sheet = $('.family-create-sheet'), currentRole = '';
     function parentMode() { return document.body.classList.contains('role-parent'); }
     function mark(key) {

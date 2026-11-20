@@ -556,7 +556,8 @@
         </button>
       </div>
         </section>
-        <section class="sp-card" aria-label="Appearance and app"><h2>App</h2>
+        <section class="sp-card" aria-label="Appearance"><h2>Appearance</h2>
+        <p class="appearance-hint">Choose how GuidEd looks on this device.</p>
         <div class="set-row">
           <span class="theme-label" id="themeLabel">Dark mode</span>
           <button type="button" class="switch" id="themeToggle" role="switch" aria-checked="false" aria-labelledby="themeLabel">
@@ -753,6 +754,7 @@
             <span class="studio-context" id="studioContext">Curriculum aligned</span>
           </div>
           <div class="studio-content" id="studioContent">
+          <div class="scheme scheme-in-plan" id="schemeStrip" hidden></div>
           <div class="studio-tabs" role="tablist" aria-label="Teaching tools">
             <button type="button" role="tab" id="studioTabPlan" data-studio-tab="plan" aria-selected="true" aria-controls="studioPanelPlan"><svg class="ico"><use href="#i-book"/></svg><span>Lesson plan<small>Plan a lesson</small></span></button>
             <button type="button" role="tab" id="studioTabResources" data-studio-tab="resources" aria-selected="false" aria-controls="studioPanelResources" tabindex="-1"><svg class="ico"><use href="#i-layers"/></svg><span>Resources<small>Create materials</small></span></button>
@@ -808,7 +810,7 @@
           </div>
         </section>
 
-        <div class="scheme" id="schemeStrip" hidden></div>
+        
         <p class="fineprint" id="fineprint">Always review a generated plan against the NaCCA curriculum before teaching.</p>
       </div>
 
