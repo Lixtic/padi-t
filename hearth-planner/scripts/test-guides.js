@@ -15,12 +15,14 @@ check('Guide filtering script supports search, audience and topic filters', /mat
 check('Production build regenerates the SEO pages and guide sitemap', /node scripts\/build-seo\.js/.test(JSON.parse(fs.readFileSync(path.join(root, 'package.json'), 'utf8')).scripts.build));
 check('The lesson-plan guide preserves the official indicator and separates the lesson objective', /Keep the official content standard and learning indicator exactly as published/.test(require(path.join(root, 'data/guides/teachers-1.js'))[0].sections[1].p[0]));
 check('The GES Scheme of Service guide is included for teachers', articles.some((a) => a.slug === 'understanding-the-ges-scheme-of-service' && a.audience === 'Teachers'));
-check('The GES guide links to the official PDF and flags the blank implementation date', pages.some(([a, h]) => a.slug === 'understanding-the-ges-scheme-of-service' && h.includes('https://ges.gov.gh/assets/uploads/documents/6ab15045a79a7_1790005317.pdf') && /implementation-date field in this copy is blank/i.test(h)));
+
 check('There are at least 15 guides', articles.length >= 15);
 check('Slugs, titles and descriptions are all different', new Set(articles.map((a) => a.slug)).size === articles.length && new Set(articles.map((a) => a.title)).size === articles.length && new Set(articles.map((a) => a.desc)).size === articles.length);
 check('Slugs are plain URL words', articles.every((a) => /^[a-z0-9]+(-[a-z0-9]+)*$/.test(a.slug)));
 check('Descriptions fit a search result', articles.every((a) => a.desc.length >= 80 && a.desc.length <= 200));
 const pages = articles.map((a) => [a, fs.readFileSync(path.join(pub, 'guides', a.slug + '.html'), 'utf8')]);
+check('GES Scheme of Service content is included as three teacher guides', ['understanding-the-ges-scheme-of-service', 'ges-teaching-career-grades-and-school-positions', 'ges-promotion-requirements-and-preparation'].every((slug) => articles.some((a) => a.slug === slug && a.audience === 'Teachers')));
+check('GES guides contain extracted grade, role and promotion details rather than a PDF-only link', pages.filter(([a]) => a.slug.startsWith('ges-') || a.slug === 'understanding-the-ges-scheme-of-service').every(([, h]) => /printed page/.test(h) && !/Download the official GES Scheme of Service/.test(h)) && pages.some(([a,h]) => a.slug === 'ges-promotion-requirements-and-preparation' && /70%/.test(h) && /aptitude test/i.test(h)));
 check('Article metadata includes social preview and breadcrumb data', pages.every(([, h]) => /twitter:card/.test(h) && /BreadcrumbList/.test(h)));
 check('Each page has its own title, h1, canonical link and Article data', pages.every(([a, h]) => h.includes('<title>' + a.title.replace(/&/g, '&amp;')) && /<h1>/.test(h) && h.includes('rel="canonical" href="https://www.guidedgh.site/guides/' + a.slug + '"') && h.includes('"@type":"Article"')));
 check('Each page has real text (300+ words)', pages.every(([, h]) => text(h) >= 300));
