@@ -1340,3 +1340,157 @@ body[data-studio-tab="resources"]:has(#studyNotesCurriculum:not([hidden])) .sche
   #acctSheet #asAccount .as-actions { gap: 7px; }
   #acctSheet #asAccount .as-actions > button { padding-inline: 8px; font-size: 13px; }
 }
+
+
+/* ───────── Office flow: curriculum first, generation second ───────── */
+#studioPanelPlan .scheme.scheme-in-plan {
+  display: block;
+  margin: 0 0 14px;
+  padding: 14px 15px;
+  border: 1px solid var(--card-line);
+  border-left: 3px solid var(--accent);
+  border-radius: 15px;
+  background: var(--v2-soft);
+  color: var(--text);
+}
+#studioPanelPlan .scheme.scheme-in-plan[hidden] { display: none !important; }
+#studioPanelPlan .scheme-in-plan .scheme-top {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 7px;
+  margin-bottom: 7px;
+}
+#studioPanelPlan .scheme-in-plan .scheme-tag {
+  display: inline-flex;
+  align-items: center;
+  min-height: 23px;
+  padding: 3px 8px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--accent) 13%, var(--card));
+  color: var(--accent);
+  font-size: 11px;
+  font-weight: 750;
+}
+#studioPanelPlan .scheme-in-plan .scheme-line {
+  color: var(--text);
+  font-size: 13px;
+  font-weight: 700;
+  line-height: 1.45;
+}
+#studioPanelPlan .scheme-in-plan .scheme-note,
+#studioPanelPlan .scheme-in-plan .scheme-std,
+#studioPanelPlan .scheme-in-plan li {
+  color: var(--muted);
+  font-size: 12.5px;
+  line-height: 1.5;
+}
+#studioPanelPlan .scheme-in-plan .scheme-note { margin: 5px 0 0; }
+#studioPanelPlan .scheme-in-plan .scheme-own {
+  display: inline-flex;
+  align-items: center;
+  min-height: 34px;
+  margin-top: 8px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--accent);
+  font-size: 12.5px;
+  font-weight: 700;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+#studioPanelPlan .scheme-in-plan details summary {
+  min-height: 34px;
+  display: flex;
+  align-items: center;
+  color: var(--accent);
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+}
+#studioPanelPlan .scheme-in-plan ul { margin: 8px 0 0; padding-left: 18px; }
+#studioPanelPlan .studio-panel-copy { margin-top: 2px; }
+#studioPanelPlan .tool-action { margin-top: 2px; }
+@media (max-width: 760px) {
+  #studioPanelPlan .scheme-in-plan { margin-bottom: 12px; padding: 12px; }
+  .teaching-studio { margin-top: 10px; padding: 14px 12px 12px; }
+  .studio-heading { margin-bottom: 11px; }
+  .studio-tabs { gap: 7px; }
+  .studio-tabs button { min-height: 82px; padding: 10px 9px; border-radius: 14px; gap: 7px; }
+  .studio-tabs button .ico { width: 21px; height: 21px; }
+  .studio-tabs button > span { font-size: .84rem; }
+  .studio-tabs button > span small { font-size: .68rem; }
+  .studio-panel { padding-top: 12px; }
+  .studio-panel-copy strong { font-size: .98rem; }
+  .studio-panel-copy small { font-size: .82rem; line-height: 1.45; }
+  .studio-panel .tool-action { min-height: 48px; }
+}
+
+/* ───────── Mobile navigation: reduce obstruction and protect scroll endings ───────── */
+@media (max-width: 760px) {
+  body.has-tabbar:not(.on-settings):not(.keyboard-open) .stage {
+    padding-bottom: calc(118px + env(safe-area-inset-bottom));
+    scroll-padding-bottom: calc(118px + env(safe-area-inset-bottom));
+  }
+  .v2-tabbar { left: 10px; right: 10px; bottom: calc(8px + env(safe-area-inset-bottom)); gap: 9px; }
+  .v2-tabbar-pill { min-height: 60px; padding: 5px; }
+  .v2-tabbar button { min-height: 48px; gap: 2px; font-size: .64rem; }
+  .v2-tabbar button .ico { width: 20px; height: 20px; }
+  .v2-tabbar-family .v2-tabbar-create,
+  .v2-tabbar .v2-tabbar-create { width: 52px; height: 52px; min-height: 52px; }
+  .v2-tabbar .v2-tabbar-create .ico { width: 23px; height: 23px; }
+  .v2-tabbar button:focus-visible { outline: 3px solid color-mix(in srgb, var(--accent) 45%, transparent); outline-offset: 2px; }
+}
+
+/* ───────── Library: compact content-first header and easier scanning ───────── */
+.library-page .library-hero {
+  display: grid; grid-template-columns: minmax(0,1fr) auto; align-items: center;
+  gap: 8px 14px; min-height: 0; padding: 2px 0 14px; overflow: visible;
+  border-radius: 0; background: transparent; color: var(--text);
+}
+.library-page .library-hero::after, .library-page .library-eyebrow { display: none; }
+.library-page .library-hero-copy { max-width: none; min-width: 0; }
+.library-page .library-hero h1 { margin: 0; color: var(--text); font-size: clamp(1.45rem,5vw,1.8rem); line-height: 1.15; letter-spacing: -.04em; }
+.library-page .library-hero p { margin-top: 5px; color: var(--muted); font-size: 12.5px; line-height: 1.4; }
+.library-page .library-create {
+  grid-column: 2; grid-row: 1; min-height: 38px; padding: 0 12px; gap: 6px;
+  border: 1px solid color-mix(in srgb,var(--accent) 24%,var(--card-line));
+  border-radius: 12px; background: var(--add-bg); color: var(--accent);
+  box-shadow: none; font-size: 12px;
+}
+.library-page .library-create .ico { width: 15px; height: 15px; }
+.library-page .library-total { position: static; grid-column: 1/-1; grid-row: 2; justify-self: start; gap: 6px; color: var(--muted); }
+.library-page .library-total-icon { display: none; }
+.library-page .library-total > span:last-child { display: flex; align-items: baseline; gap: 4px; line-height: 1.2; }
+.library-page .library-total strong { color: var(--text); font-size: 12px; font-weight: 750; }
+.library-page .library-total small { color: var(--muted); font-size: 12px; }
+.library-page .library-toolbar { gap: 10px; }
+.library-page .library-search-wrap { min-height: 44px; border-radius: 13px; }
+.library-page .library-search-wrap .lib-search { min-height: 42px; font-size: 14px; }
+.library-page .lib-chips { display: flex; gap: 7px; overflow-x: auto; padding: 2px 0 8px; scrollbar-width: none; -webkit-overflow-scrolling: touch; }
+.library-page .lib-chips::-webkit-scrollbar { display: none; }
+.library-page .lib-chip { flex: 0 0 auto; min-height: 34px; padding: 0 11px; font-size: 11.5px; }
+.library-page .library-results-head { margin-top: 18px; }
+.library-page .library-results-head h2 { font-size: 17px; }
+.library-page .library-results-head > span { font-size: 12px; }
+.library-page .lib-grid { gap: 12px; }
+.library-page { padding-bottom: calc(112px + env(safe-area-inset-bottom)); }
+@media (max-width: 560px) {
+  .library-page .library-hero { gap: 6px 8px; padding-bottom: 12px; }
+  .library-page .library-hero h1 { font-size: 23px; }
+  .library-page .library-hero p { max-width: 34ch; font-size: 12px; }
+  .library-page .library-create { min-height: 36px; padding: 0 10px; font-size: 11.5px; }
+}
+@media (max-width: 360px) {
+  .library-page .library-hero { grid-template-columns: minmax(0,1fr); }
+  .library-page .library-create { grid-column: 1; grid-row: 2; justify-self: start; }
+  .library-page .library-total { grid-row: 3; }
+}
+
+/* Shared visual rhythm for interactive cards and form controls. */
+.teaching-studio, .library-page .lib-card { box-shadow: none; }
+.teaching-studio, .library-page .lib-card, .library-page .library-search-wrap {
+  border-color: color-mix(in srgb, var(--card-line) 82%, transparent);
+}
+:root[data-theme="dark"] #studioPanelPlan .scheme-in-plan { background: #1b2638; border-color: #35465f; border-left-color: var(--accent); }
