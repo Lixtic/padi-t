@@ -18,13 +18,17 @@
   <script src="/cookie-consent.js" defer></script>
   <script src="/home.js" defer></script>
 <style>
-.hero-plan-form{display:grid;gap:12px;max-width:560px;margin-top:24px}
-.hero-plan-fields{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-.hero-plan-fields label{display:grid;gap:7px;color:#193653;font-size:14px;font-weight:700}
-.hero-plan-fields select{width:100%;min-height:48px;padding:0 14px;border:1px solid #d5e0dc;border-radius:12px;background:#fff;color:#18324f;font:inherit;font-weight:600}
-.hero-plan-form .btn{width:100%;justify-content:center;cursor:pointer;font:inherit}
-.hero-plan-form .btn.secondary{display:flex;text-decoration:none}
-@media(max-width:520px){.hero-plan-fields{grid-template-columns:1fr}}
+.hero-plan-form{display:grid;gap:14px;width:100%;max-width:520px;margin:28px 0 0;padding:22px;background:rgba(255,255,255,.82);border:1px solid rgba(0,106,78,.14);border-radius:22px;box-shadow:0 16px 40px rgba(20,52,43,.08);backdrop-filter:blur(12px)}
+.hero-plan-fields{display:grid;grid-template-columns:1fr;gap:13px}
+.hero-plan-fields label{display:grid;gap:8px;color:#193653;font-size:13px;font-weight:700;letter-spacing:.02em}
+.hero-plan-fields select{display:block;width:100%;min-width:0;min-height:54px;padding:0 44px 0 15px;border:1px solid #d6e3dc;border-radius:13px;background:#fff;color:#18324f;font:inherit;font-size:16px;font-weight:600;box-shadow:0 2px 6px rgba(20,52,43,.035);appearance:auto}
+.hero-plan-fields select:focus{outline:3px solid rgba(0,106,78,.16);border-color:#006a4e}
+.hero-plan-form .btn{display:flex;width:100%;min-height:54px;align-items:center;justify-content:center;gap:10px;cursor:pointer;font:inherit}
+.hero-plan-form .btn.primary{border-radius:14px}
+.hero-plan-form .btn.secondary{width:100%;min-height:48px;display:flex;align-items:center;justify-content:center;text-decoration:none;border-radius:14px}
+.hero-plan-form .micro{margin:0;color:#66736f;font-size:13px;line-height:1.6}
+@media(min-width:700px){.hero-plan-fields{grid-template-columns:1fr 1fr;gap:12px}.hero-plan-form{padding:24px}}
+@media(max-width:520px){.hero-plan-form{gap:12px;margin-top:24px;padding:17px;border-radius:18px}.hero-plan-fields{grid-template-columns:1fr}.hero-plan-fields select{min-height:52px}}
 </style>
 </head>
 <body>
@@ -36,7 +40,6 @@
   <section class="hero">
     <div class="wrap hero-grid">
       <div>
-        <span class="eyebrow"><i class="spark"></i> Powered by Super Intelligence</span>
         <h1>Teaching deserves a <em>smarter future.</em></h1>
         <p class="lead">Meet GuidED: Super Intelligence for teaching, learning and everything in between. A thoughtful teaching and learning companion, built around Ghana’s curriculum and the people who bring it to life.</p>
         <form class="hero-plan-form" action="https://app.guidedgh.site/" method="get">
