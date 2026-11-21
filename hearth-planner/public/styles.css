@@ -2565,8 +2565,8 @@ main[data-view="chat"] .news-bar { display: none; }
 /* News bar: stays pinned at the top of the scrolling screen; several posts rotate inside it */
 .news-bar { position: sticky; top: 8px; z-index: 6; background-color: var(--bg); background-image: linear-gradient(rgba(27,69,168,.08), rgba(27,69,168,.08)); -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px); box-shadow: 0 6px 18px rgba(20,30,70,.10); }
 .news-bar a { transition: opacity .2s ease; }
-.nb-dots { display: flex; flex: 0 0 auto; gap: 2px; }
-.nb-dots:empty { display: none; }
+.news-bar .nb-dots { display: flex; flex: 0 0 auto; min-width: max-content; gap: 2px; }
+.news-bar .nb-dots:empty { display: none; }
 .news-bar .nb-dot { position: relative; width: 16px; height: 28px; margin: 0; padding: 0; border: 0; background: transparent; }
 .news-bar .nb-dot::after { content: ""; position: absolute; left: 50%; top: 50%; width: 6px; height: 6px; margin: -3px 0 0 -3px; border-radius: 50%; background: currentColor; opacity: .28; transition: opacity .2s ease, transform .2s ease; }
 .news-bar .nb-dot.on::after { opacity: .9; transform: scale(1.25); }
