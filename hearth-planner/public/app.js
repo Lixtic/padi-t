@@ -911,7 +911,7 @@
     const body = out.join('\n').replace(/\n{3,}/g, '\n\n').trim();
     return body ? body + '\n\n' + SIGN_OFF : '';
   }
-  /* Shared and term-pack documents end with a sign-off area (the assessment rubric stays in the app and the full download). */
+  /* Shared and term-pack documents end with a sign-off area (the assessment rubric stays in the app only). */
   const SIGN_OFF = ['## Approval', '',
     '| Class Teacher | Head Teacher / Supervisor | School Stamp |', '|---|---|---|',
     '| Name: ______________________<br>Signature: ________________<br>Date: ____________________ | Name: ______________________<br>Signature: ________________<br>Date: ____________________ | <br><br><br><br><br> |'].join('\n');
@@ -964,6 +964,11 @@
       if (btn) { btn.disabled = false; label.textContent = before; }
     }
   }
+  /* Downloads and shares leave the assessment rubric out; it stays in the app. */
+  function dropRubric(md) {
+    return String(md || '').replace(/(^|\n)#{1,3}[ \t]*Assessment Rubric[^\n]*\n[\s\S]*?(?=\n#{1,2}[ \t]+\S|$)/i, '$1').replace(/\n{3,}/g, '\n\n').trim();
+  }
+  const exportBody = (text) => dropRubric(splitElic(text).body);
   async function exportPdf(text, title, btn, kind) {
     const layout = kind === 'worksheet' || kind === 'homework' ? 'portrait' : 'landscape';
     const GP = window.GuidedPlans;
@@ -971,7 +976,7 @@
     const label = $('span', btn), before = label.textContent;
     btn.disabled = true; label.textContent = 'Preparing…';
     try {
-      const blob = await makePdf(title, splitElic(text).body, layout);
+      const blob = await makePdf(title, exportBody(text), layout);
       saveBlob(blob, title, 'pdf');
       toast('Downloaded ' + title + '.pdf' + hintProfile());
     } catch (e) {
@@ -989,7 +994,7 @@
     btn.disabled = true; label.textContent = 'Preparing…';
     try {
       if (window.SchoolPadiArtifact) {                    // hosted as an artifact: build the file in the browser
-        const name = await window.SchoolPadiArtifact.save(title, splitElic(text).body, layout, profile());
+        const name = await window.SchoolPadiArtifact.save(title, exportBody(text), layout, profile());
         toast('Saved ' + name + hintProfile());
         return;
       }
@@ -997,14 +1002,14 @@
       try {
         await loadDocxLib();
         const who = profile();
-        const blob = await window.SchoolPadiDocx.toFile(window.docx, title, splitElic(text).body, { portrait: layout === 'portrait', teacher: who.teacher, school: who.school, footer: GP ? GP.footerText() : '' });
+        const blob = await window.SchoolPadiDocx.toFile(window.docx, title, exportBody(text), { portrait: layout === 'portrait', teacher: who.teacher, school: who.school, footer: GP ? GP.footerText() : '' });
         saveBlob(blob, title);
         toast('Downloaded ' + title + '.docx' + hintProfile());
         return;
       } catch (e) { /* fall back to the server below */ }
       const res = await fetch('/api/export-docx', {
         method: 'POST', headers: { 'content-type': 'application/json' },
-        body: JSON.stringify({ title, layout, content: splitElic(text).body, teacher: profile().teacher || '', school: profile().school || '' }),
+        body: JSON.stringify({ title, layout, content: exportBody(text), teacher: profile().teacher || '', school: profile().school || '' }),
       });
       if (!res.ok) {
         let msg = 'Word export is not available here.';
