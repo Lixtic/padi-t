@@ -124,3 +124,8 @@ body.bo { background: var(--bg); color: var(--text); overflow: auto; display: bl
  .bo .ad-find button { min-height:42px; }
 }
 @media (prefers-reduced-motion:reduce) { .bo *, .bo *::before, .bo *::after { scroll-behavior:auto !important; transition:none !important; animation:none !important; } }
+
+/* News picture */
+.bo .news-pic { display: grid; gap: 10px; }
+.bo .news-pic-box { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+.bo .news-pic-box img { display: block; max-width: min(260px, 100%); max-height: 160px; border-radius: 10px; border: 1px solid var(--card-line); object-fit: cover; }

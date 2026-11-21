@@ -6,6 +6,8 @@ const crypto = require('crypto');
 const db = require('./_db');
 const SITE = 'https://www.guidedgh.site';
 const LIMITS = { title: [8, 140], summary: [20, 300], body: [100, 20000] };
+const IMG_MAX_BYTES = 450 * 1024;
+const IMG_TYPES = { 'image/jpeg': [0xff, 0xd8, 0xff], 'image/png': [0x89, 0x50, 0x4e, 0x47], 'image/webp': null };
 
 const esc = (s) => String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
 const slugify = (s) => String(s).toLowerCase().replace(/&/g, ' and ').normalize('NFKD').replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 60).replace(/-+$/, '');
@@ -40,11 +42,40 @@ function validate(b) {
   return { ok: out };
 }
 
+// An optional picture: the admin page shrinks it first and sends it as a data URL; we check it again here and keep it in news_images.
+function parseImage(b) {
+  const raw = b && b.image;
+  if (raw == null || raw === '') return { none: true };
+  const m = /^data:(image\/(?:jpeg|png|webp));base64,([A-Za-z0-9+/=]+)$/.exec(String(raw));
+  if (!m) return { error: 'image', message: 'The picture must be a JPEG, PNG or WebP image.' };
+  const buf = Buffer.from(m[2], 'base64');
+  if (!buf.length || buf.length > IMG_MAX_BYTES) return { error: 'image_big', message: 'The picture is too large. Choose a smaller one (under ' + Math.round(IMG_MAX_BYTES / 1024) + ' KB after shrinking).' };
+  const sig = IMG_TYPES[m[1]];
+  const ok = sig ? sig.every((x, i) => buf[i] === x) : (buf.slice(0, 4).toString() === 'RIFF' && buf.slice(8, 12).toString() === 'WEBP');
+  if (!ok) return { error: 'image', message: 'That file is not a real ' + m[1].replace('image/', '').toUpperCase() + ' picture.' };
+  const alt = String(b.image_alt || '').replace(/\s+/g, ' ').trim().slice(0, 200);
+  if (alt.length < 3) return { error: 'image_alt', message: 'Describe the picture in a few words (alt text) so screen readers and search engines can use it.' };
+  const dim = (n) => { n = Math.round(Number(n)); return n >= 16 && n <= 6000 ? n : 0; };
+  return { type: m[1], data: m[2], alt, w: dim(b.image_w), h: dim(b.image_h) };
+}
+async function applyImage(postId, im, b, now) {
+  if (im.type) {
+    await db.query('insert into news_images (post_id, type, alt, data, w, h, updated_at) values ($1, $2, $3, $4, $5, $6, $7) on conflict (post_id) do update set type = $2, alt = $3, data = $4, w = $5, h = $6, updated_at = $7', [postId, im.type, im.alt, im.data, im.w, im.h, now]);
+  } else if (b && b.remove_image) {
+    await db.query('delete from news_images where post_id = $1', [postId]);
+  } else if (b && typeof b.image_alt === 'string' && b.image_alt.trim()) {
+    await db.query('update news_images set alt = $2 where post_id = $1', [postId, b.image_alt.replace(/\s+/g, ' ').trim().slice(0, 200)]);
+  }
+}
+const imgUrl = (slug, v) => '/news-image/' + slug + '?v=' + Number(v || 0);
+const imgTag = (slug, im, cls) => '<img class="' + cls + '" src="' + esc(imgUrl(slug, im.updated_at)) + '" alt="' + esc(im.alt) + '"' + (Number(im.w) && Number(im.h) ? ' width="' + Number(im.w) + '" height="' + Number(im.h) + '"' : '') + (cls === 'news-thumb' ? ' loading="lazy"' : '') + ' decoding="async">';
+
 /* ───────── Admin ───────── */
 async function list() {
   await db.ensure();
   const rows = await db.query('select id, slug, title, summary, body, source_name, source_url, status, published_at, updated_at from news_posts order by published_at desc limit 200');
-  return { posts: rows.map((r) => ({ ...r, published_at: Number(r.published_at), updated_at: Number(r.updated_at) })) };
+  const imgs = {}; (await db.query('select post_id, alt, updated_at from news_images')).forEach((i) => { imgs[i.post_id] = { alt: i.alt, v: Number(i.updated_at) }; });
+  return { posts: rows.map((r) => ({ ...r, published_at: Number(r.published_at), updated_at: Number(r.updated_at), image: imgs[r.id] || null })) };
 }
 async function notifyPublished(post) {
   try {
@@ -65,6 +96,7 @@ async function notifyPublished(post) {
 async function save(me, b) {
   await db.ensure();
   const v = validate(b || {}); if (!v.ok) return { status: 400, body: v };
+  const im = parseImage(b || {}); if (im.error) return { status: 400, body: im };
   const p = v.ok, now = Date.now();
   const id = String((b && b.id) || '').replace(/[^a-f0-9]/g, '').slice(0, 16);
   if (id) {
@@ -73,18 +105,22 @@ async function save(me, b) {
     const firstLive = cur[0].status === 'draft' && p.status === 'published';
     await db.query('update news_posts set title = $2, summary = $3, body = $4, source_name = $5, source_url = $6, status = $7, updated_at = $8, published_at = case when $9 then $8 else published_at end where id = $1', [id, p.title, p.summary, p.body, p.source_name, p.source_url, p.status, now, firstLive]);
     const row = (await db.query('select slug from news_posts where id = $1', [id]))[0];
+    await applyImage(id, im, b, now);
     const notified = firstLive ? await notifyPublished({ id, slug: row.slug, title: p.title, summary: p.summary }) : 0;
     return { status: 200, body: { ok: true, id, slug: row.slug, status: p.status, notified } };
   }
   const nid = crypto.randomBytes(6).toString('hex');
   const slug = (slugify(p.title) || 'post') + '-' + nid.slice(0, 5);
   await db.query('insert into news_posts (id, slug, title, summary, body, source_name, source_url, status, published_at, updated_at, author) values ($1, $2, $3, $4, $5, $6, $7, $8, $9, $9, $10)', [nid, slug, p.title, p.summary, p.body, p.source_name, p.source_url, p.status, now, String((me && me.email) || '').slice(0, 200)]);
+  await applyImage(nid, im, b, now);
   const notified = p.status === 'published' ? await notifyPublished({ id: nid, slug, title: p.title, summary: p.summary }) : 0;
   return { status: 201, body: { ok: true, id: nid, slug, status: p.status, notified } };
 }
 async function remove(id) {
   await db.ensure();
-  const done = await db.query('delete from news_posts where id = $1 returning slug', [String(id || '').replace(/[^a-f0-9]/g, '').slice(0, 16)]);
+  const clean = String(id || '').replace(/[^a-f0-9]/g, '').slice(0, 16);
+  await db.query('delete from news_images where post_id = $1', [clean]);
+  const done = await db.query('delete from news_posts where id = $1 returning slug', [clean]);
   return done.length ? { status: 200, body: { ok: true, slug: done[0].slug } } : { status: 404, body: { error: 'unknown', message: 'That post no longer exists.' } };
 }
 
@@ -94,7 +130,7 @@ const shell = (title, desc, url, ld, inner, opts) => `<!doctype html>
 <title>${esc(title)}</title>
 <meta name="description" content="${esc(desc)}">
 ${(opts && opts.noindex) ? '<meta name="robots" content="noindex">' : '<link rel="canonical" href="' + esc(url) + '">'}
-<meta property="og:type" content="${(opts && opts.og) || 'website'}"><meta property="og:site_name" content="GuidEd"><meta property="og:title" content="${esc(title)}"><meta property="og:description" content="${esc(desc)}"><meta property="og:url" content="${esc(url)}">
+<meta property="og:type" content="${(opts && opts.og) || 'website'}"><meta property="og:site_name" content="GuidEd"><meta property="og:title" content="${esc(title)}"><meta property="og:description" content="${esc(desc)}"><meta property="og:url" content="${esc(url)}">${(opts && opts.image) ? '<meta property="og:image" content="' + esc(opts.image) + '"><meta name="twitter:card" content="summary_large_image"><meta name="twitter:image" content="' + esc(opts.image) + '">' : ''}
 ${ld ? '<script type="application/ld+json">' + JSON.stringify(ld).replace(/</g, '\\u003c') + '</script>' : ''}
   <link rel="stylesheet" href="/cookie-consent.css">
   <script src="/cookie-consent.js" defer></script>
@@ -109,15 +145,17 @@ const NOTE = '<p class="upd">GuidEd shares short updates for Ghana teachers and 
 function articleHtml(p) {
   const url = SITE + '/news/' + p.slug;
   const ld = { '@context': 'https://schema.org', '@type': 'NewsArticle', headline: p.title, description: p.summary, datePublished: isoDate(p.published_at), dateModified: isoDate(p.updated_at), inLanguage: 'en-GH', mainEntityOfPage: url, author: { '@type': 'Organization', name: 'GuidEd' }, publisher: { '@type': 'Organization', name: 'GuidEd', url: SITE + '/' } };
-  let inner = '<p class="upd">' + esc(longDate(p.published_at)) + (Number(p.updated_at) - Number(p.published_at) > 86400000 ? ' · Updated ' + esc(longDate(p.updated_at)) : '') + '</p>\n<h1>' + esc(p.title) + '</h1>\n<p class="lede">' + esc(p.summary) + '</p>\n' + renderBody(p.body) + '\n';
+  const pic = p.image ? SITE + imgUrl(p.slug, p.image.updated_at) : '';
+  if (pic) ld.image = pic;
+  let inner = '<p class="upd">' + esc(longDate(p.published_at)) + (Number(p.updated_at) - Number(p.published_at) > 86400000 ? ' · Updated ' + esc(longDate(p.updated_at)) : '') + '</p>\n<h1>' + esc(p.title) + '</h1>\n<p class="lede">' + esc(p.summary) + '</p>\n' + (p.image ? '<figure class="news-fig">' + imgTag(p.slug, p.image, 'news-img') + '</figure>\n' : '') + renderBody(p.body) + '\n';
   if (p.source_url) inner += '<p class="upd">Source: <a href="' + esc(p.source_url) + '" rel="noopener">' + esc(p.source_name || new URL(p.source_url).hostname) + '</a></p>\n';
-  return shell(p.title + ' · GuidEd News', p.summary, url, ld, inner + NOTE, { og: 'article' });
+  return shell(p.title + ' · GuidEd News', p.summary, url, ld, inner + NOTE, { og: 'article', image: pic });
 }
 function indexHtml(posts) {
   const url = SITE + '/news';
   const ld = { '@context': 'https://schema.org', '@type': 'CollectionPage', name: 'GuidEd News', url, description: 'Updates for Ghana teachers and parents.', inLanguage: 'en-GH' };
   let inner = '<h1>News for teachers and parents</h1>\n<p class="lede">Short updates on exams, the school calendar and the curriculum, with a link to the official source where there is one.</p>\n';
-  inner += posts.length ? '<ul class="guide-list">\n' + posts.map((p) => '<li><a href="/news/' + esc(p.slug) + '"><strong>' + esc(p.title) + '</strong></a><br><span class="upd">' + esc(longDate(p.published_at)) + ' · ' + esc(p.summary) + '</span></li>').join('\n') + '\n</ul>\n' : '<p>No news yet. Check back soon, or read our <a href="/guides">guides</a>.</p>\n';
+  inner += posts.length ? '<ul class="guide-list">\n' + posts.map((p) => '<li>' + (p.image ? '<a class="news-thumb-link" href="/news/' + esc(p.slug) + '" tabindex="-1" aria-hidden="true">' + imgTag(p.slug, p.image, 'news-thumb') + '</a>' : '') + '<a href="/news/' + esc(p.slug) + '"><strong>' + esc(p.title) + '</strong></a><br><span class="upd">' + esc(longDate(p.published_at)) + ' · ' + esc(p.summary) + '</span></li>').join('\n') + '\n</ul>\n' : '<p>No news yet. Check back soon, or read our <a href="/guides">guides</a>.</p>\n';
   return shell('News for Ghana Teachers and Parents · GuidEd', 'Short updates for Ghana teachers and parents on exams, the school calendar and the curriculum.', url, ld, inner + NOTE);
 }
 
@@ -132,15 +170,30 @@ async function page(req, res) {
       if (!/^[a-z0-9-]{3,80}$/.test(slug)) throw Object.assign(new Error('nf'), { nf: true });
       const rows = await db.query("select slug, title, summary, body, source_name, source_url, published_at, updated_at from news_posts where slug = $1 and status = 'published'", [slug]);
       if (!rows.length) throw Object.assign(new Error('nf'), { nf: true });
-      return send(200, articleHtml(rows[0]));
+      const pic = await db.query('select i.alt, i.w, i.h, i.updated_at from news_images i join news_posts p on p.id = i.post_id where p.slug = $1', [slug]);
+      return send(200, articleHtml({ ...rows[0], image: pic[0] || null }));
     }
     const rows = await db.query("select slug, title, summary, published_at from news_posts where status = 'published' order by published_at desc limit 60");
-    return send(200, indexHtml(rows));
+    const pics = {}; (await db.query("select p.slug, i.alt, i.w, i.h, i.updated_at from news_images i join news_posts p on p.id = i.post_id where p.status = 'published'")).forEach((i) => { pics[i.slug] = i; });
+    return send(200, indexHtml(rows.map((r) => ({ ...r, image: pics[r.slug] || null }))));
   } catch (e) {
     if (e && e.nf) return send(404, shell('News post not found · GuidEd', 'This news post could not be found.', SITE + '/news', null, '<h1>We could not find that post</h1>\n<p>It may have been removed. See the <a href="/news">latest news</a>.</p>', { noindex: true }), 'public, max-age=0, s-maxage=30');
     console.error('[news]', e && e.message);
     return send(500, shell('News · GuidEd', 'News', SITE + '/news', null, '<h1>News</h1><p>Something went wrong. Please try again in a moment.</p>', { noindex: true }), 'no-store');
   }
+}
+
+async function image(req, res) {
+  const slug = String(new URL(req.url, 'http://x').searchParams.get('slug') || '').toLowerCase();
+  const done = (status, type, body, cache) => { res.statusCode = status; if (type) res.setHeader('content-type', type); res.setHeader('cache-control', cache); res.end(body || ''); };
+  if (req.method !== 'GET' && req.method !== 'HEAD') { res.setHeader('allow', 'GET, HEAD'); return done(405, '', '', 'no-store'); }
+  try {
+    if (!/^[a-z0-9-]{3,80}$/.test(slug) || !db.configured()) return done(404, '', '', 'public, max-age=60');
+    await db.ensure();
+    const rows = await db.query("select i.type, i.data from news_images i join news_posts p on p.id = i.post_id where p.slug = $1 and p.status = 'published'", [slug]);
+    if (!rows.length) return done(404, '', '', 'public, max-age=60');
+    return done(200, rows[0].type, req.method === 'HEAD' ? '' : Buffer.from(rows[0].data, 'base64'), 'public, max-age=86400, s-maxage=86400, stale-while-revalidate=604800');   // the ?v= on the URL changes whenever the picture does
+  } catch (e) { console.error('[news-image]', e && e.message); return done(500, '', '', 'no-store'); }
 }
 
 async function sitemap(req, res) {
@@ -151,4 +204,4 @@ async function sitemap(req, res) {
   res.end('<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n  <url><loc>' + SITE + '/news</loc>' + (rows[0] ? '<lastmod>' + isoDate(rows[0].updated_at).slice(0, 10) + '</lastmod>' : '') + '<priority>0.7</priority></url>\n' + rows.map((r) => '  <url><loc>' + SITE + '/news/' + esc(r.slug) + '</loc><lastmod>' + isoDate(r.updated_at).slice(0, 10) + '</lastmod><priority>0.6</priority></url>').join('\n') + '\n</urlset>\n');
 }
 
-module.exports = { list, save, remove, page, sitemap, _test: { renderBody, validate, slugify, articleHtml, indexHtml } };
+module.exports = { list, save, remove, page, image, sitemap, _test: { renderBody, validate, slugify, articleHtml, indexHtml, parseImage } };

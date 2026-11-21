@@ -80,6 +80,11 @@
         <div class="ad-row"><label class="kb-file">Headline <input type="text" id="newsTitle" maxlength="140" placeholder="WAEC releases the 2027 BECE timetable" required></label></div>
         <div class="ad-row"><label class="kb-file">Summary <small>(one or two sentences, shown in search results)</small> <textarea id="newsSummary" rows="2" maxlength="300" required></textarea></label></div>
         <div class="ad-row"><label class="kb-file">Post <small>(blank line = new paragraph, "## " = heading, "- " = bullet, [text](https://link) = link)</small> <textarea id="newsBody" rows="9" maxlength="20000" required></textarea></label></div>
+        <div class="ad-row news-pic">
+          <label class="kb-file">Picture <small>(optional, JPEG, PNG or WebP. It is shrunk for you.)</small> <input type="file" id="newsImageFile" accept="image/jpeg,image/png,image/webp"></label>
+          <div class="news-pic-box" id="newsPicBox" hidden><img id="newsPicPreview" alt=""><button type="button" id="newsPicRemove">Remove picture</button></div>
+          <label class="kb-file" id="newsAltRow" hidden>Describe the picture <small>(alt text, for screen readers and search)</small> <input type="text" id="newsImageAlt" maxlength="200" placeholder="Pupils writing the BECE in a classroom"></label>
+        </div>
         <div class="ad-row">
           <label class="kb-file">Source name <input type="text" id="newsSourceName" maxlength="120" placeholder="WAEC"></label>
           <label class="kb-file">Source link <input type="url" id="newsSourceUrl" placeholder="https://waecgh.org/..."></label>
