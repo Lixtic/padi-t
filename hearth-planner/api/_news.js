@@ -183,6 +183,17 @@ async function page(req, res) {
   }
 }
 
+/* The newest live post, for the banner inside the app. Small JSON, cached briefly. */
+async function latest(req, res) {
+  const out = (post) => { res.statusCode = 200; res.setHeader('content-type', 'application/json; charset=utf-8'); res.setHeader('cache-control', 'public, max-age=0, s-maxage=60, stale-while-revalidate=300'); res.end(JSON.stringify({ post })); };
+  try {
+    if (!db.configured()) return out(null);
+    await db.ensure();
+    const r = (await db.query("select slug, title, published_at from news_posts where status = 'published' order by published_at desc limit 1"))[0];
+    return out(r ? { slug: r.slug, title: r.title, published_at: Number(r.published_at) } : null);
+  } catch (e) { console.error('[news-latest]', e && e.message); return out(null); }
+}
+
 async function image(req, res) {
   const slug = String(new URL(req.url, 'http://x').searchParams.get('slug') || '').toLowerCase();
   const done = (status, type, body, cache) => { res.statusCode = status; if (type) res.setHeader('content-type', type); res.setHeader('cache-control', cache); res.end(body || ''); };
@@ -204,4 +215,4 @@ async function sitemap(req, res) {
   res.end('<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n  <url><loc>' + SITE + '/news</loc>' + (rows[0] ? '<lastmod>' + isoDate(rows[0].updated_at).slice(0, 10) + '</lastmod>' : '') + '<priority>0.7</priority></url>\n' + rows.map((r) => '  <url><loc>' + SITE + '/news/' + esc(r.slug) + '</loc><lastmod>' + isoDate(r.updated_at).slice(0, 10) + '</lastmod><priority>0.6</priority></url>').join('\n') + '\n</urlset>\n');
 }
 
-module.exports = { list, save, remove, page, image, sitemap, _test: { renderBody, validate, slugify, articleHtml, indexHtml, parseImage } };
+module.exports = { list, save, remove, page, image, latest, sitemap, _test: { renderBody, validate, slugify, articleHtml, indexHtml, parseImage } };

@@ -1983,6 +1983,18 @@
     $('#noticeText').textContent = n.text; bar.hidden = false;
     $('#noticeX').onclick = () => { bar.hidden = true; try { localStorage.setItem('guided.notice.gone', n.id); } catch (e) { /* fine */ } };
   }
+  /* The newest news post as a dismissible bar on the start screen, for two weeks. Dismissing hides that post only. */
+  function showNewsBar() {
+    const bar = $('#newsBar'); if (!bar || !window.fetch) return;
+    fetch('/api/sync?what=news-latest', { headers: { accept: 'application/json' } }).then((r) => (r.ok ? r.json() : null)).then((j) => {
+      const post = j && j.post;
+      let gone = ''; try { gone = localStorage.getItem('guided.news.gone') || ''; } catch (e) { /* shown again next time */ }
+      if (!post || !post.slug || gone === post.slug || Date.now() - Number(post.published_at) > 14 * 86400000) { bar.hidden = true; return; }
+      const link = $('#newsBarLink'); link.textContent = post.title; link.href = '/news/' + post.slug;
+      bar.hidden = false;
+      $('#newsBarX').onclick = () => { bar.hidden = true; try { localStorage.setItem('guided.news.gone', post.slug); } catch (e) { /* fine */ } };
+    }).catch(() => { /* offline: no bar */ });
+  }
   const termAuto = () => (window.SchoolPadiSchemes ? window.SchoolPadiSchemes.currentTerm(undefined, state.params.cls) : 1);
   const termKey = () => { const u = window.PadiSync && window.PadiSync.user && window.PadiSync.user(); return 'guided.term.' + ((u && (u.id || u.email)) || 'guest'); };
   function termNow() {
@@ -2153,6 +2165,7 @@
       const j = await res.json();
       state.config = { loaded: true, demo: !!j.demo, provider: j.provider || null, accessRequired: !!j.accessRequired };
       if (window.GuidedAds) { window.GuidedAds.init(j.ads); showNotice(j.notice); updateView(); }
+      showNewsBar();   // not tied to the ads script, so an ad blocker cannot hide it
       await initAccount(Object.assign({}, j.sync || {}, { enabled: !!(j.auth && j.auth.enabled), syncEnabled: !!j.sync, authUrl: j.auth && j.auth.url, authDirectUrl: j.auth && j.auth.direct }));
     } catch (e) {
       state.config = { loaded: true, demo: true, provider: null, accessRequired: false };   // static preview, no server
