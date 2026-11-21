@@ -16,9 +16,10 @@ assert(home && home.destination === '/home' && new RegExp('^' + home.has[0].valu
 assert(!v.rewrites.some((r) => /\.html$/.test(r.destination)), 'no rewrite may point at a static file (500 on Vercel)');
 for (const p of ['/parents', '/teachers']) assert(v.redirects.some((r) => r.source === p && r.has && r.destination.startsWith('https://app.guidedgh.site/?for=')), p + ' redirect (www)');
 assert(v.headers.some((h) => h.has && h.headers.some((x) => x.key === 'X-Robots-Tag' && /noindex/.test(x.value))), 'app host noindex');
-const run = (host, search, standalone) => { let to = null; vm.runInNewContext(fs.readFileSync('public/home.js', 'utf8'), { location: { hostname: host, search, replace: (u) => { to = u; } }, window: { matchMedia: () => ({ matches: standalone }), navigator: {} } }); return to; };
+const run = (host, search, standalone) => { let to = null; vm.runInNewContext(fs.readFileSync('public/home.js', 'utf8'), { document: { querySelector: () => null, getElementById: () => null }, location: { hostname: host, search, replace: (u) => { to = u; } }, window: { matchMedia: () => ({ matches: standalone }), navigator: {} } }); return to; };
 assert.strictEqual(run('www.guidedgh.site', '', false), null);
 assert.strictEqual(run('www.guidedgh.site', '?source=pwa', false), 'https://app.guidedgh.site/?source=pwa');
 assert.strictEqual(run('www.guidedgh.site', '', true), 'https://app.guidedgh.site/?source=pwa');
 assert.strictEqual(run('app.guidedgh.site', '?source=pwa', true), null);
+assert(html.includes('id="how"') && html.includes('NaCCA lesson plans'), 'how-it-works section');
 console.log('PASS landing');
