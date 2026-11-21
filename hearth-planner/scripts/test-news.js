@@ -69,6 +69,13 @@ const good = { title: 'WAEC releases the BECE timetable', summary: 'The timetabl
   check('Sitemap: live posts only, XML', /xml/.test(sm.headers['content-type']) && sm.body.includes(created.body.slug) && !sm.body.includes(hidden.body.slug));
   check('Delete: removes the post', (await News.remove(created.body.id)).status === 200 && (await News.remove(created.body.id)).status === 404 && (await run(News.page, '/x?what=news&slug=' + created.body.slug)).statusCode === 404);
 
+  // In-app news bar: newest live post only, small cached JSON
+  const latestRes = await run(News.latest, '/api/sync?what=news-latest');
+  const lp = JSON.parse(latestRes.body).post;
+  check('News bar: returns the newest live post only, as short cached JSON', latestRes.statusCode === 200 && /json/.test(latestRes.headers['content-type']) && /s-maxage=60/.test(latestRes.headers['cache-control']) && !!lp && lp.slug && lp.title && !('body' in lp) && rows.filter((r) => r.status === 'published').every((r) => Number(r.published_at) <= lp.published_at));
+  const sy = require('fs').readFileSync(require('path').join(__dirname, '../api/sync.js'), 'utf8'), appJs = require('fs').readFileSync(require('path').join(__dirname, '../public/app.js'), 'utf8'), idxHtml = require('fs').readFileSync(require('path').join(__dirname, '../public/index.html'), 'utf8');
+  check('News bar: routed, drawn from the app, dismissible per post, expires after two weeks', /news-latest/.test(sy) && /showNewsBar\(\);/.test(appJs) && /guided\.news\.gone/.test(appJs) && /14 \* 86400000/.test(appJs) && /id="newsBar"[^>]*hidden/.test(idxHtml) && /id="newsBarX"/.test(idxHtml));
+
   // Only admins reach the write actions
   const admin = require('../api/admin');
   const call = async (method, action, headers) => { const res = { headers: {}, setHeader() {}, end(b) { this.body = b; } }; const req = { method, url: '/api/admin?action=' + action, headers: headers || {}, on() {} }; await admin(req, res); return res.statusCode; };
