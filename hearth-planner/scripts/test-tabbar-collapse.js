@@ -11,3 +11,7 @@ console.log('PASS tabbar collapse');
 const ti = fs.readFileSync('public/theme-init.js', 'utf8');
 assert(/isContentEditable[\s\S]*pointer: coarse/.test(ti), 'theme-init treats a focused field on a phone as keyboard-open');
 console.log('PASS keyboard-open on focus');
+// The app is sized from the tab bar's measured position (not only a fixed estimate), so the composer never ends up under the bar.
+assert(/function fitApp\(\)/.test(js) && /--app-fit/.test(js), 'v2.js measures the tab bar and sets --app-fit');
+assert(/\.app \{ height: var\(--app-fit,/.test(css), 'CSS uses --app-fit with the old estimate as the fallback');
+console.log('PASS app fits tab bar');
