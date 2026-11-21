@@ -41,6 +41,13 @@
       // A reduced visual viewport means the on-screen keyboard is open. Remove
       // the bottom-navigation reservation while the keyboard owns that space.
       var keyboardOpen = !!(vv && window.innerHeight - height > 120);
+      // Installed iPhone apps can shrink the layout viewport together with the visual one, so the two heights match even
+      // with the keyboard up. A focused text field on a phone is the other reliable sign.
+      if (!keyboardOpen) {
+        var el = document.activeElement;
+        var typing = !!(el && (el.isContentEditable || /^(TEXTAREA|SELECT)$/.test(el.tagName) || (el.tagName === 'INPUT' && !/^(button|checkbox|radio|submit|reset|range|color|file|image)$/i.test(el.type || 'text'))));
+        keyboardOpen = typing && !!(window.matchMedia && matchMedia('(max-width: 760px) and (pointer: coarse)').matches);
+      }
       if (document.body) document.body.classList.toggle('keyboard-open', keyboardOpen);
       // Only follow the visual viewport while the keyboard is open. With the keyboard closed, iOS Chrome and Safari report an
       // offset and height that change as their toolbars collapse and expand; following them pushed the whole app down and cut

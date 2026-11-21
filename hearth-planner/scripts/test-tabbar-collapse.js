@@ -7,3 +7,7 @@ assert(/body\.tabbar-mini[^{]*\.v2-tabbar-pill[^{]*\{[^}]*max-width:\s*52px/.tes
 assert(/body\.tabbar-mini[^{]*button:not\(:first-of-type\)[^{]*\{[^}]*opacity:\s*0/.test(css), 'other tabs fold away');
 assert(/prefers-reduced-motion: reduce\)[\s\S]*v2-tabbar-pill/.test(css.slice(css.indexOf('tabbar-mini'))), 'reduced motion is respected');
 console.log('PASS tabbar collapse');
+// A focused text field on a phone counts as "keyboard open" even when the browser does not shrink the visual viewport.
+const ti = fs.readFileSync('public/theme-init.js', 'utf8');
+assert(/isContentEditable[\s\S]*pointer: coarse/.test(ti), 'theme-init treats a focused field on a phone as keyboard-open');
+console.log('PASS keyboard-open on focus');
