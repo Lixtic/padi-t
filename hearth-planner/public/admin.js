@@ -296,10 +296,37 @@
   function newsReset() {
     ['newsId', 'newsTitle', 'newsSummary', 'newsBody', 'newsSourceName', 'newsSourceUrl'].forEach(function (i) { $('#' + i).value = ''; });
     $('#newsNew').hidden = true; $('#newsPublish').textContent = 'Publish';
+    newsPic = { data: '', w: 0, h: 0, remove: false, had: false }; $('#newsImageFile').value = ''; $('#newsImageAlt').value = ''; picShow('');
+  }
+  /* The optional picture: shrunk in the browser (longest side 1280px, JPEG) so it stays small, then sent with the post. */
+  var newsPic = { data: '', w: 0, h: 0, remove: false, had: false };
+  function picShow(src) {
+    $('#newsPicBox').hidden = !src; $('#newsAltRow').hidden = !src && !newsPic.had;
+    if (src) $('#newsPicPreview').src = src; else $('#newsPicPreview').removeAttribute('src');
+  }
+  function shrinkImage(file) {
+    return new Promise(function (resolve, reject) {
+      var url = URL.createObjectURL(file), img = new Image();
+      img.onerror = function () { URL.revokeObjectURL(url); reject(new Error('That file could not be read as a picture.')); };
+      img.onload = function () {
+        URL.revokeObjectURL(url);
+        var scale = Math.min(1, 1280 / Math.max(img.naturalWidth, img.naturalHeight)), w = Math.max(16, Math.round(img.naturalWidth * scale)), h = Math.max(16, Math.round(img.naturalHeight * scale));
+        var c = document.createElement('canvas'); c.width = w; c.height = h;
+        var g = c.getContext('2d'); g.fillStyle = '#fff'; g.fillRect(0, 0, w, h); g.drawImage(img, 0, 0, w, h);
+        var q = 0.82, data = c.toDataURL('image/jpeg', q);
+        while (data.length * 0.75 > 400 * 1024 && q > 0.4) { q -= 0.1; data = c.toDataURL('image/jpeg', q); }
+        if (data.length * 0.75 > 440 * 1024) return reject(new Error('That picture is too detailed to shrink enough. Try a smaller one.'));
+        resolve({ data: data, w: w, h: h });
+      };
+      img.src = url;
+    });
   }
   function newsEdit(p) {
     $('#newsId').value = p.id; $('#newsTitle').value = p.title; $('#newsSummary').value = p.summary; $('#newsBody').value = p.body;
     $('#newsSourceName').value = p.source_name || ''; $('#newsSourceUrl').value = p.source_url || '';
+    newsPic = { data: '', w: 0, h: 0, remove: false, had: !!p.image }; $('#newsImageFile').value = ''; $('#newsImageAlt').value = p.image ? p.image.alt : '';
+    picShow(p.image && p.status === 'published' ? '/news-image/' + p.slug + '?v=' + p.image.v : '');
+    if (p.image && p.status !== 'published') { $('#newsPicBox').hidden = true; $('#newsAltRow').hidden = false; }
     $('#newsNew').hidden = false; $('#newsPublish').textContent = p.status === 'published' ? 'Update' : 'Publish';
     $('#newsState').textContent = 'Editing "' + p.title + '".'; $('#newsTitle').focus();
   }
@@ -329,7 +356,7 @@
     function save(status) {
       if (!form.reportValidity()) return;
       var state = $('#newsState'), btns = [$('#newsPublish'), $('#newsDraft')]; btns.forEach(function (b) { b.disabled = true; });
-      post('news-save', { id: $('#newsId').value, title: $('#newsTitle').value, summary: $('#newsSummary').value, body: $('#newsBody').value, source_name: $('#newsSourceName').value, source_url: $('#newsSourceUrl').value, status: status })
+      post('news-save', { id: $('#newsId').value, title: $('#newsTitle').value, summary: $('#newsSummary').value, body: $('#newsBody').value, source_name: $('#newsSourceName').value, source_url: $('#newsSourceUrl').value, status: status, image: newsPic.data || undefined, image_w: newsPic.w, image_h: newsPic.h, image_alt: $('#newsImageAlt').value, remove_image: newsPic.remove || undefined })
         .then(function (r) {
           if (r && r.ok) { state.textContent = status === 'published' ? 'Published. It is live at /news/' + r.slug + (r.notified ? '. In-app notifications sent to ' + r.notified + ' accounts.' : '.') : 'Saved as a draft. It is not public yet.'; newsReset(); loadNews(); loadLog(); }
           else state.textContent = (r && r.message) || 'Could not save the post.';
@@ -338,6 +365,14 @@
     }
     form.addEventListener('submit', function (e) { e.preventDefault(); save('published'); });
     $('#newsDraft').addEventListener('click', function () { save('draft'); });
+    $('#newsImageFile').addEventListener('change', function () {
+      var f = this.files && this.files[0], state = $('#newsState'); if (!f) return;
+      if (!/^image\/(jpeg|png|webp)$/.test(f.type)) { state.textContent = 'Choose a JPEG, PNG or WebP picture.'; this.value = ''; return; }
+      state.textContent = 'Preparing the picture…';
+      shrinkImage(f).then(function (r) { newsPic.data = r.data; newsPic.w = r.w; newsPic.h = r.h; newsPic.remove = false; picShow(r.data); state.textContent = 'Picture ready (' + Math.round(r.data.length * 0.75 / 1024) + ' KB). Add a short description, then publish.'; $('#newsImageAlt').focus(); })
+        .catch(function (e) { state.textContent = e.message || 'Could not use that picture.'; $('#newsImageFile').value = ''; });
+    });
+    $('#newsPicRemove').addEventListener('click', function () { newsPic.data = ''; newsPic.remove = true; newsPic.had = false; $('#newsImageFile').value = ''; $('#newsImageAlt').value = ''; picShow(''); $('#newsState').textContent = 'The picture will be removed when you save.'; });
     $('#newsNew').addEventListener('click', function () { newsReset(); $('#newsState').textContent = ''; });
   }
 

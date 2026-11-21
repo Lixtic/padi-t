@@ -65,6 +65,7 @@ const SCHEMA = [
   // News posts written by admins and shown at /news.
   "create table if not exists news_posts (id text primary key, slug text unique not null, title text not null, summary text not null, body text not null, source_name text not null default '', source_url text not null default '', status text not null default 'published', published_at bigint not null, updated_at bigint not null, author text not null default '')",
   'create index if not exists news_posts_recent on news_posts (status, published_at desc)',
+  "create table if not exists news_images (post_id text primary key, type text not null, alt text not null default '', data text not null, w int not null default 0, h int not null default 0, updated_at bigint not null)",
 ];
 
 // Creates the tables the first time a function runs after a deploy.

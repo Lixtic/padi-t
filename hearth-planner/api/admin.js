@@ -206,7 +206,7 @@ module.exports = async (req, res) => {
     if (req.method === 'POST' && action === 'grant') { const b = await readJson(req); const r = await grant(me, String(b.user_id || '').slice(0, 120), b.days, String(b.note || '').slice(0, 200)); return sendJson(res, r.status, r.body); }
     if (req.method === 'POST' && action === 'block') { const b = await readJson(req); const r = await block(me, String(b.user_id || '').slice(0, 120), !!b.blocked, b.reason); return sendJson(res, r.status, r.body); }
     if (action === 'news-list' && req.method === 'GET') return sendJson(res, 200, await News.list());
-    if (action === 'news-save' && req.method === 'POST') { const r = await News.save(me, await readJson(req, 120000)); if (r.body && r.body.ok) await logAction(me, 'news_' + r.body.status, r.body.slug, ''); return sendJson(res, r.status, r.body); }
+    if (action === 'news-save' && req.method === 'POST') { const r = await News.save(me, await readJson(req, 750000)); if (r.body && r.body.ok) await logAction(me, 'news_' + r.body.status, r.body.slug, ''); return sendJson(res, r.status, r.body); }
     if (action === 'news-delete' && req.method === 'POST') { const b = await readJson(req); const r = await News.remove(b.id); if (r.body && r.body.ok) await logAction(me, 'news_delete', r.body.slug, ''); return sendJson(res, r.status, r.body); }
     if (action === 'notice' && req.method === 'GET') return sendJson(res, 200, await getNotice());
     if (action === 'notice' && req.method === 'POST') return sendJson(res, 200, await setNotice(me, await readJson(req)));

@@ -2,11 +2,20 @@
 // News: admin-written posts become safe, readable pages; drafts stay private; only admins can write.
 const rows = [];
 const notificationRows = [];
+const images = {};
 const recipients = [{ user_id: 'teacher-1' }, { user_id: 'parent-1' }];
 const squash = (s) => String(s).replace(/\s+/g, ' ').trim();
 global.__PADI_SQL__ = { query: async (text, p) => {
   const t = squash(text);
   if (/^(create|alter|insert into accounts|insert into users)/.test(t) && !/^insert into news_posts/.test(t)) return [];
+  const imgRow = (slug) => { const post = rows.find((r) => r.slug === slug); return post && images[post.id] ? { post, img: images[post.id] } : null; };
+  if (/^insert into news_images/.test(t)) { images[p[0]] = { type: p[1], alt: p[2], data: p[3], w: p[4], h: p[5], updated_at: p[6] }; return []; }
+  if (/^delete from news_images/.test(t)) { delete images[p[0]]; return []; }
+  if (/^update news_images set alt/.test(t)) { if (images[p[0]]) images[p[0]].alt = p[1]; return []; }
+  if (/^select post_id, alt, updated_at from news_images/.test(t)) return Object.keys(images).map((k) => ({ post_id: k, alt: images[k].alt, updated_at: images[k].updated_at }));
+  if (/^select i\.alt, i\.w, i\.h, i\.updated_at from news_images i join news_posts p/.test(t)) { const r = imgRow(p[0]); return r ? [r.img] : []; }
+  if (/^select p\.slug, i\.alt/.test(t)) return rows.filter((r) => r.status === 'published' && images[r.id]).map((r) => ({ slug: r.slug, ...images[r.id] }));
+  if (/^select i\.type, i\.data from news_images i join news_posts p/.test(t)) { const r = imgRow(p[0]); return r && r.post.status === 'published' ? [r.img] : []; }
   if (/^insert into notifications/.test(t)) {
     if (/from accounts/.test(t)) {
       recipients.forEach((r) => notificationRows.push({ user_id: r.user_id, id: 'news-' + p[0] + '-' + r.user_id, title: p[1], body: p[2], url: p[3] }));
@@ -57,24 +66,48 @@ const good = { title: 'WAEC releases the BECE timetable', summary: 'The timetabl
 
   const before = rows.find((r) => r.id === draft.body.id).published_at;
   await new Promise((r) => setTimeout(r, 5));
+  const notifiedBefore = notificationRows.length;
   const edited = await News.save({ email: 'boss@x.test' }, { ...good, id: draft.body.id, title: 'A draft that is now ready to publish', status: 'published' });
   const row = rows.find((r) => r.id === draft.body.id);
   check('Edit: the address stays the same; publishing a draft sets the date', edited.body.slug === draft.body.slug && row.published_at > before && (await run(News.page, '/x?what=news&slug=' + draft.body.slug)).statusCode === 200);
-  check('Draft publish: sends notifications once when it first goes live', edited.body.notified === 2 && notificationRows.length === 4);
+  check('Draft publish: sends notifications once when it first goes live', edited.body.notified === 2 && notificationRows.length === notifiedBefore + 2);
   const republished = await News.save({ email: 'boss@x.test' }, { ...good, id: draft.body.id, title: 'An updated headline for a live post' });
-  check('Edit live post: does not send duplicate news notifications', republished.body.notified === 0 && notificationRows.length === 4);
+  check('Edit live post: does not send duplicate news notifications', republished.body.notified === 0 && notificationRows.length === notifiedBefore + 2);
   check('Edit: an unknown post is refused', (await News.save({}, { ...good, id: 'abcdef123456' })).status === 404);
   const hidden = await News.save({}, { ...good, title: 'Hidden unpublished post', status: 'draft' });
   const sm = await run(News.sitemap, '/news-sitemap.xml');
   check('Sitemap: live posts only, XML', /xml/.test(sm.headers['content-type']) && sm.body.includes(created.body.slug) && !sm.body.includes(hidden.body.slug));
   check('Delete: removes the post', (await News.remove(created.body.id)).status === 200 && (await News.remove(created.body.id)).status === 404 && (await run(News.page, '/x?what=news&slug=' + created.body.slug)).statusCode === 404);
 
+
+  // Optional picture
+  const PNG = 'data:image/png;base64,' + Buffer.concat([Buffer.from([0x89, 0x50, 0x4e, 0x47]), Buffer.alloc(200, 1)]).toString('base64');
+  check('Picture: only real JPEG, PNG or WebP data is accepted', T.parseImage({ image: 'data:text/html;base64,AAAA', image_alt: 'abc' }).error === 'image' && T.parseImage({ image: 'data:image/png;base64,AAAAAAAA', image_alt: 'abc' }).error === 'image' && !!T.parseImage({ image: PNG, image_alt: 'A classroom' }).type);
+  check('Picture: needs alt text and stays under the size limit', T.parseImage({ image: PNG, image_alt: '' }).error === 'image_alt' && T.parseImage({ image: 'data:image/jpeg;base64,' + Buffer.concat([Buffer.from([0xff, 0xd8, 0xff]), Buffer.alloc(500 * 1024)]).toString('base64'), image_alt: 'abc' }).error === 'image_big' && T.parseImage({ ...good }).none === true);
+  const withPic = await News.save({ email: 'boss@x.test' }, { ...good, title: 'A post that has a picture attached', image: PNG, image_alt: 'Pupils in a classroom', image_w: 800, image_h: 450 });
+  check('Picture: a post can be saved with one', withPic.status === 201 && !!images[withPic.body.id] && images[withPic.body.id].alt === 'Pupils in a classroom');
+  const picPage = await run(News.page, '/x?what=news&slug=' + withPic.body.slug);
+  check('Picture: shown on the post with alt text, size, social image and structured data', /<figure class="news-fig"><img class="news-img" src="\/news-image\/[a-z0-9-]+\?v=\d+" alt="Pupils in a classroom" width="800" height="450"/.test(picPage.body) && picPage.body.includes('property="og:image" content="https://www.guidedgh.site/news-image/') && /"image":"https:\/\/www\.guidedgh\.site\/news-image\//.test(picPage.body));
+  check('Picture: a thumbnail on the news index', /class="news-thumb"/.test((await run(News.page, '/api/sync?what=news')).body));
+  const bytes = await run(News.image, '/x?what=news-image&slug=' + withPic.body.slug);
+  check('Picture: served from our own address with the right type and long cache', bytes.statusCode === 200 && bytes.headers['content-type'] === 'image/png' && Buffer.isBuffer(bytes.body) && bytes.body[0] === 0x89 && /max-age=86400/.test(bytes.headers['cache-control']));
+  const picDraft = await News.save({ email: 'boss@x.test' }, { ...good, title: 'A draft that also has a picture', status: 'draft', image: PNG, image_alt: 'Hidden picture' });
+  check('Picture: a draft picture is not public; unknown posts are 404', (await run(News.image, '/x?slug=' + picDraft.body.slug)).statusCode === 404 && (await run(News.image, '/x?slug=nothing-here-00000')).statusCode === 404);
+  const keep = await News.save({ email: 'boss@x.test' }, { ...good, id: withPic.body.id, title: 'A post that has a picture attached', image_alt: 'New description' });
+  check('Picture: editing text keeps the picture; the description can change', !!images[withPic.body.id] && images[withPic.body.id].alt === 'New description' && keep.status === 200);
+  check('Picture: the admin list says which posts have one', (await News.list()).posts.find((x) => x.id === withPic.body.id).image.alt === 'New description');
+  await News.save({ email: 'boss@x.test' }, { ...good, id: withPic.body.id, title: 'A post that has a picture attached', remove_image: true });
+  check('Picture: can be removed; the page then has none', !images[withPic.body.id] && !/news-img/.test((await run(News.page, '/x?what=news&slug=' + withPic.body.slug)).body));
+  await News.save({ email: 'boss@x.test' }, { ...good, id: picDraft.body.id, title: 'A draft that also has a picture' });
+  await News.remove(picDraft.body.id);
+  check('Picture: deleting a post deletes its picture', !images[picDraft.body.id]);
+
   // Only admins reach the write actions
   const admin = require('../api/admin');
   const call = async (method, action, headers) => { const res = { headers: {}, setHeader() {}, end(b) { this.body = b; } }; const req = { method, url: '/api/admin?action=' + action, headers: headers || {}, on() {} }; await admin(req, res); return res.statusCode; };
   check('Admin: news actions refuse anyone who is not an admin', (await call('GET', 'news-list')) === 403 && (await call('POST', 'news-save')) === 403 && (await call('POST', 'news-delete')) === 403);
   const v = require('fs').readFileSync(require('path').join(__dirname, '../vercel.json'), 'utf8');
-  check('Routes: /news, /news/<slug> and the sitemap are rewritten', /"source": "\/news"/.test(v) && /\/news\/:slug/.test(v) && /news-sitemap\.xml/.test(v) && /news-sitemap\.xml/.test(require('fs').readFileSync(require('path').join(__dirname, '../public/robots.txt'), 'utf8')));
+  check('Routes: /news, /news/<slug>, /news-image/<slug> and the sitemap are rewritten', /news-image\/:slug/.test(v) && /"source": "\/news"/.test(v) && /\/news\/:slug/.test(v) && /news-sitemap\.xml/.test(v) && /news-sitemap\.xml/.test(require('fs').readFileSync(require('path').join(__dirname, '../public/robots.txt'), 'utf8')));
   check('Vercel stays within 12 functions', require('fs').readdirSync(require('path').join(__dirname, '../api')).filter((f) => !f.startsWith('_')).length <= 12);
 
   let failed = 0;
