@@ -115,6 +115,10 @@
       "destination": "/api/sync?what=news&slug=:slug"
     },
     {
+      "source": "/news-image/:slug",
+      "destination": "/api/sync?what=news-image&slug=:slug"
+    },
+    {
       "source": "/news-sitemap.xml",
       "destination": "/api/sync?what=news-sitemap"
     },

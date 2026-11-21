@@ -304,3 +304,10 @@ input:focus-visible, select:focus-visible, textarea:focus-visible, button:focus-
   html { scroll-behavior: auto; }
   *, *::before, *::after { transition-duration: .01ms !important; animation-duration: .01ms !important; }
 }
+
+/* News pictures */
+.news-fig { margin: 18px 0 22px; }
+.news-img { display: block; width: 100%; height: auto; border-radius: 14px; background: rgba(120, 130, 150, .12); }
+.guide-list li:has(.news-thumb-link) { display: grid; grid-template-columns: 96px 1fr; column-gap: 14px; align-items: start; }
+.guide-list li:has(.news-thumb-link) .news-thumb-link { grid-row: 1 / span 3; }
+.news-thumb { display: block; width: 96px; height: 72px; object-fit: cover; border-radius: 10px; background: rgba(120, 130, 150, .12); }

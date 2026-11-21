@@ -14,6 +14,7 @@ module.exports = async (req, res) => {
   const route = new URL(req.url, 'http://x');
   if (route.searchParams.get('what') === 'news') return require('./_news').page(req, res);                  // public pages: /news and /news/<slug>
   if (route.searchParams.get('what') === 'news-latest') return require('./_news').latest(req, res);                // JSON for the in-app banner
+  if (route.searchParams.get('what') === 'news-image') return require('./_news').image(req, res);                 // /news-image/<slug>
   if (route.searchParams.get('what') === 'news-sitemap') return require('./_news').sitemap(req, res);
   if (route.searchParams.get('what') === 'parent-learning') return require('./_parent-learning')(req, res);
   if (route.searchParams.get('what') === 'account-profile') {

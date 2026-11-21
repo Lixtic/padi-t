@@ -2779,31 +2779,29 @@
       continueWeek();
     }
 
-    // Public lesson-plan catalogue links can preselect a validated JHS plan.
-    // The catalogue flag additionally starts the standard shared weekly package automatically.
+    // Public homepage/catalogue links can preselect any supported class and subject.
+    // Term and week default to the current school calendar for the selected class.
     let catalogueAuto = false, catalogueSelectionValid = false;
     try {
       const q = new URLSearchParams(location.search);
       catalogueAuto = q.get('catalogue') === '1';
       const linkedClass = q.get('class');
       const linkedSubject = q.get('subject');
-      const linkedTerm = Number(q.get('term'));
-      const linkedWeek = Number(q.get('week'));
-      if (['Basic 7', 'Basic 8', 'Basic 9'].includes(linkedClass) &&
-          subjectsOf(linkedClass).includes(linkedSubject) &&
-          termsFor(linkedClass).includes(linkedTerm) &&
-          weeksFor(linkedClass).includes(linkedWeek)) {
-        catalogueSelectionValid = true;
+      if (CLASSES.includes(linkedClass) && subjectsOf(linkedClass).includes(linkedSubject)) {
         state.params.cls = linkedClass;
         state.params.subject = linkedSubject;
-        state.params.term = linkedTerm;
-        state.params.week = linkedWeek;
-        // Use the normal shared lesson-plan package, not the lesson-plan-only output override.
-        state.params.mode = 'full';
-        state.params.studyNotes = true;
-        state.params.bece = true;
-        termSet(linkedTerm);
-        store.save(true);
+        const linkedTerm = q.has('term') ? Number(q.get('term')) : termNow();
+        const linkedWeek = q.has('week') ? Number(q.get('week')) : (calendarWeek() || 1);
+        if (termsFor(linkedClass).includes(linkedTerm) && weeksFor(linkedClass).includes(linkedWeek)) {
+          catalogueSelectionValid = true;
+          state.params.term = linkedTerm;
+          state.params.week = linkedWeek;
+          state.params.mode = 'full';
+          state.params.studyNotes = true;
+          state.params.bece = true;
+          termSet(linkedTerm);
+          store.save(true);
+        }
       }
     } catch (e) { /* ignore invalid or unavailable catalogue links */ }
 
@@ -2856,7 +2854,7 @@
       state.params.mode = 'full';
       state.params.studyNotes = true;
       state.params.bece = true;
-      promptEl.value = 'Create the complete weekly lesson plan package using GuidEd’s standard shared lesson-plan output format for the selected class, subject, term and week. Follow the selected week’s curriculum scheme. Include the lesson metadata, both lessons, study notes, BECE practice and assessment rubric required by the standard JHS format.';
+      promptEl.value = 'Create the complete weekly lesson plan package using GuidEd’s standard shared lesson-plan output format for the selected class, subject, term and week. Follow the selected week’s curriculum scheme. Include lesson metadata, the full lessons, learner notes and ' + examOf(state.params.cls).toggle + ' with an appropriate marking guide or assessment rubric.';
       autoGrow();
       submit();
     }).catch(() => {

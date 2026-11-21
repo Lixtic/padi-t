@@ -1688,3 +1688,12 @@ html, body { overscroll-behavior-y: contain; }
 @media (max-width: 760px) and (prefers-reduced-motion: reduce) {
   .v2-tabbar-pill, .v2-tabbar-pill button, .v2-tabbar-pill button span, .v2-tabbar .v2-tabbar-create { transition: none !important; }
 }
+
+/* Browser viewport correction: some iOS browsers report the browser chrome as a safe-area inset.
+   Do not reserve that space inside a normal browser tab; keep the edge-to-edge inset for installed PWAs. */
+@media (max-width: 760px) and (display-mode: browser) {
+  :root { --sat-z: 0px; }
+  body::before { display: none; }
+  .app { padding-top: 0; }
+  .v2-tabbar { bottom: 4px !important; }
+}

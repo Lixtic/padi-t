@@ -17,20 +17,49 @@
   <link rel="stylesheet" href="/cookie-consent.css">
   <script src="/cookie-consent.js" defer></script>
   <script src="/home.js" defer></script>
+<style>
+.hero-plan-form{display:grid;gap:14px;width:100%;max-width:520px;margin:28px 0 0;padding:22px;background:rgba(255,255,255,.82);border:1px solid rgba(0,106,78,.14);border-radius:22px;box-shadow:0 16px 40px rgba(20,52,43,.08);backdrop-filter:blur(12px)}
+.hero-plan-fields{display:grid;grid-template-columns:1fr;gap:13px}
+.hero-plan-fields label{display:grid;gap:8px;color:#193653;font-size:13px;font-weight:700;letter-spacing:.02em}
+.hero-plan-fields select{display:block;width:100%;min-width:0;min-height:54px;padding:0 44px 0 15px;border:1px solid #d6e3dc;border-radius:13px;background:#fff;color:#18324f;font:inherit;font-size:16px;font-weight:600;box-shadow:0 2px 6px rgba(20,52,43,.035);appearance:auto}
+.hero-plan-fields select:focus{outline:3px solid rgba(0,106,78,.16);border-color:#006a4e}
+.hero-plan-form .btn{display:flex;width:100%;min-height:54px;align-items:center;justify-content:center;gap:10px;cursor:pointer;font:inherit}
+.hero-plan-form .btn.primary{border-radius:14px}
+.hero-plan-form .btn.secondary{width:100%;min-height:48px;display:flex;align-items:center;justify-content:center;text-decoration:none;border-radius:14px}
+.hero-plan-form .micro{margin:0;color:#66736f;font-size:13px;line-height:1.6}
+@media(min-width:700px){.hero-plan-fields{grid-template-columns:1fr 1fr;gap:12px}.hero-plan-form{padding:24px}}
+@media(max-width:520px){.hero-plan-form{gap:12px;margin-top:24px;padding:17px;border-radius:18px}.hero-plan-fields{grid-template-columns:1fr}.hero-plan-fields select{min-height:52px}}
+</style>
 </head>
 <body>
 <header class="wrap nav">
   <a class="brand" href="/" aria-label="GuidED home"><span class="brand-mark">G</span>GuidED</a>
-  <nav class="navlinks" aria-label="Main navigation"><a href="#platform">Platform</a><a href="#who">Who it’s for</a><a href="#approach">Our approach</a><a href="#read">Guides &amp; news</a><a class="navcta" href="https://app.guidedgh.site/">Enter GuidED <span aria-hidden="true">↗</span></a></nav>
+  <nav class="navlinks" aria-label="Main navigation"><a href="#platform">Platform</a><a href="#who">Who it’s for</a><a href="#approach">Our approach</a><a href="#read">Guides &amp; news</a><a class="navcta" href="https://app.guidedgh.site/">Enter App <span aria-hidden="true">↗</span></a></nav>
 </header>
 <main>
   <section class="hero">
     <div class="wrap hero-grid">
       <div>
-        <span class="eyebrow"><i class="spark"></i> Powered by Super Intelligence</span>
         <h1>Teaching deserves a <em>smarter future.</em></h1>
         <p class="lead">Meet GuidED: Super Intelligence for teaching, learning and everything in between. A thoughtful teaching and learning companion, built around Ghana’s curriculum and the people who bring it to life.</p>
-        <div class="actions"><a class="btn primary" href="https://app.guidedgh.site/">Start with GuidED <span>→</span></a><a class="btn secondary" href="#platform">Explore the platform</a></div>
+        <form class="hero-plan-form" action="https://app.guidedgh.site/" method="get">
+          <input type="hidden" name="catalogue" value="1">
+          <div class="hero-plan-fields">
+            <label>Class
+              <select name="class" id="heroPlanClass" required>
+                <option>KG 1</option><option>KG 2</option><option>Basic 1</option><option>Basic 2</option><option>Basic 3</option><option>Basic 4</option><option>Basic 5</option><option>Basic 6</option><option>Basic 7</option><option selected>Basic 8</option><option>Basic 9</option><option>SHS 1</option><option>SHS 2</option><option>SHS 3</option>
+              </select>
+            </label>
+            <label>Subject
+              <select name="subject" id="heroPlanSubject" required>
+                <option>Integrated Science</option><option>Mathematics</option><option>English Language</option><option>Social Studies</option><option>Religious and Moral Education</option><option>Computing</option><option>Career Technology</option><option>Creative Arts and Design</option><option>Ghanaian Language</option><option>French</option><option>Physical Education and Health</option>
+              </select>
+            </label>
+          </div>
+          <button class="btn primary" type="submit">Generate Lesson Plan <span>→</span></button>
+          <a class="btn secondary" href="#platform">Explore the platform</a>
+          <p class="micro">GuidED will build the selected week’s plan. Once it is ready, choose Download Word to save it.</p>
+        </form>
         <p class="micro">For teachers, parents and learners across Ghana.</p>
       </div>
       <div class="visual" aria-label="Illustration of the GuidED teaching workspace">
