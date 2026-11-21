@@ -1,2 +1,10 @@
+[project]
+name = "guided"
+version = "0.1.0"
+requires-python = ">=3.9"
+dependencies = [
+  "python-docx>=1.1.0",
+]
+
 [tool.vercel]
 entrypoint = "api.export_docx:app"
