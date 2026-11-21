@@ -1668,3 +1668,23 @@ html, body { overscroll-behavior-y: contain; }
 .ptr.ptr-busy svg { animation: ptr-spin .8s linear infinite; }
 @keyframes ptr-spin { to { transform: rotate(360deg); } }
 @media (prefers-reduced-motion: reduce) { .ptr.ptr-busy svg { animation-duration: 2s; } }
+
+/* Editing a plan: the tab bar folds into one small Home button (v2.js adds body.tabbar-mini) and unfolds when tapped. */
+@media (max-width: 760px) {
+  .v2-tabbar:not(.v2-tabbar-family) .v2-tabbar-pill { max-width: 100%; transition: max-width .4s cubic-bezier(.2,.8,.2,1), min-height .4s cubic-bezier(.2,.8,.2,1), padding .4s cubic-bezier(.2,.8,.2,1), grid-template-columns .4s cubic-bezier(.2,.8,.2,1); }
+  .v2-tabbar:not(.v2-tabbar-family) .v2-tabbar-pill button { transition: opacity .22s ease, transform .4s cubic-bezier(.2,.8,.2,1), padding .4s cubic-bezier(.2,.8,.2,1), min-height .4s cubic-bezier(.2,.8,.2,1), background .2s; }
+  .v2-tabbar:not(.v2-tabbar-family) .v2-tabbar-pill button span { max-height: 18px; overflow: hidden; transition: opacity .2s ease, max-height .3s ease; }
+  .v2-tabbar:not(.v2-tabbar-family) .v2-tabbar-create { transition: flex-basis .4s cubic-bezier(.2,.8,.2,1), width .4s cubic-bezier(.2,.8,.2,1), margin .4s cubic-bezier(.2,.8,.2,1), opacity .25s ease, transform .4s cubic-bezier(.2,.8,.2,1); }
+
+  body.tabbar-mini .v2-tabbar:not(.v2-tabbar-family) { pointer-events: none; }
+  body.tabbar-mini .v2-tabbar:not(.v2-tabbar-family) .v2-tabbar-pill { pointer-events: auto; max-width: 52px; min-height: 52px; padding: 3px; grid-template-columns: 1fr 0fr 0fr 0fr; }
+  body.tabbar-mini .v2-tabbar:not(.v2-tabbar-family) .v2-tabbar-pill button { animation: none; }
+  body.tabbar-mini .v2-tabbar:not(.v2-tabbar-family) .v2-tabbar-pill button:not(:first-of-type) { opacity: 0; transform: scale(.35); padding: 0; min-height: 0; pointer-events: none; }
+  body.tabbar-mini .v2-tabbar:not(.v2-tabbar-family) .v2-tabbar-pill button:first-of-type { min-height: 44px; padding: 0; background: transparent; box-shadow: none; color: var(--accent); }
+  body.tabbar-mini .v2-tabbar:not(.v2-tabbar-family) .v2-tabbar-pill button span { opacity: 0; max-height: 0; }
+  body.tabbar-mini .v2-tabbar:not(.v2-tabbar-family) .v2-tab-ind { opacity: 0 !important; }
+  body.tabbar-mini .v2-tabbar:not(.v2-tabbar-family) .v2-tabbar-create { flex-basis: 0; width: 0; min-width: 0; margin-left: -12px; border-width: 0; opacity: 0; transform: scale(.3); pointer-events: none; }
+}
+@media (max-width: 760px) and (prefers-reduced-motion: reduce) {
+  .v2-tabbar-pill, .v2-tabbar-pill button, .v2-tabbar-pill button span, .v2-tabbar .v2-tabbar-create { transition: none !important; }
+}
