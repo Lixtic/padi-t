@@ -1509,8 +1509,9 @@ body[data-studio-tab="resources"]:has(#studyNotesCurriculum:not([hidden])) .sche
 /* ───────── Mobile navigation: reduce obstruction and protect scroll endings ───────── */
 @media (max-width: 760px) {
   body.has-tabbar:not(.on-settings):not(.keyboard-open) .stage {
-    padding-bottom: calc(118px + env(safe-area-inset-bottom));
-    scroll-padding-bottom: calc(118px + env(safe-area-inset-bottom));
+    /* .app is already shortened to sit above the tab bar, so the stage needs only a little breathing room. */
+    padding-bottom: 12px;
+    scroll-padding-bottom: 12px;
   }
   .v2-tabbar { left: 10px; right: 10px; bottom: calc(8px + env(safe-area-inset-bottom)); gap: 9px; }
   .v2-tabbar-pill { min-height: 60px; padding: 5px; }
