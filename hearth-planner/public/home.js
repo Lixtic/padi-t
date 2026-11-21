@@ -2,6 +2,23 @@
 (function () {
   var APP = 'https://app.guidedgh.site';
   if (location.hostname === 'app.guidedgh.site') return;
+  var planForm = document.querySelector('.hero-plan-form');
+  if (planForm) {
+    planForm.addEventListener('submit', function (event) {
+      event.preventDefault();
+      var planClass = document.getElementById('heroPlanClass');
+      var planSubject = document.getElementById('heroPlanSubject');
+      if (!planClass || !planSubject || !planClass.value || !planSubject.value) {
+        if (planForm.reportValidity) planForm.reportValidity();
+        return;
+      }
+      var params = new URLSearchParams();
+      params.set('catalogue', '1');
+      params.set('class', planClass.value);
+      params.set('subject', planSubject.value);
+      window.location.assign(APP + '/?' + params.toString());
+    });
+  }
   var planClass = document.getElementById('heroPlanClass');
   var planSubject = document.getElementById('heroPlanSubject');
   if (planClass && planSubject) {
