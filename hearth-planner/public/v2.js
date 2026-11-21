@@ -218,6 +218,27 @@
     }
     build();
     new MutationObserver(build).observe(document.body,{attributes:true,attributeFilter:['class']});
+    /* Size the app from where the tab bar really is, so nothing (the composer, the last lines of a plan) ends up under it.
+       The fixed 84px + safe-area estimate in CSS can come out short on an installed iPhone app, most visibly after the keyboard closes. */
+    var fitTimers = [];
+    function fitApp() {
+      var root = document.documentElement, b = document.body, bar = document.querySelector('.v2-tabbar'), app = document.querySelector('.app');
+      if (!bar || !app || b.classList.contains('keyboard-open') || b.classList.contains('on-settings') || b.classList.contains('tabbar-mini') || getComputedStyle(bar).display === 'none') {
+        if (!b.classList.contains('tabbar-mini')) root.style.removeProperty('--app-fit');
+        return;
+      }
+      var nr = bar.getBoundingClientRect(), ar = app.getBoundingClientRect();
+      if (!nr.height || !app.offsetHeight) return;
+      var fit = (nr.top - ar.top - 6) / (ar.height / app.offsetHeight);
+      if (fit > 240 && isFinite(fit)) root.style.setProperty('--app-fit', Math.round(fit) + 'px');
+    }
+    function fitSoon() { fitTimers.forEach(clearTimeout); fitTimers = [0, 120, 450, 900].map(function (ms) { return setTimeout(fitApp, ms); }); }
+    window.addEventListener('resize', fitSoon);
+    window.addEventListener('orientationchange', fitSoon);
+    if (window.visualViewport) window.visualViewport.addEventListener('resize', fitSoon);
+    new MutationObserver(fitSoon).observe(document.body, { attributes: true, attributeFilter: ['class'] });
+    if (document.fonts && document.fonts.ready) document.fonts.ready.then(fitSoon);
+    fitSoon();
     /* Editing a plan: the tab bar folds into one small Home button so the plan has the room. Tap it to bring the bar back. */
     var wasEditing = false;
     function settleBar() { setTimeout(function () { window.dispatchEvent(new Event('resize')); }, 450); }   // put the highlight back under the active tab
