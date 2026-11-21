@@ -17,6 +17,15 @@
   <link rel="stylesheet" href="/cookie-consent.css">
   <script src="/cookie-consent.js" defer></script>
   <script src="/home.js" defer></script>
+<style>
+.hero-plan-form{display:grid;gap:12px;max-width:560px;margin-top:24px}
+.hero-plan-fields{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.hero-plan-fields label{display:grid;gap:7px;color:#193653;font-size:14px;font-weight:700}
+.hero-plan-fields select{width:100%;min-height:48px;padding:0 14px;border:1px solid #d5e0dc;border-radius:12px;background:#fff;color:#18324f;font:inherit;font-weight:600}
+.hero-plan-form .btn{width:100%;justify-content:center;cursor:pointer;font:inherit}
+.hero-plan-form .btn.secondary{display:flex;text-decoration:none}
+@media(max-width:520px){.hero-plan-fields{grid-template-columns:1fr}}
+</style>
 </head>
 <body>
 <header class="wrap nav">
@@ -30,7 +39,23 @@
         <span class="eyebrow"><i class="spark"></i> Powered by Super Intelligence</span>
         <h1>Teaching deserves a <em>smarter future.</em></h1>
         <p class="lead">Meet GuidED: Super Intelligence for teaching, learning and everything in between. A thoughtful teaching and learning companion, built around Ghana’s curriculum and the people who bring it to life.</p>
-        <div class="actions"><a class="btn primary" href="/lesson-plans">Download Lesson Plan <span>↓</span></a><a class="btn secondary" href="#platform">Explore the platform</a></div>
+        <form class="hero-plan-form" action="https://app.guidedgh.site/" method="get">
+          <input type="hidden" name="catalogue" value="1">
+          <div class="hero-plan-fields">
+            <label>Class
+              <select name="class" required>
+                <option value="Basic 7">Basic 7</option><option value="Basic 8" selected>Basic 8</option><option value="Basic 9">Basic 9</option>
+              </select>
+            </label>
+            <label>Subject
+              <select name="subject" required>
+                <option>Integrated Science</option><option>Mathematics</option><option>English Language</option><option>Social Studies</option><option>Religious and Moral Education</option><option>Computing</option><option>Career Technology</option><option>Creative Arts and Design</option><option>Ghanaian Language</option><option>French</option><option>Physical Education and Health</option>
+              </select>
+            </label>
+          </div>
+          <button class="btn primary" type="submit">Generate &amp; Download Lesson Plan <span>↓</span></button>
+          <a class="btn secondary" href="#platform">Explore the platform</a>
+        </form>
         <p class="micro">For teachers, parents and learners across Ghana.</p>
       </div>
       <div class="visual" aria-label="Illustration of the GuidED teaching workspace">
