@@ -31,7 +31,7 @@ global.__PADI_SQL__ = { query: async (text, p) => {
   if (/^select id, slug, title, summary, body/.test(t)) return rows.slice().sort((a, b) => b.published_at - a.published_at);
   if (/from news_posts where slug = \$1 and status = 'published'/.test(t)) return rows.filter((r) => r.slug === p[0] && r.status === 'published');
   if (/^select slug, title, summary, published_at from news_posts where status = 'published'/.test(t)) return rows.filter((r) => r.status === 'published').sort((a, b) => b.published_at - a.published_at);
-  if (/^select slug, title, published_at from news_posts where status = 'published' order by published_at desc limit 1/.test(t)) return rows.filter((r) => r.status === 'published').sort((a, b) => b.published_at - a.published_at).slice(0, 1);
+  if (/^select slug, title, published_at from news_posts where status = 'published' order by published_at desc limit 5/.test(t)) return rows.filter((r) => r.status === 'published').sort((a, b) => b.published_at - a.published_at).slice(0, 5);
   if (/^select slug, updated_at from news_posts where status = 'published'/.test(t)) return rows.filter((r) => r.status === 'published');
   return [];
 } };
@@ -105,7 +105,8 @@ const good = { title: 'WAEC releases the BECE timetable', summary: 'The timetabl
   // In-app news bar: newest live post only, small cached JSON
   const latestRes = await run(News.latest, '/api/sync?what=news-latest');
   const lp = JSON.parse(latestRes.body).post;
-  check('News bar: returns the newest live post only, as short cached JSON', latestRes.statusCode === 200 && /json/.test(latestRes.headers['content-type']) && /s-maxage=60/.test(latestRes.headers['cache-control']) && !!lp && lp.slug && lp.title && !('body' in lp) && rows.filter((r) => r.status === 'published').every((r) => Number(r.published_at) <= lp.published_at));
+  const lps = JSON.parse(latestRes.body).posts;
+  check('News bar: returns the newest live posts (up to five), newest first, as short cached JSON', latestRes.statusCode === 200 && /json/.test(latestRes.headers['content-type']) && /s-maxage=60/.test(latestRes.headers['cache-control']) && !!lp && lp.slug && lp.title && !('body' in lp) && Array.isArray(lps) && lps.length >= 1 && lps.length <= 5 && lps[0].slug === lp.slug && rows.filter((r) => r.status === 'published').every((r) => Number(r.published_at) <= lp.published_at));
   const sy = require('fs').readFileSync(require('path').join(__dirname, '../api/sync.js'), 'utf8'), appJs = require('fs').readFileSync(require('path').join(__dirname, '../public/app.js'), 'utf8'), idxHtml = require('fs').readFileSync(require('path').join(__dirname, '../public/index.html'), 'utf8');
   check('News bar: routed, drawn from the app, dismissible per post, expires after two weeks', /news-latest/.test(sy) && /showNewsBar\(\);/.test(appJs) && /guided\.news\.gone/.test(appJs) && /14 \* 86400000/.test(appJs) && /id="newsBar"[^>]*hidden/.test(idxHtml) && /id="newsBarX"/.test(idxHtml));
 

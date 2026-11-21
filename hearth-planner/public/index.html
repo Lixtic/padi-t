@@ -642,12 +642,14 @@
       <div class="grow grow-top"></div>
 
       <div class="notice-bar" id="noticeBar" role="status" hidden><span id="noticeText"></span><button type="button" id="noticeX" aria-label="Dismiss">×</button></div>
-      <div class="notice-bar news-bar" id="newsBar" role="status" hidden><span class="nb-tag">News</span><a id="newsBarLink" href="/news">Latest news</a><button type="button" id="newsBarX" aria-label="Dismiss">×</button></div>
+      <div class="notice-bar news-bar" id="newsBar" role="status" hidden><span class="nb-tag">News</span><a id="newsBarLink" href="/news">Latest news</a><span class="nb-dots" id="newsBarDots"></span><button type="button" id="newsBarX" aria-label="Dismiss">×</button></div>
     <div class="hero" id="hero">
         <svg class="hero-mark" aria-hidden="true"><use href="#i-logo"/></svg>
-        <h1>Which week are we planning?</h1>
-        <p>Choose a subject, class and week. GuidEd writes two 60-minute lessons, study notes and BECE practice, ready for Word.</p>
-        <p class="hero-more">GuidEd is a free lesson-planning assistant for Ghana teachers, Basic 1 to SHS 3, following the GES and NaCCA scheme of learning. It also helps parents follow what their children are learning.</p>
+        <h1>Which week are we planning?<button type="button" class="hero-info" id="heroInfo" aria-label="About GuidEd" aria-expanded="false" aria-controls="heroTip">i</button></h1>
+        <div class="hero-tip" id="heroTip" role="note" hidden>
+          <p>Choose a subject, class and week. GuidEd writes two 60-minute lessons, study notes and BECE practice, ready for Word.</p>
+          <p class="hero-more">GuidEd is a free lesson-planning assistant for Ghana teachers, Basic 1 to SHS 3, following the GES and NaCCA scheme of learning. It also helps parents follow what their children are learning.</p>
+        </div>
         
       </div>
       <aside class="ad-slot" id="adSlot" aria-label="Advertisement" data-nosnippet hidden>

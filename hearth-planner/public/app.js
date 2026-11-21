@@ -1983,18 +1983,37 @@
     $('#noticeText').textContent = n.text; bar.hidden = false;
     $('#noticeX').onclick = () => { bar.hidden = true; try { localStorage.setItem('guided.notice.gone', n.id); } catch (e) { /* fine */ } };
   }
-  /* The newest news post as a dismissible bar on the start screen, for two weeks. Dismissing hides that post only. */
+  /* Up to five recent news posts in one bar, rotating every few seconds (dots to pick one). Posts older than two weeks are left out.
+     The ✕ hides the bar until a newer post is published. */
   function showNewsBar() {
     const bar = $('#newsBar'); if (!bar || !window.fetch) return;
     fetch('/api/sync?what=news-latest', { headers: { accept: 'application/json' } }).then((r) => (r.ok ? r.json() : null)).then((j) => {
-      const post = j && j.post;
+      const all = (j && (j.posts || (j.post ? [j.post] : []))) || [];
+      const posts = all.filter((p) => p && p.slug && Date.now() - Number(p.published_at) <= 14 * 86400000).slice(0, 5);
       let gone = ''; try { gone = localStorage.getItem('guided.news.gone') || ''; } catch (e) { /* shown again next time */ }
-      if (!post || !post.slug || gone === post.slug || Date.now() - Number(post.published_at) > 14 * 86400000) { bar.hidden = true; return; }
-      const link = $('#newsBarLink'); link.textContent = post.title; link.href = '/news/' + post.slug;
-      bar.hidden = false;
-      $('#newsBarX').onclick = () => { bar.hidden = true; try { localStorage.setItem('guided.news.gone', post.slug); } catch (e) { /* fine */ } };
+      if (!posts.length || gone === posts[0].slug) { bar.hidden = true; return; }
+      const link = $('#newsBarLink'), dots = $('#newsBarDots');
+      let at = 0, timer = null;
+      const show = (i, user) => {
+        at = (i + posts.length) % posts.length;
+        link.textContent = posts[at].title; link.href = '/news/' + posts[at].slug;
+        Array.from(dots.children).forEach((d, k) => { d.classList.toggle('on', k === at); d.setAttribute('aria-current', k === at ? 'true' : 'false'); });
+        if (user) restart();
+      };
+      const restart = () => { clearInterval(timer); if (posts.length > 1 && !(window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches)) timer = setInterval(() => { if (!document.hidden && !bar.matches(':hover')) show(at + 1); }, 5000); };
+      dots.replaceChildren(...(posts.length > 1 ? posts.map((p, k) => { const d = h('button', { type: 'button', class: 'nb-dot', 'aria-label': 'News ' + (k + 1) + ' of ' + posts.length }); d.onclick = () => show(k, true); return d; }) : []));
+      show(0); restart(); bar.hidden = false;
+      $('#newsBarX').onclick = () => { clearInterval(timer); bar.hidden = true; try { localStorage.setItem('guided.news.gone', posts[0].slug); } catch (e) { /* fine */ } };
     }).catch(() => { /* offline: no bar */ });
   }
+  /* The (i) next to the start-screen title opens a short description of GuidEd. */
+  (function heroInfo() {
+    const btn = $('#heroInfo'), tip = $('#heroTip'); if (!btn || !tip) return;
+    const set = (open) => { tip.hidden = !open; btn.setAttribute('aria-expanded', String(open)); $('#hero').classList.toggle('tip-open', open); };
+    btn.addEventListener('click', (e) => { e.stopPropagation(); set(tip.hidden); });
+    document.addEventListener('click', (e) => { if (!tip.hidden && !tip.contains(e.target)) set(false); });
+    document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && !tip.hidden) { set(false); btn.focus(); } });
+  })();
   const termAuto = () => (window.SchoolPadiSchemes ? window.SchoolPadiSchemes.currentTerm(undefined, state.params.cls) : 1);
   const termKey = () => { const u = window.PadiSync && window.PadiSync.user && window.PadiSync.user(); return 'guided.term.' + ((u && (u.id || u.email)) || 'guest'); };
   function termNow() {
