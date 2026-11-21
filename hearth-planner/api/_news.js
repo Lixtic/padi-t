@@ -183,15 +183,15 @@ async function page(req, res) {
   }
 }
 
-/* The newest live post, for the banner inside the app. Small JSON, cached briefly. */
+/* The newest live posts (up to five), for the banner inside the app. Small JSON, cached briefly. */
 async function latest(req, res) {
-  const out = (post) => { res.statusCode = 200; res.setHeader('content-type', 'application/json; charset=utf-8'); res.setHeader('cache-control', 'public, max-age=0, s-maxage=60, stale-while-revalidate=300'); res.end(JSON.stringify({ post })); };
+  const out = (posts) => { res.statusCode = 200; res.setHeader('content-type', 'application/json; charset=utf-8'); res.setHeader('cache-control', 'public, max-age=0, s-maxage=60, stale-while-revalidate=300'); res.end(JSON.stringify({ post: posts[0] || null, posts })); };
   try {
-    if (!db.configured()) return out(null);
+    if (!db.configured()) return out([]);
     await db.ensure();
-    const r = (await db.query("select slug, title, published_at from news_posts where status = 'published' order by published_at desc limit 1"))[0];
-    return out(r ? { slug: r.slug, title: r.title, published_at: Number(r.published_at) } : null);
-  } catch (e) { console.error('[news-latest]', e && e.message); return out(null); }
+    const rows = await db.query("select slug, title, published_at from news_posts where status = 'published' order by published_at desc limit 5");
+    return out(rows.map((r) => ({ slug: r.slug, title: r.title, published_at: Number(r.published_at) })));
+  } catch (e) { console.error('[news-latest]', e && e.message); return out([]); }
 }
 
 async function image(req, res) {
