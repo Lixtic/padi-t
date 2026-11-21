@@ -3066,6 +3066,24 @@
     settingsReturnPage = null;
     showPage(destination || null);
   });
+  /* Touch gestures (gestures.js): pull to refresh, swipe in from the left edge to go back. */
+  if (window.GuidedGestures) window.GuidedGestures.configure({
+    refresh: async () => {
+      if (state.streaming) return;
+      if (signedIn() && window.PadiSync.syncAvailable()) await syncNow(true);
+      if (window.GuidedPlans && window.GuidedPlans.load) await window.GuidedPlans.load();
+      renderLibrary();
+      toast('Up to date');
+    },
+    back: () => {
+      const dlg = document.querySelector('dialog[open]');
+      if (dlg) { dlg.close(); return; }
+      const page = pageOpen();
+      if (!page) return;
+      const b = page[2].querySelector('[id$="Back"]');
+      if (b) b.click(); else showPage(null);
+    },
+  });
   [['#dashboardBack'], ['#libraryBack']].forEach(([sel]) => { const b = $(sel); if (b) b.addEventListener('click', () => showPage(null)); });
   // Anything that goes back to planning leaves the page first.
   document.addEventListener('click', (e) => {
@@ -3373,6 +3391,11 @@
       if (e.pointerType === 'touch' || e.pointerType === 'pen') pressTimer = setTimeout(() => { revealLibraryMenu(pressedItem); pressTimer = null; }, 520);
     });
     ['pointerup','pointercancel','pointerleave'].forEach((name) => libGrid.addEventListener(name, () => { if (pressTimer) clearTimeout(pressTimer); pressTimer = null; pressedItem = null; }));
+    libGrid.addEventListener('guided:swipe-left', (e) => {                // swipe a card left: the same actions as a long press
+      const item = e.target.closest('.lib-item'), menu = item && item.querySelector('.lib-item-menu');
+      if (menu) { closeLibraryMenus(menu); menu.hidden = false; }
+    });
+    libGrid.addEventListener('selectstart', (e) => { if (e.target.closest && e.target.closest('.lib-card')) e.preventDefault(); });
     libGrid.addEventListener('contextmenu', (e) => { const card = e.target.closest('.lib-card'); if (card) { e.preventDefault(); revealLibraryMenu(card); } });
     libGrid.addEventListener('click', (e) => {
       const action = e.target.closest('[data-lib-action]');
