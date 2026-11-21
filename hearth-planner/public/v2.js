@@ -218,6 +218,25 @@
     }
     build();
     new MutationObserver(build).observe(document.body,{attributes:true,attributeFilter:['class']});
+    /* Editing a plan: the tab bar folds into one small Home button so the plan has the room. Tap it to bring the bar back. */
+    var wasEditing = false;
+    function settleBar() { setTimeout(function () { window.dispatchEvent(new Event('resize')); }, 450); }   // put the highlight back under the active tab
+    function syncEditing() {
+      var on = !!document.querySelector('.doc-body.editing');
+      if (on === wasEditing) return;
+      wasEditing = on;
+      document.body.classList.toggle('tabbar-mini', on);
+      if (!on) settleBar();
+      var first = document.querySelector('.v2-tabbar-pill button');
+      if (first) { if (on) first.setAttribute('aria-label', 'Show navigation'); else first.removeAttribute('aria-label'); }
+    }
+    new MutationObserver(syncEditing).observe($('#stage') || document.body, { subtree: true, attributes: true, attributeFilter: ['class'] });
+    document.addEventListener('click', function (event) {
+      if (!document.body.classList.contains('tabbar-mini') || !event.target.closest('.v2-tabbar')) return;
+      event.preventDefault(); event.stopPropagation();
+      document.body.classList.remove('tabbar-mini'); settleBar();
+      var first = document.querySelector('.v2-tabbar-pill button'); if (first) first.removeAttribute('aria-label');
+    }, true);
     document.addEventListener('click',function(event){
       var tab=event.target.closest('#parentDashboardContent [data-parent-tab]');
       if(tab) {
