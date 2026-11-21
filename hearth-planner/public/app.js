@@ -85,8 +85,8 @@
     let size = 1;
     const bigger = h('button', { type: 'button', class: 'reader-btn', 'aria-label': 'Larger text', text: 'A+' });
     const smaller = h('button', { type: 'button', class: 'reader-btn', 'aria-label': 'Smaller text', text: 'A\u2212' });
-    const share = onShare ? h('button', { type: 'button', class: 'reader-btn reader-share', 'aria-label': 'Share lesson plan', title: 'Share lesson plan' }, icon('share'), h('span', { text: 'Share' })) : null;
-    if (share) share.addEventListener('click', onShare);
+    const share = onShare ? h('button', { type: 'button', class: 'reader-btn reader-share', 'aria-label': 'Download lesson plan', title: 'Download lesson plan' }, icon('download'), h('span', { text: 'Download' })) : null;
+    if (share) share.addEventListener('click', () => onShare(share));
     const close = h('button', { type: 'button', class: 'reader-btn reader-close', text: 'Close' });
     const body = h('div', { class: 'reader-body md', tabindex: '-1' });
     body.append(...Array.from(source.childNodes).map((n) => n.cloneNode(true)));
@@ -650,13 +650,13 @@
         const SL = window.SchoolPadiSlides;
         if (SL && SL.isDeck(session.params) && SL.parse(api.text).length) { slideState = slideState || { i: 0 }; SL.present(api.text, slideState, () => {}); return; }
         const canSharePlan = kind === 'plan' && !(session.params && session.params.mode === 'resources');
-        openReader(titleEl.textContent, bodyEl, canSharePlan ? () => {
+        openReader(titleEl.textContent, bodyEl, canSharePlan ? (readerButton) => {
           if (api.msg && api.msg.preview) {
-            if (signedIn()) toast('This is a preview of Lesson 1. Write the full plan to share it.');
-            else openSignupSheet('Create a free account to unlock the full plan and share it.');
+            if (signedIn()) toast('This is a preview of Lesson 1. Write the full plan to download it.');
+            else openSignupSheet('Create a free account to unlock the full plan and download it.');
             return;
           }
-          sharePlan(api.text, baseTitle, btnShare);
+          exportPdf(api.text, titleEl.textContent || baseTitle, readerButton, kind);
         } : null, !!(session.params && session.params.mode === 'resources' && session.params.resourceType === 'Study notes') && accountRole !== 'parent');
       },
       setKind(k) { kind = KIND_TITLE[k] !== undefined ? k : 'plan'; titleEl.textContent = api.title; bodyEl.classList.toggle('worksheet', kind === 'worksheet' || !!(session.params && session.params.resourceType === 'Learner worksheet')); btnShare.hidden = kind !== 'plan' || !!(session.params && session.params.mode === 'resources'); },
