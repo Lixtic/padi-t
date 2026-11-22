@@ -9,5 +9,8 @@ check('every career page is in the sitemap', careers.every((c) => map.includes('
 check('pages have no inline style or script (CSP)', careers.every((c) => { const h = fs.readFileSync(path.join(pub, 'careers', c.id + '.html'), 'utf8'); return !/<style|style="|onclick=/.test(h) && !/<script(?![^>]*(src=|type="application\/ld\+json"))/.test(h); }));
 check('pages carry the orientation-only caveat', careers.every((c) => /not official admissions, licensing or employment advice/.test(fs.readFileSync(path.join(pub, 'careers', c.id + '.html'), 'utf8'))));
 check('pages never claim verified requirements', careers.every((c) => !/source-reviewed|guaranteed/i.test(fs.readFileSync(path.join(pub, 'careers', c.id + '.html'), 'utf8'))));
+const mp = fs.readFileSync(path.join(pub, 'lesson-plans', 'basic-7-mathematics.html'), 'utf8');
+check('subject pages list related careers', /Careers that use Mathematics/.test(mp) && /href="\/careers\//.test(mp));
+check('career pages link back to lesson plans', careers.every((c) => /href="\/lesson-plans"/.test(fs.readFileSync(path.join(pub, 'careers', c.id + '.html'), 'utf8'))));
 check('hub links to full pages', /\/careers\//.test(fs.readFileSync(path.join(pub, 'career-roadmaps.js'), 'utf8')));
 if (fail) process.exit(1); console.log('Career page tests passed.');
