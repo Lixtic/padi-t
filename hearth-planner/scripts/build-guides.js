@@ -5,7 +5,7 @@ const root = path.join(__dirname, '..');
 const SITE = 'https://www.guidedgh.site';
 const DATE = process.env.GUIDES_DATE || '2026-11-19';
 const esc = (s) => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
-const articles = ['teachers-1', 'teachers-2', 'families'].flatMap((f) => require(path.join(root, 'data/guides', f + '.js')));
+const articles = ['teachers-1', 'teachers-2', 'teachers-3', 'families'].flatMap((f) => require(path.join(root, 'data/guides', f + '.js')));
 const bySlug = new Map(articles.map((a) => [a.slug, a]));
 if (bySlug.size !== articles.length) throw new Error('Duplicate guide slug');
 for (const a of articles) for (const r of a.related || []) if (!bySlug.has(r)) throw new Error(a.slug + ' links to a missing guide: ' + r);
@@ -33,9 +33,9 @@ function list(items) { return '<ul>\n' + items.map((x) => '<li>' + esc(x) + '</l
 
 function articlePage(a) {
   const url = `${SITE}/guides/${a.slug}`;
-  const ld = { '@context': 'https://schema.org', '@graph': [{ '@type': 'Article', headline: a.title, description: a.desc, inLanguage: 'en-GH', datePublished: DATE, dateModified: DATE, mainEntityOfPage: url, author: { '@type': 'Organization', name: 'GuidEd' }, publisher: { '@type': 'Organization', name: 'GuidEd', url: SITE + '/' } }, { '@type': 'BreadcrumbList', itemListElement: [{ '@type': 'ListItem', position: 1, name: 'Home', item: SITE + '/' }, { '@type': 'ListItem', position: 2, name: 'Guides', item: SITE + '/guides' }, { '@type': 'ListItem', position: 3, name: a.title, item: url }] }] };
+  const ld = { '@context': 'https://schema.org', '@graph': [{ '@type': 'Article', headline: a.title, description: a.desc, inLanguage: 'en-GH', datePublished: a.date || DATE, dateModified: a.date || DATE, mainEntityOfPage: url, author: { '@type': 'Organization', name: 'GuidEd' }, publisher: { '@type': 'Organization', name: 'GuidEd', url: SITE + '/' } }, { '@type': 'BreadcrumbList', itemListElement: [{ '@type': 'ListItem', position: 1, name: 'Home', item: SITE + '/' }, { '@type': 'ListItem', position: 2, name: 'Guides', item: SITE + '/guides' }, { '@type': 'ListItem', position: 3, name: a.title, item: url }] }] };
   let h = head(`${a.title} · GuidEd`, a.desc, url, ld);
-  h += `<p class="upd">${esc(a.audience)} · ${minutes(a)} min read · Updated ${DATE}</p>\n<h1>${esc(a.title)}</h1>\n<p class="lede">${esc(a.intro)}</p>\n`;
+  h += `<p class="upd">${esc(a.audience)} · ${minutes(a)} min read · Updated ${a.date || DATE}</p>\n<h1>${esc(a.title)}</h1>\n<p class="lede">${esc(a.intro)}</p>\n`;
   for (const s of a.sections) {
     h += `<h2>${esc(s.h)}</h2>\n`;
     for (const p of s.p || []) h += `<p>${esc(p)}</p>\n`;
@@ -51,7 +51,7 @@ function articlePage(a) {
 
 function topicOf(a) {
   const slug = a.slug;
-  if (/lesson-plan|scheme-of-learning|term-planning|learning-indicator/.test(slug)) return 'Lesson planning';
+  if (/lesson-plan|scheme-of-learning|scheme-of-work|term-planning|learning-indicator/.test(slug)) return 'Lesson planning';
   if (/assessment|questioning|depth-of-knowledge/.test(slug)) return 'Assessment';
   if (/bece|wassce/.test(slug)) return 'Exam preparation';
   if (/homework|study-routine|maths/.test(slug)) return 'Learning at home';
