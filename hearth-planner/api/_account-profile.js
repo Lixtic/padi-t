@@ -59,6 +59,9 @@ module.exports = async (req, res) => {
     }
 
     const [prev] = await db.query('select data from account_profiles where user_id = $1', [me.uid]);
+    const previousChildren = Array.isArray(prev && prev.data && prev.data.children) ? prev.data.children : [];
+    const retainedIds = new Set(children.map((child) => String(child.id)));
+    const removedChildIds = previousChildren.map((child) => String(child.id || '')).filter((id) => id && !retainedIds.has(id));
     const data = { roles, primaryRole, displayName, children };
 
     // Keep contact details when older profile-saving flows do not send them.
@@ -86,6 +89,11 @@ module.exports = async (req, res) => {
     );
     const retainedChildIds = children.map((child) => child.id);
     await db.query('delete from parent_learning where user_id = $1 and not (data->>\'childId\' = any($2::text[]))', [me.uid, retainedChildIds]);
+    if (removedChildIds.length) {
+      // New notifications carry child_id. Remove those precisely, and clear legacy learning notices
+      // without a child reference because their owner cannot be established safely.
+      await db.query("delete from notifications where user_id = $1 and type = 'learning' and (child_id = any($2::text[]) or child_id is null)", [me.uid, removedChildIds]);
+    }
     return sendJson(res, 200, { ok: true, profile: { ...data, updatedAt } });
   } catch (e) {
     console.error('account profile failed:', e && e.message);
