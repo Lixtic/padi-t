@@ -135,7 +135,7 @@ ${ld ? '<script type="application/ld+json">' + JSON.stringify(ld).replace(/</g, 
   <link rel="stylesheet" href="/cookie-consent.css">
   <script src="/cookie-consent.js" defer></script>
 </head>
-<body><main class="lg"><div class="lg-top"><a class="lg-back" href="/news">← All news</a><span class="lg-brand">Guid<em>Ed</em></span><a class="lg-back" href="/">Open GuidEd</a></div>
+<body><main class="lg"><div class="lg-top"><a class="lg-back" href="/news" data-back="same">← All news</a><span class="lg-brand">Guid<em>Ed</em></span><a class="lg-back" href="/">Open GuidEd</a></div>
 ${inner}
 <div class="lg-foot"><a href="/news">News</a><a href="/guides">Guides</a><a href="/lesson-plans">Lesson plans</a><a href="/about">About</a><a href="/terms">Terms</a><a href="/privacy">Privacy</a><a href="/">Open the app</a></div>
 </main></body></html>
@@ -156,8 +156,11 @@ function indexHtml(posts) {
   const ld = { '@context': 'https://schema.org', '@type': 'CollectionPage', name: 'GuidEd News: Ghana education news', url, description: 'Ghana education news for teachers and parents.', inLanguage: 'en-GH' };
   let inner = '<h1>Ghana education news for teachers and parents</h1>\n<p class="lede">Short updates on GES, NaCCA and WAEC announcements, exams, the school calendar and the curriculum, with a link to the official source where there is one.</p>\n';
   inner += posts.length ? '<ul class="guide-list">\n' + posts.map((p) => '<li>' + (p.image ? '<a class="news-thumb-link" href="/news/' + esc(p.slug) + '" tabindex="-1" aria-hidden="true">' + imgTag(p.slug, p.image, 'news-thumb') + '</a>' : '') + '<a href="/news/' + esc(p.slug) + '"><strong>' + esc(p.title) + '</strong></a><br><span class="upd">' + esc(longDate(p.published_at)) + ' · ' + esc(p.summary) + '</span></li>').join('\n') + '\n</ul>\n' : '<p>No news yet. Check back soon, or read our <a href="/guides">guides</a>.</p>\n';
-  return shell('Ghana Education News: GES, NaCCA and WAEC Updates · GuidEd', 'Ghana education news for teachers and parents: GES, NaCCA and WAEC announcements, exams, the school calendar and curriculum updates, with official sources.', url, ld, inner + NOTE);
+  return backToApp(shell('Ghana Education News: GES, NaCCA and WAEC Updates · GuidEd', 'Ghana education news for teachers and parents: GES, NaCCA and WAEC announcements, exams, the school calendar and curriculum updates, with official sources.', url, ld, inner + NOTE));
 }
+
+/* On the news list itself, the top-left link is a plain Back button instead of a link to the page you are on. */
+function backToApp(html) { return html.replace('<a class="lg-back" href="/news" data-back="same">← All news</a>', '<a class="lg-back" href="/" data-back="any">← Back</a>'); }
 
 async function page(req, res) {
   const u = new URL(req.url, 'http://x'), slug = String(u.searchParams.get('slug') || '').toLowerCase();
