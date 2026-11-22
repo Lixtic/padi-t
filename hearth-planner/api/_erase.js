@@ -43,7 +43,7 @@ async function eraseAccount(me) {
   let identityRemoved = true;
   try { await db.query('delete from neon_auth."user" where id = $1', [uid]); }
   catch (e) {
-    if (!/neon_auth|does not exist|relation/i.test(String(e && e.message))) {
+    if (!/does not exist|undefined table|undefined schema/i.test(String(e && e.message))) {
       identityRemoved = false;
       console.error('account deletion: sign-in identity still needs removal:', e && e.message);
     }
