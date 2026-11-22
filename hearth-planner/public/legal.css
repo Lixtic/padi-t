@@ -325,3 +325,11 @@ input:focus-visible, select:focus-visible, textarea:focus-visible, button:focus-
 .guide-fig a { display: block; overflow: hidden; border: 1px solid var(--line); border-radius: 14px; background: #fff; box-shadow: 0 10px 28px rgba(20,30,70,.10); }
 .guide-fig img { display: block; width: 100%; height: auto; }
 .guide-fig figcaption { margin-top: 9px; color: var(--muted); font-size: 13px; line-height: 1.5; text-align: center; }
+
+/* Guides pagination */
+.guide-pager { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 6px; margin: 26px 0 6px; }
+.guide-page { min-width: 42px; height: 42px; padding: 0 13px; border: 1px solid var(--line); border-radius: 12px; background: var(--card); color: var(--text); font: inherit; font-size: 14px; font-weight: 650; cursor: pointer; }
+.guide-page:hover:not(:disabled) { border-color: var(--accent); color: var(--accent); }
+.guide-page.is-active { border-color: var(--accent); background: var(--accent); color: #fff; }
+.guide-page:disabled { opacity: .4; cursor: default; }
+@media (max-width: 520px) { .guide-page { min-width: 38px; height: 40px; padding: 0 10px; } .guide-pager { gap: 5px; } }
