@@ -85,7 +85,7 @@
     let size = 1;
     const bigger = h('button', { type: 'button', class: 'reader-btn', 'aria-label': 'Larger text', text: 'A+' });
     const smaller = h('button', { type: 'button', class: 'reader-btn', 'aria-label': 'Smaller text', text: 'A\u2212' });
-    const share = onShare ? h('button', { type: 'button', class: 'reader-btn reader-share', 'aria-label': 'Download lesson plan', title: 'Download lesson plan' }, icon('download'), h('span', { text: 'Download' })) : null;
+    const share = onShare ? h('button', { type: 'button', class: 'reader-btn reader-share', 'aria-label': 'Share or download lesson plan', title: 'Share only the lesson plan tables, with a signature and stamp area' }, icon('share'), h('span', { text: 'Share' })) : null;
     if (share) share.addEventListener('click', () => onShare(share));
     const close = h('button', { type: 'button', class: 'reader-btn reader-close', text: 'Close' });
     const body = h('div', { class: 'reader-body md', tabindex: '-1' });
@@ -656,7 +656,7 @@
             else openSignupSheet('Create a free account to unlock the full plan and download it.');
             return;
           }
-          exportPdf(api.text, titleEl.textContent || baseTitle, readerButton, kind);
+          sharePlan(api.text, baseTitle, readerButton);          // same output as the Share button: plan tables, sign-off area, PDF or Word
         } : null, !!(session.params && session.params.mode === 'resources' && session.params.resourceType === 'Study notes') && accountRole !== 'parent');
       },
       setKind(k) { kind = KIND_TITLE[k] !== undefined ? k : 'plan'; titleEl.textContent = api.title; bodyEl.classList.toggle('worksheet', kind === 'worksheet' || !!(session.params && session.params.resourceType === 'Learner worksheet')); btnShare.hidden = kind !== 'plan' || !!(session.params && session.params.mode === 'resources'); },
