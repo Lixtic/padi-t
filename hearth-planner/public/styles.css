@@ -117,7 +117,9 @@ a { color: inherit; }
   border-right: 1px solid var(--line);
   transition: margin-left .3s var(--ease);
   z-index: 40;
+  overflow-y: auto; overscroll-behavior: contain; -webkit-overflow-scrolling: touch;   /* the whole menu scrolls, so every link is reachable on short or portrait screens */
 }
+.sidebar > * { flex-shrink: 0; }
 .app.sb-collapsed .sidebar { margin-left: calc(var(--sb-w) * -1); }
 
 .main {
@@ -799,7 +801,7 @@ html { overscroll-behavior-y: none; }
 .set-install:hover { background: var(--accent-h); }
 .set-panel .install-hint { margin: 0 12px 6px; }
 @media (max-width: 860px) {
-  .sb-foot { max-height: 62vh; overflow-y: auto; overscroll-behavior: contain; }
+  .sb-foot { max-height: none; overflow: visible; }
 }
 
 /* ───────── Plan options: three essentials up front, the rest on demand ───────── */

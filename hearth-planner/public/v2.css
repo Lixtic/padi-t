@@ -188,7 +188,9 @@ body.on-settings .v2-tabbar { display: none !important; }
     max-width: 360px;
     height: 100%;
     min-height: 0;
-    overflow: hidden;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    -webkit-overflow-scrolling: touch;
     background: var(--sb);
   }
 
@@ -241,10 +243,8 @@ body.on-settings .v2-tabbar { display: none !important; }
   .sb-foot {
     flex: 0 1 auto;
     min-height: 0;
-    max-height: min(43dvh, 350px);
-    overflow-y: auto;
-    overscroll-behavior: contain;
-    -webkit-overflow-scrolling: touch;
+    max-height: none;
+    overflow: visible;
     display: flex;
     flex-direction: column;
     gap: 5px;
@@ -287,7 +287,7 @@ body.on-settings .v2-tabbar { display: none !important; }
 
 @media (max-width: 560px) {
   .sidebar { width: min(88vw, 360px); }
-  .sb-foot { max-height: min(40dvh, 320px); }
+  .sb-foot { max-height: none; }
 }
 
 /* Five tabs: tighter labels. */
