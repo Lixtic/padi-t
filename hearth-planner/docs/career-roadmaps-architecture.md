@@ -84,7 +84,9 @@ The first expanded catalogue batch now contains 30 career profiles across techno
 The current Phase 2 implementation is a source-governance foundation, not a claim that all career pathways have been independently verified. Existing profiles remain labelled `orientation-only`. Registry records now identify the source owner, source type, evidence scope, limitations and checked date. The registry covers GTEC, CTVET, Ghana TVET Service, the Nursing and Midwifery Council, Medical and Dental Council, Allied Health Professions Council, Pharmacy Council Ghana, Veterinary Council of Ghana, National Teaching Council and ICAG. The sources are reference authorities only; no career profile is promoted to `source-reviewed` by adding a link. The exact institution, programme, qualification, validity period and applicable professional requirements must be checked before changing a career's review state.
 
 ### Phase 3 — Learner accounts and personal roadmaps
-- Persist saved careers and milestones to the signed-in learner account.
+- Persist personal roadmaps and milestone progress to the signed-in account through the authenticated private sync endpoint.
+- Allow guests to draft roadmaps locally; keep them on the device until they sign in.
+- Track each route stage as not started, in progress or completed; allow removal of a personal roadmap.
 - Add learner-stage onboarding, progress tracking and reminders.
 - Preserve guest browsing and avoid requiring an account to explore.
 
@@ -99,4 +101,4 @@ The current Phase 2 implementation is a source-governance foundation, not a clai
 - Aggregate, privacy-preserving insights only where appropriate.
 
 ## Current implementation boundaries
-Phase 1 is a front-end foundation. Saved careers are stored in local browser storage, not synced across devices. It does not yet create an account-linked progress plan, provide verified live admissions data, or use AI to make career recommendations. The starter catalogue is deliberately small and its route descriptions must not be mistaken for official requirements.
+The Career Roadmaps hub and saved-career list are available without sign-in; saved careers remain local to the current browser. Personal roadmaps can be created and their pathway stages tracked as not started, in progress or completed. Guest roadmaps remain on the device, and are copied to the signed-in account when account sync is available. Account-backed roadmaps are private to the authenticated user and stored through the shared Neon sync service. Learner-stage onboarding, reminders, family/school sharing, AI career guidance and verified live admissions data are not yet implemented. Career route descriptions remain orientation guidance and must not be mistaken for official requirements.
