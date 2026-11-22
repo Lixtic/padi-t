@@ -92,7 +92,7 @@
       var cols = rows[0].length, first = hasHeader ? rows[0][0] : '', w = [], c;
       var signArea = hasHeader && cols === 3 && /^\**\s*class teacher/i.test(first);
       if (signArea) w = [36, 36, 28];   // signature and stamp area
-      else if (meta) w = cols === 2 ? [28, 72] : rows[0].map(function () { return 1; });
+      else if (meta) w = cols === 2 ? [28, 72] : cols === 3 ? [24, 36, 40] : rows[0].map(function () { return 1; });
       else if (hasHeader && cols === 3 && PHASE_HEADER.test(first)) w = [15, 68, 17];
       else if (hasHeader && cols === 4 && PHASE_HEADER.test(first)) w = [13, 36, 36, 15];
       else {
@@ -106,6 +106,7 @@
     }
 
     function metaCell(v) {
+      v = v.replace(new RegExp(BR + '\\s*(?=(?:CP|CI|CC|CG|PL|DL)\\s*:)', 'g'), '; ');   // core competencies on one line instead of six
       var t = v.trim();
       if (t && /^(?:\*\*[^*]+\*\*\s*:?|[^:*\n]{2,40}:)\s*$/.test(t)) return { text: t, label: true };
       if (t && t.indexOf('**') === -1) {
@@ -142,7 +143,7 @@
       var big = rows.some(function (r) { return r.join('').length >= 700; });
       var w;
       var G = null;
-      if (joined && cols === 3) { G = [0.19, 0.05, 0.40, 0.13, 0.23].map(function (x) { return USABLE * x; }); w = G; }   // 5-column grid: metadata rows 24 / 40 / 36, lesson rows 19 / 58 / 23
+      if (joined && cols === 3) { G = [0.19, 0.05, 0.37, 0.13, 0.26].map(function (x) { return USABLE * x; }); w = G; }   // 5-column grid: metadata rows 24 / 40 / 36, lesson rows 19 / 58 / 23
       else if (joined) { var a = USABLE * 0.19, c = USABLE * 0.23; w = [a, USABLE - a - c, c]; }
       else w = widths(rows, hasHeader, meta);
       var labelFirst = hasHeader && !meta && LABEL_COLUMN.test(rows[0][0]);
