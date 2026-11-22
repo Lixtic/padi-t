@@ -47,6 +47,7 @@ module.exports = async (req, res) => {
     if (!/^[\w-]{1,64}$/.test(id)) return sendJson(res, 400, { error: 'bad_request', message: 'A valid learning record ID is required.' });
     if (body && body.delete === true) {   // saved activities are fetched as a snapshot; no content-bearing tombstone is needed
       await db.query('delete from parent_learning where user_id = $1 and id = $2', [me.uid, id]);
+      await db.query("delete from notifications where user_id = $1 and (learning_record_id = $2 or dedupe_key = $3)", [me.uid, id, 'parent-completed:' + id]);
       return sendJson(res, 200, { ok: true, deleted: id });
     }
     const kind = clean(body && body.kind, 24);
