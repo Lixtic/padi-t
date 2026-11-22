@@ -42,12 +42,7 @@ a:focus-visible, summary:focus-visible { outline: 3px solid var(--gold); outline
   gap: 24px;
 }
 .brand { display: inline-flex; align-items: center; gap: 11px; color: var(--indigo); font-size: 22px; font-weight: 850; letter-spacing: -.8px; }
-.brand-mark {
-  width: 39px; height: 39px; display: grid; place-items: center;
-  border-radius: 13px 13px 13px 5px;
-  background: var(--green); color: white; font-size: 23px; font-weight: 900;
-  box-shadow: 0 6px 16px rgba(0,106,78,.2);
-}
+.brand-mark { width: 39px; height: 39px; flex: 0 0 auto; border-radius: 11px; box-shadow: 0 6px 16px rgba(0,106,78,.2); }
 .navlinks { display: flex; align-items: center; gap: clamp(14px,2.2vw,28px); color: #59677A; font-size: 13px; font-weight: 700; }
 .navlinks > a:not(.navcta) { transition: color .2s ease; }
 .navlinks > a:not(.navcta):hover { color: var(--green); }
@@ -202,7 +197,7 @@ a:focus-visible, summary:focus-visible { outline: 3px solid var(--gold); outline
   .wrap { width: calc(100% - 34px); }
   .nav { min-height: 68px; gap: 10px; }
   .brand { gap: 8px; font-size: 19px; }
-  .brand-mark { width: 35px; height: 35px; font-size: 21px; }
+  .brand-mark { width: 35px; height: 35px; }
   .navlinks { gap: 0; }
   .navlinks a:not(.navcta) { display: none; }
   .navcta { min-height: 42px; padding: 0 13px; border-radius: 11px; font-size: 12px; }
