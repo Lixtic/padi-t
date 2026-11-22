@@ -33,4 +33,5 @@ $('#roadmap-list').addEventListener('change',e=>{const sel=e.target.closest('[da
 $('#roadmap-list').addEventListener('click',e=>{const b=e.target.closest('[data-remove-roadmap]');if(!b)return;const id=b.dataset.removeRoadmap;roadmaps=roadmaps.filter(p=>p.id!==id);persistRoadmaps();if(syncReady)window.PadiSync.deleteCareerRoadmap(id).catch(()=>{});renderRoadmaps()});
 try{roadmaps=JSON.parse(localStorage.getItem(ROADMAPS)||'[]')}catch(e){roadmaps=[]}
 render();renderRoadmaps();initRoadmapSync();
+window.addEventListener('guided:auth-changed',()=>initRoadmapSync());
 })();
