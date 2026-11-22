@@ -124,6 +124,31 @@ The four exported rows under content standard `B7.1.1.1` were compared field-by-
 - The export exemplar arrays for these two rows contain the four numbered activities visible under the corresponding indicator. For `B7.1.1.2.2`, the PDF places two additional account/permission exploration statements before the exemplar label; whether those are intended as activities or a table extraction artifact should be reviewed before finalising a canonical exemplar list.
 - These rows remain **source-compared; export discrepancies confirmed; correction pending review**. No manifest entries are approved.
 
+## Computing: third Basic 7 indicator batch — Technology in the Community
+
+**Source:** NaCCA Computing CCP PDF, printed pages 5–7 (PDF pages 33–35; zero-based PDF page indexes 32–34), Strand 1, Sub-strand 2, “Technology in the Community”. Official source: https://nacca.gov.gh/wp-content/uploads/2023/06/COMPUTING.pdf.
+
+The six exported rows under content standard `B7.1.2.1` were compared with the official table.
+
+| Indicator code | Official indicator wording (source table) | Export comparison | Result |
+|---|---|---|---|
+| `B7.1.2.1.1` | “Describe and give examples of at least five technology tools for learning in each subject (e.g. Spreadsheets, Virtual Museum, Scrabble, Presentation, Scratch, etc.)” | Export indicator field contains the standard wording, core-competency text and an `Exemplar(s):` marker. Its exemplar field merges the first indicator's activity/NB with the next indicator's activity and competency text. | **Severe row/column boundary contamination confirmed.** |
+| `B7.1.2.1.2` | “Demonstrate the use of at least three technology tools identified in B7.1.2.1.1.” | Indicator field is followed by `CC8.1` text. The export exemplar array is empty, while the official PDF contains an activity to demonstrate a technology tool in groups and present how it works. | **Indicator contamination and missing exemplar confirmed.** |
+| `B7.1.2.1.3` | “Discuss the benefits of using technology tools in learning.” | Indicator field appends `CC8.1` competency wording. Its exemplar array begins with a trailing competency fragment from the previous row, then the benefit-discussion activity, then a `DL5.3` fragment and the next table heading. | **Indicator and exemplar contamination confirmed.** |
+| `B7.1.2.1.4` | “Examine the negative impact of computers and computer use on the environment” | Indicator field matches the source wording. The export has two exemplar strings; the PDF has the observation activity, a website/video activity and a follow-on discussion prompt. The latter two are combined in the export's second string. | **Indicator matches; exemplar grouping is merged but source content is present.** |
+| `B7.1.2.1.5` | “Propose environmentally responsible practices that can be used to reduce the negative impact of computers and computer use on the environment” | Indicator field matches the source. Export exemplars combine “Discuss” and “Evaluate” into one string, then retain the e-waste proposal activity in another. | **Indicator matches; exemplar grouping is merged.** |
+| `B7.1.2.1.6` | “Create a component from disposed computer parts.” | Indicator field matches the source. The export has two activities combined into one exemplar string; both are present in the PDF. | **Indicator matches; exemplar grouping is merged.** |
+
+### Batch disposition
+
+- The content standard code `B7.1.2.1` and wording “Demonstrate the use of Technology in the community.” match the PDF.
+- Rows `B7.1.2.1.1`–`B7.1.2.1.3` show strong evidence that the export's table parser crossed row and column boundaries: competency descriptions, the standard text, headings and neighbouring indicators' activities have been concatenated.
+- `B7.1.2.1.2` is a concrete missing-exemplar case in the export: the official PDF contains an activity but the exported exemplar array is empty.
+- Rows `B7.1.2.1.4`–`B7.1.2.1.6` retain the main exemplar wording but merge separate activities into combined strings. This is a structure/segmentation discrepancy even where the text is present.
+- Preserve the source PDF's wording, including its punctuation and examples. Do not infer missing content or silently rewrite it.
+
+All six rows remain **source-compared; discrepancies recorded; correction pending review**. No verification manifest entries are approved.
+
 ## Required evidence before verification
 
 For each indicator proposed for verification, capture and review:
