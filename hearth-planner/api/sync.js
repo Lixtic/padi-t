@@ -89,8 +89,11 @@ module.exports = async (req, res) => {
       // The teacher must type DELETE, so a stray tap or a replayed request cannot remove an account.
       if (String(body.confirm || '').trim() !== 'DELETE') return sendJson(res, 400, { error: 'confirm', message: 'Type DELETE to confirm.' });
       const r = await require('./_erase').eraseAccount(me);
+      if (!r.identityRemoved) {
+        return sendJson(res, 503, { ok: false, identityRemoved: false, retryable: true, error: 'identity_cleanup_pending', message: 'Your learning data has been removed, but sign-in cleanup is still pending. Please retry account deletion or contact support.' });
+      }
       require('./_entitle').event('account_deleted');
-      return sendJson(res, 200, { ok: true, identityRemoved: r.identityRemoved });
+      return sendJson(res, 200, { ok: true, identityRemoved: true });
     }
     const maxTs = Date.now() + 864e5;
     if (body.what === 'plans') {
