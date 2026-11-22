@@ -1,6 +1,6 @@
 /* GuidEd service worker: caches the app shell so it opens instantly and works offline
    for reading saved plans. API calls (/api/*) are never cached. Bump VERSION to force an update. */
-const VERSION = 'schoolpadi-v215';
+const VERSION = 'schoolpadi-v217';
 const SHELL = ['./', 'index.html', 'styles.css?v=183', 'parent-registration.css', 'parent-registration.js', 'parent-dashboard.js', 'family-illustrations.js', 'family-visuals.css', 'guided-family-splash.webp', 'markdown.js', 'motion.js', 'phone-auth.js', 'tour.js', 'myscheme.js', 'gestures.js', 'app.js', 'editor.js', 'schemes.js', 'sample.js', 'plan-join.js', 'sync.js', 'levels.js', 'plans.js', 'profile.js', 'ads.js', 'rewarded.js', 'feedback.js', 'docx-export.js', 'pdf-export.js', 'slides.js', 'v2.css', 'v2.js', 'icons/apple-touch-icon.png', 'theme-init.js', 'pwa.js',
   'about', 'terms', 'privacy', 'refunds', 'ads-policy', 'legal.css', 'legal-theme.js', 'favicon.svg', 'manifest.webmanifest', 'vendor/neon-realtime.js', 'icons/icon-192.png', 'icons/icon-512.png'];
 

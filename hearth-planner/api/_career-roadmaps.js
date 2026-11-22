@@ -30,7 +30,9 @@ module.exports = async (req, res) => {
       id: clean(stage && stage.id, 100) || ('stage-' + (i+1)),
       title: clean(stage && stage.title, 160),
       detail: clean(stage && stage.detail, 600),
-      status: STATUSES.has(stage && stage.status) ? stage.status : 'not-started'
+      status: STATUSES.has(stage && stage.status) ? stage.status : 'not-started',
+      due: /^\d{4}-\d{2}-\d{2}$/.test(clean(stage && stage.due, 10)) ? clean(stage.due, 10) : '',
+      note: clean(stage && stage.note, 200)
     })) : [];
     if (!/^[a-z0-9][a-z0-9-]{1,79}$/.test(careerId) || !title || stages.length < 1 || stages.some(s => !s.title || !s.detail)) {
       return sendJson(res, 400, { error:'bad_request', message:'Check the career and roadmap steps.' });
