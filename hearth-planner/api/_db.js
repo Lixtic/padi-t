@@ -61,6 +61,10 @@ const SCHEMA = [
   'create table if not exists bonus (user_id text primary key, n int not null default 0)',
   'create table if not exists plan_log (subject text not null, period text not null, cls text not null, n int not null default 0, primary key (subject, period, cls))',
   "create table if not exists notifications (id text primary key, user_id text not null, dedupe_key text not null, type text not null, title text not null, body text not null default '', url text not null default '', created_at bigint not null, read_at bigint, unique (user_id, dedupe_key))",
+  'alter table notifications add column if not exists child_id text',
+  'alter table notifications add column if not exists learning_record_id text',
+  // Purge historical soft-deleted learning rows: their content is no longer needed for snapshot-based sync.
+  'delete from parent_learning where deleted = true',
   'create index if not exists notifications_user_recent on notifications (user_id, created_at desc)',
   // News posts written by admins and shown at /news.
   "create table if not exists news_posts (id text primary key, slug text unique not null, title text not null, summary text not null, body text not null, source_name text not null default '', source_url text not null default '', status text not null default 'published', published_at bigint not null, updated_at bigint not null, author text not null default '')",
