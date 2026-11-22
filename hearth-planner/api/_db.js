@@ -17,6 +17,8 @@ const SCHEMA = [
   'create table if not exists otp_codes (email text primary key, code_hash text not null, expires_at bigint not null, attempts int not null default 0, sent_at bigint not null, sent_count int not null default 1, window_start bigint not null)',
   "create table if not exists plans (user_id text not null, id text not null, data jsonb not null default '{}'::jsonb, updated_at bigint not null, deleted boolean not null default false, primary key (user_id, id))",
   "create table if not exists profiles (user_id text primary key, data jsonb not null default '{}'::jsonb, updated_at bigint not null)",
+  "create table if not exists career_roadmaps (user_id text not null, id text not null, career_id text not null, data jsonb not null default '{}'::jsonb, updated_at bigint not null, primary key (user_id, id))",
+  "create index if not exists career_roadmaps_recent on career_roadmaps (user_id, updated_at desc)",
   'create table if not exists account_profiles (user_id text primary key, data jsonb not null default \'{}\'::jsonb, updated_at bigint not null)',
   "create table if not exists parent_learning (user_id text not null, id text not null, kind text not null, data jsonb not null default '{}'::jsonb, updated_at bigint not null, deleted boolean not null default false, primary key (user_id, id))",
   'create index if not exists parent_learning_recent on parent_learning (user_id, updated_at desc)',
