@@ -35,6 +35,8 @@ for (const id of ['career-grid','career-search','career-category','start-discove
   if (!html.includes('id="' + id + '"')) throw new Error('Missing Career Roadmaps UI element: ' + id);
 }
 for (const feature of ['Saved careers','show-matches','data-open','data-save','Start my roadmap','data-stage','renderRoadmaps','saveCareerRoadmap']) if (!js.includes(feature)) throw new Error('Missing interaction: ' + feature);
+if (!js.includes('data-due') || !js.includes('data-note') || !js.includes('Overdue by')) throw new Error('Milestone target dates and notes are missing');
+if (!api.includes('stage.due') || !api.includes('stage.note')) throw new Error('Roadmap API does not keep milestone dates and notes');
 if (!html.includes('sync.js') || !html.includes('vendor/neon-auth.js')) throw new Error('Authenticated account sync is not loaded');
 if (!html.includes('career-sources.js')) throw new Error('Career source registry is not loaded');
 if (!js.includes('Official Ghana reference points')) throw new Error('Career source links are not rendered');
