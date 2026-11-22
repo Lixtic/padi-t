@@ -12,6 +12,7 @@ global.__PADI_SQL__ = { query: async (text, p) => {
   if (/^insert into parent_learning/.test(t)) { rows.set(p[0] + '/' + p[1], { id: p[1], kind: p[2], data: JSON.parse(p[3]), updated_at: p[4] }); return []; }
   if (/^select id, kind, data, updated_at, deleted from parent_learning/.test(t)) return [...rows.values()].filter((r) => !r.deleted);
   if (/^delete from parent_learning where user_id = \$1 and id = \$2/.test(t)) { rows.delete(p[0] + '/' + p[1]); return []; }
+  if (/^delete from notifications where user_id = \$1 and \(learning_record_id = \$2 or dedupe_key = \$3\)/.test(t)) return [];
   if (/^select 1 as x from parent_learning/.test(t)) { const r = rows.get(p[0] + '/' + p[1]); return r && !r.deleted ? [{ x: 1 }] : []; }
   if (/^select count\(\*\)::int as n from parent_learning/.test(t)) return [{ n: [...rows.values()].filter((r) => !r.deleted).length }];
   return [];
