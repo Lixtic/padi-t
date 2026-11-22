@@ -174,6 +174,30 @@ The four exported rows under content standard `B7.1.3.1` were compared with the 
 
 All four rows remain **source-compared; discrepancies recorded; correction pending review**. No verification manifest entries are approved.
 
+
+## Computing: fifth Basic 7 indicator batch — Introduction to Word Processing
+
+**Source:** NaCCA Computing CCP PDF, printed pages 8–10 (PDF pages 36–38; zero-based PDF page indexes 36–38), Strand 2, Sub-strand 1, “Introduction to Word Processing”. Official source: https://nacca.gov.gh/wp-content/uploads/2023/06/COMPUTING.pdf.
+
+The four exported Basic 7 Computing keys under the `B7.2.1.1` prefix were compared with the official table.
+
+| Export key | Official indicator wording (source table) | Export comparison | Result |
+|---|---|---|---|
+| `B7.2.1.1.1` | “Explain the importance of word processing software” | The export indicator field appends `CC8.2` competency text and the `Exemplar(s):` marker. Its exemplar array contains the three source activities, but competency text is inserted into the final exemplar string. The official content standard wording is “Demonstrate how to use Microsoft Word (Editing)”; the export's strand field instead says “Demonstrate how to use Microsoft Word (Formatting Text)”. | **Indicator/exemplar boundary contamination; content-standard/strand label does not match the source section.** |
+| `B7.2.1.1.2` | “Demonstrate how to insert, select, delete and move text” | The indicator field appends a `DL5.1` competency fragment. The exported exemplar array begins with the trailing words “identify, locate…” from that competency description, then retains the three source activities. | **Indicator and exemplar fields contaminated by competency text; source activities are present.** |
+| `B7.2.1.1.3` | “Demonstrate how to find and replace content and undo edited changes” | The indicator field appends a `DL5.1` competency fragment. Its exemplar array contains the two activities listed for this indicator, but also includes a table-header/standard fragment and a separate “Explore the Tab button…” activity that appears on printed page 10 under a repeated `B7.2.1.1.3` code and a different “Formatting Text” standard heading. | **Confirmed cross-section/row contamination; source PDF itself repeats an indicator code under a different standard heading.** |
+| `B7.2.1.1.4` | “Demonstrate how to spell check, carry out content translation, language setting” | The indicator field contains fragments of the content-standard heading and `Exemplar(s):` marker. Its exemplar array includes the two source activities for this indicator, but also contains material for the separate formatting indicators printed on page 9: text decoration/case/size/colour and paragraph alignment/indentation/bullets/line spacing/shading. Those activities appear in the PDF under codes `B7.2.1.1.4.5` and `B7.2.1.1.4.6`, which are not separate keys in the exported index. | **Severe cross-indicator merge; two separately coded source indicators are folded into this export row.** |
+
+### Batch disposition
+
+- The source's content standard at the start of this section is `B7.2.1.1`, “Demonstrate how to use Microsoft Word (Editing)”. The export assigns the strand label “Demonstrate how to use Microsoft Word (Formatting Text)” to the `B7.2.1.1.1`–`.4` records. This is a source-to-export metadata discrepancy.
+- The source PDF lists `B7.2.1.1.4.5` and `B7.2.1.1.4.6` as additional formatting indicators on printed page 9, but the export index has no matching keys. Their exemplar activities appear to have been merged into the exported `B7.2.1.1.4` exemplar array.
+- Printed page 10 contains a further `B7.2.1.1.3` code for “Demonstrate how to set tabs and apply formatting” beneath a “Formatting Text” standard heading. Because the PDF repeats the code, do not infer a corrected code or merge this activity into another record without source-owner review.
+- The export's `B7.2.1.1.3` exemplar list therefore appears to combine material from at least two different table positions; `B7.2.1.1.4` combines material from at least three source indicators.
+- Preserve both the duplicated codes and the original source wording in the audit trail. These are source-document anomalies and export-structure discrepancies requiring human review, not permission to rewrite the curriculum.
+
+All four exported rows remain **source-compared; discrepancies recorded; correction pending review**. No verification manifest entries are approved.
+
 ## Required evidence before verification
 
 For each indicator proposed for verification, capture and review:
