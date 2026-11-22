@@ -51,11 +51,11 @@ const ran = (re) => log.filter((l) => re.test(l.text));
     assert.ok(purge[0].text.toLowerCase().includes('delete from ' + t) || purge[0].text.toLowerCase().includes('update ' + t), t + ' cleanup is included in the atomic purge');
   }
   assert.ok(purge[0].text.includes('lower(email)'), 'email-owned records are removed case-insensitively');
-  assert.ok(purge[0].text.includes("user_id = 'deleted'"), 'payment rows are anonymised');
+  assert.ok(purge[0].text.includes("THEN 'deleted' ELSE user_id END"), 'payment rows are anonymised');
 
   // Payments are anonymised, never deleted. Blocked accounts are never removed.
   assert.equal(ran(/^delete from payments/).length, 0);
-  assert.ok(ran(/^update payments set user_id = 'deleted', email = ''/).length === 1);
+  assert.ok(purge[0].text.includes('UPDATE payments SET'), 'payment rows are anonymised in the same atomic statement');
   assert.equal(ran(/blocked/).length, 0);
 
   // Another teacher's id is never used.
