@@ -1,0 +1,24 @@
+(() => {
+'use strict';
+const careers=window.GuidEdCareers||[];
+const $=s=>document.querySelector(s);
+const grid=$('#career-grid'),search=$('#career-search'),category=$('#career-category'),count=$('#career-count'),empty=$('#career-empty'),dialog=$('#career-dialog'),detail=$('#career-detail');
+const SAVED='guided.career-roadmaps.saved.v1';
+let saved=[];try{saved=JSON.parse(localStorage.getItem(SAVED)||'[]')}catch(e){}
+let onlySaved=false,matched=null;
+const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+[...new Set(careers.map(c=>c.category))].sort().forEach(v=>{const o=document.createElement('option');o.value=v;o.textContent=v;category.appendChild(o)});
+function persist(){try{localStorage.setItem(SAVED,JSON.stringify(saved))}catch(e){}}
+function filtered(){const q=search.value.trim().toLowerCase(),cat=category.value;return careers.filter(c=>(!onlySaved||saved.includes(c.id))&&(!matched||matched.has(c.id))&&(cat==='all'||c.category===cat)&&(!q||[c.title,c.category,c.summary,...c.skills,...c.subjects,...c.interests].join(' ').toLowerCase().includes(q)))}
+function render(){const list=filtered();count.textContent=list.length+' of '+careers.length+' careers';grid.innerHTML=list.map(c=>'<article class="cr-card"><div class="cr-card-top"><span class="cr-card-icon">'+c.icon+'</span><button class="cr-save" data-save="'+c.id+'" aria-label="Save '+esc(c.title)+'" aria-pressed="'+saved.includes(c.id)+'">'+(saved.includes(c.id)?'♥':'♡')+'</button></div><div class="cr-card-category">'+esc(c.category)+'</div><h3>'+esc(c.title)+'</h3><p>'+esc(c.summary)+'</p><div class="cr-card-bottom"><span>'+c.routes.length+' roadmap stages</span><button data-open="'+c.id+'">View roadmap →</button></div></article>').join('');empty.hidden=list.length>0}
+function openCareer(id){const c=careers.find(x=>x.id===id);if(!c)return;detail.innerHTML='<div class="cr-detail"><span class="cr-detail-icon">'+c.icon+'</span><div class="cr-card-category">'+esc(c.category)+'</div><h2>'+esc(c.title)+'</h2><p class="cr-detail-lede">'+esc(c.summary)+'</p><section class="cr-detail-section"><h3>Your pathway</h3>'+c.routes.map((r,i)=>'<div class="cr-route"><span class="cr-route-num">'+(i+1)+'</span><div><strong>'+esc(r.name)+'</strong><p>'+esc(r.detail)+'</p></div></div>').join('')+'</section><section class="cr-detail-section"><h3>Useful school subjects</h3><div class="cr-chips">'+c.subjects.map(x=>'<span class="cr-chip">'+esc(x)+'</span>').join('')+'</div></section><section class="cr-detail-section"><h3>Skills to develop</h3><div class="cr-chips">'+c.skills.map(x=>'<span class="cr-chip">'+esc(x)+'</span>').join('')+'</div></section><section class="cr-detail-section"><h3>Start now</h3><p>'+esc(c.next)+'</p></section><p class="cr-detail-note">'+esc(c.caution)+'</p><div class="cr-detail-action"><button data-save="'+c.id+'" aria-pressed="'+saved.includes(c.id)+'">'+(saved.includes(c.id)?'♥ Saved career':'♡ Save this career')+'</button></div></div>';dialog.showModal()}
+grid.addEventListener('click',e=>{const s=e.target.closest('[data-save]'),o=e.target.closest('[data-open]');if(s){const id=s.dataset.save;saved=saved.includes(id)?saved.filter(x=>x!==id):[...saved,id];persist();render();if(dialog.open)openCareer(id)}else if(o)openCareer(o.dataset.open)});
+detail.addEventListener('click',e=>{const s=e.target.closest('[data-save]');if(s){const id=s.dataset.save;saved=saved.includes(id)?saved.filter(x=>x!==id):[...saved,id];persist();openCareer(id);render()}});
+search.addEventListener('input',render);category.addEventListener('change',render);
+$('#saved-toggle').addEventListener('click',e=>{onlySaved=!onlySaved;e.currentTarget.setAttribute('aria-pressed',String(onlySaved));e.currentTarget.textContent=onlySaved?'♥ Saved careers':'♡ Saved careers';render()});
+$('#start-discovery').addEventListener('click',()=>{$('#discovery').hidden=false;$('#discovery').scrollIntoView({behavior:'smooth',block:'start'})});
+$('#close-discovery').addEventListener('click',()=>{$('#discovery').hidden=true;matched=null;render()});
+$('#show-matches').addEventListener('click',()=>{const picks=[...document.querySelectorAll('#interest-list input:checked')].map(x=>x.value);if(!picks.length){matched=null}else{const scores=careers.map(c=>({id:c.id,n:c.interests.filter(x=>picks.includes(x)).length})).filter(x=>x.n>0).sort((a,b)=>b.n-a.n);matched=new Set(scores.map(x=>x.id))}$('#discovery').hidden=true;onlySaved=false;$('#saved-toggle').setAttribute('aria-pressed','false');$('#saved-toggle').textContent='♡ Saved careers';render();$('#career-library').scrollIntoView({behavior:'smooth'})});
+$('#dialog-close').addEventListener('click',()=>dialog.close());dialog.addEventListener('click',e=>{if(e.target===dialog)dialog.close()});
+render();
+})();
