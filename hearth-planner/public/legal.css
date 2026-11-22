@@ -311,3 +311,12 @@ input:focus-visible, select:focus-visible, textarea:focus-visible, button:focus-
 .guide-list li:has(.news-thumb-link) { display: grid; grid-template-columns: 96px 1fr; column-gap: 14px; align-items: start; }
 .guide-list li:has(.news-thumb-link) .news-thumb-link { grid-row: 1 / span 3; }
 .news-thumb { display: block; width: 96px; height: 72px; object-fit: cover; border-radius: 10px; background: rgba(120, 130, 150, .12); }
+
+/* Free JHS lesson plan form on /lesson-plans (was an inline <style>, which the CSP blocks) */
+.jhs-downloads{margin:2rem 0;padding:1.25rem;border:1px solid #d8e1dc;border-radius:18px;background:#f7faf8}
+.jhs-downloads h2{margin-top:0}
+.jhs-plan-form{display:grid;grid-template-columns:1fr 1fr;gap:.65rem 1rem;max-width:680px}
+.jhs-plan-form label{font-weight:650;font-size:.92rem;align-self:end}
+.jhs-plan-form select{width:100%;min-height:44px;padding:.65rem;border:1px solid #bdcbc4;border-radius:10px;background:white;color:#17231d;font:inherit}
+.jhs-plan-form button{grid-column:1/-1;min-height:48px;border:0;border-radius:12px;background:#006a4e;color:white;font:inherit;font-weight:700;padding:.75rem 1rem;cursor:pointer}
+@media(max-width:520px){.jhs-plan-form{grid-template-columns:1fr}.jhs-plan-form button{grid-column:auto}}

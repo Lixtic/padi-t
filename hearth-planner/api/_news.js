@@ -153,10 +153,10 @@ function articleHtml(p) {
 }
 function indexHtml(posts) {
   const url = SITE + '/news';
-  const ld = { '@context': 'https://schema.org', '@type': 'CollectionPage', name: 'GuidEd News', url, description: 'Updates for Ghana teachers and parents.', inLanguage: 'en-GH' };
-  let inner = '<h1>News for teachers and parents</h1>\n<p class="lede">Short updates on exams, the school calendar and the curriculum, with a link to the official source where there is one.</p>\n';
+  const ld = { '@context': 'https://schema.org', '@type': 'CollectionPage', name: 'GuidEd News: Ghana education news', url, description: 'Ghana education news for teachers and parents.', inLanguage: 'en-GH' };
+  let inner = '<h1>Ghana education news for teachers and parents</h1>\n<p class="lede">Short updates on GES, NaCCA and WAEC announcements, exams, the school calendar and the curriculum, with a link to the official source where there is one.</p>\n';
   inner += posts.length ? '<ul class="guide-list">\n' + posts.map((p) => '<li>' + (p.image ? '<a class="news-thumb-link" href="/news/' + esc(p.slug) + '" tabindex="-1" aria-hidden="true">' + imgTag(p.slug, p.image, 'news-thumb') + '</a>' : '') + '<a href="/news/' + esc(p.slug) + '"><strong>' + esc(p.title) + '</strong></a><br><span class="upd">' + esc(longDate(p.published_at)) + ' · ' + esc(p.summary) + '</span></li>').join('\n') + '\n</ul>\n' : '<p>No news yet. Check back soon, or read our <a href="/guides">guides</a>.</p>\n';
-  return shell('News for Ghana Teachers and Parents · GuidEd', 'Short updates for Ghana teachers and parents on exams, the school calendar and the curriculum.', url, ld, inner + NOTE);
+  return shell('Ghana Education News: GES, NaCCA and WAEC Updates · GuidEd', 'Ghana education news for teachers and parents: GES, NaCCA and WAEC announcements, exams, the school calendar and curriculum updates, with official sources.', url, ld, inner + NOTE);
 }
 
 async function page(req, res) {

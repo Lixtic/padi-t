@@ -46,10 +46,10 @@ function topics(rows) {
 function subjectPage(cls, sub) {
   const lv = levelOf(cls), data = D[sub].classes[cls], terms = Object.keys(data).sort();
   const url = `${SITE}/lesson-plans/${pageSlug(cls, sub)}`;
-  const title = `${cls} ${sub} Lesson Plans (GES & NaCCA) · GuidEd`;
-  const desc = `Free ${cls} ${sub} lesson plans for Ghana teachers, following the NaCCA scheme of learning week by week. Notes, ${lv.exam.section} and Word export.`;
+  const title = `${cls} ${sub} Scheme of Work & Lesson Plans · GuidEd`;
+  const desc = `${cls} ${sub} scheme of work and weekly lesson plans for Ghana, week by week from the GES and NaCCA scheme of learning. Free lesson notes, ${lv.exam.section} and Word export.`;
   let h = head(title, desc, url);
-  h += `<h1>${esc(cls)} ${esc(sub)} lesson plans</h1>\n<p class="lede">Make a ready-to-teach weekly lesson plan for ${esc(cls)} ${esc(sub)} that follows the Ghana Education Service (GES) and NaCCA scheme of learning. You get two lessons, ${esc(lv.notes.toggle.toLowerCase())} and ${esc(lv.exam.section)} with a marking guide, as a Word file you can edit.</p>\n<p><a href="/"><strong>Make a ${esc(cls)} ${esc(sub)} plan now</strong></a>. A Lesson 1 preview needs no account.</p>\n`;
+  h += `<h1>${esc(cls)} ${esc(sub)} lesson plans and scheme of work</h1>\n<p class="lede">Below is the ${esc(cls)} ${esc(sub)} scheme of work, week by week, and you can make a ready-to-teach weekly lesson plan that follows the Ghana Education Service (GES) and NaCCA scheme of learning. You get two lessons, ${esc(lv.notes.toggle.toLowerCase())} and ${esc(lv.exam.section)} with a marking guide, as a Word file you can edit.</p>\n<p><a href="/"><strong>Make a ${esc(cls)} ${esc(sub)} plan now</strong></a>. A Lesson 1 preview needs no account.</p>\n`;
   h += `<h2>What ${esc(cls)} ${esc(sub)} covers</h2>\n<p>Topics by week, from the scheme of learning that GuidEd uses to write each plan.</p>\n`;
   for (const t of terms) {
     const tp = topics(data[t]);
@@ -76,8 +76,8 @@ const allClasses = L.ALL_CLASSES.filter((c) => Object.keys(D).some((s) => D[s].c
 for (const cls of allClasses) {
   const subs = Object.keys(D).filter((s) => D[s].classes[cls]).sort();
   const url = `${SITE}/lesson-plans/${clsSlug(cls)}`;
-  let h = head(`${cls} Lesson Plans for Ghana (GES & NaCCA) · GuidEd`, `Free ${cls} lesson plans for every subject, following the GES and NaCCA scheme of learning.`, url);
-  h += `<h1>${esc(cls)} lesson plans</h1>\n<p class="lede">Pick a subject to see what ${esc(cls)} covers each week, then make a plan in GuidEd.</p>\n<ul>\n${subs.map((s) => `<li><a href="/lesson-plans/${pageSlug(cls, s)}">${esc(cls)} ${esc(s)}</a></li>`).join('\n')}\n</ul>\n` + foot;
+  let h = head(`${cls} Lesson Plans & Scheme of Work for Ghana (GES, NaCCA) · GuidEd`, `${cls} lesson plans and scheme of work for every subject, week by week from the GES and NaCCA scheme of learning. Free to start, Word export.`, url);
+  h += `<h1>${esc(cls)} lesson plans and scheme of work</h1>\n<p class="lede">Pick a subject to see the ${esc(cls)} scheme of work, what is covered each week, then make a lesson plan in GuidEd.</p>\n<ul>\n${subs.map((s) => `<li><a href="/lesson-plans/${pageSlug(cls, s)}">${esc(cls)} ${esc(s)}</a></li>`).join('\n')}\n</ul>\n` + foot;
   fs.writeFileSync(path.join(OUT, clsSlug(cls) + '.html'), h);
   urls.push(url); pages++;
   for (const s of subs) { fs.writeFileSync(path.join(OUT, pageSlug(cls, s) + '.html'), subjectPage(cls, s)); urls.push(`${SITE}/lesson-plans/${pageSlug(cls, s)}`); pages++; }
