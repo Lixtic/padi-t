@@ -71,10 +71,15 @@ Later versions may add learner-selected school subjects, preferred work activiti
 - Navigation entry from the GuidEd app.
 - Data and UI smoke tests.
 
-### Phase 2 — Ghana source verification
-- Expand the catalogue to 100+ careers.
-- Add source-backed admission routes, recognised institutions, regulators, scholarship sources and review dates.
-- Add editorial review workflow and stale-data checks.
+### Phase 2 — Ghana source verification (in progress)
+- Establish a central registry of official Ghana reference sources with source owner, purpose, URL and checked date.
+- Attach source references and an explicit review state to every career profile.
+- Show official reference links inside each career profile, with a warning that a source link does not itself verify a specific course or provider.
+- Expand the catalogue in reviewed batches toward 100+ careers.
+- Add source-backed admission routes, recognised institutions, regulators, scholarship sources and review dates only after checking the relevant official source.
+- Add an editorial review workflow and stale-data checks.
+
+The current Phase 2 implementation is a source-governance foundation, not a claim that all career pathways have been independently verified. Existing profiles remain labelled `orientation-only`. The source registry currently includes GTEC institution/accreditation discovery, CTVET's qualifications framework and accredited-provider register, Ghana TVET Service qualification progression, the Nursing and Midwifery Council, and the Medical and Dental Council. Some career families still need their own regulator or professional-body references before any detailed licensing claims can be marked source-reviewed.
 
 ### Phase 3 — Learner accounts and personal roadmaps
 - Persist saved careers and milestones to the signed-in learner account.
