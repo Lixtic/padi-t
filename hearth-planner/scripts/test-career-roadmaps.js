@@ -7,7 +7,7 @@ const context = { window: {} };
 vm.runInNewContext(read('public/career-sources.js'), context);
 vm.runInNewContext(read('public/career-data.js'), context);
 const careers = context.window.GuidEdCareers;
-if (!Array.isArray(careers) || careers.length < 30) throw new Error('Expected at least 30 career profiles in the first catalogue expansion');
+if (!Array.isArray(careers) || careers.length < 45) throw new Error('Expected at least 30 career profiles in the second catalogue batch');
 const ids = careers.map(c => c.id);
 if (new Set(ids).size !== ids.length) throw new Error('Career IDs must be unique');
 if (new Set(careers.map(c => c.title)).size !== careers.length) throw new Error('Career titles must be unique');
