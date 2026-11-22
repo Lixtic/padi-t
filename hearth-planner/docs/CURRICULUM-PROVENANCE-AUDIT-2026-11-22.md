@@ -149,6 +149,31 @@ The six exported rows under content standard `B7.1.2.1` were compared with the o
 
 All six rows remain **source-compared; discrepancies recorded; correction pending review**. No verification manifest entries are approved.
 
+
+## Computing: fourth Basic 7 indicator batch — Health and Safety in the Use of ICT Tools
+
+**Source:** NaCCA Computing CCP PDF, printed page 7 (PDF page 35; zero-based PDF page index 34), Strand 1, Sub-strand 3, “Health and Safety in the Use of ICT Tools”. Official source: https://nacca.gov.gh/wp-content/uploads/2023/06/COMPUTING.pdf.
+
+The four exported rows under content standard `B7.1.3.1` were compared with the official table.
+
+| Indicator code | Official indicator wording (source table) | Export comparison | Result |
+|---|---|---|---|
+| `B7.1.3.1.1` | “Describe health measures and current regulatory requirements and potential computing-related disorders” | The export indicator field includes `CC8.1`, the `Exemplar(s):` marker and the beginning of the first exemplar. The exported exemplar array does not preserve the source's three-item list cleanly: the first source activity (“Watch videos…”) is absent from the array, while competency fragments are inserted among the remaining activities. | **Indicator/exemplar boundary contamination and missing first exemplar activity confirmed.** |
+| `B7.1.3.1.2` | “Describe Safety measures in using ICT tools” | Indicator wording matches the PDF. The two exported exemplar entries correspond to the two source activities about liquid spills/electronic circuits and tripping over power cables/electrical terminals. | **No substantive discrepancy identified in the compared indicator and exemplar fields.** |
+| `B7.1.3.1.3` | “Demonstrate how to apply Health and Safety measures in Using ICT Tools” | The export indicator appends `PL5.3` and `CP 5.7` competency descriptions. Its exemplar array contains a workstation-risk activity that appears in the PDF immediately after the B7.1.3.1.3 line, but the PDF labels that following activity as `B8.1.3.1.1` (“Examine workstation health risk assessment methods”). | **Competency contamination confirmed; source document has an apparent code/placement inconsistency requiring human review. Do not assign the workstation activity to B7.1.3.1.3 automatically.** |
+| `B7.1.3.1.4` | “Explore safety measures at workstations” | The export indicator includes an `Exemplar(s):` fragment and `PL5.3` competency text. The exemplar array contains the workstation hazard-reduction activity in the PDF, but competency fragments are appended to the exported text. | **Indicator/exemplar boundary contamination confirmed; core activity text is present.** |
+
+### Batch disposition
+
+- The content standard code `B7.1.3.1` and wording “Demonstrate how to apply Health and Safety measures in using ICT Tools” match the PDF.
+- `B7.1.3.1.1` has a concrete exemplar extraction defect: the PDF lists three activities, but the export does not retain the first activity as an exemplar and mixes competency text into the array.
+- `B7.1.3.1.2` is the cleanest of the four compared rows; its indicator and two exemplar activities correspond to the source.
+- The PDF places `B8.1.3.1.1` immediately after the `B7.1.3.1.3` indicator line, and its workstation-risk exemplar is associated with that B8 code in the PDF text. The export instead stores that activity under `B7.1.3.1.3`. This is not safe to “correct” by inference; the source document itself must be reviewed and the discrepancy escalated.
+- `B7.1.3.1.4` retains the central workstation-safety activity but its indicator and exemplar fields contain competency fragments.
+- Preserve the source PDF's wording and its apparent code inconsistency in the audit trail. Do not silently reassign the activity or rewrite the official source.
+
+All four rows remain **source-compared; discrepancies recorded; correction pending review**. No verification manifest entries are approved.
+
 ## Required evidence before verification
 
 For each indicator proposed for verification, capture and review:
