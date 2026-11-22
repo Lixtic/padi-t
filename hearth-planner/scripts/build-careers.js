@@ -37,7 +37,7 @@ function page(c) {
   let h = head(title, desc, url, ld);
   h += `<p class="upd">${esc(c.category)} · Career orientation</p>\n<h1>${esc(c.icon)} ${esc(c.title)}: career pathway in Ghana</h1>\n<p class="lede">${esc(c.summary)}</p>\n`;
   h += `<h2>Your pathway, step by step</h2>\n<ol>\n${c.routes.map((r) => `<li><strong>${esc(r.name)}.</strong> ${esc(r.detail)}</li>`).join('\n')}\n</ol>\n`;
-  h += `<h2>School subjects that help</h2>\n${ul(c.subjects)}<h2>Skills to build</h2>\n${ul(c.skills)}`;
+  h += `<h2>School subjects that help</h2>\n${ul(c.subjects)}<p class="upd">Build these subjects week by week with GuidEd's <a href="/lesson-plans">lesson plans for every class</a>.</p>\n<h2>Skills to build</h2>\n${ul(c.skills)}`;
   h += `<h2>A first step you can take now</h2>\n<p>${esc(c.next)}</p>\n`;
   h += `<p class="upd">${esc(c.caution)}</p>\n`;
   const refs = (c.sourceRefs || []).map((id) => sources[id]).filter(Boolean);
@@ -51,5 +51,15 @@ function page(c) {
 
 fs.rmSync(out, { recursive: true, force: true }); fs.mkdirSync(out, { recursive: true });
 for (const c of careers) fs.writeFileSync(path.join(out, c.id + '.html'), page(c));
-module.exports = { careers };
+// Which career-profile subject names each GuidEd subject stands for.
+const SUBJECT_MAP = {
+  'Mathematics': ['Core Mathematics', 'Elective Mathematics'], 'English Language': ['English Language'], 'Computing': ['Computing / ICT', 'Computing'],
+  'Integrated Science': ['Science', 'Physics', 'Biology', 'Chemistry'], 'Science': ['Science', 'Physics', 'Biology', 'Chemistry'], 'General Science': ['Science', 'Physics', 'Biology', 'Chemistry'],
+  'Social Studies': ['Social Studies', 'History'], 'History': ['History', 'Social Studies'], 'Creative Arts and Design': ['Creative Arts'], 'Creative Arts': ['Creative Arts'],
+  'Career Technology': ['Career Technology', 'Technical Drawing'] };
+function careersForSubject(sub, max) {
+  const want = SUBJECT_MAP[sub]; if (!want) return [];
+  return careers.map((c) => ({ c, n: c.subjects.filter((x) => want.includes(x)).length })).filter((x) => x.n).sort((a, b) => b.n - a.n || a.c.title.localeCompare(b.c.title)).slice(0, max || 8).map((x) => x.c);
+}
+module.exports = { careers, careersForSubject };
 if (require.main === module) console.log(careers.length + ' career pages');

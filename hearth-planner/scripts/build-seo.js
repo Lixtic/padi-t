@@ -6,6 +6,7 @@ const root = path.join(__dirname, '..');
 const L = require(path.join(root, 'api/_levels.js'));
 const D = require(path.join(root, 'data/schemes.json')).subjects;
 const SITE = 'https://www.guidedgh.site';
+const { careersForSubject } = require('./build-careers.js');
 const OUT = path.join(root, 'public/lesson-plans');
 const DATE = new Date().toISOString().slice(0, 10);
 const esc = (s) => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
@@ -61,6 +62,8 @@ function subjectPage(cls, sub) {
   if (terms.length < 3 && /^Basic [789]$/.test(cls)) h += `<p class="upd">Term 1 is available now. Terms 2 and 3 are being added.</p>\n`;
   const sibs = lv.classes.filter((c) => c !== cls && D[sub].classes[c]).map((c) => `<a href="/lesson-plans/${pageSlug(c, sub)}">${esc(c)} ${esc(sub)}</a>`);
   const subs = Object.keys(D).filter((s) => s !== sub && D[s].classes[cls]).map((s) => `<a href="/lesson-plans/${pageSlug(cls, s)}">${esc(cls)} ${esc(s)}</a>`);
+  const cr = careersForSubject(sub, 8);
+  if (cr.length) h += `<h2>Careers that use ${esc(sub)}</h2>\n<p>Learners often ask what a subject is for. These careers build on ${esc(sub)}. <a href="/career-roadmaps">Explore all careers</a>.</p>\n<ul>${cr.map((c) => `<li><a href="/careers/${c.id}">${esc(c.icon)} ${esc(c.title)}</a></li>`).join('')}</ul>\n`;
   if (subs.length) h += `<h2>More ${esc(cls)} subjects</h2>\n<ul>${subs.map((x) => '<li>' + x + '</li>').join('')}</ul>\n`;
   if (sibs.length) h += `<h2>${esc(sub)} for other classes</h2>\n<ul>${sibs.map((x) => '<li>' + x + '</li>').join('')}</ul>\n`;
   h += `<p class="upd">GuidEd uses AI and can make mistakes. Check each plan against your syllabus and textbook. GuidEd is an independent tool, not an official GES or NaCCA product.</p>\n` + foot;
