@@ -105,7 +105,7 @@
       "schedule": "0 17 * * 0"
     },
     {
-      "path": "/api/retention",
+      "path": "/api/sync?what=retention",
       "schedule": "17 3 * * *"
     }
   ],
