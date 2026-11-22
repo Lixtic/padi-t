@@ -35,6 +35,22 @@ module.exports = [
     related: ['what-is-a-scheme-of-learning', 'term-planning-and-teacher-workload', 'how-to-write-a-ges-lesson-plan', 'nacca-lesson-plan-template-basic-1-9']
   },
   {
+    slug: 'scheme-of-work-primary-basic-1-6-ghana', tool: 'scheme-generator', toolDefault: { cls: 'Basic 4', sub: 'Mathematics' }, audience: 'Teachers', date: '2026-11-22',
+    title: 'Primary Scheme of Work (Basic 1 to 6) in Ghana: How to Plan the Term',
+    desc: 'How to plan a primary school scheme of work for Basic 1 to 6 in Ghana: what to include, how to pace a term, and a free generator that gives the week-by-week scheme.',
+    intro: 'A primary teacher often handles every subject for one class, so a term plan has to cover Mathematics, English, Science, Our World Our People, Creative Arts and more, all in the same few weeks. A clear scheme of work for each subject keeps you from falling behind in one while you rush another. This guide shows how to plan a Basic 1 to 6 term, and the generator below gives you the week-by-week scheme for any class and subject.',
+    sections: [
+      { h: 'Plan one subject at a time, then put them together', p: ['Start with a scheme for each subject, because each has its own strands and its own order. Then lay them side by side against your timetable. This shows you early if a week is overloaded, for example when a Mathematics test, a Science project and an English composition all fall in Week 6.'] },
+      { h: 'Use the generator as your starting point', p: ['Choose your class, subject and term above. You get the topics for every week, with the strand, sub-strand, content standard and indicators. Print it, or download the Word file and add your own activities, materials and remarks. Treat it as a base to adapt, and check it against your curriculum document and school calendar.'] },
+      { h: 'Pace for young learners', p: ['Lower primary learners need more time on each idea and more practice with real objects. If a topic runs across several weeks in the scheme, plan the first lesson for exploring, the middle ones for practice, and the last for a quick check. Do not move on just because the calendar says so. If most of the class is not ready, note it in Remarks and adjust the next week.'] },
+      { h: 'Build in revision and assessment weeks', p: ['Most terms end with revision and an end-of-term assessment. Mark those weeks in your scheme from the start, and decide which earlier topics you will revisit. A short class exercise every week or two is easier to manage than one large test.'] },
+      { h: 'Keep a record you can show', p: ['A scheme with honest Remarks (what was taught, what was not finished, what learners found hard) helps you, your head teacher and your circuit supervisor. It also makes next term\'s plan easier, since you already know what to repeat.'] },
+      { h: 'From scheme to lesson plans', p: ['Each week of the scheme becomes one or more lesson plans. Take the indicators for the week, write one clear objective for each lesson, and plan what learners will do in the starter, main part and closure. GuidEd writes weekly lesson plans from the same scheme, which you can edit before you teach.'] }
+    ],
+    takeaway: 'Plan each subject on its own scheme, check them together against your timetable, leave room for revision, and write honest remarks. Use the generator to get the weekly topics quickly, then add your own activities.',
+    related: ['scheme-of-work-ghana-how-to-prepare', 'what-is-a-scheme-of-learning', 'term-planning-and-teacher-workload', 'how-to-write-a-ges-lesson-plan']
+  },
+  {
     slug: 'shs-lesson-plan-ghana-format-and-tips', audience: 'Teachers', date: '2026-11-22',
     title: 'SHS Lesson Plan in Ghana: Format, Tips and Free Plans',
     desc: 'How to write a Senior High School lesson plan in Ghana: the format, how it differs from JHS, tips for double periods, and where to get free weekly plans.',
