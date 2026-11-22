@@ -69,6 +69,17 @@ The Computing PDF's cover identifies NaCCA under the Ministry of Education, the 
 
 **Important boundary:** locating and inspecting these official documents establishes candidate sources and document identity only. It does not verify any exported indicator, exemplar, content standard, strand or sub-strand. No exact record-to-document reconciliation has been completed in this follow-up. The official PDF page numbers and curriculum's printed page labels may differ; both should be recorded during reconciliation.
 
+## Source-document spot checks (not yet matched to exported rows)
+
+A first pass through the official PDF text confirms that the documents contain distinct content-standard and indicator levels. This distinction matters when reconciling the database export:
+
+- **Computing, Basic 7:** the PDF labels `B7.1.1.1` as the content standard, “Examine the parts of a computer”. The indicator rows beneath it are separately numbered `B7.1.1.1.1`, `B7.1.1.1.2`, `B7.1.1.1.3` and `B7.1.1.1.4`. The first indicator discusses fourth-generation computers; the second addresses input devices. In the PDF text extraction, this table begins on printed page 2. Source: https://nacca.gov.gh/wp-content/uploads/2023/06/COMPUTING.pdf.
+- **Creative Arts and Design, Basic 7:** the scope-and-sequence section distinguishes content standard `B7/JHS1.2.1.1` for Visual Arts media and techniques from the individual indicator rows later in the subject section. The PDF contents place the Basic 7 Creative Arts section under Strand 2, Sub-strand 2.1, “Media and Techniques”. Source: https://nacca.gov.gh/wp-content/uploads/2022/10/Creative-Arts-and-Designs.pdf.
+- **Career Technology, Basic 7:** the PDF uses the `B7/JHS1` code form. For example, `B7/JHS1.I.1.1` is a content standard and `B7/JHS1.I.1.1.1` is an indicator. This code format should not be mechanically normalised into another subject's code pattern without preserving the source form. Source: https://nacca.gov.gh/wp-content/uploads/2022/10/Career-Technology.pdf.
+- **Social Studies:** the PDF cover identifies the JHS1 (B7)–JHS3 (B9) CCP curriculum, September 2020, © NaCCA, Ministry of Education 2021. This establishes document identity, not any exported record's correctness. Source: https://nacca.gov.gh/wp-content/uploads/2023/06/SOCIAL-STUDIES.pdf.
+
+These are document-level observations from the official PDFs. The source rows have **not** yet been paired with matching database-export rows, and none of these examples is an approval to change the verification manifest. During reconciliation, compare code, label/type (content standard versus indicator), exact wording, exemplar grouping, subject, basic level and printed page together.
+
 ## Required evidence before verification
 
 For each indicator proposed for verification, capture and review:
