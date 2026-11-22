@@ -7,9 +7,10 @@ const context = { window: {} };
 vm.runInNewContext(read('public/career-sources.js'), context);
 vm.runInNewContext(read('public/career-data.js'), context);
 const careers = context.window.GuidEdCareers;
-if (!Array.isArray(careers) || careers.length < 8) throw new Error('Expected at least eight starter careers');
+if (!Array.isArray(careers) || careers.length < 30) throw new Error('Expected at least 30 career profiles in the first catalogue expansion');
 const ids = careers.map(c => c.id);
 if (new Set(ids).size !== ids.length) throw new Error('Career IDs must be unique');
+if (new Set(careers.map(c => c.title)).size !== careers.length) throw new Error('Career titles must be unique');
 for (const c of careers) {
   for (const key of ['id','title','category','summary','interests','strengths','subjects','routes','skills','next','caution']) {
     if (!c[key]) throw new Error(c.id + ' is missing ' + key);
@@ -30,4 +31,4 @@ if (!html.includes('career-sources.js')) throw new Error('Career source registry
 if (!js.includes('Official Ghana reference points')) throw new Error('Career source links are not rendered');
 if (!app.includes('href="/career-roadmaps"')) throw new Error('Career Roadmaps navigation link missing');
 new Function(js.replace(/^\(\(\) => \{/, '(function(){').replace(/\}\)\(\);\s*$/, '})();'));
-console.log('Career Roadmaps checks passed: ' + careers.length + ' starter careers.');
+console.log('Career Roadmaps checks passed: ' + careers.length + ' career profiles.');
