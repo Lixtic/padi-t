@@ -52,6 +52,23 @@ Do not auto-correct, delete, or mark these records verified from heuristics alon
 
 NaCCA's official Common Core Programme (CCP) page provides subject-level curriculum downloads for the JHS programme: https://nacca.gov.gh/common-core-programme-ccp/. An official NaCCA-hosted Computing CCP PDF is also discoverable at https://nacca.gov.gh/wp-content/uploads/2023/06/COMPUTING.pdf; its indexed contents identify the Basic 7–9 structure and carry NaCCA/Ministry of Education attribution. These are useful starting points for the source register, but this audit has not yet reconciled the 966 database records against the PDFs. The official CCP page should be used to locate the matching document for each subject, and the edition/date on each downloaded PDF should be recorded.
 
+## Official source discovery and document register
+
+The official NaCCA Common Core Programme page lists subject-level curriculum downloads for the CCP learning areas: https://nacca.gov.gh/common-core-programme-ccp/. The following direct NaCCA-hosted PDFs were located and their cover/contents metadata inspected during the follow-up source discovery (22 November 2026):
+
+| Subject | Official document title | Cover metadata | Official PDF |
+|---|---|---|---|
+| Computing | Computing Common Core Programme Curriculum for JHS1 (B7)–JHS3 (B9) | September 2020; © NaCCA, Ministry of Education 2021 | https://nacca.gov.gh/wp-content/uploads/2023/06/COMPUTING.pdf |
+| Career Technology | Career Technology Common Core Programme Curriculum for B7/JHS1–B9/JHS3 | September 2020; © NaCCA, Ministry of Education 2021 | https://nacca.gov.gh/wp-content/uploads/2022/10/Career-Technology.pdf |
+| Creative Arts and Design | Creative Arts and Design Common Core Programme Curriculum for B7/JHS1–B9/JHS3 | September 2020; © NaCCA, Ministry of Education 2021 | https://nacca.gov.gh/wp-content/uploads/2022/10/Creative-Arts-and-Designs.pdf |
+| Social Studies | Social Studies Common Core Programme Curriculum for JHS1 (B7)–JHS3 (B9) | September 2020; © NaCCA, Ministry of Education 2021 | https://nacca.gov.gh/wp-content/uploads/2023/06/SOCIAL-STUDIES.pdf |
+| Religious and Moral Education | Religious and Moral Education Common Core Programme Curriculum for B7–B9 | NaCCA-hosted CCP PDF; © NaCCA, Ministry of Education 2021 | https://nacca.gov.gh/wp-content/uploads/2023/06/Religious-and-Moral-Education.pdf |
+| English Language | English Language Common Core Programme Curriculum for B7–B9 | NaCCA-hosted CCP PDF; © NaCCA, Ministry of Education 2021 | https://www.nacca.gov.gh/wp-content/uploads/2023/06/ENGLISH-LANGUAGE.pdf |
+
+The Computing PDF's cover identifies NaCCA under the Ministry of Education, the Basic 7–9 CCP scope and September 2020; its contents include the Basic 7–9 strands and sub-strands. The Career Technology, Creative Arts and Design, and Social Studies PDFs likewise identify the Basic 7–9 CCP scope and September 2020. The RME and English PDFs are included as official subject-source leads, but their full document metadata and page mappings still need to be captured in the source register.
+
+**Important boundary:** locating and inspecting these official documents establishes candidate sources and document identity only. It does not verify any exported indicator, exemplar, content standard, strand or sub-strand. No exact record-to-document reconciliation has been completed in this follow-up. The official PDF page numbers and curriculum's printed page labels may differ; both should be recorded during reconciliation.
+
 ## Required evidence before verification
 
 For each indicator proposed for verification, capture and review:
@@ -82,7 +99,7 @@ A record should enter `verifiedIndicators` only after a human reviewer has recon
 ## Scope and limitations
 
 - This audit inspected the exported JSON and application verification logic in the repository.
-- The original NaCCA source PDFs/documents were not present in the reviewed repository paths, so this audit does not certify the wording or accuracy of any curriculum record.
+- The source discovery follow-up located official NaCCA-hosted CCP PDFs for Computing, Career Technology, Creative Arts and Design, Social Studies, RME and English Language. These documents have not yet been reconciled indicator-by-indicator against the database export, so this audit does not certify the wording or accuracy of any curriculum record.
 - The counts above are generated from the current export using the same heuristic categories documented by the existing audit script. Heuristic flags are not an official quality score.
 - This is a technical provenance audit, not a formal NaCCA endorsement or legal opinion.
 
