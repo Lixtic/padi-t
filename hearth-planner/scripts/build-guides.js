@@ -13,12 +13,12 @@ for (const a of articles) for (const r of a.related || []) if (!bySlug.has(r)) t
 const words = (a) => [a.intro, a.takeaway].concat(a.sections.flatMap((s) => (s.p || []).concat(s.ul || []))).join(' ').split(/\s+/).filter(Boolean).length;
 const minutes = (a) => Math.max(2, Math.round(words(a) / 200));
 
-const head = (title, desc, url, ld) => `<!doctype html>
+const head = (title, desc, url, ld, img) => `<!doctype html>
 <html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"><meta name="theme-color" content="#1B45A8"><link rel="icon" href="/favicon.svg" type="image/svg+xml"><link rel="icon" href="/favicon.ico" sizes="48x48"><link rel="icon" href="/icons/icon-192.png" sizes="192x192" type="image/png"><link rel="stylesheet" href="/legal.css"><script src="/legal-theme.js"></script>
 <title>${esc(title)}</title>
 <meta name="description" content="${esc(desc)}">
 <link rel="canonical" href="${url}">
-<meta property="og:type" content="article"><meta property="og:site_name" content="GuidEd"><meta property="og:title" content="${esc(title)}"><meta property="og:description" content="${esc(desc)}"><meta property="og:url" content="${url}"><meta property="og:image" content="${SITE}/icons/icon-512.png"><meta name="twitter:card" content="summary_large_image"><meta name="twitter:title" content="${esc(title)}"><meta name="twitter:description" content="${esc(desc)}"><meta name="twitter:image" content="${SITE}/icons/icon-512.png">
+<meta property="og:type" content="article"><meta property="og:site_name" content="GuidEd"><meta property="og:title" content="${esc(title)}"><meta property="og:description" content="${esc(desc)}"><meta property="og:url" content="${url}"><meta property="og:image" content="${img || SITE + '/icons/icon-512.png'}"><meta name="twitter:card" content="summary_large_image"><meta name="twitter:title" content="${esc(title)}"><meta name="twitter:description" content="${esc(desc)}"><meta name="twitter:image" content="${img || SITE + '/icons/icon-512.png'}">
 <script type="application/ld+json">${JSON.stringify(ld)}</script>
   <link rel="stylesheet" href="/cookie-consent.css">
   <script src="/cookie-consent.js" defer></script>
@@ -34,8 +34,9 @@ function list(items) { return '<ul>\n' + items.map((x) => '<li>' + esc(x) + '</l
 function articlePage(a) {
   const url = `${SITE}/guides/${a.slug}`;
   const ld = { '@context': 'https://schema.org', '@graph': [{ '@type': 'Article', headline: a.title, description: a.desc, inLanguage: 'en-GH', datePublished: a.date || DATE, dateModified: a.date || DATE, mainEntityOfPage: url, author: { '@type': 'Organization', name: 'GuidEd' }, publisher: { '@type': 'Organization', name: 'GuidEd', url: SITE + '/' } }, { '@type': 'BreadcrumbList', itemListElement: [{ '@type': 'ListItem', position: 1, name: 'Home', item: SITE + '/' }, { '@type': 'ListItem', position: 2, name: 'Guides', item: SITE + '/guides' }, { '@type': 'ListItem', position: 3, name: a.title, item: url }] }] };
-  let h = head(`${a.title} · GuidEd`, a.desc, url, ld);
+  let h = head(`${a.title} · GuidEd`, a.desc, url, ld, a.image ? SITE + a.image.src : '');
   h += `<p class="upd">${esc(a.audience)} · ${minutes(a)} min read · Updated ${a.date || DATE}</p>\n<h1>${esc(a.title)}</h1>\n<p class="lede">${esc(a.intro)}</p>\n`;
+  if (a.image) h += `<figure class="guide-fig"><a href="${esc(a.image.src)}"><img src="${esc(a.image.src)}" width="${a.image.w}" height="${a.image.h}" alt="${esc(a.image.alt)}" fetchpriority="low"></a><figcaption>${esc(a.image.caption)}</figcaption></figure>\n`;
   for (const s of a.sections) {
     h += `<h2>${esc(s.h)}</h2>\n`;
     for (const p of s.p || []) h += `<p>${esc(p)}</p>\n`;
