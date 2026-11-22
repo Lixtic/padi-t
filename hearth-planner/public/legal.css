@@ -333,3 +333,11 @@ input:focus-visible, select:focus-visible, textarea:focus-visible, button:focus-
 .guide-page.is-active { border-color: var(--accent); background: var(--accent); color: #fff; }
 .guide-page:disabled { opacity: .4; cursor: default; }
 @media (max-width: 520px) { .guide-page { min-width: 38px; height: 40px; padding: 0 10px; } .guide-pager { gap: 5px; } }
+
+/* Guides hero with a classroom photo (added when /img/guides-hero.webp exists) */
+.guides-hero.has-photo { min-height: 360px; display: flex; flex-direction: column; justify-content: center; background: linear-gradient(100deg, rgba(6,64,49,.97) 0%, rgba(6,64,49,.9) 40%, rgba(6,64,49,.5) 72%, rgba(6,64,49,.12) 100%), url(/img/guides-hero.webp) 72% center / cover no-repeat, #004D39; }
+.guides-hero.has-photo h1 { max-width: 560px; text-shadow: 0 2px 18px rgba(0,0,0,.25); }
+.guides-hero.has-photo .lede { max-width: 520px; color: rgba(255,255,255,.94); }
+.guides-hero.has-photo .guides-primary { align-self: flex-start; }
+@media (min-width: 820px) { .guides-hero.has-photo { min-height: 400px; padding: 44px 44px 40px; background: linear-gradient(90deg, rgba(6,64,49,.97) 0%, rgba(6,64,49,.92) 34%, rgba(6,64,49,.35) 62%, rgba(6,64,49,0) 100%), url(/img/guides-hero.webp) right center / cover no-repeat, #004D39; } }
+@media (max-width: 520px) { .guides-hero.has-photo { min-height: 372px; background: linear-gradient(100deg, rgba(6,64,49,.97) 0%, rgba(6,64,49,.86) 55%, rgba(6,64,49,.45) 100%), url(/img/guides-hero.webp) 78% center / cover no-repeat, #004D39; } }
