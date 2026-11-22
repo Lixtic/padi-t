@@ -65,6 +65,7 @@ const SCHEMA = [
   'alter table notifications add column if not exists learning_record_id text',
   // Purge historical soft-deleted learning rows: their content is no longer needed for snapshot-based sync.
   'delete from parent_learning where deleted = true',
+  "update notifications set title = 'Learning activity update', body = '' where type = 'learning' and child_id is null",
   'create index if not exists notifications_user_recent on notifications (user_id, created_at desc)',
   // News posts written by admins and shown at /news.
   "create table if not exists news_posts (id text primary key, slug text unique not null, title text not null, summary text not null, body text not null, source_name text not null default '', source_url text not null default '', status text not null default 'published', published_at bigint not null, updated_at bigint not null, author text not null default '')",
