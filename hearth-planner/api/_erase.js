@@ -20,6 +20,7 @@ async function eraseAccount(me) {
     'delete from profiles where user_id = $1',
     'delete from account_profiles where user_id = $1',
     'delete from parent_learning where user_id = $1',   // children's names, classes and saved lessons
+    'delete from notifications where user_id = $1',   // may contain a child's name, subject or learning topic
     'delete from reminder_log where user_id = $1',
     'delete from mail_optout where user_id = $1',
     'delete from account_phones where user_id = $1',   // saved mobile money number
