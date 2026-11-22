@@ -18,7 +18,7 @@ for (const c of careers) {
   if (!Array.isArray(c.routes) || c.routes.length < 4) throw new Error(c.id + ' needs a meaningful step-by-step route');
   if (!['orientation-only','source-reviewed'].includes(c.reviewStatus)) throw new Error(c.id + ' needs an explicit review status');
   if (!Array.isArray(c.sourceRefs) || !c.sourceRefs.length) throw new Error(c.id + ' needs source references');
-  for (const ref of c.sourceRefs) if (!context.window.GuidEdCareerSources[ref]) throw new Error(c.id + ' has an unknown source reference: ' + ref);
+  for (const ref of c.sourceRefs) {\n    const source = context.window.GuidEdCareerSources[ref];\n    if (!source) throw new Error(c.id + ' has an unknown source reference: ' + ref);\n    for (const key of ['sourceOwner','sourceType','evidenceScope','limitations','checkedAt']) if (!source[key]) throw new Error(ref + ' is missing governance metadata: ' + key);\n    if (!Array.isArray(source.evidenceScope) || !source.evidenceScope.length) throw new Error(ref + ' needs explicit evidence scope');\n  }
 }
 const html = read('public/career-roadmaps.html');
 const js = read('public/career-roadmaps.js');
