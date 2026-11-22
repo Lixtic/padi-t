@@ -132,3 +132,10 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible{ou
  .cr-interest-list{grid-template-columns:repeat(3,minmax(0,1fr))}
 }
 @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*,*::before,*::after{scroll-behavior:auto!important;animation-duration:.01ms!important;transition-duration:.01ms!important}}
+
+/* Source transparency */
+.cr-source-section ul{list-style:none;margin:0;padding:0;display:grid;gap:8px}
+.cr-source-section li{display:flex;flex-direction:column;gap:2px;padding:11px 12px;background:#fff;border:1px solid #e1eae3;border-radius:11px}
+.cr-source-section li a{font-size:13px;font-weight:800;color:#137b58;text-decoration:none}
+.cr-source-section li span,.cr-source-footnote{font-size:11px;color:#71867a}
+.cr-source-footnote{margin:9px 0 0;line-height:1.5}

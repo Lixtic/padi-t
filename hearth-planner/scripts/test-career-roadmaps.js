@@ -4,6 +4,7 @@ const vm = require('node:vm');
 const root = path.join(__dirname, '..');
 const read = p => fs.readFileSync(path.join(root, p), 'utf8');
 const context = { window: {} };
+vm.runInNewContext(read('public/career-sources.js'), context);
 vm.runInNewContext(read('public/career-data.js'), context);
 const careers = context.window.GuidEdCareers;
 if (!Array.isArray(careers) || careers.length < 8) throw new Error('Expected at least eight starter careers');
@@ -14,6 +15,9 @@ for (const c of careers) {
     if (!c[key]) throw new Error(c.id + ' is missing ' + key);
   }
   if (!Array.isArray(c.routes) || c.routes.length < 4) throw new Error(c.id + ' needs a meaningful step-by-step route');
+  if (!['orientation-only','source-reviewed'].includes(c.reviewStatus)) throw new Error(c.id + ' needs an explicit review status');
+  if (!Array.isArray(c.sourceRefs) || !c.sourceRefs.length) throw new Error(c.id + ' needs source references');
+  for (const ref of c.sourceRefs) if (!context.window.GuidEdCareerSources[ref]) throw new Error(c.id + ' has an unknown source reference: ' + ref);
 }
 const html = read('public/career-roadmaps.html');
 const js = read('public/career-roadmaps.js');
@@ -22,6 +26,8 @@ for (const id of ['career-grid','career-search','career-category','start-discove
   if (!html.includes('id="' + id + '"')) throw new Error('Missing Career Roadmaps UI element: ' + id);
 }
 for (const feature of ['Saved careers','show-matches','data-open','data-save']) if (!js.includes(feature)) throw new Error('Missing interaction: ' + feature);
+if (!html.includes('career-sources.js')) throw new Error('Career source registry is not loaded');
+if (!js.includes('Official Ghana reference points')) throw new Error('Career source links are not rendered');
 if (!app.includes('href="/career-roadmaps"')) throw new Error('Career Roadmaps navigation link missing');
 new Function(js.replace(/^\(\(\) => \{/, '(function(){').replace(/\}\)\(\);\s*$/, '})();'));
 console.log('Career Roadmaps checks passed: ' + careers.length + ' starter careers.');
