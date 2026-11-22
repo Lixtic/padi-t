@@ -35,8 +35,7 @@ async function eraseAccount(me) {
       (SELECT count(*) FROM d_notifications) + (SELECT count(*) FROM d_reminder_log) +
       (SELECT count(*) FROM d_mail_optout) + (SELECT count(*) FROM d_account_phones) +
       (SELECT count(*) FROM d_subscriptions) + (SELECT count(*) FROM d_bonus) +
-      (SELECT count(*) FROM d_reward_tokens) + (SELECT count(*) FROM d_feedback_user) +
-      (SELECT count(*) FROM d_accounts) + (SELECT count(*) FROM d_feedback) + (SELECT count(*) FROM d_usage) +
+      (SELECT count(*) FROM d_reward_tokens) + (SELECT count(*) FROM d_accounts) + (SELECT count(*) FROM d_feedback) + (SELECT count(*) FROM d_usage) +
       (SELECT count(*) FROM d_reservations) + (SELECT count(*) FROM d_otp) +
       (SELECT count(*) FROM d_users) + (SELECT count(*) FROM a_payments) AS affected
   `, [uid, subjectOf(uid), email]);
