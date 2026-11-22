@@ -31,12 +31,23 @@ const foot = `<div class="lg-foot"><a href="/news">News</a><a href="/guides">Gui
 
 function list(items) { return '<ul>\n' + items.map((x) => '<li>' + esc(x) + '</li>').join('\n') + '\n</ul>\n'; }
 
+const SCHEME_TOOL = `<section class="sg" id="scheme-generator" aria-labelledby="sg-h"><h2 id="sg-h">Make a termly scheme of learning</h2>
+<p class="sg-sub">Pick a class, subject and term. You get the full week-by-week scheme from the national curriculum, ready to print or open in Word.</p>
+<form class="sg-form" id="sgForm"><div><label for="sgClass">Class</label><select id="sgClass" disabled><option>Loading…</option></select></div><div><label for="sgSubject">Subject</label><select id="sgSubject" disabled></select></div><div><label for="sgTerm">Term</label><select id="sgTerm"><option value="1">Term 1</option><option value="2">Term 2</option><option value="3">Term 3</option></select></div><div><label for="sgYear">Academic year</label><input id="sgYear" autocomplete="off" maxlength="12"></div><div><label for="sgSchool">School (optional)</label><input id="sgSchool" autocomplete="off" maxlength="80"></div><div><label for="sgTeacher">Teacher (optional)</label><input id="sgTeacher" autocomplete="off" maxlength="80"></div></form>
+<p class="sg-msg" id="sgMsg" role="status" aria-live="polite"></p>
+<div class="sg-actions" id="sgActions" hidden><button type="button" id="sgPrint">Print or save as PDF</button><button type="button" id="sgWord">Download Word</button></div>
+<div class="sg-out" id="sgOut"></div>
+<noscript><p>The generator needs JavaScript. You can also browse every scheme on the <a href="/lesson-plans">lesson plans</a> pages.</p></noscript></section>
+`;
+
 function articlePage(a) {
   const url = `${SITE}/guides/${a.slug}`;
   const ld = { '@context': 'https://schema.org', '@graph': [{ '@type': 'Article', headline: a.title, description: a.desc, inLanguage: 'en-GH', datePublished: a.date || DATE, dateModified: a.date || DATE, mainEntityOfPage: url, author: { '@type': 'Organization', name: 'GuidEd' }, publisher: { '@type': 'Organization', name: 'GuidEd', url: SITE + '/' } }, { '@type': 'BreadcrumbList', itemListElement: [{ '@type': 'ListItem', position: 1, name: 'Home', item: SITE + '/' }, { '@type': 'ListItem', position: 2, name: 'Guides', item: SITE + '/guides' }, { '@type': 'ListItem', position: 3, name: a.title, item: url }] }] };
   let h = head(`${a.title} · GuidEd`, a.desc, url, ld, a.image ? SITE + a.image.src : '');
+  if (a.tool) h = h.replace('</head>', '  <script src="/scheme-gen.js" defer></script>\n</head>');
   h += `<p class="upd">${esc(a.audience)} · ${minutes(a)} min read · Updated ${a.date || DATE}</p>\n<h1>${esc(a.title)}</h1>\n<p class="lede">${esc(a.intro)}</p>\n`;
   if (a.image) h += `<figure class="guide-fig"><a href="${esc(a.image.src)}"><img src="${esc(a.image.src)}" width="${a.image.w}" height="${a.image.h}" alt="${esc(a.image.alt)}" fetchpriority="low"></a><figcaption>${esc(a.image.caption)}</figcaption></figure>\n`;
+  if (a.tool === 'scheme-generator') h += SCHEME_TOOL;
   for (const s of a.sections) {
     h += `<h2>${esc(s.h)}</h2>\n`;
     for (const p of s.p || []) h += `<p>${esc(p)}</p>\n`;
@@ -85,5 +96,12 @@ const out = path.join(root, 'public/guides');
 fs.rmSync(out, { recursive: true, force: true }); fs.mkdirSync(out, { recursive: true });
 for (const a of articles) fs.writeFileSync(path.join(out, a.slug + '.html'), articlePage(a));
 fs.writeFileSync(path.join(root, 'public/guides.html'), indexPage());
+// Data for the scheme generator, loaded only when someone uses it.
+{
+  const D = require(path.join(root, 'data/schemes.json')).subjects, out2 = {};
+  for (const [sub, v] of Object.entries(D)) for (const [cls, terms] of Object.entries(v.classes)) for (const [t, rows] of Object.entries(terms))
+    ((out2[cls] = out2[cls] || {})[sub] = out2[cls][sub] || {})[t] = rows.map((r) => [r.weeks, r.type === 'teach' ? 0 : r.type === 'exam' ? 2 : 1, r.strand || '', r.substrand || '', r.standard || '', r.indicators || [], r.focus || '']);
+  fs.writeFileSync(path.join(root, 'public/scheme-gen.json'), JSON.stringify(out2));
+}
 module.exports = { articles };
 if (require.main === module) console.log(articles.length + ' guides, ' + articles.reduce((n, a) => n + words(a), 0) + ' words');
