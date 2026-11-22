@@ -80,6 +80,34 @@ A first pass through the official PDF text confirms that the documents contain d
 
 These are document-level observations from the official PDFs. The source rows have **not** yet been paired with matching database-export rows, and none of these examples is an approval to change the verification manifest. During reconciliation, compare code, label/type (content standard versus indicator), exact wording, exemplar grouping, subject, basic level and printed page together.
 
+## Computing: first indicator-level reconciliation batch
+
+**Source:** NaCCA, *Computing Common Core Programme (CCP) Curriculum for JHS1 (B7)–JHS3 (B9)*, September 2020, © NaCCA/Ministry of Education 2021. Official PDF: https://nacca.gov.gh/wp-content/uploads/2023/06/COMPUTING.pdf. The Basic 7 table is on printed pages 2–3 (PDF pages 30–31; zero-based PDF page indexes 29–30).
+
+The four exported rows under content standard `B7.1.1.1` were compared field-by-field with the PDF table. This is a source comparison, not a claim that every field in the export is correct.
+
+| Indicator code | Official indicator wording | Export comparison | Result |
+|---|---|---|---|
+| `B7.1.1.1.1` | “Discuss the fourth-generation computers” | Export indicator field continues past the indicator sentence with `Exemplar(s):`, exemplar text and the word “Critical”. Its exemplar array also contains a fragment (“Identify a microchip”) plus competency-related text. | **Confirmed field contamination.** Indicator wording must be separated from exemplar and competency columns. |
+| `B7.1.1.1.2` | “Demonstrate understanding in the use of input devices (barcode, scanner, etc.)” | Export indicator wording matches the PDF's indicator sentence. The exemplar array's second item absorbs the next table heading, `CONTENT INDICATORS AND EXEMPLAR(S) CORE COMPETENCIES STANDARD`, which is not exemplar content. | **Indicator matches; exemplar boundary contamination confirmed.** |
+| `B7.1.1.1.3` | “Examine the uses of the output devices: graphing plotter, data and multimedia projectors as well as pico projector” | Export indicator field appends `CC8.1` competency wording. The official PDF places competency descriptions in the separate core-competencies column. | **Confirmed field contamination.** Remove competency text from the indicator field only after a reviewed correction is prepared. |
+| `B7.1.1.1.4` | “Examine full-sized external hard drives, hard drive speed, disk caching, Storage portable hard drives, Optical Discs and Drives.” | Export indicator field appends `CC8.1` competency text. The export exemplar array includes an embedded `Exemplar(s)` marker and the table's competency/header text. The official PDF itself shows a repeated `Exemplar(s):` label in the source cell and awkward wording around “Storage portable hard drives”; these source features must not be silently rewritten. | **Confirmed column-boundary contamination in export; source wording anomaly retained for human review.** |
+
+### What this batch establishes
+
+1. The content-standard code `B7.1.1.1` and standard text “Examine the parts of a computer” match the official PDF table.
+2. The four indicator codes are present in the official PDF under that content standard.
+3. At least three exported indicator fields contain text from neighbouring exemplar/core-competency cells; the fourth row also contains a competency fragment.
+4. The export's exemplar arrays contain table-heading and/or competency fragments. They cannot safely be passed through as clean exemplar lists without source-aware reconstruction.
+5. The official source itself contains a repeated exemplar label and wording irregularity in the fourth row. The reconciliation records these faithfully rather than treating the PDF as error-free.
+
+### Disposition
+
+- Mark these four rows as **source-compared; export discrepancies confirmed; correction pending review** in this audit only.
+- Do **not** add them to `verifiedIndicators` yet. The current manifest schema's verified status is used by the application to release official exemplars; a human-reviewed corrected representation and provenance record should be prepared before any such promotion.
+- Do not edit the generated `api/_curriculum_index.js` by hand. Any eventual correction must be made in the canonical source data/import pipeline and regenerated, with original export values preserved for traceability.
+- Next comparison batch: remaining Basic 7 Computing indicators, then Basic 8 and Basic 9 Computing.
+
 ## Required evidence before verification
 
 For each indicator proposed for verification, capture and review:
