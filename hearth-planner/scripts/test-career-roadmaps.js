@@ -28,6 +28,9 @@ for (const c of careers) {
 const html = read('public/career-roadmaps.html');
 const js = read('public/career-roadmaps.js');
 const app = read('public/index.html');
+const api = read('api/_career-roadmaps.js');
+const schema = read('api/_db.js');
+const syncApi = read('public/sync.js');
 for (const id of ['career-grid','career-search','career-category','start-discovery','show-matches','career-dialog','roadmap-list','roadmap-count']) {
   if (!html.includes('id="' + id + '"')) throw new Error('Missing Career Roadmaps UI element: ' + id);
 }
@@ -37,5 +40,7 @@ if (!html.includes('career-sources.js')) throw new Error('Career source registry
 if (!js.includes('Official Ghana reference points')) throw new Error('Career source links are not rendered');
 if (!app.includes('href="/career-roadmaps"')) throw new Error('Career Roadmaps navigation link missing');
 new Function(js.replace(/^\(\(\) => \{/, '(function(){').replace(/\}\)\(\);\s*$/, '})();'));
+for (const rule of ['career_roadmaps','user_id = $1','not-started','in-progress','completed']) if (!api.includes(rule) && !schema.includes(rule)) throw new Error('Missing private roadmap API rule: ' + rule);
+if (!syncApi.includes('listCareerRoadmaps') || !syncApi.includes('saveCareerRoadmap') || !syncApi.includes('deleteCareerRoadmap')) throw new Error('PadiSync roadmap methods are missing');
 if (!js.includes('listCareerRoadmaps') || !js.includes('deleteCareerRoadmap')) throw new Error('Account-backed roadmap sync actions are missing');
 console.log('Career Roadmaps checks passed: ' + careers.length + ' career profiles and personal roadmap controls.');
