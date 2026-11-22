@@ -108,6 +108,22 @@ The four exported rows under content standard `B7.1.1.1` were compared field-by-
 - Do not edit the generated `api/_curriculum_index.js` by hand. Any eventual correction must be made in the canonical source data/import pipeline and regenerated, with original export values preserved for traceability.
 - Next comparison batch: remaining Basic 7 Computing indicators, then Basic 8 and Basic 9 Computing.
 
+## Computing: second Basic 7 indicator batch
+
+**Source:** same NaCCA Computing CCP PDF, printed page 4 (PDF page 32; zero-based PDF page index 31), under Strand 1, Sub-strand 1, “Components of Computers and Computer Systems”. Official source: https://nacca.gov.gh/wp-content/uploads/2023/06/COMPUTING.pdf.
+
+| Indicator code | Official indicator wording | Export comparison | Result |
+|---|---|---|---|
+| `B7.1.1.2.1` | “Discover the latest Windows Operating System (Start screen, Use of tiles, Taskbar buttons, Preview thumbnails), temporal peeking into a window on a taskbar” | The export field includes the correct indicator text but also contains `CC8.1` core-competency wording and a fragment of the content-standard text (“the use of the features of the Windows Desktop”). The four exported exemplars match the four activities listed in the official table. | **Indicator field contamination confirmed; exemplar list matches source.** |
+| `B7.1.1.2.2` | “Practise file management techniques (file & folder management, Users & Accounts)” | The export field appends `CC8.1` competency wording. The four exported exemplars correspond to the four activities under this indicator in the PDF. The PDF also contains two preceding account/permission exploration statements before the explicit `Exemplar(s):` label; preserve that source layout in any reviewed reconstruction rather than silently dropping them. | **Indicator field contamination confirmed; exemplar boundary needs human review.** |
+
+### Batch disposition
+
+- Both indicator statements require separating competency fragments from the indicator column.
+- The content standard `B7.1.1.2` (“Demonstrate the use of the features of the Windows Desktop”) matches the PDF.
+- The export exemplar arrays for these two rows contain the four numbered activities visible under the corresponding indicator. For `B7.1.1.2.2`, the PDF places two additional account/permission exploration statements before the exemplar label; whether those are intended as activities or a table extraction artifact should be reviewed before finalising a canonical exemplar list.
+- These rows remain **source-compared; export discrepancies confirmed; correction pending review**. No manifest entries are approved.
+
 ## Required evidence before verification
 
 For each indicator proposed for verification, capture and review:
