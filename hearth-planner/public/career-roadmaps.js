@@ -1,6 +1,7 @@
 (() => {
 'use strict';
 const careers=window.GuidEdCareers||[];
+const sources=window.GuidEdCareerSources||{};
 const $=s=>document.querySelector(s);
 const grid=$('#career-grid'),search=$('#career-search'),category=$('#career-category'),count=$('#career-count'),empty=$('#career-empty'),dialog=$('#career-dialog'),detail=$('#career-detail');
 const SAVED='guided.career-roadmaps.saved.v1';
