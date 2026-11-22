@@ -274,11 +274,6 @@ a:hover { color: var(--accent-strong); }
 .jhs-plan-form, .jhs-downloads {
   border-radius: 18px;
 }
-.jhs-plan-form {
-  background: var(--card);
-  border: 1px solid var(--line);
-  box-shadow: 0 12px 32px rgba(27,54,93,.06);
-}
 .jhs-plan-form button, .jhs-downloads a, .lg button[type="submit"] {
   border-radius: 12px;
 }
@@ -312,11 +307,15 @@ input:focus-visible, select:focus-visible, textarea:focus-visible, button:focus-
 .guide-list li:has(.news-thumb-link) .news-thumb-link { grid-row: 1 / span 3; }
 .news-thumb { display: block; width: 96px; height: 72px; object-fit: cover; border-radius: 10px; background: rgba(120, 130, 150, .12); }
 
-/* Free JHS lesson plan form on /lesson-plans (was an inline <style>, which the CSP blocks) */
-.jhs-downloads{margin:2rem 0;padding:1.25rem;border:1px solid #d8e1dc;border-radius:18px;background:#f7faf8}
-.jhs-downloads h2{margin-top:0}
-.jhs-plan-form{display:grid;grid-template-columns:1fr 1fr;gap:.65rem 1rem;max-width:680px}
-.jhs-plan-form label{font-weight:650;font-size:.92rem;align-self:end}
-.jhs-plan-form select{width:100%;min-height:44px;padding:.65rem;border:1px solid #bdcbc4;border-radius:10px;background:white;color:#17231d;font:inherit}
-.jhs-plan-form button{grid-column:1/-1;min-height:48px;border:0;border-radius:12px;background:#006a4e;color:white;font:inherit;font-weight:700;padding:.75rem 1rem;cursor:pointer}
-@media(max-width:520px){.jhs-plan-form{grid-template-columns:1fr}.jhs-plan-form button{grid-column:auto}}
+/* Free JHS lesson plan card on /lesson-plans: one card, follows light and dark */
+.jhs-downloads { margin: 28px 0; padding: 22px 20px 18px; border: 1px solid var(--line); border-radius: 20px; background: var(--card); box-shadow: 0 10px 30px rgba(20,30,70,.06); }
+.jhs-downloads h2 { margin: 0 0 8px; }
+.jhs-downloads > p { margin: 0 0 18px; color: var(--muted); font-size: 15px; }
+.jhs-downloads > p.upd { margin: 14px 0 0; font-size: 12.5px; }
+.jhs-plan-form { display: grid; grid-template-columns: 1fr 1fr; gap: 6px 14px; max-width: none; padding: 0; border: 0; background: none; box-shadow: none; }
+.jhs-plan-form label { align-self: end; margin-top: 8px; color: var(--text); font-size: 13px; font-weight: 700; letter-spacing: .01em; }
+.jhs-plan-form select { width: 100%; min-height: 48px; padding: 0 12px; border: 1px solid var(--line); border-radius: 12px; background: var(--bg); color: var(--text); font: inherit; font-size: 16px; font-weight: 500; }
+.jhs-plan-form select:focus-visible { outline: 3px solid color-mix(in srgb, var(--accent) 35%, transparent); outline-offset: 1px; border-color: var(--accent); }
+.jhs-plan-form button { grid-column: 1 / -1; min-height: 50px; margin-top: 14px; border: 0; border-radius: 13px; background: #006A4E; color: #fff; font: inherit; font-weight: 800; cursor: pointer; box-shadow: 0 8px 20px rgba(0,106,78,.22); }
+.jhs-plan-form button:hover { filter: brightness(1.06); }
+@media (max-width: 520px) { .jhs-downloads { padding: 18px 16px 16px; } .jhs-plan-form { grid-template-columns: 1fr; } .jhs-plan-form button { grid-column: auto; } }
