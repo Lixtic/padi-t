@@ -139,3 +139,22 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible{ou
 .cr-source-section li a{font-size:13px;font-weight:800;color:#137b58;text-decoration:none}
 .cr-source-section li span,.cr-source-footnote{font-size:11px;color:#71867a}
 .cr-source-footnote{margin:9px 0 0;line-height:1.5}
+
+/* Personal learner roadmaps */
+.cr-my-roadmaps{margin:34px 0;padding:24px;background:#fff;border:1px solid #e2ebe3;border-radius:20px}
+.cr-roadmap-list{display:grid;gap:14px}
+.cr-roadmap-card{padding:18px;border:1px solid #e2ebe3;border-radius:16px;background:#fbfdfb}
+.cr-roadmap-head{display:flex;justify-content:space-between;align-items:flex-start;gap:12px}
+.cr-roadmap-head h3{margin:4px 0;font-size:19px}
+.cr-roadmap-head p{margin:0;color:#71867a;font-size:13px}
+.cr-progress{height:7px;background:#e8eee9;border-radius:99px;overflow:hidden;margin:15px 0}
+.cr-progress span{display:block;height:100%;background:#18845f;border-radius:99px;transition:width .2s ease}
+.cr-roadmap-stages{display:grid;gap:9px}
+.cr-roadmap-stage{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:11px 0;border-top:1px solid #edf1ed}
+.cr-roadmap-stage span{min-width:0;display:grid;gap:3px}
+.cr-roadmap-stage b{font-size:13px}
+.cr-roadmap-stage small{font-size:12px;color:#71867a;line-height:1.45}
+.cr-roadmap-stage select{flex:0 0 132px;max-width:42%;padding:8px;border:1px solid #dbe6dd;border-radius:9px;background:#fff;color:#24483a;font-size:12px}
+.cr-detail-action{display:flex;flex-wrap:wrap;gap:10px}
+.cr-detail-action .cr-btn{min-height:42px}
+@media(max-width:520px){.cr-my-roadmaps{padding:17px;margin:24px 0}.cr-roadmap-card{padding:14px}.cr-roadmap-stage{align-items:flex-start;flex-direction:column}.cr-roadmap-stage select{max-width:100%;width:100%}.cr-roadmap-head h3{font-size:17px}}
