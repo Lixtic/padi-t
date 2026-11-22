@@ -24,7 +24,7 @@ const head = (title, desc, url) => `<!doctype html>
 </head>
 <body><main class="lg"><div class="lg-top"><a class="lg-back" href="/lesson-plans" data-back="same">← All lesson plans</a><span class="lg-brand">Guid<em>Ed</em></span></div>
 `;
-const foot = `<div class="lg-foot"><a href="/guides">Guides</a><a href="/about">About</a><a href="/terms">Terms</a><a href="/privacy">Privacy</a><a href="/refunds">Refunds</a><a href="/">Open the app</a></div>
+const foot = `<div class="lg-foot"><a href="/guides">Guides</a><a href="/career-roadmaps">Careers</a><a href="/about">About</a><a href="/terms">Terms</a><a href="/privacy">Privacy</a><a href="/refunds">Refunds</a><a href="/">Open the app</a></div>
 </main></body></html>
 `;
 
