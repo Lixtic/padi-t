@@ -75,7 +75,7 @@ function indexPage() {
     const audienceLabel = a.audience === 'Teachers' ? 'For teachers' : a.audience === 'Parents' ? 'For parents' : a.audience === 'Students' ? 'For students' : 'For parents & students';
     h += `<article class="guide-card" data-title="${esc(a.title.toLowerCase())}" data-search="${esc((a.title + ' ' + a.desc + ' ' + a.audience + ' ' + topic).toLowerCase())}" data-audience="${audience}" data-topic="${esc(topic)}"><div class="guide-card-meta"><span class="guide-category">${esc(topic)}</span><span>${esc(audienceLabel)}</span></div><h3><a href="/guides/${a.slug}">${esc(a.title)}</a></h3><p>${esc(a.desc)}</p><div class="guide-card-foot"><span>${minutes(a)} min read</span><a href="/guides/${a.slug}" aria-label="Read ${esc(a.title)}">Read guide <span aria-hidden="true">→</span></a></div></article>\n`;
   }
-  h += `</div><p id="guide-empty" class="guide-empty" hidden>No guides match that search. Try another word or clear the filters.</p></section>\n`;
+  h += `</div><nav class="guide-pager" id="guide-pager" aria-label="Guides pages" hidden></nav><p id="guide-empty" class="guide-empty" hidden>No guides match that search. Try another word or clear the filters.</p></section>\n`;
   h += `<p class="upd guides-disclaimer">GuidEd is an independent tool and is not an official product of the Ghana Education Service, NaCCA or WAEC. Guides are general guidance; check official sources for current curriculum and examination requirements.</p>\n` + foot;
   return h;
 }
