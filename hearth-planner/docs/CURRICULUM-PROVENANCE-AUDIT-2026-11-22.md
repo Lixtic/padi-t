@@ -198,6 +198,34 @@ The four exported Basic 7 Computing keys under the `B7.2.1.1` prefix were compar
 
 All four exported rows remain **source-compared; discrepancies recorded; correction pending review**. No verification manifest entries are approved.
 
+
+## Computing: sixth Basic 7 indicator batch — Electronic Spreadsheet
+
+**Source:** NaCCA Computing CCP PDF, printed pages 13–15 (PDF pages 41–43; zero-based PDF page indexes 41–43), Strand 2, Sub-strand 3, “Introduction to Electronic Spreadsheet”. Official source: https://nacca.gov.gh/wp-content/uploads/2023/06/COMPUTING.pdf.
+
+The eight exported rows under content standards `B7.2.3.1`, `B7.2.3.2` and `B7.2.3.3` were compared with the official table.
+
+| Indicator code | Official indicator wording (source table) | Export comparison | Result |
+|---|---|---|---|
+| `B7.2.3.1.1` | “Explain the importance of electronic spreadsheet” | Export indicator field appends `DL5.1` competency wording, content-standard wording and the `Exemplar(s):` marker. The three source activities are present, but competency text is embedded in the exemplar strings and the first exemplar string combines the standard/strand label with the activity. | **Indicator and exemplar column-boundary contamination; source activities remain identifiable.** |
+| `B7.2.3.1.2` | “Explore features of MS-Excel interface” | Indicator field appends a `DL5.1` fragment. The exemplar array starts with the trailing competency phrase “identify, locate…” before the source's three activities; the competency tail is embedded again after the first activity. | **Competency fragments contaminate indicator and exemplar fields; all three activities are present.** |
+| `B7.2.3.1.3` | “Demonstrate how to set the cell datatype (General, Number, Currency, etc.).” | Indicator field appends `DL5.1` text. The exemplar array begins with the trailing words “it to solve a problem.” from the competency descriptor, followed by the two source activities. | **Competency tail contaminates indicator and first exemplar; source activities are present.** |
+| `B7.2.3.1.4` | “Demonstrate how to use Align Text, Merge & Wrap, Borders and Shades” | Indicator field appends a `DL5.1` fragment. The exemplar array begins with the competency tail, retains the two source activities, then appends the next table's “CONTENT INDICATORS AND EXEMPLAR(S) CORE COMPETENCIES STANDARD” heading. | **Indicator/exemplar contamination and trailing table-header leakage confirmed.** |
+| `B7.2.3.2.1` | “Demonstrate how to adjust margins and set page orientation” | The indicator field appends part of the content-standard wording “Demonstrate how to format a worksheet”. The three source activities are present, but competency text is appended to the second/third activity strings. | **Content-standard fragment in indicator field; competency contamination in exemplars.** |
+| `B7.2.3.2.2` | “Demonstrate how to set up a header and a footer.” | Indicator wording matches. The exemplar array begins with a trailing `DL5.1` competency fragment, then contains the two source activities; competency text is also attached to the second activity. | **Indicator matches; exemplar field is contaminated by competency text.** |
+| `B7.2.3.2.3` | “Demonstrate the use of the Autofill function in MS-Excel worksheet” | Indicator field appends a `DL5.1` fragment and `Exemplar(s):` marker. The exemplar contains the source's Autofill activity but includes the competency tail in the middle of the sentence. | **Indicator/exemplar boundary contamination; activity content is present.** |
+| `B7.2.3.3.1` | “Demonstrate how to create formulas” | The exported indicator field is empty. The exemplar array contains the activity “Create simple formulas starting with the equal sign (=)” but also includes the indicator wording, `Exemplar(s):` marker, part of the content-standard heading and competency descriptions. | **Confirmed missing indicator statement in export; source activity is present but mixed with metadata.** |
+
+### Batch disposition
+
+- The source PDF distinguishes the three content standards: `B7.2.3.1` (“Demonstrate how to use the Spreadsheet (Editing Worksheets)”), `B7.2.3.2` (“Demonstrate how to format a worksheet”), and `B7.2.3.3` (“Demonstrate how to use spreadsheet formula”).
+- Export records generally preserve the activity wording but do not reliably preserve the boundaries between indicator, content standard, exemplar and core competency fields.
+- `B7.2.3.3.1` is a clear missing-indicator case: the official PDF supplies the indicator wording, while the export's indicator field is empty.
+- The final `B7.2.3.1.4` exemplar contains a table-header fragment from the next section, further evidence of extraction continuing beyond the row boundary.
+- These findings concern field structure and missing text in the export; they do not imply that the source activities themselves are pedagogically incorrect. Preserve the official source wording and do not reconstruct a canonical row without review.
+
+All eight rows remain **source-compared; discrepancies recorded; correction pending review**. No verification manifest entries are approved.
+
 ## Required evidence before verification
 
 For each indicator proposed for verification, capture and review:
