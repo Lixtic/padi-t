@@ -22,15 +22,13 @@ async function eraseAccount(me) {
       d_subscriptions AS (DELETE FROM subscriptions WHERE user_id = $1 RETURNING 1),
       d_bonus AS (DELETE FROM bonus WHERE user_id = $1 RETURNING 1),
       d_reward_tokens AS (DELETE FROM reward_tokens WHERE user_id = $1 RETURNING 1),
-      d_feedback_user AS (DELETE FROM feedback WHERE user_id = $1 RETURNING 1),
+      d_feedback AS (DELETE FROM feedback WHERE user_id = $1 OR ($3 <> '' AND lower(email) = $3) RETURNING 1),
       d_accounts AS (DELETE FROM accounts WHERE user_id = $1 RETURNING 1),
       d_usage AS (DELETE FROM usage WHERE subject = $2 RETURNING 1),
       d_reservations AS (DELETE FROM quota_reservations WHERE subject = $2 RETURNING 1),
       d_otp AS (DELETE FROM otp_codes WHERE email = $3 RETURNING 1),
       d_users AS (DELETE FROM users WHERE id = $1 OR ($3 <> '' AND lower(email) = $3) RETURNING 1),
-      d_feedback_email AS (DELETE FROM feedback WHERE $3 <> '' AND lower(email) = $3 RETURNING 1),
-      a_payments AS (UPDATE payments SET user_id = 'deleted', email = '' WHERE user_id = $1 RETURNING 1),
-      a_payments_email AS (UPDATE payments SET email = '' WHERE $3 <> '' AND lower(email) = $3 RETURNING 1)
+      a_payments AS (UPDATE payments SET user_id = CASE WHEN user_id = $1 THEN 'deleted' ELSE user_id END, email = '' WHERE user_id = $1 OR ($3 <> '' AND lower(email) = $3) RETURNING 1)
     SELECT
       (SELECT count(*) FROM d_plans) + (SELECT count(*) FROM d_profiles) +
       (SELECT count(*) FROM d_account_profiles) + (SELECT count(*) FROM d_parent_learning) +
@@ -38,10 +36,9 @@ async function eraseAccount(me) {
       (SELECT count(*) FROM d_mail_optout) + (SELECT count(*) FROM d_account_phones) +
       (SELECT count(*) FROM d_subscriptions) + (SELECT count(*) FROM d_bonus) +
       (SELECT count(*) FROM d_reward_tokens) + (SELECT count(*) FROM d_feedback_user) +
-      (SELECT count(*) FROM d_accounts) + (SELECT count(*) FROM d_usage) +
+      (SELECT count(*) FROM d_accounts) + (SELECT count(*) FROM d_feedback) + (SELECT count(*) FROM d_usage) +
       (SELECT count(*) FROM d_reservations) + (SELECT count(*) FROM d_otp) +
-      (SELECT count(*) FROM d_users) + (SELECT count(*) FROM d_feedback_email) +
-      (SELECT count(*) FROM a_payments) + (SELECT count(*) FROM a_payments_email) AS affected
+      (SELECT count(*) FROM d_users) + (SELECT count(*) FROM a_payments) AS affected
   `, [uid, subjectOf(uid), email]);
 
   let identityRemoved = true;
