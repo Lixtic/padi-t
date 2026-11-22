@@ -45,8 +45,9 @@ module.exports = async (req, res) => {
     catch (e) { return sendJson(res, e.status || 400, { error: 'bad_request', message: e.message }); }
     const id = clean(body && body.id, 64);
     if (!/^[\w-]{1,64}$/.test(id)) return sendJson(res, 400, { error: 'bad_request', message: 'A valid learning record ID is required.' });
-    if (body && body.delete === true) {   // remove one saved record (kept as a tombstone so other devices drop it too)
-      await db.query('update parent_learning set deleted = true, updated_at = $3 where user_id = $1 and id = $2', [me.uid, id, Date.now()]);
+    if (body && body.delete === true) {   // saved activities are fetched as a snapshot; no content-bearing tombstone is needed
+      await db.query('delete from parent_learning where user_id = $1 and id = $2', [me.uid, id]);
+      await db.query("delete from notifications where user_id = $1 and (learning_record_id = $2 or dedupe_key = $3)", [me.uid, id, 'parent-completed:' + id]);
       return sendJson(res, 200, { ok: true, deleted: id });
     }
     const kind = clean(body && body.kind, 24);
@@ -95,7 +96,7 @@ module.exports = async (req, res) => {
       const notificationId = require('crypto').randomUUID();
       const title = 'Learning activity completed';
       const message = clean(child.name, 80) + ' completed ' + (subject ? subject + ': ' : '') + (clean(data.topic || data.title, 120) || 'a home-learning activity') + '.';
-      await db.query('insert into notifications (id, user_id, dedupe_key, type, title, body, url, created_at) values ($1,$2,$3,$4,$5,$6,$7,$8) on conflict (user_id, dedupe_key) do nothing', [notificationId, me.uid, 'parent-completed:' + id, 'learning', title, message, '/?view=parent', Date.now()]);
+      await db.query('insert into notifications (id, user_id, dedupe_key, type, title, body, url, created_at, child_id, learning_record_id) values ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10) on conflict (user_id, dedupe_key) do nothing', [notificationId, me.uid, 'parent-completed:' + id, 'learning', title, message, '/?view=parent', Date.now(), childId, id]);
     }
     return sendJson(res, 200, { ok: true, record: { id, kind, data: JSON.parse(json), updatedAt } });
   } catch (e) {

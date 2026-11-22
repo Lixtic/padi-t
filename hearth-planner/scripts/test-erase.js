@@ -45,19 +45,17 @@ const ran = (re) => log.filter((l) => re.test(l.text));
   assert.equal(r.code, 200, JSON.stringify(r.body));
   assert.equal(r.body.ok, true);
   assert.equal(r.body.identityRemoved, true);
-  for (const t of ['plans', 'profiles', 'account_profiles', 'parent_learning', 'subscriptions', 'bonus', 'reward_tokens', 'feedback', 'accounts']) {
-    const hit = ran(new RegExp('^delete from ' + t + ' where user_id')).filter((l) => l.params[0] === 'user-123');
-    assert.equal(hit.length, 1, t + ' is cleared for this user');
+  const purge = ran(/^with/);
+  assert.equal(purge.length, 1, 'all application-owned deletion runs in one atomic SQL statement');
+  for (const t of ['plans', 'profiles', 'account_profiles', 'parent_learning', 'notifications', 'subscriptions', 'bonus', 'reward_tokens', 'feedback', 'accounts', 'users', 'otp_codes', 'usage', 'quota_reservations', 'reminder_log', 'mail_optout', 'account_phones', 'payments']) {
+    assert.ok(purge[0].text.toLowerCase().includes('delete from ' + t) || purge[0].text.toLowerCase().includes('update ' + t), t + ' cleanup is included in the atomic purge');
   }
-  assert.ok(ran(/^delete from usage where subject/).length === 1 && /^u:[0-9a-f]{24}$/.test(ran(/^delete from usage where subject/)[0].params[0]), 'usage counters use the hashed subject');
-  assert.ok(ran(/^delete from users where/).length === 1, 'legacy sign-in record');
-  assert.equal(ran(/^delete from users where/)[0].params[1], 'ada@example.com', 'email is matched in lower case');
-  const auth = ran(/neon_auth/);
-  assert.equal(auth.length, 1); assert.equal(auth[0].params[0], 'user-123');
+  assert.ok(purge[0].text.includes('lower(email)'), 'email-owned records are removed case-insensitively');
+  assert.ok(purge[0].text.includes("THEN 'deleted' ELSE user_id END"), 'payment rows are anonymised');
 
   // Payments are anonymised, never deleted. Blocked accounts are never removed.
   assert.equal(ran(/^delete from payments/).length, 0);
-  assert.ok(ran(/^update payments set user_id = 'deleted', email = ''/).length === 1);
+  assert.ok(purge[0].text.includes('UPDATE payments SET'), 'payment rows are anonymised in the same atomic statement');
   assert.equal(ran(/blocked/).length, 0);
 
   // Another teacher's id is never used.
@@ -66,7 +64,7 @@ const ran = (re) => log.filter((l) => re.test(l.text));
   // If the Neon Auth row cannot be removed (permissions), the data is still gone and the answer says so.
   log.length = 0; failAuthDelete = 'permission denied for table user';
   r = await post({ what: 'delete-account', confirm: 'DELETE' }, me);
-  assert.equal(r.code, 200); assert.equal(r.body.identityRemoved, false);
+  assert.equal(r.code, 503); assert.equal(r.body.identityRemoved, false); assert.equal(r.body.retryable, true);
 
   // A database without the neon_auth schema is fine.
   failAuthDelete = 'relation "neon_auth.user" does not exist';

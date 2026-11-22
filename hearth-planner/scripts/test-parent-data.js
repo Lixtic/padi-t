@@ -11,7 +11,8 @@ global.__PADI_SQL__ = { query: async (text, p) => {
   if (/from account_profiles where user_id/.test(t)) return p[0] === 'parent-1' ? [{ data: profile }] : [];
   if (/^insert into parent_learning/.test(t)) { rows.set(p[0] + '/' + p[1], { id: p[1], kind: p[2], data: JSON.parse(p[3]), updated_at: p[4] }); return []; }
   if (/^select id, kind, data, updated_at, deleted from parent_learning/.test(t)) return [...rows.values()].filter((r) => !r.deleted);
-  if (/^update parent_learning set deleted = true/.test(t)) { const k = p[0] + '/' + p[1]; if (rows.has(k)) rows.get(k).deleted = true; return []; }
+  if (/^delete from parent_learning where user_id = \$1 and id = \$2/.test(t)) { rows.delete(p[0] + '/' + p[1]); return []; }
+  if (/^delete from notifications where user_id = \$1 and \(learning_record_id = \$2 or dedupe_key = \$3\)/.test(t)) return [];
   if (/^select 1 as x from parent_learning/.test(t)) { const r = rows.get(p[0] + '/' + p[1]); return r && !r.deleted ? [{ x: 1 }] : []; }
   if (/^select count\(\*\)::int as n from parent_learning/.test(t)) return [{ n: [...rows.values()].filter((r) => !r.deleted).length }];
   return [];
@@ -50,6 +51,7 @@ const rec = (extra) => ({ id: 'pl-1', kind: 'lesson', data: Object.assign({ chil
   assert.equal(r.code, 200); assert.equal(r.json.deleted, 'pl-1');
   r = await call('GET', parent);
   assert.equal(r.json.length, 0, 'a deleted record is gone from the list');
+  assert.equal(rows.has('parent-1/pl-1'), false, 'deleted learner content is physically removed from storage');
   // the cap: the 151st new record is refused, but updating an existing one is not
   rows.clear();
   for (let i = 0; i < 150; i++) { r = await call('POST', parent, Object.assign(rec(), { id: 'cap-' + i })); assert.equal(r.code, 200, 'record ' + i); }

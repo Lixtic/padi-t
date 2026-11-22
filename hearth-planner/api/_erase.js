@@ -1,54 +1,53 @@
 'use strict';
-/* Account deletion. Removes what GuidEd holds about a signed-in teacher:
-   plans, profile, account details, usage counters, bonus and reward records, feedback they sent, their legacy sign-in record and
-   their Neon Auth sign-in (which also removes their sessions and linked accounts).
-   Kept on purpose: payment records, without the email address and with the account id removed, because they are accounting records;
-   and the block list, so a blocked account cannot return by deleting itself. */
+/* Account deletion. Application-owned personal data is removed atomically in one PostgreSQL statement.
+   Neon Auth identity deletion follows separately; if that fails, the caller receives a retryable pending state.
+   Payment rows are retained only as anonymised accounting records; blocked-account records are retained. */
 const crypto = require('crypto');
 const db = require('./_db');
-
 const subjectOf = (uid) => 'u:' + crypto.createHash('sha256').update(String(uid)).digest('hex').slice(0, 24);
 
-async function run(text, params) { await db.query(text, params); }
-
-// Returns { identityRemoved } where identityRemoved says whether the Neon Auth user row was deleted (or never existed).
 async function eraseAccount(me) {
   const uid = String(me.uid), email = String(me.email || '').trim().toLowerCase();
   await db.ensure();
-  const mine = [
-    'delete from plans where user_id = $1',
-    'delete from profiles where user_id = $1',
-    'delete from account_profiles where user_id = $1',
-    'delete from parent_learning where user_id = $1',   // children's names, classes and saved lessons
-    'delete from reminder_log where user_id = $1',
-    'delete from mail_optout where user_id = $1',
-    'delete from account_phones where user_id = $1',   // saved mobile money number
-    'delete from subscriptions where user_id = $1',
-    'delete from bonus where user_id = $1',
-    'delete from reward_tokens where user_id = $1',
-    'delete from feedback where user_id = $1',
-    'delete from accounts where user_id = $1',
-    "update payments set user_id = 'deleted', email = '' where user_id = $1",
-  ];
-  for (const sql of mine) await run(sql, [uid]);
-  await run('delete from usage where subject = $1', [subjectOf(uid)]);
-  await run('delete from quota_reservations where subject = $1', [subjectOf(uid)]);
-  if (email) {
-    await run('delete from otp_codes where email = $1', [email]);
-    await run('delete from users where id = $1 or email = $2', [uid, email]);
-    await run("update payments set email = '' where lower(email) = $1", [email]);
-    await run("delete from feedback where lower(email) = $1", [email]);
-  } else {
-    await run('delete from users where id = $1', [uid]);
-  }
-  // Neon Auth keeps its users in the neon_auth schema of the same database; sessions, linked accounts and memberships cascade.
+  await db.query(`
+    WITH
+      d_plans AS (DELETE FROM plans WHERE user_id = $1 RETURNING 1),
+      d_profiles AS (DELETE FROM profiles WHERE user_id = $1 RETURNING 1),
+      d_account_profiles AS (DELETE FROM account_profiles WHERE user_id = $1 RETURNING 1),
+      d_parent_learning AS (DELETE FROM parent_learning WHERE user_id = $1 RETURNING 1),
+      d_notifications AS (DELETE FROM notifications WHERE user_id = $1 RETURNING 1),
+      d_reminder_log AS (DELETE FROM reminder_log WHERE user_id = $1 RETURNING 1),
+      d_mail_optout AS (DELETE FROM mail_optout WHERE user_id = $1 RETURNING 1),
+      d_account_phones AS (DELETE FROM account_phones WHERE user_id = $1 RETURNING 1),
+      d_subscriptions AS (DELETE FROM subscriptions WHERE user_id = $1 RETURNING 1),
+      d_bonus AS (DELETE FROM bonus WHERE user_id = $1 RETURNING 1),
+      d_reward_tokens AS (DELETE FROM reward_tokens WHERE user_id = $1 RETURNING 1),
+      d_feedback AS (DELETE FROM feedback WHERE user_id = $1 OR ($3 <> '' AND lower(email) = $3) RETURNING 1),
+      d_accounts AS (DELETE FROM accounts WHERE user_id = $1 RETURNING 1),
+      d_usage AS (DELETE FROM usage WHERE subject = $2 RETURNING 1),
+      d_reservations AS (DELETE FROM quota_reservations WHERE subject = $2 RETURNING 1),
+      d_otp AS (DELETE FROM otp_codes WHERE email = $3 RETURNING 1),
+      d_users AS (DELETE FROM users WHERE id = $1 OR ($3 <> '' AND lower(email) = $3) RETURNING 1),
+      a_payments AS (UPDATE payments SET user_id = CASE WHEN user_id = $1 THEN 'deleted' ELSE user_id END, email = '' WHERE user_id = $1 OR ($3 <> '' AND lower(email) = $3) RETURNING 1)
+    SELECT
+      (SELECT count(*) FROM d_plans) + (SELECT count(*) FROM d_profiles) +
+      (SELECT count(*) FROM d_account_profiles) + (SELECT count(*) FROM d_parent_learning) +
+      (SELECT count(*) FROM d_notifications) + (SELECT count(*) FROM d_reminder_log) +
+      (SELECT count(*) FROM d_mail_optout) + (SELECT count(*) FROM d_account_phones) +
+      (SELECT count(*) FROM d_subscriptions) + (SELECT count(*) FROM d_bonus) +
+      (SELECT count(*) FROM d_reward_tokens) + (SELECT count(*) FROM d_accounts) + (SELECT count(*) FROM d_feedback) + (SELECT count(*) FROM d_usage) +
+      (SELECT count(*) FROM d_reservations) + (SELECT count(*) FROM d_otp) +
+      (SELECT count(*) FROM d_users) + (SELECT count(*) FROM a_payments) AS affected
+  `, [uid, subjectOf(uid), email]);
+
   let identityRemoved = true;
-  try { await run('delete from neon_auth."user" where id = $1', [uid]); }
+  try { await db.query('delete from neon_auth."user" where id = $1', [uid]); }
   catch (e) {
-    // No such schema means this deployment does not use Neon Auth, which is fine. Anything else (permissions) needs a human.
-    if (!/neon_auth|does not exist|relation/i.test(String(e && e.message))) { identityRemoved = false; console.error('account deletion: could not remove the sign-in record:', e && e.message); }
+    if (!/does not exist|undefined table|undefined schema/i.test(String(e && e.message))) {
+      identityRemoved = false;
+      console.error('account deletion: sign-in identity still needs removal:', e && e.message);
+    }
   }
   return { identityRemoved };
 }
-
 module.exports = { eraseAccount, subjectOf };
