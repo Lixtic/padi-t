@@ -49,6 +49,12 @@
     cls.disabled = sub.disabled = false;
     setSubjects('Mathematics'); build();
   }).catch(function () { msg.textContent = 'The generator could not load. Check your connection and refresh.'; });
+  var smp = $('sgSamples');
+  if (smp) smp.addEventListener('click', function (e) {
+    var b = e.target.closest('button'); if (!b || !DATA) return;
+    cls.value = b.getAttribute('data-c'); setSubjects(b.getAttribute('data-s')); sub.value = b.getAttribute('data-s'); term.value = b.getAttribute('data-t');
+    build(); out.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  });
   cls.addEventListener('change', function () { setSubjects(sub.value); build(); });
   [sub, term].forEach(function (e) { e.addEventListener('change', build); });
   ['sgYear', 'sgSchool', 'sgTeacher'].forEach(function (id) { $(id).addEventListener('input', function () { if (DATA) build(); }); });

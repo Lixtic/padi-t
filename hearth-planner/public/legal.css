@@ -411,3 +411,7 @@ body:has(.guides-hero) { --bg:#092b22; --text:#f4f8f3; --muted:#b4c8bf; --line:r
   body.sg-printing .sg { border: 0; padding: 0; } body.sg-printing .sg-wrap { overflow: visible; border: 0; }
   body.sg-printing .sg-table { min-width: 0; font-size: 10pt; } @page { size: landscape; margin: 12mm; }
 }
+.sg-samples { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin: 14px 0 4px; font-size: 13px; font-weight: 700; }
+.sg-samples button { min-height: 36px; padding: 0 12px; border: 1px solid var(--line); border-radius: 999px; background: var(--bg); color: var(--text); font: inherit; font-size: 13px; font-weight: 600; cursor: pointer; }
+.sg-samples button:hover { border-color: #006A4E; }
+@media print { body.sg-printing .sg-samples { display: none !important; } }
