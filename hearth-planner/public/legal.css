@@ -334,13 +334,6 @@ input:focus-visible, select:focus-visible, textarea:focus-visible, button:focus-
 .guide-page:disabled { opacity: .4; cursor: default; }
 @media (max-width: 520px) { .guide-page { min-width: 38px; height: 40px; padding: 0 10px; } .guide-pager { gap: 5px; } }
 
-/* Guides hero with a classroom photo (added when /img/guides-hero.webp exists) */
-.guides-hero.has-photo { min-height: 360px; display: flex; flex-direction: column; justify-content: center; background: linear-gradient(100deg, rgba(6,64,49,.97) 0%, rgba(6,64,49,.9) 40%, rgba(6,64,49,.5) 72%, rgba(6,64,49,.12) 100%), url(/img/guides-hero.webp) 72% center / cover no-repeat, #004D39; }
-.guides-hero.has-photo h1 { max-width: 560px; text-shadow: 0 2px 18px rgba(0,0,0,.25); }
-.guides-hero.has-photo .lede { max-width: 520px; color: rgba(255,255,255,.94); }
-.guides-hero.has-photo .guides-primary { align-self: flex-start; }
-@media (min-width: 820px) { .guides-hero.has-photo { min-height: 400px; padding: 44px 44px 40px; background: linear-gradient(90deg, rgba(6,64,49,.97) 0%, rgba(6,64,49,.92) 34%, rgba(6,64,49,.35) 62%, rgba(6,64,49,0) 100%), url(/img/guides-hero.webp) right center / cover no-repeat, #004D39; } }
-@media (max-width: 520px) { .guides-hero.has-photo { min-height: 372px; background: linear-gradient(100deg, rgba(6,64,49,.97) 0%, rgba(6,64,49,.86) 55%, rgba(6,64,49,.45) 100%), url(/img/guides-hero.webp) 78% center / cover no-repeat, #004D39; } }
 
 /* Guides hub: Ghanaian classroom-led knowledge hub visual direction */
 body:has(.guides-hero) { --bg:#092b22; --text:#f4f8f3; --muted:#b4c8bf; --line:rgba(203,230,215,.14); --card:#10372b; --accent:#f4b400; background:#092b22; color:#f4f8f3; }
@@ -351,7 +344,7 @@ body:has(.guides-hero) { --bg:#092b22; --text:#f4f8f3; --muted:#b4c8bf; --line:r
 .lg:has(.guides-hero) .lg-brand em { color:#9bd5b7; }
 .guides-hero { position:relative; isolation:isolate; display:flex; align-items:center; min-height:350px; overflow:hidden; margin:24px 0 0; padding:34px 30px; border:1px solid rgba(203,230,215,.12); border-radius:25px; background:#075c46; box-shadow:0 20px 48px rgba(0,0,0,.22); }
 .guides-hero-image,.guides-hero-shade { position:absolute; inset:0; width:100%; height:100%; }
-.guides-hero-image { z-index:-2; object-fit:cover; object-position:center 44%; }
+.guides-hero-image { z-index:-2; object-fit:cover; object-position:center 72%; }
 .guides-hero-shade { z-index:-1; background:linear-gradient(90deg,rgba(3,65,49,.98) 0%,rgba(3,65,49,.91) 42%,rgba(3,65,49,.54) 69%,rgba(3,65,49,.12) 100%); }
 .guides-hero-content { max-width:610px; }
 .guides-hero .guides-kicker { color:#f6d45c; font-size:11px; letter-spacing:.19em; font-weight:850; margin:0 0 12px; }
@@ -381,7 +374,7 @@ body:has(.guides-hero) { --bg:#092b22; --text:#f4f8f3; --muted:#b4c8bf; --line:r
  .lg:has(.guides-hero) { padding:14px 16px calc(40px + env(safe-area-inset-bottom)); }
  .lg:has(.guides-hero) .lg-top { padding-bottom:14px; }
  .guides-hero { min-height:365px; margin-top:18px; padding:24px 20px; border-radius:21px; align-items:flex-end; }
- .guides-hero-image { object-position:62% center; }
+ .guides-hero-image { object-position:60% 100%; }
  .guides-hero-shade { background:linear-gradient(0deg,rgba(3,55,42,.98) 0%,rgba(3,55,42,.89) 48%,rgba(3,55,42,.22) 100%); }
  .guides-hero-content { max-width:100%; }
  .guides-hero h1 { font-size:clamp(37px,10vw,48px); }
