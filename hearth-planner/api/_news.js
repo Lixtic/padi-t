@@ -137,7 +137,7 @@ ${ld ? '<script type="application/ld+json">' + JSON.stringify(ld).replace(/</g, 
 </head>
 <body><main class="lg"><div class="lg-top"><a class="lg-back" href="/news" data-back="same">← All news</a><span class="lg-brand">Guid<em>Ed</em></span><a class="lg-back" href="/">Open GuidEd</a></div>
 ${inner}
-<div class="lg-foot"><a href="/news">News</a><a href="/guides">Guides</a><a href="/lesson-plans">Lesson plans</a><a href="/about">About</a><a href="/terms">Terms</a><a href="/privacy">Privacy</a><a href="/">Open the app</a></div>
+<div class="lg-foot"><a href="/news">News</a><a href="/guides">Guides</a><a href="/career-roadmaps">Careers</a><a href="/lesson-plans">Lesson plans</a><a href="/about">About</a><a href="/terms">Terms</a><a href="/privacy">Privacy</a><a href="/">Open the app</a></div>
 </main></body></html>
 `;
 const NOTE = '<p class="upd">GuidEd shares short updates for Ghana teachers and parents and links to the official source where there is one. GuidEd is independent and is not an official GES, NaCCA or WAEC service. Check important dates with your school or the official notice.</p>';
