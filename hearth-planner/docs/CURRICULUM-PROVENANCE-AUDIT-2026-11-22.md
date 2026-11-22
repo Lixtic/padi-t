@@ -48,6 +48,10 @@ The heuristic flags look for embedded exemplar labels, curriculum/competency hea
 
 Do not auto-correct, delete, or mark these records verified from heuristics alone.
 
+## Official source discovery
+
+NaCCA's official Common Core Programme (CCP) page provides subject-level curriculum downloads for the JHS programme: https://nacca.gov.gh/common-core-programme-ccp/. An official NaCCA-hosted Computing CCP PDF is also discoverable at https://nacca.gov.gh/wp-content/uploads/2023/06/COMPUTING.pdf; its indexed contents identify the Basic 7–9 structure and carry NaCCA/Ministry of Education attribution. These are useful starting points for the source register, but this audit has not yet reconciled the 966 database records against the PDFs. The official CCP page should be used to locate the matching document for each subject, and the edition/date on each downloaded PDF should be recorded.
+
 ## Required evidence before verification
 
 For each indicator proposed for verification, capture and review:
