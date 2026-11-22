@@ -48,7 +48,7 @@ function articlePage(a) {
   if (a.tool) h = h.replace('</head>', '  <script src="/scheme-gen.js" defer></script>\n</head>');
   h += `<p class="upd">${esc(a.audience)} · ${minutes(a)} min read · Updated ${a.date || DATE}</p>\n<h1>${esc(a.title)}</h1>\n<p class="lede">${esc(a.intro)}</p>\n`;
   if (a.image) h += `<figure class="guide-fig"><a href="${esc(a.image.src)}"><img src="${esc(a.image.src)}" width="${a.image.w}" height="${a.image.h}" alt="${esc(a.image.alt)}" fetchpriority="low"></a><figcaption>${esc(a.image.caption)}</figcaption></figure>\n`;
-  if (a.tool === 'scheme-generator') h += SCHEME_TOOL;
+  if (a.tool === 'scheme-generator') h += a.toolDefault ? SCHEME_TOOL.replace('<section class="sg"', `<section class="sg" data-class="${esc(a.toolDefault.cls)}" data-subject="${esc(a.toolDefault.sub)}"`) : SCHEME_TOOL;
   for (const s of a.sections) {
     h += `<h2>${esc(s.h)}</h2>\n`;
     for (const p of s.p || []) h += `<p>${esc(p)}</p>\n`;

@@ -45,9 +45,10 @@
   }
   fetch('/scheme-gen.json').then(function (r) { return r.json(); }).then(function (d) {
     DATA = d;
-    fill(cls, order(Object.keys(d)), 'Basic 7');
+    var box = $('scheme-generator'), dc = box.getAttribute('data-class') || 'Basic 7', ds = box.getAttribute('data-subject') || 'Mathematics';
+    fill(cls, order(Object.keys(d)), dc);
     cls.disabled = sub.disabled = false;
-    setSubjects('Mathematics'); build();
+    setSubjects(ds); build();
   }).catch(function () { msg.textContent = 'The generator could not load. Check your connection and refresh.'; });
   var smp = $('sgSamples');
   if (smp) smp.addEventListener('click', function (e) {
