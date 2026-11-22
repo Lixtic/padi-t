@@ -72,6 +72,8 @@ Later versions may add learner-selected school subjects, preferred work activiti
 - Data and UI smoke tests.
 
 ### Phase 2 — Ghana source verification (in progress)
+
+The first expanded catalogue batch now contains 30 career profiles across technology, health, engineering, agriculture, creative industries, media, business, hospitality and education. These profiles are deliberately labelled `orientation-only`; a broad reference source is not evidence that a particular route, programme or professional requirement has been verified.
 - Establish a central registry of official Ghana reference sources with source owner, purpose, URL and checked date.
 - Attach source references and an explicit review state to every career profile.
 - Show official reference links inside each career profile, with a warning that a source link does not itself verify a specific course or provider.
