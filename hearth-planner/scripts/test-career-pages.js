@@ -1,0 +1,13 @@
+'use strict';
+const fs = require('fs'), path = require('path');
+const { careers } = require('./build-careers.js');
+const pub = path.join(__dirname, '..', 'public');
+let fail = 0; const check = (n, ok) => { console.log((ok ? 'PASS ' : 'FAIL ') + n); if (!ok) fail++; };
+const map = fs.readFileSync(path.join(pub, 'sitemap.xml'), 'utf8');
+check('every career has a page', careers.every((c) => fs.existsSync(path.join(pub, 'careers', c.id + '.html'))));
+check('every career page is in the sitemap', careers.every((c) => map.includes('/careers/' + c.id + '<')) && map.includes('/career-roadmaps<'));
+check('pages have no inline style or script (CSP)', careers.every((c) => { const h = fs.readFileSync(path.join(pub, 'careers', c.id + '.html'), 'utf8'); return !/<style|style="|onclick=/.test(h) && !/<script(?![^>]*(src=|type="application\/ld\+json"))/.test(h); }));
+check('pages carry the orientation-only caveat', careers.every((c) => /not official admissions, licensing or employment advice/.test(fs.readFileSync(path.join(pub, 'careers', c.id + '.html'), 'utf8'))));
+check('pages never claim verified requirements', careers.every((c) => !/source-reviewed|guaranteed/i.test(fs.readFileSync(path.join(pub, 'careers', c.id + '.html'), 'utf8'))));
+check('hub links to full pages', /\/careers\//.test(fs.readFileSync(path.join(pub, 'career-roadmaps.js'), 'utf8')));
+if (fail) process.exit(1); console.log('Career page tests passed.');

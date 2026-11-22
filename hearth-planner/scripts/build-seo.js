@@ -90,10 +90,12 @@ hub = /<!--CLASSES-->/.test(hub) ? hub.replace(/<!--CLASSES-->[\s\S]*<!--\/CLASS
 fs.writeFileSync(hubFile, hub);
 // sitemap
 const guides = require('./build-guides.js').articles;                   // also (re)writes public/guides*
-const core = [['/home', '1.0'], ['/lesson-plans', '0.9'], ['/guides', '0.8'], ['/news', '0.7'], ['/about', '0.5'], ['/terms', '0.2'], ['/privacy', '0.2'], ['/refunds', '0.2'], ['/ads-policy', '0.2']];
+const careers = require('./build-careers.js').careers;                  // writes public/careers/*
+const core = [['/home', '1.0'], ['/lesson-plans', '0.9'], ['/guides', '0.8'], ['/career-roadmaps', '0.8'], ['/news', '0.7'], ['/about', '0.5'], ['/terms', '0.2'], ['/privacy', '0.2'], ['/refunds', '0.2'], ['/ads-policy', '0.2']];
 const xml = ['<?xml version="1.0" encoding="UTF-8"?>', '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">']
   .concat(core.map(([p, pr]) => `  <url><loc>${SITE}${p}</loc><lastmod>${DATE}</lastmod><priority>${pr}</priority></url>`))
   .concat(guides.map((g) => `  <url><loc>${SITE}/guides/${g.slug}</loc><lastmod>${DATE}</lastmod><priority>0.6</priority></url>`))
+  .concat(careers.map((c) => `  <url><loc>${SITE}/careers/${c.id}</loc><lastmod>${DATE}</lastmod><priority>0.6</priority></url>`))
   .concat(urls.map((u) => `  <url><loc>${u}</loc><lastmod>${DATE}</lastmod><priority>0.7</priority></url>`)).concat('</urlset>', '');
 fs.writeFileSync(path.join(root, 'public/sitemap.xml'), xml.join('\n'));
-console.log(pages + ' pages, ' + (urls.length + core.length) + ' sitemap URLs');
+console.log(pages + ' pages, ' + (urls.length + core.length + careers.length + guides.length) + ' sitemap URLs');

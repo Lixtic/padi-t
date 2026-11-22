@@ -7,6 +7,7 @@ button,input,select{font:inherit}
 button,a,select{-webkit-tap-highlight-color:transparent}
 button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid #78b99a;outline-offset:3px}
 .cr-top{position:sticky;top:0;z-index:20;min-height:60px;padding:10px 16px;display:flex;align-items:center;justify-content:space-between;background:#f4f7f3ed;border-bottom:1px solid #e2ebe3;backdrop-filter:blur(14px)}
+.cr-back{color:#315c4e;text-decoration:none;font-size:13px;font-weight:750;min-height:44px;display:inline-flex;align-items:center}
 .cr-brand{font-size:23px;font-weight:900;letter-spacing:-1.5px;color:#103d30;text-decoration:none}
 .cr-brand span{color:#18845f}
 .cr-top nav{display:flex;align-items:center;gap:14px}
