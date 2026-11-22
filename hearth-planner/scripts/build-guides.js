@@ -23,7 +23,7 @@ const head = (title, desc, url, ld, img) => `<!doctype html>
   <link rel="stylesheet" href="/cookie-consent.css">
   <script src="/cookie-consent.js" defer></script>
 </head>
-<body><main class="lg"><div class="lg-top"><a class="lg-back" href="/guides">← All guides</a><span class="lg-brand">Guid<em>Ed</em></span><a class="lg-back" href="/">Open GuidEd</a></div>
+<body><main class="lg"><div class="lg-top"><a class="lg-back" href="/guides" data-back="same">← All guides</a><span class="lg-brand">Guid<em>Ed</em></span><a class="lg-back" href="/">Open GuidEd</a></div>
 `;
 const foot = `<div class="lg-foot"><a href="/news">News</a><a href="/guides">Guides</a><a href="/lesson-plans">Lesson plans</a><a href="/about">About</a><a href="/terms">Terms</a><a href="/privacy">Privacy</a><a href="/refunds">Refunds</a><a href="/">Open the app</a></div>
 </main></body></html>
@@ -64,6 +64,7 @@ function indexPage() {
   const url = `${SITE}/guides`;
   const ld = { '@context': 'https://schema.org', '@type': 'CollectionPage', name: 'GuidEd Guides', url, description: 'Practical guides for teachers and families in Ghana.', inLanguage: 'en-GH' };
   let h = head('Guides for Ghana Teachers and Parents · GuidEd', 'Practical guides on lesson planning, classroom teaching, BECE and WASSCE preparation, and supporting learning at home in Ghana.', url, ld).replace('og:type" content="article"', 'og:type" content="website"');
+  h = h.replace('<a class="lg-back" href="/guides" data-back="same">← All guides</a>', '<a class="lg-back" href="/" data-back="any">← Back</a>');
   h = h.replace('</head>', '  <script src="/guides.js" defer></script>\n</head>');
   h += `<section class="guides-hero" aria-labelledby="guides-hero-title"><img class="guides-hero-image" src="/guided-family-splash.webp" alt="A Ghanaian teacher supporting learners as they work together in a classroom" fetchpriority="high"><div class="guides-hero-shade"></div><div class="guides-hero-content"><p class="guides-kicker">THE GUIDED KNOWLEDGE HUB</p><h1 id="guides-hero-title">Learn. Teach. Grow.</h1><p class="lede">Practical guidance for Ghanaian classrooms and families. Find a useful idea, put it into practice, and keep learning.</p><a class="guides-primary" href="/">Open GuidEd <span aria-hidden="true">→</span></a></div></section>\n`;
   h += `<section class="guides-discovery" aria-label="Find a guide"><label class="guides-search-label" for="guide-search">What would you like help with?</label><div class="guides-search"><span aria-hidden="true">⌕</span><input id="guide-search" type="search" placeholder="Search lesson planning, BECE, homework…" autocomplete="off"><button type="button" id="guide-search-clear" aria-label="Clear search">×</button></div><div class="guide-filters" role="group" aria-label="Filter guides by audience"><button type="button" class="guide-filter is-active" data-audience="all" aria-pressed="true">Everyone</button><button type="button" class="guide-filter" data-audience="Teachers" aria-pressed="false">Teachers</button><button type="button" class="guide-filter" data-audience="family" aria-pressed="false">Parents & students</button></div></section>\n`;

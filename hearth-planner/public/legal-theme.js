@@ -25,3 +25,16 @@ try { var t = localStorage.getItem('schoolpadi.theme'); if (t === 'light' || t =
     installConsentAssets();
   }
 })();
+
+/* Back links: <a data-back="any"> goes back one page in history when there is a page to go back to, and follows its href otherwise
+   (opened in a new tab, for example). <a data-back="same"> only goes back when the page we came from is the page the link points to,
+   so "All guides" on an article returns to the list exactly as it was (page, search, scroll) and otherwise opens the list. */
+document.addEventListener('click', function (e) {
+  var a = e.target && e.target.closest && e.target.closest('a[data-back]');
+  if (!a || e.defaultPrevented || e.button || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+  var mode = a.getAttribute('data-back'), can = history.length > 1;
+  if (mode === 'same') {
+    try { var from = new URL(document.referrer); can = can && from.origin === location.origin && from.pathname.replace(/\.html$/, '') === new URL(a.href, location.href).pathname.replace(/\.html$/, ''); } catch (err) { can = false; }
+  }
+  if (can) { e.preventDefault(); history.back(); }
+});

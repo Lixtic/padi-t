@@ -21,7 +21,7 @@ const head = (title, desc, url) => `<!doctype html>
 <link rel="canonical" href="${url}">
 <meta property="og:type" content="website"><meta property="og:site_name" content="GuidEd"><meta property="og:title" content="${esc(title)}"><meta property="og:description" content="${esc(desc)}"><meta property="og:url" content="${url}"><meta property="og:image" content="${SITE}/icons/icon-512.png">
 </head>
-<body><main class="lg"><div class="lg-top"><a class="lg-back" href="/lesson-plans">← All lesson plans</a><span class="lg-brand">Guid<em>Ed</em></span></div>
+<body><main class="lg"><div class="lg-top"><a class="lg-back" href="/lesson-plans" data-back="same">← All lesson plans</a><span class="lg-brand">Guid<em>Ed</em></span></div>
 `;
 const foot = `<div class="lg-foot"><a href="/guides">Guides</a><a href="/about">About</a><a href="/terms">Terms</a><a href="/privacy">Privacy</a><a href="/refunds">Refunds</a><a href="/">Open the app</a></div>
 </main></body></html>
