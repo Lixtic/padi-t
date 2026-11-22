@@ -19,7 +19,7 @@ module.exports = [
     related: ['how-to-write-a-ges-lesson-plan', 'writing-good-learning-indicators', 'starter-main-closure-lesson-phases', 'what-is-a-scheme-of-learning']
   },
   {
-    slug: 'scheme-of-work-ghana-how-to-prepare', audience: 'Teachers', date: '2026-11-22',
+    slug: 'scheme-of-work-ghana-how-to-prepare', tool: 'scheme-generator', audience: 'Teachers', date: '2026-11-22',
     title: 'Scheme of Work in Ghana: What It Is and How to Prepare One',
     desc: 'What a scheme of work is, how it differs from a scheme of learning and a lesson plan, and a simple way to build a term scheme of work from the curriculum.',
     intro: 'Many Ghanaian teachers use "scheme of work" for the week-by-week list of what they will teach in a term. NaCCA\'s own curriculum documents call the official version a scheme of learning. The two ideas are close, and the practical question is the same: what do I teach in Week 1, Week 2 and every week after, and how do I keep it on track? This guide explains the terms and shows a simple way to prepare your scheme of work.',
