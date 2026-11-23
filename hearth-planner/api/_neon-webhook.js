@@ -72,17 +72,43 @@ async function sendSms(phone, text, fetchImpl) {
 }
 
 const SUBJECTS = { 'email-verification': 'Confirm your GuidEd email', 'sign-in': 'Your GuidEd sign-in code', 'forget-password': 'Reset your GuidEd password' };
-async function sendEmailCode(to, code, type, transportFactory) {
-  if (!process.env.SMTP_URL) throw Object.assign(new Error('SMTP_URL is not set'), { status: 500 });
-  const json = process.env.SMTP_URL === 'json';
-  const transport = transportFactory ? transportFactory() : require('nodemailer').createTransport(json ? { jsonTransport: true } : process.env.SMTP_URL);
+async function sendEmailCode(to, code, type, transportFactory, fetchImpl) {
+  const from = process.env.MAIL_FROM || 'GuidEd <no-reply@localhost>';
+  const subject = (SUBJECTS[type] || 'Your GuidEd code') + ': ' + code;
   const intro = type === 'email-verification' ? 'Enter this code in GuidEd to confirm your email address.' : type === 'forget-password' ? 'Enter this code in GuidEd to choose a new password.' : 'Enter this code in GuidEd to sign in.';
-  const info = await transport.sendMail({
-    from: process.env.MAIL_FROM || 'GuidEd <no-reply@localhost>', to, subject: (SUBJECTS[type] || 'Your GuidEd code') + ': ' + code,
-    text: intro + '\n\nYour code: ' + code + '\n\nIt works for a few minutes. If you did not ask for it, you can ignore this email.',
-    html: '<p>' + intro + '</p><p style="font-size:28px;letter-spacing:6px;font-weight:700">' + code + '</p><p style="color:#666">It works for a few minutes. If you did not ask for it, you can ignore this email.</p>',
+  const text = intro + '\n\nYour code: ' + code + '\n\nIt works for a few minutes. If you did not ask for it, you can ignore this email.';
+  const html = '<p>' + intro + '</p><p style="font-size:28px;letter-spacing:6px;font-weight:700">' + code + '</p><p style="color:#666">It works for a few minutes. If you did not ask for it, you can ignore this email.</p>';
+
+  // Prefer Resend's HTTP API: it avoids slow SMTP handshakes/queues on serverless
+  // functions. Keep SMTP as a backwards-compatible fallback for existing installs.
+  if (process.env.RESEND_API_KEY) {
+    let response, body = {};
+    try {
+      response = await (fetchImpl || fetch)('https://api.resend.com/emails', {
+        method: 'POST',
+        headers: { authorization: 'Bearer ' + process.env.RESEND_API_KEY, 'content-type': 'application/json' },
+        body: JSON.stringify({ from, to: [to], subject, text, html }),
+        signal: AbortSignal.timeout(8000),
+      });
+      body = await response.json().catch(() => ({}));
+    } catch (e) {
+      throw Object.assign(new Error('Resend email request failed: ' + String(e && e.message || 'network error').slice(0, 100)), { status: 502 });
+    }
+    if (!response.ok) {
+      const message = String(body.message || body.name || 'provider rejected email').slice(0, 120);
+      throw Object.assign(new Error('Resend ' + response.status + ': ' + message), { status: response.status === 429 || response.status >= 500 ? 502 : 422 });
+    }
+    return 'resend';
+  }
+
+  if (!process.env.SMTP_URL) throw Object.assign(new Error('Set RESEND_API_KEY or SMTP_URL to deliver email codes'), { status: 500 });
+  const json = process.env.SMTP_URL === 'json';
+  const transport = transportFactory ? transportFactory() : require('nodemailer').createTransport(json ? { jsonTransport: true } : process.env.SMTP_URL, {
+    connectionTimeout: 8000, greetingTimeout: 8000, socketTimeout: 10000,
   });
+  const info = await transport.sendMail({ from, to, subject, text, html });
   if (json) global.__lastMail = { to, code, type, info };
+  return 'smtp';
 }
 
 // Sends one code. Returns nothing; throws an error with .status when delivery failed.
@@ -96,7 +122,7 @@ async function deliver(event, deps) {
     return 'sms';
   }
   if (!u.email) throw Object.assign(new Error('No email in event'), { status: 422 });
-  await sendEmailCode(u.email, code, d.otp_type, deps && deps.transport);
+  await sendEmailCode(u.email, code, d.otp_type, deps && deps.transport, deps && deps.fetch);
   return 'email';
 }
 
