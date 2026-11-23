@@ -45,7 +45,7 @@ const ran = (re) => log.filter((l) => re.test(l.text));
   assert.equal(r.code, 200, JSON.stringify(r.body));
   assert.equal(r.body.ok, true);
   assert.equal(r.body.identityRemoved, true);
-  const purge = ran(/^with/);
+  const purge = ran(/^with/i);
   assert.equal(purge.length, 1, 'all application-owned deletion runs in one atomic SQL statement');
   for (const t of ['plans', 'career_roadmaps', 'plan_log', 'free_plan_reservations', 'profiles', 'account_profiles', 'parent_learning', 'notifications', 'subscriptions', 'bonus', 'reward_tokens', 'feedback', 'accounts', 'users', 'otp_codes', 'usage', 'quota_reservations', 'reminder_log', 'mail_optout', 'account_phones', 'payments']) {
     assert.ok(purge[0].text.toLowerCase().includes('delete from ' + t) || purge[0].text.toLowerCase().includes('update ' + t), t + ' cleanup is included in the atomic purge');
