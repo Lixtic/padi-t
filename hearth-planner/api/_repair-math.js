@@ -57,7 +57,7 @@ module.exports = async (req, res) => {
   } catch (e) {
     return sendJson(res, 503, { error: 'protection_unavailable', message: 'Usage protection is temporarily unavailable. Please try again.' });
   }
-  if (!reservation.ok) return sendJson(res, 429, { error: 'quota', message: Quota.message(reservation) });
+  if (!reservation.ok) return sendJson(res, 429, { error: 'quota', message: 'The available AI usage allowance has been reached. Please try again after it resets.' }, { 'Retry-After': String(reservation.retryAfter || 3600) });
 
   let repaired = '', usedChars = 0, finish = 'stop', started = false;
   try {
@@ -75,7 +75,7 @@ module.exports = async (req, res) => {
     await Quota.settle(reservation.reservation, estimatedInput + Quota.estimateTokens(usedChars));
     return sendJson(res, 200, { content: repaired.trim() });
   } catch (e) {
-    if (started) await Quota.settle(reservation.reservation, estimatedInput).catch(() => {});
+    if (started) await Quota.settle(reservation.reservation, estimatedInput + Quota.estimateTokens(usedChars)).catch(() => {});
     else await Quota.release(reservation.reservation).catch(() => {});
     console.error('[repair-math] failed:', e && e.message);
     return sendJson(res, 502, { error: 'repair_failed', message: e.message || 'Could not repair this resource. Please try again.' });
