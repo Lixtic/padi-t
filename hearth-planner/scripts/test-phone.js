@@ -15,12 +15,13 @@ global.__PADI_SQL__ = { query: async (text, p) => {
   if (/^select 1 from blocked where user_id/.test(t)) return blocked.has(p[0]) ? [{ ok: 1 }] : [];
   if (/^insert into payments/.test(t)) { payments.set(p[0], { reference: p[0], user_id: p[1], email: p[2], plan: p[3], amount: p[4], currency: p[5], status: 'pending', created_at: p[6] }); return []; }
   if (/^select user_id, amount, currency, status from payments where reference/.test(t)) { const r = payments.get(p[0]); return r ? [r] : []; }
-  if (/^update payments set status = 'success'/.test(t)) {
+  if (/^with paid as \(/.test(t)) {
     const r = payments.get(p[0]); if (!r || r.status === 'success' || r.user_id === 'deleted') return [];
-    r.status = 'success'; r.paid_at = p[1]; return [{ user_id: r.user_id, plan: r.plan }];
+    const days = r.plan === 'term' ? p[3] : p[2];
+    const until = Math.max(Number(subs.get(r.user_id)?.expires_at || 0), Number(p[1])) + Number(days) * DAY;
+    r.status = 'success'; r.paid_at = p[1]; subs.set(r.user_id, { expires_at: until, plan: r.plan });
+    return [{ user_id: r.user_id, expires_at: until }];
   }
-  if (/^select expires_at from subscriptions where user_id/.test(t)) return subs.has(p[0]) ? [{ expires_at: subs.get(p[0]).expires_at }] : [];
-  if (/^insert into subscriptions/.test(t)) { subs.set(p[0], { expires_at: p[1], plan: p[2] }); return []; }
   if (/^select phone, provider from account_phones/.test(t)) return phones.has(p[0]) ? [phones.get(p[0])] : [];
   if (/^insert into account_phones/.test(t)) { phones.set(p[0], { phone: p[1], provider: p[2] }); return []; }
   if (/^delete from account_phones/.test(t)) { phones.delete(p[0]); return []; }
