@@ -263,3 +263,16 @@ A record should enter `verifiedIndicators` only after a human reviewer has recon
 ## Decision
 
 **Verification status remains: UNVERIFIED.** No manifest entries are approved by this audit. The next required input is the official source documents (or stable official URLs and editions) so indicator-by-indicator reconciliation can be performed.
+
+## 23 November implementation addendum — source register and reconciliation tracking
+
+The source-discovery notes above are now represented in two machine-readable files:
+
+- `data/curriculum-source-register.json` records the six discovered NaCCA subject documents, official URLs, known edition metadata, source-checksum state and page-mapping state.
+- `data/curriculum-reconciliation.json` records the six Basic 7 Computing comparison batches already described in this audit.
+
+The Computing comparison currently covers **28 of the 50 Basic 7 Computing records** in the export. The remaining 22 Basic 7 Computing records are still queued, followed by the 37 Basic 8 and 35 Basic 9 Computing records. This is a comparison queue, not a verification count.
+
+**Evidence gaps remain explicit:** no downloaded-source SHA-256 checksum has yet been captured in the register; printed-page ranges are recorded for the compared Computing batches, while exact PDF page-index mapping still needs a controlled source-file capture. English Language and Religious and Moral Education also need their full cover metadata confirmed.
+
+No curriculum record has been corrected in the generated index, and `curriculum-verification.json` remains `unverified_database_export` with zero approved indicators. The new provenance regression test enforces that boundary. A source comparison, even where wording matches, is not a second-review approval and does not by itself release official exemplars.
