@@ -296,7 +296,22 @@
     },
     getProfile: async function () { var j = await call('/api/sync?what=profile', { auth: true }); return j && j.profile ? j.profile : null; },
     setProfile: function (data, updatedAt) { return call('/api/sync', { method: 'POST', auth: true, body: { what: 'profile', data: data, updated_at: updatedAt } }); },
-    getAccountProfile: async function () { var j = await call('/api/account-profile', { auth: true }); return j && j.profile ? j.profile : null; },
+    getAccountProfile: async function () {
+      // Prefer the friendly route, but fall back to the canonical sync dispatcher if a host rewrite fails.
+      try {
+        var j = await call('/api/account-profile', { auth: true });
+        return j && j.profile ? j.profile : null;
+      } catch (firstError) {
+        try {
+          var fallback = await call('/api/sync?what=account-profile', { auth: true });
+          return fallback && fallback.profile ? fallback.profile : null;
+        } catch (fallbackError) {
+          // Keep the original failure available for diagnostics without exposing internals in the UI.
+          fallbackError.accountProfileRouteError = firstError && firstError.message || '';
+          throw fallbackError;
+        }
+      }
+    },
     setAccountProfile: function (data) { return call('/api/account-profile', { method: 'POST', auth: true, body: { data: data } }); },
     listParentLearning: function (childId) { return call('/api/sync?what=parent-learning' + (childId ? '&childId=' + encodeURIComponent(childId) : ''), { auth: true }); },
     listCareerRoadmaps: function () { return call('/api/sync?what=career-roadmaps', { auth: true }); },
