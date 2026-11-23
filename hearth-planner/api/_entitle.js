@@ -155,8 +155,8 @@ async function rewardClaim(ent, token) {
 async function checkFree(ent, cls) {
   const c = cfg(), period = weekKey(), now = Date.now();
   const rows = await log(ent.subject, period);
-  const active = await db.query("select cls from free_plan_reservations where subject = $1 and period = $2 and expires_at > $3 and kind <> 'bonus'", [ent.subject, period, now]);
-  const used = rows.reduce((n, r) => n + r.n, 0) + active.length;
+  const active = await db.query("select cls, kind from free_plan_reservations where subject = $1 and period = $2 and expires_at > $3", [ent.subject, period, now]);
+  const used = rows.reduce((n, r) => n + r.n, 0) + active.filter(r => r.kind !== 'bonus').length;
   const classes = Array.from(new Set(rows.filter(r => r.n > 0).map(r => r.cls).concat(active.map(r => r.cls))));
   if (c.freeClasses && !classes.includes(cls) && classes.length >= c.freeClasses) return { ok: false, reason: 'classes', classes, limit: c.freeClasses, resetsAt: nextWeek() };
   if (c.freePlansWeekly && used >= c.freePlansWeekly) {
@@ -188,14 +188,14 @@ async function reserveSlot(ent, cls, kind, limit, classLimit) {
         (SELECT count(DISTINCT cls) FROM (
           SELECT cls FROM plan_log WHERE subject = $1 AND period = $2 AND n > 0
           UNION
-          SELECT cls FROM free_plan_reservations WHERE subject = $1 AND period = $2 AND expires_at > $3 AND kind <> 'bonus'
+          SELECT cls FROM free_plan_reservations WHERE subject = $1 AND period = $2 AND expires_at > $3
         ) seen_classes)::int AS class_count
       FROM lock
     ),
     eligible AS (
       SELECT
         ($6 = 0 OR EXISTS (SELECT 1 FROM plan_log WHERE subject = $1 AND period = $2 AND cls = $4 AND n > 0)
-          OR EXISTS (SELECT 1 FROM free_plan_reservations WHERE subject = $1 AND period = $2 AND cls = $4 AND expires_at > $3 AND kind <> 'bonus')
+          OR EXISTS (SELECT 1 FROM free_plan_reservations WHERE subject = $1 AND period = $2 AND cls = $4 AND expires_at > $3)
           OR class_count < $6) AS class_ok,
         ($5 = 0 OR used + reserved < $5) AS weekly_ok
       FROM stats
