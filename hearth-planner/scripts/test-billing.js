@@ -15,7 +15,7 @@ global.__PADI_SQL__ = { query: async (text, p) => {
   if (/^select 1 from blocked where user_id/.test(t)) return blocked.has(p[0]) ? [{ ok: 1 }] : [];
   if (/^insert into payments/.test(t)) { payments.set(p[0], { reference: p[0], user_id: p[1], email: p[2], plan: p[3], amount: p[4], currency: p[5], status: 'pending', created_at: p[6] }); return []; }
   if (/^select user_id, amount, currency, status from payments where reference/.test(t)) { const r = payments.get(p[0]); return r ? [r] : []; }
-  if (/^with paid as \(/.test(t)) {
+  if (/^with paid as \(/i.test(t)) {
     if (failGrant) throw new Error('simulated subscription write failure');
     const r = payments.get(p[0]); if (!r || r.status === 'success' || r.user_id === 'deleted') return [];
     const days = r.plan === 'term' ? p[3] : p[2];
