@@ -56,7 +56,42 @@
           "computing-b7-04",
           "computing-b7-05",
           "computing-b7-06"
-        ]
+        ],
+        "classes": {
+          "Basic 7": {
+            "indexedRecords": 50,
+            "sourceComparedRecords": 28,
+            "remainingRecords": 22,
+            "batchIds": [
+              "computing-b7-01",
+              "computing-b7-02",
+              "computing-b7-03",
+              "computing-b7-04",
+              "computing-b7-05",
+              "computing-b7-06"
+            ]
+          },
+          "Basic 8": {
+            "indexedRecords": 37,
+            "sourceComparedRecords": 4,
+            "remainingRecords": 33,
+            "batchIds": [
+              "computing-b8-01"
+            ]
+          },
+          "Basic 9": {
+            "indexedRecords": 35,
+            "sourceComparedRecords": 7,
+            "remainingRecords": 28,
+            "batchIds": [
+              "computing-b9-01",
+              "computing-b9-02"
+            ]
+          }
+        },
+        "overallIndexedRecords": 122,
+        "overallSourceComparedRecords": 39,
+        "overallRemainingRecords": 83
       }
     },
     {
