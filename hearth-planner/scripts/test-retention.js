@@ -43,14 +43,15 @@ async function request(method, authorization) {
     expiredResponseCacheEntries: 1,
     staleRateLimitBuckets: 1
   });
-  assert.equal(calls.length, 5);
-  assert.match(calls[0].sql, /otp_codes where expires_at <=/i);
-  assert.match(calls[1].sql, /quota_reservations where expires_at <=/i);
-  assert.match(calls[2].sql, /free_plan_reservations where expires_at <=/i);
-  assert.match(calls[3].sql, /response_cache where created_at <=/i);
-  assert.match(calls[4].sql, /rate_limits where window_start <=/i);
-  assert.ok(calls[3].params[0] < calls[4].params[0], 'cache cutoff follows its 30-day TTL by default');
-  assert.ok(calls.every((c) => !/parent_learning|notifications|payments|feedback|admin_log|knowledge_sources/i.test(c.sql)), 'no records with unresolved retention policy are deleted');
+  const deletes = calls.filter((c) => /^delete from/i.test(c.sql));
+  assert.equal(deletes.length, 5);
+  assert.match(deletes[0].sql, /otp_codes where expires_at <=/i);
+  assert.match(deletes[1].sql, /quota_reservations where expires_at <=/i);
+  assert.match(deletes[2].sql, /free_plan_reservations where expires_at <=/i);
+  assert.match(deletes[3].sql, /response_cache where created_at <=/i);
+  assert.match(deletes[4].sql, /rate_limits where window_start <=/i);
+  assert.ok(deletes[3].params[0] < deletes[4].params[0], 'cache cutoff follows its 30-day TTL by default');
+  assert.ok(deletes.every((c) => !/parent_learning|notifications|payments|feedback|admin_log|knowledge_sources/i.test(c.sql)), 'no records with unresolved retention policy are deleted');
 
   calls.length = 0; fail = true;
   res = await request('GET', 'Bearer cron-test-secret');
