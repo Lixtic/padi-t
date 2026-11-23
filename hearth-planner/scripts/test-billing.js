@@ -112,6 +112,23 @@ const DAY = 86400000;
   await call({ action: 'verify', user: ada, body: { reference: ref2 } });
   assert.equal(subs.get('ada').expires_at, until + 120 * DAY, 'term adds 120 days after the current end');
 
+  // Two separate payments settling concurrently must both extend the latest expiry.
+  const startConcurrent = subs.get('ada').expires_at;
+  const monthly = await call({ action: 'checkout', user: ada, body: { plan: 'monthly' } });
+  const term = await call({ action: 'checkout', user: ada, body: { plan: 'term' } });
+  const concurrentMonthly = monthly.json.reference, concurrentTerm = term.json.reference;
+  paystack.verify[concurrentMonthly] = { status: 'success', amount: 2300, currency: 'GHS' };
+  paystack.verify[concurrentTerm] = { status: 'success', amount: 5000, currency: 'GHS' };
+  const settled = await Promise.all([
+    call({ action: 'verify', user: ada, body: { reference: concurrentMonthly } }),
+    call({ action: 'verify', user: ada, body: { reference: concurrentTerm } })
+  ]);
+  assert.deepEqual(settled.map(x => x.code), [200, 200], 'both concurrent payments settle');
+  assert.equal(payments.get(concurrentMonthly).status, 'success');
+  assert.equal(payments.get(concurrentTerm).status, 'success');
+  assert.equal(subs.get('ada').expires_at, startConcurrent + 150 * DAY,
+    'concurrent monthly and term payments both stack on the latest expiry');
+
   // Webhook: signature required; valid event is idempotent with verify; pending asks Paystack to retry.
   const ev = (reference) => JSON.stringify({ event: 'charge.success', data: { reference } });
   let raw = ev('x');
