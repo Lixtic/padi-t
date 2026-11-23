@@ -149,30 +149,111 @@ async function rewardClaim(ent, token) {
   return { status: 200, body: { ok: true, bonus: await bonusLeft(ent.uid), left: Math.max(0, c.rewardPerDay - await rewardsToday(ent.uid)) } };
 }
 
-// Signed-in teachers on the free tier: may this request start a new plan?
+// Signed-in free-plan usage is reserved before generation. Reservations are
+// counted atomically with committed usage, so parallel requests cannot all pass
+// the same remaining slot. A failed generation releases its reservation.
 async function checkFree(ent, cls) {
-  const c = cfg();
-  const rows = await log(ent.subject, weekKey());
-  const used = rows.reduce((n, r) => n + r.n, 0);
-  const classes = rows.map((r) => r.cls);
+  const c = cfg(), period = weekKey(), now = Date.now();
+  const rows = await log(ent.subject, period);
+  const active = await db.query("select cls from free_plan_reservations where subject = $1 and period = $2 and expires_at > $3 and kind <> 'bonus'", [ent.subject, period, now]);
+  const used = rows.reduce((n, r) => n + r.n, 0) + active.length;
+  const classes = Array.from(new Set(rows.filter(r => r.n > 0).map(r => r.cls).concat(active.map(r => r.cls))));
   if (c.freeClasses && !classes.includes(cls) && classes.length >= c.freeClasses) return { ok: false, reason: 'classes', classes, limit: c.freeClasses, resetsAt: nextWeek() };
   if (c.freePlansWeekly && used >= c.freePlansWeekly) {
-    if (rewardOn() && ent.uid && (await bonusLeft(ent.uid)) > 0) { ent.useBonus = true; return { ok: true, used, limit: c.freePlansWeekly, bonus: true }; }   // a bonus plan earned by watching a video
+    if (rewardOn() && ent.uid && (await bonusLeft(ent.uid)) > 0) return { ok: true, used, limit: c.freePlansWeekly, bonus: true };
     return { ok: false, reason: 'plans', used, limit: c.freePlansWeekly, resetsAt: nextWeek() };
   }
   return { ok: true, used, limit: c.freePlansWeekly };
 }
-// Parent accounts: home lessons, explanations and exercises. Counted per account (not per child) under their own subject so they never
-// touch a teacher's plan or class allowance when one account is both.
 const parentSubject = (ent) => ent.subject + ':parent';
 async function checkFreeParent(ent) {
-  const limit = cfg().freeParentWeekly;
-  const used = (await log(parentSubject(ent), weekKey())).reduce((n, r) => n + r.n, 0);
+  const period = weekKey(), now = Date.now(), limit = cfg().freeParentWeekly;
+  const rows = await log(parentSubject(ent), period);
+  const active = await db.query("select id from free_plan_reservations where subject = $1 and period = $2 and expires_at > $3 and kind = 'parent'", [parentSubject(ent), period, now]);
+  const used = rows.reduce((n, r) => n + r.n, 0) + active.length;
   return limit && used >= limit ? { ok: false, reason: 'parent', used, limit, resetsAt: nextWeek() } : { ok: true, used, limit };
+}
+async function reserveSlot(ent, cls, kind, limit, classLimit) {
+  await db.ensure();
+  const id = require('crypto').randomUUID(), period = weekKey(), now = Date.now();
+  const subject = kind === 'parent' ? parentSubject(ent) : ent.subject;
+  const rows = await db.query(`
+    WITH lock AS MATERIALIZED (
+      SELECT pg_advisory_xact_lock(hashtext($1))
+    ),
+    stats AS (
+      SELECT
+        COALESCE((SELECT sum(n) FROM plan_log WHERE subject = $1 AND period = $2), 0)::int AS used,
+        (SELECT count(*) FROM free_plan_reservations WHERE subject = $1 AND period = $2 AND expires_at > $3 AND kind <> 'bonus')::int AS reserved,
+        (SELECT count(DISTINCT cls) FROM plan_log WHERE subject = $1 AND period = $2 AND n > 0)::int AS classes,
+        (SELECT count(DISTINCT cls) FROM free_plan_reservations WHERE subject = $1 AND period = $2 AND expires_at > $3 AND kind <> 'bonus')::int AS reserved_classes
+      FROM lock
+    ),
+    eligible AS (
+      SELECT
+        ($6 = 0 OR EXISTS (SELECT 1 FROM plan_log WHERE subject = $1 AND period = $2 AND cls = $4 AND n > 0)
+          OR EXISTS (SELECT 1 FROM free_plan_reservations WHERE subject = $1 AND period = $2 AND cls = $4 AND expires_at > $3 AND kind <> 'bonus')
+          OR classes + reserved_classes < $6) AS class_ok,
+        ($5 = 0 OR used + reserved < $5) AS weekly_ok
+      FROM stats
+    ),
+    normal AS (
+      INSERT INTO free_plan_reservations (id, subject, period, cls, kind, user_id, expires_at)
+      SELECT $7, $1, $2, $4, $8, $9, $3 + 1800000 FROM eligible
+       WHERE class_ok AND weekly_ok
+      RETURNING id
+    ),
+    bonus_claim AS (
+      UPDATE bonus SET n = n - 1
+       WHERE user_id = $9 AND n > 0 AND $8 = 'teacher'
+         AND NOT EXISTS (SELECT 1 FROM normal)
+         AND EXISTS (SELECT 1 FROM eligible WHERE class_ok AND NOT weekly_ok)
+      RETURNING user_id
+    ),
+    bonus_slot AS (
+      INSERT INTO free_plan_reservations (id, subject, period, cls, kind, user_id, expires_at)
+      SELECT $7, $1, $2, $4, 'bonus', user_id, $3 + 1800000 FROM bonus_claim
+      RETURNING id
+    )
+    SELECT id, 'normal' AS kind FROM normal
+    UNION ALL
+    SELECT id, 'bonus' AS kind FROM bonus_slot
+  `, [subject, period, now, cls, limit, classLimit, id, kind, ent.uid || '']);
+  if (rows.length) return { ok: true, reservation: rows[0].id, bonus: rows[0].kind === 'bonus' };
+  const check = kind === 'parent' ? await checkFreeParent(ent) : await checkFree(ent, cls);
+  return Object.assign({}, check, { ok: false, reason: check.reason || (kind === 'parent' ? 'parent' : 'plans') });
+}
+async function reserveFree(ent, cls) { const c = cfg(); return reserveSlot(ent, cls, 'teacher', c.freePlansWeekly, c.freeClasses); }
+async function reserveFreeParent(ent) { return reserveSlot(ent, '*', 'parent', cfg().freeParentWeekly, 0); }
+async function commitFree(reservation) {
+  const rows = await db.query(`
+    WITH r AS (SELECT subject, period, cls, kind FROM free_plan_reservations WHERE id = $1),
+    bumped AS (
+      INSERT INTO plan_log (subject, period, cls, n)
+      SELECT subject, period, cls, 1 FROM r WHERE kind IN ('teacher','parent')
+      ON CONFLICT (subject, period, cls) DO UPDATE SET n = plan_log.n + 1
+      RETURNING 1
+    ),
+    removed AS (DELETE FROM free_plan_reservations WHERE id = $1 RETURNING kind)
+    SELECT kind FROM removed
+  `, [reservation]);
+  if (!rows.length) throw new Error('Quota reservation expired before it could be committed.');
+  event(rows[0].kind === 'parent' ? 'parent_free' : rows[0].kind === 'bonus' ? 'plan_bonus' : 'plan_free');
+}
+async function releaseFree(reservation) {
+  await db.query(`
+    WITH r AS (DELETE FROM free_plan_reservations WHERE id = $1 RETURNING user_id, kind),
+    refund AS (
+      INSERT INTO bonus (user_id, n) SELECT user_id, 1 FROM r WHERE kind = 'bonus'
+      ON CONFLICT (user_id) DO UPDATE SET n = bonus.n + 1
+      RETURNING user_id
+    )
+    SELECT 1
+  `, [reservation]);
 }
 const countFreeParent = (ent) => { event('parent_free'); return bump(parentSubject(ent), weekKey(), '*'); };
 const countFree = async (ent, cls) => {
-  if (ent.useBonus) { event('plan_bonus'); await db.query('update bonus set n = n - 1 where user_id = $1 and n > 0', [ent.uid]); return; }   // paid for with a bonus plan, not the weekly allowance
+  if (ent.useBonus) { event('plan_bonus'); await db.query('update bonus set n = n - 1 where user_id = $1 and n > 0', [ent.uid]); return; }
   event('plan_free'); return bump(ent.subject, weekKey(), cls);
 };
 
@@ -237,4 +318,4 @@ async function notice() {
 }
 const clearNoticeCache = () => { noticeCache = { at: 0, value: null }; };
 
-module.exports = { rewardStart, rewardClaim, rewardOn, notice, clearNoticeCache, event, isAdmin, cfg, enabled, resolve, checkFree, countFree, checkFreeParent, countFreeParent, checkGuest, countGuest, message, status, weekKey, expiry };
+module.exports = { rewardStart, rewardClaim, rewardOn, notice, clearNoticeCache, event, isAdmin, cfg, enabled, resolve, checkFree, reserveFree, reserveFreeParent, commitFree, releaseFree, countFree, checkFreeParent, countFreeParent, checkGuest, countGuest, message, status, weekKey, expiry };
