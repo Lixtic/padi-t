@@ -5,7 +5,7 @@ const path = require('node:path');
 const root = path.join(__dirname, '..');
 const api = fs.readFileSync(path.join(root, 'api/_repair-math.js'), 'utf8');
 const app = fs.readFileSync(path.join(root, 'public/app.js'), 'utf8');
-const css = fs.readFileSync(path.join(root, 'public/styles.css'), 'utf8');
+const css = fs.readFileSync(path.join(root, 'public/styles.css'), 'utf8');\nconst sync = fs.readFileSync(path.join(root, 'api/sync.js'), 'utf8');
 
 assert.match(api, /A\.authed\(req\)/, 'repair endpoint must require an authenticated user');
 assert.match(api, /\^mathematics\$/i, 'repair endpoint must be restricted to Mathematics');
