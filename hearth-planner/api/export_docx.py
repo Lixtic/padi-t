@@ -2,10 +2,14 @@
 
 Uses the same GES layout builder as the Django app (lib/ges_docx_export.py).
 """
+import base64
+import hashlib
+import hmac
 import json
 import os
 import re
 import sys
+import time
 
 sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'lib'))
 from ges_docx_export import build_ges_lesson_docx  # noqa: E402
@@ -31,9 +35,36 @@ def _json(start_response, status, payload):
     return _response(start_response, str(status), 'application/json; charset=utf-8', body)
 
 
+def _claims(environ):
+    token = (environ.get('HTTP_AUTHORIZATION') or '').strip()
+    if not token.startswith('Bearer '):
+        return None
+    parts = token[7:].split('.')
+    secret = (os.environ.get('EXPORT_TOKEN_SECRET') or os.environ.get('AUTH_SECRET') or '').encode('utf-8')
+    if len(parts) != 2 or len(secret) < 24:
+        return None
+    payload, signature = parts
+    expected = hmac.new(secret, payload.encode('ascii'), hashlib.sha256).hexdigest()
+    if not hmac.compare_digest(expected, signature):
+        return None
+    try:
+        claims = json.loads(base64.urlsafe_b64decode(payload + '=' * (-len(payload) % 4)).decode('utf-8'))
+    except (ValueError, UnicodeDecodeError):
+        return None
+    if not claims.get('uid') or int(claims.get('exp') or 0) <= int(time.time()):
+        return None
+    if claims.get('tier') not in ('free', 'pro'):
+        return None
+    return claims
+
+
 def app(environ, start_response):
     if environ.get('REQUEST_METHOD') != 'POST':
         return _response(start_response, '405 Method Not Allowed', 'text/plain; charset=utf-8', b'', [('Allow', 'POST')])
+
+    claims = _claims(environ)
+    if not claims:
+        return _json(start_response, '401 Unauthorized', {'error': 'session', 'message': 'Please sign in again before exporting.'})
 
     try:
         length = int(environ.get('CONTENT_LENGTH') or 0)
@@ -57,7 +88,8 @@ def app(environ, start_response):
     try:
         data = build_ges_lesson_docx(
             title, content, portrait=(payload.get('layout') == 'portrait'),
-            teacher=str(payload.get('teacher') or '').strip()[:80], school=str(payload.get('school') or '').strip()[:100]
+            teacher=str(payload.get('teacher') or '').strip()[:80], school=str(payload.get('school') or '').strip()[:100],
+            footer_text='GuidEd · Free plan' if claims.get('tier') == 'free' else ''
         )
     except Exception as exc:  # never leak internals to the client
         print('export failed:', repr(exc), file=sys.stderr)
