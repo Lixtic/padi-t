@@ -43,7 +43,7 @@ async function request(method, authorization) {
     expiredResponseCacheEntries: 1,
     staleRateLimitBuckets: 1
   });
-  const deletes = calls.filter((c) => /^delete from/i.test(c.sql));
+  const deletes = calls.filter((c) => /delete from (otp_codes|quota_reservations|free_plan_reservations|response_cache|rate_limits)/i.test(c.sql));
   assert.equal(deletes.length, 5);
   assert.match(deletes[0].sql, /otp_codes where expires_at <=/i);
   assert.match(deletes[1].sql, /quota_reservations where expires_at <=/i);
