@@ -558,7 +558,7 @@
     try {
       const who = window.PadiSync && window.PadiSync.authHeader ? await window.PadiSync.authHeader() : {};
       if (!who || !(who.authorization || who.Authorization)) throw new Error('Please sign in again before repairing this resource.');
-      const response = await fetch('/api/repair-math', {
+      const response = await fetch('/api/sync?what=repair-math', {
         method: 'POST',
         headers: Object.assign({ 'content-type': 'application/json', 'x-access-code': state.access || '', accept: 'application/json' }, who),
         body: JSON.stringify({ subject: session.params.subject, cls: session.params.cls, content: original.body })
