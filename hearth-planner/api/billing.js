@@ -154,6 +154,15 @@ module.exports = async (req, res) => {
     if (req.method !== 'POST') return sendJson(res, 405, { error: 'method', message: 'Use POST.' });
     if (!me || !me.uid) return sendJson(res, 401, { error: 'session', message: 'Please sign in first.' });
     if (await require('./_quota').limited(res, 'billing:' + me.uid, 40, 10 * 60 * 1000)) return;
+    if (action === 'export-token') {
+      const exportSecret = process.env.EXPORT_TOKEN_SECRET || process.env.AUTH_SECRET || '';
+      if (exportSecret.length < 24) return sendJson(res, 503, { error: 'not_configured', message: 'Secure Word export is not configured.' });
+      const ent = await E.resolve(me, clientIp(req));
+      if (ent.blocked) return sendJson(res, 403, { error: 'blocked', message: 'This account has been paused.' });
+      const payload = Buffer.from(JSON.stringify({ uid: me.uid, tier: ent.tier === 'pro' ? 'pro' : 'free', exp: Math.floor(Date.now() / 1000) + 300 })).toString('base64url');
+      const signature = crypto.createHmac('sha256', exportSecret).update(payload).digest('hex');
+      return sendJson(res, 200, { token: payload + '.' + signature, expiresIn: 300 });
+    }
     if (action === 'reward_start' || action === 'reward_claim') {
       const ent = await E.resolve(me, clientIp(req));
       const b = await readJson(req);
