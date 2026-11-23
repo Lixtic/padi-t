@@ -55,6 +55,7 @@ const ran = (re) => log.filter((l) => re.test(l.text));
   assert.ok(purge[0].text.toLowerCase().includes('delete from career_roadmaps'), 'personal roadmaps are removed');
   assert.ok(purge[0].text.toLowerCase().includes('delete from plan_log'), 'pseudonymous weekly usage is removed');
   assert.ok(purge[0].text.toLowerCase().includes('delete from free_plan_reservations'), 'active free-plan reservations are removed');
+  assert.ok(purge[0].text.toLowerCase().includes("subject = $2 or subject = $2 || ':parent'"), 'teacher and parent quota subjects are removed');
 
   // Payments are anonymised, never deleted. Blocked accounts are never removed.
   assert.equal(ran(/^delete from payments/).length, 0);
