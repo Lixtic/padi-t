@@ -21,7 +21,7 @@ assert.match(html, /<tr class="ph">/);
 assert.match(html, /<th>[\s\S]*PHASE \/ DURATION[\s\S]*<\/th>/);
 assert.match(html, /<td[^>]*>[\s\S]*Phase 1: Starter/);
 assert.match(html, /<td[^>]*>[\s\S]*Teacher:[\s\S]*Learners:/);
-assert.doesNotMatch(html, /<th>[\s\S]*Phase 1: Starter/);
+assert.doesNotMatch((html.match(/<th\b[^>]*>[\s\S]*?<\/th>/g) || []).join(''), /Phase 1: Starter/);
 
 const normal = renderMd([
   '| PHASE / DURATION | LEARNING ACTIVITIES | RESOURCES |',
