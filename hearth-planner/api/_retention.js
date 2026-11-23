@@ -29,7 +29,19 @@ async function handler(req, res) {
     const results = await Promise.all([
       db.query('delete from otp_codes where expires_at <= $1 returning email', [now]),
       db.query('delete from quota_reservations where expires_at <= $1 returning id', [now]),
-      db.query('delete from free_plan_reservations where expires_at <= $1 returning id', [now]),
+      db.query(`
+        WITH expired AS (
+          DELETE FROM free_plan_reservations WHERE expires_at <= $1
+          RETURNING id, user_id, kind
+        ),
+        refunded AS (
+          INSERT INTO bonus (user_id, n)
+          SELECT user_id, 1 FROM expired WHERE kind = 'bonus'
+          ON CONFLICT (user_id) DO UPDATE SET n = bonus.n + 1
+          RETURNING user_id
+        )
+        SELECT id FROM expired
+      `, [now]),
       db.query('delete from response_cache where created_at <= $1 returning key', [now - cacheTtlMs()]),
       db.query('delete from rate_limits where window_start <= $1 returning key', [now - DAY])
     ]);
