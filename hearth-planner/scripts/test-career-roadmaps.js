@@ -45,4 +45,8 @@ new Function(js.replace(/^\(\(\) => \{/, '(function(){').replace(/\}\)\(\);\s*$/
 for (const rule of ['career_roadmaps','user_id = $1','not-started','in-progress','completed']) if (!api.includes(rule) && !schema.includes(rule)) throw new Error('Missing private roadmap API rule: ' + rule);
 if (!syncApi.includes('listCareerRoadmaps') || !syncApi.includes('saveCareerRoadmap') || !syncApi.includes('deleteCareerRoadmap')) throw new Error('PadiSync roadmap methods are missing');
 if (!js.includes('listCareerRoadmaps') || !js.includes('deleteCareerRoadmap')) throw new Error('Account-backed roadmap sync actions are missing');
+if (!api.includes('deleted=true') || !api.includes('deleted:!!r.deleted')) throw new Error('Roadmap deletion tombstones are missing');
+if (!js.includes('SYNC_QUEUE') || !js.includes('flushSync') || !js.includes("addEventListener('online'")) throw new Error('Offline roadmap retry queue is missing');
+const sw = read('public/sw.js');
+if (!sw.includes('career-roadmaps|careers')) throw new Error('Public career routes must not overwrite the offline app shell');
 console.log('Career Roadmaps checks passed: ' + careers.length + ' career profiles and personal roadmap controls.');
