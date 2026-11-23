@@ -26,7 +26,7 @@ global.__PADI_SQL__ = { query: async (sql, p) => {
   if (/^select cls, n from plan_log/.test(t)) {
     return [...planLog.entries()].filter(([k])=>k.startsWith(p[0]+'|'+p[1]+'|')).map(([k,n])=>({cls:k.split('|')[2],n}));
   }
-  if (/^select cls from free_plan_reservations/.test(t)) {
+  if (/^select cls, kind from free_plan_reservations/.test(t)) {
     return [...reservations.values()].filter(r=>r.subject===p[0]&&r.period===p[1]&&r.expiresAt>p[2]&&r.kind!=='bonus').map(r=>({cls:r.cls,kind:r.kind}));
   }
   if (/^select id from free_plan_reservations/.test(t)) {
