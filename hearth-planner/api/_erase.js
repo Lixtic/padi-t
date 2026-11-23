@@ -12,6 +12,9 @@ async function eraseAccount(me) {
   await db.query(`
     WITH
       d_plans AS (DELETE FROM plans WHERE user_id = $1 RETURNING 1),
+      d_career_roadmaps AS (DELETE FROM career_roadmaps WHERE user_id = $1 RETURNING 1),
+      d_plan_log AS (DELETE FROM plan_log WHERE subject = $2 RETURNING 1),
+      d_free_plan_reservations AS (DELETE FROM free_plan_reservations WHERE subject = $2 RETURNING 1),
       d_profiles AS (DELETE FROM profiles WHERE user_id = $1 RETURNING 1),
       d_account_profiles AS (DELETE FROM account_profiles WHERE user_id = $1 RETURNING 1),
       d_parent_learning AS (DELETE FROM parent_learning WHERE user_id = $1 RETURNING 1),
@@ -30,7 +33,7 @@ async function eraseAccount(me) {
       d_users AS (DELETE FROM users WHERE id = $1 OR ($3 <> '' AND lower(email) = $3) RETURNING 1),
       a_payments AS (UPDATE payments SET user_id = CASE WHEN user_id = $1 THEN 'deleted' ELSE user_id END, email = '' WHERE user_id = $1 OR ($3 <> '' AND lower(email) = $3) RETURNING 1)
     SELECT
-      (SELECT count(*) FROM d_plans) + (SELECT count(*) FROM d_profiles) +
+      (SELECT count(*) FROM d_plans) + (SELECT count(*) FROM d_career_roadmaps) + (SELECT count(*) FROM d_plan_log) + (SELECT count(*) FROM d_free_plan_reservations) + (SELECT count(*) FROM d_profiles) +
       (SELECT count(*) FROM d_account_profiles) + (SELECT count(*) FROM d_parent_learning) +
       (SELECT count(*) FROM d_notifications) + (SELECT count(*) FROM d_reminder_log) +
       (SELECT count(*) FROM d_mail_optout) + (SELECT count(*) FROM d_account_phones) +
