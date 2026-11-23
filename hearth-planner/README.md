@@ -107,7 +107,7 @@ Knowledge retrieval is additive and fail-open: if no approved source matches or 
 | `ANTHROPIC_API_KEY` / `OPENAI_API_KEY` / `GEMINI_API_KEY` | Your provider key. Set one. |
 | `LLM_PROVIDER` | `anthropic`, `openai` or `gemini`. Only needed if you set more than one key. |
 | `ANTHROPIC_MODEL` / `OPENAI_MODEL` / `GEMINI_MODEL` | Override the default model. |
-| `MAX_OUTPUT_TOKENS` | Output budget per answer. Default 8000. A full package needs about 6,000 to 9,000. |
+| `MAX_OUTPUT_TOKENS` | Output budget per answer. Default 12000. A full package (10 BECE multiple-choice questions plus 3 structured questions) needs about 7,000 to 11,000. |
 | `ACCESS_CODE` | If set, teachers must enter this code before generating. Strongly recommended for a public site, since every generation costs money. |
 | `RATE_LIMIT` | Generations per IP every 10 minutes. Default 8. |
 | `TOKEN_QUOTA_DAILY` | Daily token budget per signed-in teacher, or per network address when not signed in. Default 200,000 (about 14 full plans). `0` turns it off. Counts are estimates. The day runs 00:00 to 24:00 UTC, which is Ghana time. |

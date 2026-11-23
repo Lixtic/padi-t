@@ -67,7 +67,7 @@ Minimum length for the Study Notes: 600 words per lesson topic.
 
 Use `## BECE Practice`, in BECE style and matched to the week's topic.
 
-**Section A: Multiple Choice.** Heading `**Section A: Multiple Choice**`, then one line `Answer all questions. Choose the correct option.` Write exactly 3 questions the way a BECE paper prints them. Do not use a table. Each question is a numbered line, followed by its four options, each on its own line starting with `A.`, `B.`, `C.` and `D.`, with a blank line between questions:
+**Section A: Multiple Choice.** Heading `**Section A: Multiple Choice**`, then one line `Answer all questions. Choose the correct option.` Write exactly 10 questions the way a BECE paper prints them, ordered from easier to harder. Cover every sub-topic in the week, and make at least 3 of them application questions (a short scenario, a calculation or a diagram described in words) rather than recall. Do not use a table. Each question is a numbered line, followed by its four options, each on its own line starting with `A.`, `B.`, `C.` and `D.`, with a blank line between questions:
 
 ```
 1. Which method is used to separate sand from water?
@@ -77,13 +77,13 @@ C. Distillation
 D. Sublimation
 ```
 
-(Write them as plain lines in the real output, not in a code block.) Distractors must be plausible and the correct letters must not all be the same. Do not mark the answers in the questions. After the last question, give `**Section A answers:**` and the answers on one line, for example `1. B, 2. C, 3. A`.
+(Write them as plain lines in the real output, not in a code block.) Distractors must be plausible and the correct letters must not all be the same. Do not mark the answers in the questions. After the last question, give `**Section A answers:**` and the answers on one line, for example `1. B, 2. C, 3. A, 4. D, 5. B, 6. A, 7. C, 8. D, 9. B, 10. C`.
 
-**Section B: Theory.** Heading `**Section B: Theory Questions**`. Give 1 to 2 structured questions with parts (a), (b), (c), with the marks shown after each part, for example `(b) Explain two causes of… (4 marks)`. Total 10 to 20 marks. Then give `**Marking Guide and Answer Key**` as a table:
+**Section B: Theory.** Heading `**Section B: Theory Questions**`. Give exactly 3 structured questions, each with parts (a), (b), (c) and where it fits (d), with the marks shown after each part, for example `(b) Explain two causes of… (4 marks)`. Each question is worth 10 marks, so the section is 30 marks. Write them in the style of the real BECE Paper 2 for the subject: a figure, table or short context to read first (describe any figure in words), then parts that move from recall to explanation to application. At least one question must ask learners to explain or apply, one must include a calculation or practical procedure where the subject allows it, and the three questions must not all test the same sub-topic. If the request has an `Examiner insights` block, follow it: include at least one question or part on a listed weak area when it fits the week's topic, match the paper format it describes, and never quote or copy examiner or WAEC questions. Then give `**Marking Guide and Answer Key**` as a table:
 
 `| Question | Expected answer | Marks |`
 
-Show every mark point, accept reasonable alternative answers, and show full working for any calculation.
+Show every mark point, accept reasonable alternative answers, and show full working for any calculation. After the table, add `**Common mistakes to avoid:**` with 3 short bullets on what candidates usually get wrong for this topic (for example missing working, wrong units, copying from the question, misspelt key terms).
 
 ### 5. Assessment Rubric
 
@@ -213,7 +213,7 @@ If the request is exactly one of the three below, write only that document (no l
 
 - `## BECE Practice: Extra Set`
 - `**Section A: Multiple Choice**` with exactly 10 questions written the way a BECE paper prints them, in the same format as Section A above (numbered question, then options `A.` to `D.` each on its own line, no table), followed by a `**Section A answers:**` line. Mix recall, understanding and application, get harder towards the end, use plausible distractors, and spread the correct letters.
-- `**Section B: Theory Questions**` with 2 structured questions with parts (a), (b), (c) and the marks after each part.
+- `**Section B: Theory Questions**` with 3 structured questions with parts (a), (b), (c) and the marks after each part (10 marks each).
 - `**Marking Guide and Answer Key**` as a table `| Question | Expected answer | Marks |`, with every mark point shown.
 
 At the other levels this request reads `Write 10 more class exercise questions on this week's topics.` or `Write 10 more WASSCE-style questions on this week's topics.` Write the extra set in that level's style from its profile, headed `## Class Exercise: Extra Set` or `## WASSCE Practice: Extra Set`, with 10 questions, no repeats, and every answer and mark shown. At Lower Primary keep the questions short, mostly oral or very light on reading.
@@ -232,6 +232,6 @@ Confirm all of these. If any one is false, fix it before replying:
 - Every section that was asked for is present, in order, and none is an outline. Sections switched off under Content options are absent.
 - Lesson 1 and Lesson 2 each have 3 phases, with a worked example, a learner activity, a check question, and an exit ticket.
 - If Study notes are on, they cover every sub-topic with all 7 elements.
-- If BECE practice is on, Section A has exactly 3 questions written as numbered questions with options A to D on separate lines (no table) and an answers line, and Section B has a complete marking guide with marks.
+- If BECE practice is on, Section A has exactly 10 questions written as numbered questions with options A to D on separate lines (no table) and an answers line, and Section B has 3 structured questions (30 marks) with a complete marking guide with marks and a common-mistakes list.
 - Every table row is on a single line, with `<br>` for line breaks and no stray `|` characters.
 - No title line, no export instruction and no internal tags appear in the body.

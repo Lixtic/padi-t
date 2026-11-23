@@ -7,6 +7,7 @@ const MyScheme = require('./_myscheme');
 const Levels = require('./_levels');
 const Curriculum = require('./_curriculum');
 const Inclusive = require('./_inclusive');
+const ExamInsights = require('./_exam_insights');
 const CLASSES = Levels.ALL_CLASSES;
 const SIZES = ['Up to 30', '31–45', '46–60', 'Over 60'];
 const NAME_RE = /^[\p{L}\p{N} &()\-–—,.'/]{2,60}$/u;
@@ -194,6 +195,7 @@ function firstMessage(p) {
   ];
   const lvl = Levels.levelOfClass(p.cls);
   if (lvl && lvl.id === 'shs') lines.push('Exam practice: WASSCE (write every practice question in WASSCE style, never BECE)');
+  if (switchOn(p, 'BECE practice', p.bece) && p.mode !== 'plan') ExamInsights.lines(p.subject, p.cls).forEach((l) => lines.push(l));
   if (p.size) lines.push('Class size: ' + p.size + ' learners');
   if (p.mode !== 'resources') Inclusive.lines(p.inc).forEach((l) => lines.push(l));
   Schemes.describe(p.scheme).forEach((l) => lines.push(l));

@@ -21,7 +21,7 @@ function activeProvider() {
 
 function maxTokens() {
   const n = parseInt(process.env.MAX_OUTPUT_TOKENS || '', 10);
-  return Number.isFinite(n) && n >= 1000 ? Math.min(n, 64000) : 8000;
+  return Number.isFinite(n) && n >= 1000 ? Math.min(n, 64000) : 12000;
 }
 
 function upstreamError(provider, status, bodyText) {
