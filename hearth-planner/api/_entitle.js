@@ -185,15 +185,18 @@ async function reserveSlot(ent, cls, kind, limit, classLimit) {
       SELECT
         COALESCE((SELECT sum(n) FROM plan_log WHERE subject = $1 AND period = $2), 0)::int AS used,
         (SELECT count(*) FROM free_plan_reservations WHERE subject = $1 AND period = $2 AND expires_at > $3 AND kind <> 'bonus')::int AS reserved,
-        (SELECT count(DISTINCT cls) FROM plan_log WHERE subject = $1 AND period = $2 AND n > 0)::int AS classes,
-        (SELECT count(DISTINCT cls) FROM free_plan_reservations WHERE subject = $1 AND period = $2 AND expires_at > $3 AND kind <> 'bonus')::int AS reserved_classes
+        (SELECT count(DISTINCT cls) FROM (
+          SELECT cls FROM plan_log WHERE subject = $1 AND period = $2 AND n > 0
+          UNION
+          SELECT cls FROM free_plan_reservations WHERE subject = $1 AND period = $2 AND expires_at > $3 AND kind <> 'bonus'
+        ) seen_classes)::int AS class_count
       FROM lock
     ),
     eligible AS (
       SELECT
         ($6 = 0 OR EXISTS (SELECT 1 FROM plan_log WHERE subject = $1 AND period = $2 AND cls = $4 AND n > 0)
           OR EXISTS (SELECT 1 FROM free_plan_reservations WHERE subject = $1 AND period = $2 AND cls = $4 AND expires_at > $3 AND kind <> 'bonus')
-          OR classes + reserved_classes < $6) AS class_ok,
+          OR class_count < $6) AS class_ok,
         ($5 = 0 OR used + reserved < $5) AS weekly_ok
       FROM stats
     ),
