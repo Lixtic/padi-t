@@ -13,7 +13,7 @@ global.__PADI_SQL__ = {
 };
 process.env.DATABASE_URL = 'test';
 process.env.CRON_SECRET = 'cron-test-secret';
-const handler = require('../api/retention');
+const handler = require('../api/_retention');
 
 function response() {
   const r = { statusCode: 0, headers: {}, body: '', setHeader(k, v) { this.headers[k] = v; }, end(v) { this.body = v; } };
