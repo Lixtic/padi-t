@@ -48,6 +48,7 @@ async function request(method, authorization) {
   assert.match(deletes[0].sql, /otp_codes where expires_at <=/i);
   assert.match(deletes[1].sql, /quota_reservations where expires_at <=/i);
   assert.match(deletes[2].sql, /free_plan_reservations where expires_at <=/i);
+  assert.match(deletes[2].sql, /insert into bonus/i, 'expired bonus reservations are refunded atomically');
   assert.match(deletes[3].sql, /response_cache where created_at <=/i);
   assert.match(deletes[4].sql, /rate_limits where window_start <=/i);
   assert.ok(deletes[3].params[0] < deletes[4].params[0], 'cache cutoff follows its 30-day TTL by default');
