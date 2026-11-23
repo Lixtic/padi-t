@@ -37,6 +37,9 @@ process.stdout.write('Curriculum Intelligence Engine tests passed.\n');
   assert2.equal(C.verificationManifest.verifiedIndicators.length, 0);
   assert2.equal(C.officialFor('Integrated Science', 'B8.2.1.1.1'), null,
     'unverified database-exported exemplars are withheld from official curriculum claims');
+  assert2.equal(C.officialFor('Computing', 'B7.1.1.1.1'), null, 'Basic 7 Computing remains unverified until each row has reviewed evidence');
+  assert2.equal(C.officialFor('Computing', 'B8.1.1.1.1'), null, 'Basic 8 Computing remains unverified');
+  assert2.equal(C.officialFor('Computing', 'B9.1.1.1.2'), null, 'Basic 9 Computing remains unverified');
   const scheme = { type: 'teach', term: 1, indicators: ['Round numbers [B8.1.1.1.2]'] };
   const text = C.buildInstruction(scheme, { cls: 'Basic 8', subject: 'Mathematics', week: 3 });
   assert2.ok(!/Official NaCCA exemplars/.test(text), 'unverified exemplars are not sent as official');

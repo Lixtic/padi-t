@@ -96,20 +96,22 @@ module.exports = async (req, res) => {
     if (guest) res.setHeader('X-Guided-Preview', '1');
   };
 
-  // Signed-in teachers on the free tier: stop here when this week's plans (or classes) are used up.
-  if (ent && ent.tier === 'free' && planTurn) {
-    let g = { ok: true };
-    try { g = await Entitle.checkFree(ent, v.params.cls); } catch (e) { console.error('[generate] free check failed', e && e.message); }
-    if (!g.ok) Entitle.event('free_limit_' + g.reason);
-    if (!g.ok) return sendJson(res, 402, { error: 'limit', reason: g.reason, resetsAt: g.resetsAt, message: Entitle.message('free', g) });
-  }
-
-  // Free parent accounts: this week's home activities.
-  if (ent && ent.tier === 'free' && parentTurn) {
-    let g = { ok: true };
-    try { g = await Entitle.checkFreeParent(ent); } catch (e) { console.error('[generate] parent allowance check failed', e && e.message); }
-    if (!g.ok) Entitle.event('free_limit_parent');
-    if (!g.ok) return sendJson(res, 402, { error: 'limit', reason: g.reason, used: g.used, limit: g.limit, resetsAt: g.resetsAt, message: Entitle.message('free', g) });
+  // Reserve the weekly allowance before either a cached response or a paid AI call.
+  // The database reservation is atomic, so parallel requests cannot overspend it.
+  let freeReservation = null;
+  if (ent && ent.tier === 'free' && (planTurn || parentTurn)) {
+    let g;
+    try {
+      g = parentTurn ? await Entitle.reserveFreeParent(ent) : await Entitle.reserveFree(ent, v.params.cls);
+    } catch (e) {
+      console.error('[generate] free reservation failed', e && e.message);
+      return sendJson(res, 503, { error: 'protection_unavailable', message: 'Your plan allowance could not be checked. Please try again shortly.' });
+    }
+    if (!g.ok) {
+      Entitle.event('free_limit_' + (g.reason || 'plans'));
+      return sendJson(res, 402, { error: 'limit', reason: g.reason, used: g.used, limit: g.limit, resetsAt: g.resetsAt, message: Entitle.message('free', g) });
+    }
+    freeReservation = g.reservation;
   }
 
   // 1. A repeat of a recent request is served from the cache, at no token cost and with no quota used.
@@ -122,12 +124,15 @@ module.exports = async (req, res) => {
   if (!fresh) {
     const hit = await Cache.lookup(ck);
     if (hit) {
+      if (freeReservation) {
+        try { await Entitle.commitFree(freeReservation); }
+        catch (e) { console.error('[generate] cached quota commit failed', e && e.message); await Entitle.releaseFree(freeReservation).catch(() => {}); return sendJson(res, 503, { error: 'protection_unavailable', message: 'Your plan allowance could not be saved. Please try again.' }); }
+        freeReservation = null;
+      }
       res.statusCode = 200;
       sendHeaders(hit.how);
       res.end(hit.text);
-      if (ent && ent.tier === 'free' && planTurn) await Entitle.countFree(ent, v.params.cls).catch(() => {});
-      else if (ent && ent.tier === 'free' && parentTurn) await Entitle.countFreeParent(ent).catch(() => {});
-      else if (ent && ent.tier === 'pro' && firstTurn) Entitle.event('plan_pro');
+      if (ent && ent.tier === 'pro' && firstTurn) Entitle.event('plan_pro');
       else if (guest) Entitle.event('guest_preview');
       return;
     }
@@ -151,9 +156,11 @@ module.exports = async (req, res) => {
       ent && ent.tier === 'pro' && Entitle.cfg().proTokenDaily ? { limit: Entitle.cfg().proTokenDaily } : undefined);
   } catch (e) {
     console.error('[generate] quota reservation failed', e && e.message);
+    if (freeReservation) await Entitle.releaseFree(freeReservation).catch(() => {});
     return sendJson(res, 503, { error: 'protection_unavailable', message: 'The usage protection service is temporarily unavailable. Please try again shortly.' });
   }
   if (!q.ok) {
+    if (freeReservation) await Entitle.releaseFree(freeReservation).catch(() => {});
     return sendJson(res, 429, { error: 'quota', message: Quota.message(q) }, { 'Retry-After': String(q.retryAfter) });
   }
 
@@ -169,6 +176,7 @@ module.exports = async (req, res) => {
     // The provider call has started; conservatively count the prompt in case it was billed
     // before the connection failed or the client stopped waiting for the first chunk.
     await Quota.settle(q.reservation, inputTokens).catch((settleError) => console.error('[generate] quota settlement failed', settleError && settleError.message));
+    if (freeReservation) await Entitle.releaseFree(freeReservation).catch(() => {});
     return sendJson(res, e.status || 502, { error: e.code || 'upstream', message: e.message || 'The AI provider failed.' });
   }
 
@@ -206,8 +214,7 @@ module.exports = async (req, res) => {
   const complete = !failed && !ctrl.signal.aborted && (finish === 'stop' || (guest && wroteText));
   if (complete) tasks.push(Cache.store(ck, full, v.thread.length, used));
   if (guest && wroteText) { Entitle.event('guest_preview'); tasks.push(Entitle.countGuest(ent)); }                     // a taster that spent tokens
-  else if (ent && ent.tier === 'free' && planTurn && !fresh && complete) tasks.push(Entitle.countFree(ent, v.params.cls));
-  else if (ent && ent.tier === 'free' && parentTurn && !fresh && complete) tasks.push(Entitle.countFreeParent(ent));
+  if (freeReservation) tasks.push(complete ? Entitle.commitFree(freeReservation) : Entitle.releaseFree(freeReservation));
   else if (ent && ent.tier === 'pro' && firstTurn && !fresh && complete) Entitle.event('plan_pro');
   await Promise.all(tasks).catch(() => {});
   // A signed-in teacher gets a durable inbox item when a new plan has finished successfully.
