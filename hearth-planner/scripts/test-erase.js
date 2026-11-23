@@ -52,6 +52,9 @@ const ran = (re) => log.filter((l) => re.test(l.text));
   }
   assert.ok(purge[0].text.includes('lower(email)'), 'email-owned records are removed case-insensitively');
   assert.ok(purge[0].text.includes("THEN 'deleted' ELSE user_id END"), 'payment rows are anonymised');
+  assert.ok(purge[0].text.includes('delete from career_roadmaps'), 'personal roadmaps are removed');
+  assert.ok(purge[0].text.includes('delete from plan_log'), 'pseudonymous weekly usage is removed');
+  assert.ok(purge[0].text.includes('delete from free_plan_reservations'), 'active free-plan reservations are removed');
 
   // Payments are anonymised, never deleted. Blocked accounts are never removed.
   assert.equal(ran(/^delete from payments/).length, 0);
