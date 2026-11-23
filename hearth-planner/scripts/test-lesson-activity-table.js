@@ -15,7 +15,7 @@ const joined = [
   '| **PHASE / DURATION** | **LEARNING ACTIVITIES** | **RESOURCES** |',
   '| **Phase 1: Starter (10 mins)** | **Teacher:** Shows a monitor. **Learners:** Name it. | Monitor |',
   '| **Phase 2: Main Instruction (40 mins)** | **Teacher:** Explains input devices. **Learners:** Sort examples. | Keyboard, mouse |',
-].join('\\n');
+].join('\n');
 const html = renderMd(joined);
 assert.match(html, /<tr class="ph">/);
 assert.match(html, /<th>[\s\S]*PHASE \/ DURATION[\s\S]*<\/th>/);
