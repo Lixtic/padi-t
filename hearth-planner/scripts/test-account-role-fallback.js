@@ -1,0 +1,14 @@
+'use strict';
+const assert = require('node:assert/strict');
+const fs = require('node:fs');
+const path = require('node:path');
+const source = fs.readFileSync(path.join(__dirname, '..', 'public', 'sync.js'), 'utf8');
+const start = source.indexOf('getAccountProfile: async function ()');
+assert.notEqual(start, -1, 'account profile lookup must exist');
+const end = source.indexOf('setAccountProfile:', start);
+const method = source.slice(start, end);
+assert.match(method, /call\('\/api\/account-profile'/, 'friendly account-profile route remains primary');
+assert.match(method, /catch \(firstError\)/, 'failed primary lookup must trigger fallback');
+assert.match(method, /call\('\/api\/sync\?what=account-profile'/, 'fallback must use canonical sync route');
+assert.match(method, /throw fallbackError/, 'report failure only when both routes fail');
+process.stdout.write('Account-role lookup fallback test passed.\n');
