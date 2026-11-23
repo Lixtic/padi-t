@@ -506,7 +506,7 @@ def _add_table(document, rows, has_header, meta):
 
 
 # ── Public entry point ───────────────────────────────────────────────────────
-def build_ges_lesson_docx(title, content, portrait=False, teacher='', school=''):
+def build_ges_lesson_docx(title, content, portrait=False, teacher='', school='', footer_text=''):
     """Return the .docx file as bytes. portrait=True gives an A4 portrait page (worksheets, homework)."""
     import io
     global USABLE_W
@@ -556,6 +556,8 @@ def build_ges_lesson_docx(title, content, portrait=False, teacher='', school='')
     _add_field(footer, 'PAGE', 8)
     _add_runs(footer, ' of ', 8, color=GREY)
     _add_field(footer, 'NUMPAGES', 8)
+    if footer_text:
+        _add_runs(footer, '   |   ' + str(footer_text)[:80], 8, color=GREY)
 
     lines = content.split('\n')
     i = 0
