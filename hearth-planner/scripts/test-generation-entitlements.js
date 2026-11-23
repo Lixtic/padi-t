@@ -4,7 +4,7 @@ const fs = require('node:fs');
 const path = require('node:path');
 const source = fs.readFileSync(path.join(__dirname, '..', 'api/generate.js'), 'utf8');
 const reserveAt = source.indexOf("if (ent && ent.tier === 'free' && (planTurn || parentTurn))");
-const cacheAt = source.indexOf('const hit = await Cache.lookup(ck)');
+const cacheAt = source.indexOf('// 1. A repeat of a recent request', reserveAt);
 const freshAt = source.indexOf('const fresh = body.fresh === true && !guest');
 assert.ok(freshAt >= 0, 'regeneration flag is recognised for signed-in accounts');
 assert.ok(reserveAt >= 0 && cacheAt > reserveAt, 'weekly reservation happens before cache lookup');
