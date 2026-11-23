@@ -42,12 +42,13 @@ async function request(method, authorization) {
     expiredResponseCacheEntries: 1,
     staleRateLimitBuckets: 1
   });
-  assert.equal(calls.length, 4);
+  assert.equal(calls.length, 5);
   assert.match(calls[0].sql, /otp_codes where expires_at <=/i);
   assert.match(calls[1].sql, /quota_reservations where expires_at <=/i);
-  assert.match(calls[2].sql, /response_cache where created_at <=/i);
-  assert.match(calls[3].sql, /rate_limits where window_start <=/i);
-  assert.ok(calls[2].params[0] < calls[3].params[0], 'cache cutoff follows its 30-day TTL by default');
+  assert.match(calls[2].sql, /free_plan_reservations where expires_at <=/i);
+  assert.match(calls[3].sql, /response_cache where created_at <=/i);
+  assert.match(calls[4].sql, /rate_limits where window_start <=/i);
+  assert.ok(calls[3].params[0] < calls[4].params[0], 'cache cutoff follows its 30-day TTL by default');
   assert.ok(calls.every((c) => !/parent_learning|notifications|payments|feedback|admin_log|knowledge_sources/i.test(c.sql)), 'no records with unresolved retention policy are deleted');
 
   calls.length = 0; fail = true;
