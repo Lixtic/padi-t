@@ -1,0 +1,165 @@
+{
+  "schemaVersion": 1,
+  "status": "partial_source_comparison",
+  "sourceRegister": "curriculum-source-register.json",
+  "sourceId": "nacca-computing-ccp-2020",
+  "subject": "Computing",
+  "class": "Basic 7",
+  "reviewedAt": "2026-11-22",
+  "evidenceBoundary": "These are source comparisons recorded in the technical audit. They are not approved corrections and do not authorize official exemplar use.",
+  "reviewedExportedIndicatorCount": 28,
+  "totalExportedIndicatorCount": 50,
+  "remainingExportedIndicatorCount": 22,
+  "batches": [
+    {
+      "id": "computing-b7-01",
+      "contentStandard": "B7.1.1.1",
+      "codes": [
+        "B7.1.1.1.1",
+        "B7.1.1.1.2",
+        "B7.1.1.1.3",
+        "B7.1.1.1.4"
+      ],
+      "printedPages": [
+        "2-3"
+      ],
+      "status": "source_compared_discrepancies_pending_human_review",
+      "findings": [
+        "Indicator fields contain exemplar or competency-column contamination.",
+        "Exemplar arrays contain competency fragments and table-heading leakage.",
+        "The source itself repeats an Exemplar(s) label and has awkward wording in the fourth row; preserve the anomaly for review."
+      ]
+    },
+    {
+      "id": "computing-b7-02",
+      "contentStandard": "B7.1.1.2",
+      "codes": [
+        "B7.1.1.2.1",
+        "B7.1.1.2.2"
+      ],
+      "printedPages": [
+        "4"
+      ],
+      "status": "source_compared_discrepancies_pending_human_review",
+      "findings": [
+        "Indicator wording corresponds to the source table.",
+        "The file-management row has two exploration statements before the Exemplar(s) label; review their intended grouping rather than dropping them."
+      ]
+    },
+    {
+      "id": "computing-b7-03",
+      "contentStandard": "B7.1.2.1",
+      "codes": [
+        "B7.1.2.1.1",
+        "B7.1.2.1.2",
+        "B7.1.2.1.3",
+        "B7.1.2.1.4",
+        "B7.1.2.1.5",
+        "B7.1.2.1.6"
+      ],
+      "printedPages": [
+        "5-7"
+      ],
+      "status": "source_compared_discrepancies_pending_human_review",
+      "findings": [
+        "The first three exported rows show row/column boundary contamination.",
+        "B7.1.2.1.2 has an empty exported exemplar array although the source contains a group demonstration activity.",
+        "Later rows retain much of the activity text but merge separate activities."
+      ]
+    },
+    {
+      "id": "computing-b7-04",
+      "contentStandard": "B7.1.3.1",
+      "codes": [
+        "B7.1.3.1.1",
+        "B7.1.3.1.2",
+        "B7.1.3.1.3",
+        "B7.1.3.1.4"
+      ],
+      "printedPages": [
+        "7"
+      ],
+      "status": "source_compared_source_anomaly_pending_human_review",
+      "findings": [
+        "B7.1.3.1.1 loses the first source activity and mixes competency text into the export.",
+        "B7.1.3.1.2 is the cleanest compared row.",
+        "The source places B8.1.3.1.1 immediately after B7.1.3.1.3; do not automatically reassign its workstation activity.",
+        "Competency fragments contaminate other indicator and exemplar fields."
+      ]
+    },
+    {
+      "id": "computing-b7-05",
+      "contentStandard": "B7.2.1.1",
+      "codes": [
+        "B7.2.1.1.1",
+        "B7.2.1.1.2",
+        "B7.2.1.1.3",
+        "B7.2.1.1.4"
+      ],
+      "sourceOnlyCodes": [
+        "B7.2.1.1.4.5",
+        "B7.2.1.1.4.6"
+      ],
+      "printedPages": [
+        "8-10"
+      ],
+      "status": "source_compared_source_anomalies_pending_human_review",
+      "findings": [
+        "Exported indicator and exemplar fields include competency and table-boundary contamination.",
+        "The source contains additional formatting indicator codes .4.5 and .4.6 that are not separate exported keys.",
+        "The source repeats code B7.2.1.1.3 beneath a different Formatting Text standard; do not infer a replacement code."
+      ]
+    },
+    {
+      "id": "computing-b7-06",
+      "contentStandards": [
+        "B7.2.3.1",
+        "B7.2.3.2",
+        "B7.2.3.3"
+      ],
+      "codes": [
+        "B7.2.3.1.1",
+        "B7.2.3.1.2",
+        "B7.2.3.1.3",
+        "B7.2.3.1.4",
+        "B7.2.3.2.1",
+        "B7.2.3.2.2",
+        "B7.2.3.2.3",
+        "B7.2.3.3.1"
+      ],
+      "printedPages": [
+        "13-15"
+      ],
+      "status": "source_compared_discrepancies_pending_human_review",
+      "findings": [
+        "Indicator, content-standard and core-competency fields are mixed in multiple exported rows.",
+        "B7.2.3.3.1 has an empty exported indicator statement while the source provides one.",
+        "The activity wording is often present but exemplar grouping and field boundaries are unreliable."
+      ]
+    }
+  ],
+  "nextComparisonOrder": [
+    {
+      "class": "Basic 7",
+      "subject": "Computing",
+      "remainingExportedIndicators": 22
+    },
+    {
+      "class": "Basic 8",
+      "subject": "Computing",
+      "exportedIndicators": 37
+    },
+    {
+      "class": "Basic 9",
+      "subject": "Computing",
+      "exportedIndicators": 35
+    }
+  ],
+  "approval": {
+    "verified": false,
+    "approvedManifestEntries": 0,
+    "correctionAppliedToCanonicalIndex": false,
+    "secondReviewerRequired": true,
+    "note": "Do not add any of these records to curriculum-verification.json until a human reviewer reconciles exact source wording, content-standard context, exemplars, competencies, printed page and source document metadata."
+  }
+}
