@@ -11,9 +11,10 @@ global.__PADI_SQL__ = { query: async (sql, p) => {
   if (/WITH lock AS MATERIALIZED/.test(t)) {
     const [subject,period,now,cls,limit,classLimit,id,kind,uid] = p;
     const committed = [...planLog.entries()].filter(([k]) => k.startsWith(subject+'|'+period+'|'));
-    const active = [...reservations.values()].filter(r => r.subject===subject && r.period===period && r.expiresAt>now && r.kind!=='bonus');
+    const active = [...reservations.values()].filter(r => r.subject===subject && r.period===period && r.expiresAt>now);
+    const normalActive = active.filter(r=>r.kind!=='bonus');
     const classes = new Set(committed.filter(([,n])=>n>0).map(([k])=>k.split('|')[2]).concat(active.map(r=>r.cls)));
-    const used = committed.reduce((n,[,v])=>n+v,0)+active.length;
+    const used = committed.reduce((n,[,v])=>n+v,0)+normalActive.length;
     const classOk = !classLimit || classes.has(cls) || classes.size<classLimit;
     const weeklyOk = !limit || used<limit;
     if(classOk && weeklyOk){reservations.set(id,{subject,period,cls,kind,userId:uid,expiresAt:now+1800000});return [{id,kind:'normal'}]}
