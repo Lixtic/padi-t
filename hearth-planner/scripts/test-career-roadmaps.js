@@ -45,4 +45,15 @@ new Function(js.replace(/^\(\(\) => \{/, '(function(){').replace(/\}\)\(\);\s*$/
 for (const rule of ['career_roadmaps','user_id = $1','not-started','in-progress','completed']) if (!api.includes(rule) && !schema.includes(rule)) throw new Error('Missing private roadmap API rule: ' + rule);
 if (!syncApi.includes('listCareerRoadmaps') || !syncApi.includes('saveCareerRoadmap') || !syncApi.includes('deleteCareerRoadmap')) throw new Error('PadiSync roadmap methods are missing');
 if (!js.includes('listCareerRoadmaps') || !js.includes('deleteCareerRoadmap')) throw new Error('Account-backed roadmap sync actions are missing');
+if (!api.includes('deleted=true') || !api.includes('deleted:!!r.deleted')) throw new Error('Roadmap deletion tombstones are missing');
+if (!js.includes('SYNC_QUEUE') || !js.includes('flushSync') || !js.includes("addEventListener('online'")) throw new Error('Offline roadmap retry queue is missing');
+if (!js.includes('syncQueue[0]===item')) throw new Error('In-flight roadmap saves must not discard newer queued edits');
+if (!js.includes("syncQueue.push({action,id,roadmap:p||null})") || !js.includes("localStorage.setItem(SYNC_QUEUE,JSON.stringify(syncQueue))")) throw new Error('Roadmap mutations must be persisted before network sync');
+if (!js.includes("queueSync('delete',id)")) throw new Error('Roadmap deletions must enter the persistent retry queue');
+if (!js.includes("Number(p.updatedAt)>=localTime") || !js.includes("Number(queued.roadmap.updatedAt||0)>Number(p.updatedAt||0)")) throw new Error('Roadmap reconciliation must compare remote and queued timestamps');
+if (!js.includes("catch(e){$('#roadmap-sync-note').textContent=e.status===401")) throw new Error('Failed sync must retain local data and report authentication failures');
+if (!api.includes("updated_at=excluded.updated_at,deleted=true") || !api.includes("deleted=false")) throw new Error('Roadmap API must retain deletion tombstones and revive explicit saves');
+if (!api.includes("where user_id = $1 order by updated_at desc")) throw new Error('Roadmap reads must remain scoped to the authenticated account');
+const sw = read('public/sw.js');
+if (!sw.includes('career-roadmaps|careers')) throw new Error('Public career routes must not overwrite the offline app shell');
 console.log('Career Roadmaps checks passed: ' + careers.length + ' career profiles and personal roadmap controls.');

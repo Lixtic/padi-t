@@ -30,17 +30,37 @@ async function rawBody(req) {
   return Buffer.concat(chunks);
 }
 
-// Adds the paid days to the teacher's Pro period. Safe to call twice for one payment: only the first call counts.
+// Payment confirmation and entitlement extension are one PostgreSQL statement.
+// If the subscription write fails, the payment status update rolls back too. The
+// ON CONFLICT expression extends from the latest committed expiry, even when two
+// different payments for the same account settle concurrently.
 async function grant(reference, paidAt) {
   await db.ensure();
-  const rows = await db.query("update payments set status = 'success', paid_at = $2 where reference = $1 and status <> 'success' and user_id <> 'deleted' returning user_id, plan", [reference, paidAt || Date.now()]);
+  const at = paidAt || Date.now();
+  const planDays = E.cfg().plans;
+  // The plan is read from the locked payment row inside the statement; days are
+  // supplied as a CASE so the amount of access cannot come from the request.
+  const rows = await db.query(`
+    WITH paid AS (
+      UPDATE payments
+         SET status = 'success', paid_at = $2
+       WHERE reference = $1 AND status <> 'success' AND user_id <> 'deleted'
+       RETURNING user_id, plan
+    )
+    INSERT INTO subscriptions (user_id, expires_at, plan, updated_at)
+    SELECT user_id,
+           $2::bigint + (CASE WHEN plan = 'term' THEN $4::bigint ELSE $3::bigint END) * 86400000,
+           plan, $2::bigint
+      FROM paid
+    ON CONFLICT (user_id) DO UPDATE
+       SET expires_at = GREATEST(subscriptions.expires_at, EXCLUDED.updated_at)
+                       + (CASE WHEN EXCLUDED.plan = 'term' THEN $4::bigint ELSE $3::bigint END) * 86400000,
+           plan = EXCLUDED.plan,
+           updated_at = EXCLUDED.updated_at
+    RETURNING user_id, expires_at
+  `, [reference, at, Number(planDays.monthly.days) || 30, Number(planDays.term.days) || 120]);
   if (!rows.length) return { already: true };
-  const { user_id: uid, plan } = rows[0];
-  const days = (E.cfg().plans[plan] || { days: 30 }).days;
-  const base = Math.max(Date.now(), await E.expiry(uid));
-  const until = base + days * 86400000;
-  await db.query('insert into subscriptions (user_id, expires_at, plan, updated_at) values ($1, $2, $3, $4) on conflict (user_id) do update set expires_at = excluded.expires_at, plan = excluded.plan, updated_at = excluded.updated_at', [uid, until, plan, Date.now()]);
-  return { granted: true, until };
+  return { granted: true, until: Number(rows[0].expires_at) };
 }
 
 // Confirms with Paystack that this reference was paid in full, then unlocks Pro.
@@ -134,6 +154,15 @@ module.exports = async (req, res) => {
     if (req.method !== 'POST') return sendJson(res, 405, { error: 'method', message: 'Use POST.' });
     if (!me || !me.uid) return sendJson(res, 401, { error: 'session', message: 'Please sign in first.' });
     if (await require('./_quota').limited(res, 'billing:' + me.uid, 40, 10 * 60 * 1000)) return;
+    if (action === 'export-token') {
+      const exportSecret = process.env.EXPORT_TOKEN_SECRET || process.env.AUTH_SECRET || '';
+      if (exportSecret.length < 24) return sendJson(res, 503, { error: 'not_configured', message: 'Secure Word export is not configured.' });
+      const ent = await E.resolve(me, clientIp(req));
+      if (ent.blocked) return sendJson(res, 403, { error: 'blocked', message: 'This account has been paused.' });
+      const payload = Buffer.from(JSON.stringify({ uid: me.uid, tier: ent.tier === 'pro' ? 'pro' : 'free', exp: Math.floor(Date.now() / 1000) + 300 })).toString('base64url');
+      const signature = crypto.createHmac('sha256', exportSecret).update(payload).digest('hex');
+      return sendJson(res, 200, { token: payload + '.' + signature, expiresIn: 300 });
+    }
     if (action === 'reward_start' || action === 'reward_claim') {
       const ent = await E.resolve(me, clientIp(req));
       const b = await readJson(req);

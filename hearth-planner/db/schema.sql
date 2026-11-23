@@ -63,5 +63,26 @@ create table if not exists subscriptions (user_id text primary key, expires_at b
 create table if not exists payments (reference text primary key, user_id text not null, email text not null default '', plan text not null, amount bigint not null, currency text not null, status text not null default 'pending', created_at bigint not null, paid_at bigint);
 create index if not exists payments_user on payments (user_id, created_at);
 create table if not exists plan_log (subject text not null, period text not null, cls text not null, n int not null default 0, primary key (subject, period, cls));
+create table if not exists free_plan_reservations (
+  id text primary key,
+  subject text not null,
+  period text not null,
+  cls text not null,
+  kind text not null,
+  user_id text not null default '',
+  expires_at bigint not null
+);
+create index if not exists free_plan_reservations_active on free_plan_reservations (subject, period, expires_at);
+create table if not exists career_roadmaps (
+  user_id text not null,
+  id text not null,
+  career_id text not null,
+  data jsonb not null default '{}'::jsonb,
+  updated_at bigint not null,
+  deleted boolean not null default false,
+  primary key (user_id, id)
+);
+alter table career_roadmaps add column if not exists deleted boolean not null default false;
+create index if not exists career_roadmaps_recent on career_roadmaps (user_id, updated_at desc);
 create table if not exists feedback (id text primary key, kind text not null, message text not null, email text not null default '', user_id text not null default '', tier text not null default '', context text not null default '', status text not null default 'new', created_at bigint not null);
 create index if not exists feedback_status on feedback (status, created_at);

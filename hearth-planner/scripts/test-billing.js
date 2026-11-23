@@ -7,6 +7,7 @@ const { Readable } = require('stream');
 const payments = new Map();            // reference -> row
 const subs = new Map();                // user_id -> { expires_at, plan }
 const blocked = new Set();
+let failGrant = false;
 const squash = (t) => t.replace(/\s+/g, ' ').trim();
 global.__PADI_SQL__ = { query: async (text, p) => {
   const t = squash(text);
@@ -14,12 +15,16 @@ global.__PADI_SQL__ = { query: async (text, p) => {
   if (/^select 1 from blocked where user_id/.test(t)) return blocked.has(p[0]) ? [{ ok: 1 }] : [];
   if (/^insert into payments/.test(t)) { payments.set(p[0], { reference: p[0], user_id: p[1], email: p[2], plan: p[3], amount: p[4], currency: p[5], status: 'pending', created_at: p[6] }); return []; }
   if (/^select user_id, amount, currency, status from payments where reference/.test(t)) { const r = payments.get(p[0]); return r ? [r] : []; }
-  if (/^update payments set status = 'success'/.test(t)) {
+  if (/^with paid as \(/i.test(t)) {
+    if (failGrant) throw new Error('simulated subscription write failure');
     const r = payments.get(p[0]); if (!r || r.status === 'success' || r.user_id === 'deleted') return [];
-    r.status = 'success'; r.paid_at = p[1]; return [{ user_id: r.user_id, plan: r.plan }];
+    const days = r.plan === 'term' ? p[3] : p[2];
+    const base = Math.max(Number(subs.get(r.user_id)?.expires_at || 0), Number(p[1]));
+    const until = base + Number(days) * DAY;
+    r.status = 'success'; r.paid_at = p[1];
+    subs.set(r.user_id, { expires_at: until, plan: r.plan });
+    return [{ user_id: r.user_id, expires_at: until }];
   }
-  if (/^select expires_at from subscriptions where user_id/.test(t)) return subs.has(p[0]) ? [{ expires_at: subs.get(p[0]).expires_at }] : [];
-  if (/^insert into subscriptions/.test(t)) { subs.set(p[0], { expires_at: p[1], plan: p[2] }); return []; }
   return [];
 } };
 Object.assign(process.env, { DATABASE_URL: 'test', SMTP_URL: 'json', AUTH_SECRET: 'test-secret-test-secret-test-secret',
@@ -87,6 +92,12 @@ const DAY = 86400000;
 
   // Paid in full: Pro for 30 days; asking again does not add more.
   paystack.verify[ref] = { status: 'success', amount: 2300, currency: 'GHS' };
+  failGrant = true;
+  r = await call({ action: 'verify', user: ada, body: { reference: ref } });
+  assert.equal(r.code, 502, 'a failed entitlement write is reported as retryable');
+  assert.equal(payments.get(ref).status, 'pending', 'payment status rolls back when the subscription write fails');
+  assert.equal(subs.size, 0, 'no partial Pro entitlement is recorded');
+  failGrant = false;
   const before = Date.now();
   r = await call({ action: 'verify', user: ada, body: { reference: ref } });
   assert.equal(r.code, 200); assert.equal(r.json.verified, true);
@@ -100,6 +111,23 @@ const DAY = 86400000;
   const ref2 = r.json.reference; paystack.verify[ref2] = { status: 'success', amount: 5000, currency: 'GHS' };
   await call({ action: 'verify', user: ada, body: { reference: ref2 } });
   assert.equal(subs.get('ada').expires_at, until + 120 * DAY, 'term adds 120 days after the current end');
+
+  // Two separate payments settling concurrently must both extend the latest expiry.
+  const startConcurrent = subs.get('ada').expires_at;
+  const monthly = await call({ action: 'checkout', user: ada, body: { plan: 'monthly' } });
+  const term = await call({ action: 'checkout', user: ada, body: { plan: 'term' } });
+  const concurrentMonthly = monthly.json.reference, concurrentTerm = term.json.reference;
+  paystack.verify[concurrentMonthly] = { status: 'success', amount: 2300, currency: 'GHS' };
+  paystack.verify[concurrentTerm] = { status: 'success', amount: 5000, currency: 'GHS' };
+  const settled = await Promise.all([
+    call({ action: 'verify', user: ada, body: { reference: concurrentMonthly } }),
+    call({ action: 'verify', user: ada, body: { reference: concurrentTerm } })
+  ]);
+  assert.deepEqual(settled.map(x => x.code), [200, 200], 'both concurrent payments settle');
+  assert.equal(payments.get(concurrentMonthly).status, 'success');
+  assert.equal(payments.get(concurrentTerm).status, 'success');
+  assert.equal(subs.get('ada').expires_at, startConcurrent + 150 * DAY,
+    'concurrent monthly and term payments both stack on the latest expiry');
 
   // Webhook: signature required; valid event is idempotent with verify; pending asks Paystack to retry.
   const ev = (reference) => JSON.stringify({ event: 'charge.success', data: { reference } });

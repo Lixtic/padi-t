@@ -13,16 +13,17 @@ module.exports = async (req, res) => {
   try {
     await db.ensure();
     if (req.method === 'GET') {
-      const rows = await db.query('select id, career_id, data, updated_at from career_roadmaps where user_id = $1 order by updated_at desc limit 50', [me.uid]);
-      return sendJson(res, 200, rows.map(r => ({ id:r.id, careerId:r.career_id, ...r.data, updatedAt:Number(r.updated_at) })));
+      const rows = await db.query('select id, career_id, data, updated_at, deleted from career_roadmaps where user_id = $1 order by updated_at desc', [me.uid]);
+      return sendJson(res, 200, rows.map(r => ({ id:r.id, careerId:r.career_id, ...r.data, deleted:!!r.deleted, updatedAt:Number(r.updated_at) })));
     }
     let body;
     try { body = await readJson(req, 50000); } catch(e) { return sendJson(res, e.status || 400, { error:'bad_request', message:e.message }); }
     const id = clean(body && body.id, 80);
     if (!/^[a-z0-9][a-z0-9_-]{1,79}$/.test(id)) return sendJson(res, 400, { error:'bad_request', message:'A valid roadmap ID is required.' });
     if (body && body.delete === true) {
-      await db.query('delete from career_roadmaps where user_id = $1 and id = $2', [me.uid, id]);
-      return sendJson(res, 200, { ok:true, deleted:id });
+      const updatedAt = Date.now();
+      await db.query("insert into career_roadmaps (user_id,id,career_id,data,updated_at,deleted) values ($1,$2,'','{}'::jsonb,$3,true) on conflict (user_id,id) do update set career_id='',data='{}'::jsonb,updated_at=excluded.updated_at,deleted=true", [me.uid, id, updatedAt]);
+      return sendJson(res, 200, { ok:true, deleted:id, updatedAt });
     }
     const careerId = clean(body && body.careerId, 80);
     const title = clean(body && body.title, 120);
@@ -39,8 +40,8 @@ module.exports = async (req, res) => {
     }
     const data = JSON.stringify({ title, stages, createdAt: Number(body.createdAt) > 0 ? Number(body.createdAt) : Date.now() });
     const updatedAt = Date.now();
-    await db.query('insert into career_roadmaps (user_id,id,career_id,data,updated_at) values ($1,$2,$3,$4::jsonb,$5) on conflict (user_id,id) do update set career_id=excluded.career_id,data=excluded.data,updated_at=excluded.updated_at', [me.uid,id,careerId,data,updatedAt]);
-    return sendJson(res, 200, { ok:true, roadmap:{ id, careerId, ...JSON.parse(data), updatedAt } });
+    await db.query('insert into career_roadmaps (user_id,id,career_id,data,updated_at,deleted) values ($1,$2,$3,$4::jsonb,$5,false) on conflict (user_id,id) do update set career_id=excluded.career_id,data=excluded.data,updated_at=excluded.updated_at,deleted=false', [me.uid,id,careerId,data,updatedAt]);
+    return sendJson(res, 200, { ok:true, roadmap:{ id, careerId, ...JSON.parse(data), deleted:false, updatedAt } });
   } catch(e) {
     console.error('career roadmap sync failed:', e && e.message);
     return sendJson(res, 500, { error:'server', message:'Could not save this roadmap. Please try again.' });

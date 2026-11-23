@@ -1,0 +1,268 @@
+{
+  "schemaVersion": 1,
+  "status": "partial_source_comparison",
+  "sourceRegister": "curriculum-source-register.json",
+  "sourceId": "nacca-computing-ccp-2020",
+  "subject": "Computing",
+  "class": "Basic 7",
+  "reviewedAt": "2026-11-22",
+  "evidenceBoundary": "These are source comparisons recorded in the technical audit. They are not approved corrections and do not authorize official exemplar use.",
+  "reviewedExportedIndicatorCount": 28,
+  "totalExportedIndicatorCount": 50,
+  "remainingExportedIndicatorCount": 22,
+  "batches": [
+    {
+      "id": "computing-b7-01",
+      "contentStandard": "B7.1.1.1",
+      "codes": [
+        "B7.1.1.1.1",
+        "B7.1.1.1.2",
+        "B7.1.1.1.3",
+        "B7.1.1.1.4"
+      ],
+      "printedPages": [
+        "2-3"
+      ],
+      "status": "source_compared_discrepancies_pending_human_review",
+      "findings": [
+        "Indicator fields contain exemplar or competency-column contamination.",
+        "Exemplar arrays contain competency fragments and table-heading leakage.",
+        "The source itself repeats an Exemplar(s) label and has awkward wording in the fourth row; preserve the anomaly for review."
+      ]
+    },
+    {
+      "id": "computing-b7-02",
+      "contentStandard": "B7.1.1.2",
+      "codes": [
+        "B7.1.1.2.1",
+        "B7.1.1.2.2"
+      ],
+      "printedPages": [
+        "4"
+      ],
+      "status": "source_compared_discrepancies_pending_human_review",
+      "findings": [
+        "Indicator wording corresponds to the source table.",
+        "The file-management row has two exploration statements before the Exemplar(s) label; review their intended grouping rather than dropping them."
+      ]
+    },
+    {
+      "id": "computing-b7-03",
+      "contentStandard": "B7.1.2.1",
+      "codes": [
+        "B7.1.2.1.1",
+        "B7.1.2.1.2",
+        "B7.1.2.1.3",
+        "B7.1.2.1.4",
+        "B7.1.2.1.5",
+        "B7.1.2.1.6"
+      ],
+      "printedPages": [
+        "5-7"
+      ],
+      "status": "source_compared_discrepancies_pending_human_review",
+      "findings": [
+        "The first three exported rows show row/column boundary contamination.",
+        "B7.1.2.1.2 has an empty exported exemplar array although the source contains a group demonstration activity.",
+        "Later rows retain much of the activity text but merge separate activities."
+      ]
+    },
+    {
+      "id": "computing-b7-04",
+      "contentStandard": "B7.1.3.1",
+      "codes": [
+        "B7.1.3.1.1",
+        "B7.1.3.1.2",
+        "B7.1.3.1.3",
+        "B7.1.3.1.4"
+      ],
+      "printedPages": [
+        "7"
+      ],
+      "status": "source_compared_source_anomaly_pending_human_review",
+      "findings": [
+        "B7.1.3.1.1 loses the first source activity and mixes competency text into the export.",
+        "B7.1.3.1.2 is the cleanest compared row.",
+        "The source places B8.1.3.1.1 immediately after B7.1.3.1.3; do not automatically reassign its workstation activity.",
+        "Competency fragments contaminate other indicator and exemplar fields."
+      ]
+    },
+    {
+      "id": "computing-b7-05",
+      "contentStandard": "B7.2.1.1",
+      "codes": [
+        "B7.2.1.1.1",
+        "B7.2.1.1.2",
+        "B7.2.1.1.3",
+        "B7.2.1.1.4"
+      ],
+      "sourceOnlyCodes": [
+        "B7.2.1.1.4.5",
+        "B7.2.1.1.4.6"
+      ],
+      "printedPages": [
+        "8-10"
+      ],
+      "status": "source_compared_source_anomalies_pending_human_review",
+      "findings": [
+        "Exported indicator and exemplar fields include competency and table-boundary contamination.",
+        "The source contains additional formatting indicator codes .4.5 and .4.6 that are not separate exported keys.",
+        "The source repeats code B7.2.1.1.3 beneath a different Formatting Text standard; do not infer a replacement code."
+      ]
+    },
+    {
+      "id": "computing-b7-06",
+      "contentStandards": [
+        "B7.2.3.1",
+        "B7.2.3.2",
+        "B7.2.3.3"
+      ],
+      "codes": [
+        "B7.2.3.1.1",
+        "B7.2.3.1.2",
+        "B7.2.3.1.3",
+        "B7.2.3.1.4",
+        "B7.2.3.2.1",
+        "B7.2.3.2.2",
+        "B7.2.3.2.3",
+        "B7.2.3.3.1"
+      ],
+      "printedPages": [
+        "13-15"
+      ],
+      "status": "source_compared_discrepancies_pending_human_review",
+      "findings": [
+        "Indicator, content-standard and core-competency fields are mixed in multiple exported rows.",
+        "B7.2.3.3.1 has an empty exported indicator statement while the source provides one.",
+        "The activity wording is often present but exemplar grouping and field boundaries are unreliable."
+      ]
+    }
+  ],
+  "nextComparisonOrder": [
+    {
+      "class": "Basic 7",
+      "subject": "Computing",
+      "remainingExportedIndicators": 22
+    },
+    {
+      "class": "Basic 8",
+      "subject": "Computing",
+      "remainingExportedIndicators": 33
+    },
+    {
+      "class": "Basic 9",
+      "subject": "Computing",
+      "remainingExportedIndicators": 28
+    }
+  ],
+  "approval": {
+    "verified": false,
+    "approvedManifestEntries": 0,
+    "correctionAppliedToCanonicalIndex": false,
+    "secondReviewerRequired": true,
+    "note": "Do not add any of these records to curriculum-verification.json until a human reviewer reconciles exact source wording, content-standard context, exemplars, competencies, printed page and source document metadata."
+  },
+  "additionalBatches": [
+    {
+      "id": "computing-b8-01",
+      "class": "Basic 8",
+      "subject": "Computing",
+      "contentStandard": "B8.1.1.1",
+      "codes": [
+        "B8.1.1.1.1",
+        "B8.1.1.1.2",
+        "B8.1.1.1.3",
+        "B8.1.1.1.4"
+      ],
+      "printedPages": [
+        "24-25"
+      ],
+      "status": "source_compared_discrepancies_pending_human_review",
+      "findings": [
+        "B8.1.1.1.1 indicator field includes core-competency column text; the main source exemplars are present but one competency description is embedded in the exemplar text.",
+        "B8.1.1.1.2 indicator wording corresponds to the source; its exemplar array contains a trailing table-heading fragment.",
+        "B8.1.1.1.3 indicator field contains content-standard and exemplar boundary fragments; the three main source activities are present.",
+        "B8.1.1.1.4 indicator wording is present but competency text is appended; source activity text is retained with competency contamination."
+      ]
+    },
+    {
+      "id": "computing-b9-01",
+      "class": "Basic 9",
+      "subject": "Computing",
+      "contentStandards": [
+        "B9.1.1.1",
+        "B9.1.1.2"
+      ],
+      "codes": [
+        "B9.1.1.1.2",
+        "B9.1.1.1.3",
+        "B9.1.1.1.4",
+        "B9.1.1.2.2"
+      ],
+      "sourceCodeAnomalies": [
+        {
+          "sourceCodeText": "B91.1.1.1",
+          "likelyNormalizedCode": "B9.1.1.1.1",
+          "normalizationAllowed": false,
+          "reason": "The official PDF prints this code without the expected separator; the export does not contain the normalized key. Human review is required."
+        },
+        {
+          "sourceCodeText": "B91.1.2.1",
+          "likelyNormalizedCode": "B9.1.1.2.1",
+          "normalizationAllowed": false,
+          "reason": "The official PDF prints this code without the expected separator; the export does not contain the normalized key. Human review is required."
+        }
+      ],
+      "printedPages": [
+        "41-42"
+      ],
+      "status": "source_compared_source_code_anomalies_pending_human_review",
+      "findings": [
+        "B9.1.1.1.2 indicator wording matches the source; its exemplar is present but the export appends core-competency text.",
+        "B9.1.1.1.3 indicator includes an exemplar marker and competency text; its main source activity is present.",
+        "B9.1.1.1.4 indicator has competency fragments; the main three source activities are present but the final exemplar contains table-heading leakage.",
+        "B9.1.1.2.2 indicator and three source activities are present, but competency text is mixed into the indicator and exemplar fields.",
+        "Do not invent or normalize the two malformed source codes until the document owner or a second reviewer resolves them."
+      ]
+    },
+    {
+      "id": "computing-b9-02",
+      "class": "Basic 9",
+      "subject": "Computing",
+      "contentStandard": "B9.1.2.1",
+      "codes": [
+        "B9.1.2.1.1",
+        "B9.1.2.1.2",
+        "B9.1.2.1.3"
+      ],
+      "printedPages": [
+        "43"
+      ],
+      "status": "source_compared_discrepancies_pending_human_review",
+      "findings": [
+        "B9.1.2.1.1 indicator wording matches, but the export indicator field includes content-standard and exemplar boundary text; competency text is appended to the exemplar.",
+        "B9.1.2.1.2 has a concrete exemplar extraction defect: the source contains a complete presentation activity, while the exported exemplar array retains only a trailing competency fragment.",
+        "B9.1.2.1.3 source activities are present but are split by competency fragments across the exported exemplar array."
+      ]
+    }
+  ],
+  "classComparisonCounts": {
+    "Basic 7": {
+      "totalExported": 50,
+      "sourceCompared": 28,
+      "remaining": 22
+    },
+    "Basic 8": {
+      "totalExported": 37,
+      "sourceCompared": 4,
+      "remaining": 33
+    },
+    "Basic 9": {
+      "totalExported": 35,
+      "sourceCompared": 7,
+      "remaining": 28
+    }
+  },
+  "overallComparedExportedIndicatorCount": 39,
+  "overallRemainingComputingIndicators": 83
+}
