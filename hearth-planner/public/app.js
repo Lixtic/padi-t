@@ -1007,8 +1007,13 @@
         toast('Downloaded ' + title + '.docx' + hintProfile());
         return;
       } catch (e) { /* fall back to the server below */ }
+      const auth = window.PadiSync && window.PadiSync.authHeader ? await window.PadiSync.authHeader() : {};
+      if (!auth.authorization) throw new Error('Please sign in again before using the Word export fallback.');
+      const claimRes = await fetch('/api/export-token', { method: 'POST', headers: Object.assign({ 'content-type': 'application/json' }, auth), body: '{}' });
+      let claim = null; try { claim = await claimRes.json(); } catch (e) { /* invalid response */ }
+      if (!claimRes.ok || !claim || !claim.token) throw new Error((claim && claim.message) || 'Could not verify your Word export access.');
       const res = await fetch('/api/export-docx', {
-        method: 'POST', headers: { 'content-type': 'application/json' },
+        method: 'POST', headers: { 'content-type': 'application/json', authorization: 'Bearer ' + claim.token },
         body: JSON.stringify({ title, layout, content: exportBody(text), teacher: profile().teacher || '', school: profile().school || '' }),
       });
       if (!res.ok) {
