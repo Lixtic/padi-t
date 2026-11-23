@@ -13,8 +13,8 @@ async function eraseAccount(me) {
     WITH
       d_plans AS (DELETE FROM plans WHERE user_id = $1 RETURNING 1),
       d_career_roadmaps AS (DELETE FROM career_roadmaps WHERE user_id = $1 RETURNING 1),
-      d_plan_log AS (DELETE FROM plan_log WHERE subject = $2 RETURNING 1),
-      d_free_plan_reservations AS (DELETE FROM free_plan_reservations WHERE subject = $2 RETURNING 1),
+      d_plan_log AS (DELETE FROM plan_log WHERE subject = $2 OR subject = $2 || ':parent' RETURNING 1),
+      d_free_plan_reservations AS (DELETE FROM free_plan_reservations WHERE subject = $2 OR subject = $2 || ':parent' RETURNING 1),
       d_profiles AS (DELETE FROM profiles WHERE user_id = $1 RETURNING 1),
       d_account_profiles AS (DELETE FROM account_profiles WHERE user_id = $1 RETURNING 1),
       d_parent_learning AS (DELETE FROM parent_learning WHERE user_id = $1 RETURNING 1),
