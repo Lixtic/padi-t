@@ -7,7 +7,7 @@ global.__PADI_SQL__ = {
   query: async (sql, params) => {
     if (fail) throw new Error('database unavailable');
     calls.push({ sql: sql.replace(/\\s+/g, ' ').trim(), params });
-    if (/^delete from/i.test(sql.trim())) return [{ id: 'x', email: 'redacted@example.test', key: 'k' }];
+    if (/delete from (otp_codes|quota_reservations|free_plan_reservations|response_cache|rate_limits)/i.test(sql)) return [{ id: 'x', email: 'redacted@example.test', key: 'k' }];
     return [];
   }
 };
