@@ -1,0 +1,61 @@
+{
+  "source": "WAEC, 2025 BECE (School Candidates) Chief Examiners' Reports",
+  "year": 2025,
+  "note": "Findings are summarised in our own words for question design. Do not copy WAEC questions or mark schemes.",
+  "subjects": {
+    "Mathematics": {
+      "format": "Paper 2 has six multi-part word and calculation questions, each with parts (a) and (b); marks go for working shown, not only the final answer.",
+      "weak": ["simplifying algebraic expressions (the most serious weakness)", "solving algebraic equations and forming an equation from a word problem", "expressing a number in standard form and converting decimals to whole numbers", "distance-time graphs", "listing members of a set with correct curly brackets, including the empty set and the set itself as subsets", "using the correct unit, GH¢, and showing evidence of working"],
+      "strong": ["intersection of sets", "making a variable the subject", "percentages", "vectors", "probability"],
+      "tip": "In the marking guide show every step of working, write GH¢ for money, and add one 'common mistake' line per theory answer."
+    },
+    "Integrated Science": {
+      "format": "Paper 2 is four structured questions chosen from a set, usually built on a figure or diagram, with practical and calculation parts.",
+      "weak": ["explaining processes and phenomena in full sentences", "applying a concept to a new situation", "practical aspects of an experiment (apparatus, method, observation, precaution)", "mathematical problems such as work, input, output and efficiency", "spelling scientific names and terms correctly"],
+      "strong": ["recall of facts", "acids and bases", "writing out formulas for calculations"],
+      "tip": "Include at least one 'explain' and one 'apply' part, a figure described in words, and a note to spell key terms correctly. Remind learners to give each question about the same time."
+    },
+    "English Language": {
+      "format": "Paper 2 has an essay part (a formal or informal letter, article or speech of about 250 words), a reading comprehension part and a literature part.",
+      "weak": ["writing a full-length essay of about 250 words", "paragraphing with unity and order", "grammar, punctuation and spelling", "working out the meaning of words in context", "spelling literary devices correctly", "using formal letter features and register"],
+      "strong": ["features of formal and informal letters", "short accurate comprehension answers", "identifying literary devices"],
+      "tip": "Ask for answers in the candidate's own words, never copied from the passage, and name the features examiners mark."
+    },
+    "Social Studies": {
+      "format": "Paper 2 has structured essay-type questions that ask for reasons, contributions and explanations.",
+      "weak": ["contributions of the 1992 Constitution to national development", "why Ghana became a republic", "why society should be educated on human rights", "why an individual should join a social security scheme"],
+      "strong": ["explaining the term constitution", "reasons for marriage", "causes of the 1948 riots"],
+      "tip": "Include 'give reasons' and 'explain the importance of' parts, with a marking guide that lists acceptable points."
+    },
+    "Religious and Moral Education": {
+      "format": "Paper 2 has context-based structured questions across Christianity, Islam and African Traditional Religion.",
+      "weak": ["the importance of sacrifice to a believer", "differences between Idul Fitr and Idul Adha", "factors that cause bribery and corruption", "lessons from religious and non-religious songs", "answering context questions"],
+      "strong": ["items and occasions for sacrifice", "creation story", "reasons festivals matter to Muslims"],
+      "tip": "Include a short context passage and ask learners to draw lessons from it."
+    },
+    "Computing": {
+      "format": "Paper 2 mixes concept questions with practical steps in word processing, publishing and spreadsheets.",
+      "weak": ["flowcharts", "file compression", "making a hyperlink in a word processor and writing text over an image in a publisher", "data communication models", "number conversion", "real-world uses of robotics"],
+      "strong": ["modes of payment", "network topologies", "spreadsheets", "security principles", "robot components and artificial intelligence"],
+      "tip": "Ask for step-by-step practical procedures and short number-conversion calculations, with working shown."
+    },
+    "Career Technology": {
+      "format": "Paper 2 has compulsory questions and a choice section, with sketches and practical processes.",
+      "weak": ["describing techniques for shaping biscuits", "identifying a Warrington hammer and sketching striking tools accurately", "answering the compulsory questions as instructed"],
+      "strong": ["sewing materials and finishing", "importance of collars", "laboratory safety", "types of timber and joints", "selecting meat for soup"],
+      "tip": "Ask for labelled sketches and step-by-step practical descriptions, and say which questions are compulsory."
+    },
+    "Creative Arts and Design": {
+      "format": "Paper 2 has practical drawing, design process and performing arts questions.",
+      "weak": ["drawing an accurate six-point colour wheel and placing primary and secondary colours correctly", "hatching and stippling shading", "steps in clay preparation", "names of lines and spaces on the staff, clefs and note values", "the concept of dance drama"],
+      "strong": ["cool colours", "choosing a printing technique and giving a reason", "tests for clay suitability", "western instruments and their classification"],
+      "tip": "Ask for steps in order and labelled sketches, and describe any drawing in words for the teacher."
+    },
+    "French": {
+      "format": "Paper 2 tests writing in French, comprehension and grammar.",
+      "weak": ["limited vocabulary, with English words used in French essays", "faulty constructions, grammar and spelling", "punctuation"],
+      "strong": ["following the rubrics", "expression in essays"],
+      "tip": "Ask for answers fully in French and include a short vocabulary-building task."
+    }
+  }
+}
