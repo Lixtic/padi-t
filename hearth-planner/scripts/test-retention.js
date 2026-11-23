@@ -39,6 +39,7 @@ async function request(method, authorization) {
   assert.deepEqual(JSON.parse(res.body).deleted, {
     expiredOtpCodes: 1,
     expiredQuotaReservations: 1,
+    expiredFreePlanReservations: 1,
     expiredResponseCacheEntries: 1,
     staleRateLimitBuckets: 1
   });
