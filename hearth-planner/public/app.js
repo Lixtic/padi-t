@@ -537,6 +537,87 @@
     return bits.join(' · ');
   }
 
+
+  async function repairMathematicsNotation(session, api, button) {
+    if (!session || !api || !api.msg || state.streaming || !signedIn()) {
+      toast('Sign in to repair saved Mathematics resources.');
+      return;
+    }
+    if (!session.params || !/^mathematics$/i.test(String(session.params.subject || ''))) {
+      toast('This tool is only available for Mathematics.');
+      return;
+    }
+    const originalRaw = api.msg.content;
+    const original = splitElic(originalRaw);
+    if (!original.body.trim()) { toast('There is no content to repair.'); return; }
+
+    const label = $('span', button), before = label ? label.textContent : 'Repair maths';
+    button.disabled = true;
+    if (label) label.textContent = 'Checking…';
+    toast('Checking the mathematics notation…');
+    try {
+      const who = window.PadiSync && window.PadiSync.authHeader ? await window.PadiSync.authHeader() : {};
+      if (!who || !(who.authorization || who.Authorization)) throw new Error('Please sign in again before repairing this resource.');
+      const response = await fetch('/api/sync?what=repair-math', {
+        method: 'POST',
+        headers: Object.assign({ 'content-type': 'application/json', 'x-access-code': state.access || '', accept: 'application/json' }, who),
+        body: JSON.stringify({ subject: session.params.subject, cls: session.params.cls, content: original.body })
+      });
+      let data = null;
+      try { data = await response.json(); } catch (e) { /* invalid response */ }
+      if (!response.ok || !data || typeof data.content !== 'string' || !data.content.trim()) {
+        throw new Error((data && data.message) || 'Could not repair this resource. Please try again.');
+      }
+
+      const preview = document.createElement('dialog');
+      preview.className = 'acct-sheet up-sheet math-repair-sheet';
+      const title = h('h2', { text: 'Review repaired notation' });
+      const intro = h('p', { class: 'as-sub', text: 'Review the corrected version carefully. Your original resource will not change unless you choose to apply this version.' });
+      const areaLabel = h('label', { text: 'Corrected Mathematics content' });
+      const area = h('textarea', { class: 'doc-edit math-repair-preview', rows: '14', 'aria-label': 'Corrected Mathematics content' });
+      area.value = data.content;
+      const caution = h('p', { class: 'math-repair-caution', text: 'Check every equation, answer and worked step before saving. If an expression was ambiguous, compare it with your source material.' });
+      const keep = h('button', { type: 'button', class: 'as-second', text: 'Keep original' });
+      const apply = h('button', { type: 'button', class: 'as-submit', text: 'Apply corrected version' });
+      const actions = h('div', { class: 'as-actions' }, keep, apply);
+      const section = h('section', null, title, intro, areaLabel, area, caution, actions);
+      preview.append(section);
+      document.body.append(preview);
+      const close = () => { if (preview.open) preview.close(); preview.remove(); };
+      keep.addEventListener('click', close);
+      preview.addEventListener('cancel', (event) => { event.preventDefault(); close(); });
+      preview.addEventListener('close', () => preview.remove(), { once: true });
+      apply.addEventListener('click', () => {
+        if (!api.msg || api.msg.content !== originalRaw) {
+          close();
+          toast('This resource changed while the repair was running. Run the repair again on the latest version.');
+          return;
+        }
+        const corrected = area.value.trim();
+        if (!corrected) { toast('The corrected content cannot be empty.'); return; }
+        const tail = (originalRaw.match(/<ElicitationsGroup>[\\s\\S]*$/i) || [''])[0];
+        const next = corrected + (tail ? '\\n\\n' + tail : '');
+        api.msg.content = next;
+        api.msg.edited = true;
+        api.msg.mathRepairedAt = Date.now();
+        api.msg.demo = false;
+        api.set(next, true, api.msg);
+        session.updatedAt = Date.now();
+        store.save();
+        close();
+        toast('Mathematics notation updated. Your original has been replaced with the version you approved.');
+      });
+      if (preview.showModal) preview.showModal();
+      else preview.setAttribute('open', '');
+      area.focus();
+    } catch (error) {
+      toast(error && error.message ? error.message : 'Could not repair this resource. Please try again.');
+    } finally {
+      button.disabled = false;
+      if (label) label.textContent = before;
+    }
+  }
+
   function makeBot(session) {
     const baseTitle = planTitle(session.params || state.params) + (session.params && session.params.mode === 'resources' ? ' – ' + resourceLabel(session.params.resourceType, session.params.cls) : session.params && session.params.mode === 'plan' ? ' – Lesson plan' : '');
     let kind = 'plan', demoted = false, editBox = null, ta = null;
@@ -548,6 +629,7 @@
     const extrasEl = h('div', { class: 'extras' });
     const metaEl = h('div', { class: 'meta' });
     const btnEdit = h('button', { type: 'button', class: 'tool', disabled: true, 'data-act': 'edit' }, icon('pencil'), h('span', { text: 'Edit' }));
+    const btnMathRepair = h('button', { type: 'button', class: 'tool math-repair-tool', disabled: true, hidden: true, title: 'Find and repair missing mathematical symbols' }, icon('spark'), h('span', { text: 'Repair maths' }));
     const btnReuse = h('button', { type: 'button', class: 'tool', disabled: true, 'data-act': 'reuse', title: 'Copy this plan into a new plan you can change freely' }, icon('layers'), h('span', { text: 'Reuse' }));
     const btnRegen = h('button', { type: 'button', class: 'tool', disabled: true }, icon('refresh'), h('span', { text: 'Regenerate' }));
     const btnFull = h('button', { type: 'button', class: 'tool', disabled: true, 'data-act': 'full', title: 'Read in full screen', 'aria-label': 'Full screen' }, icon('expand'), h('span', { text: 'Full screen' }));
@@ -562,12 +644,12 @@
         h('div', { class: 'doc' },
           h('div', { class: 'doc-bar' },
             h('div', { class: 'doc-id' }, titleEl, progress),
-            h('div', { class: 'doc-tools' }, btnEdit, btnReuse, btnRegen, btnShare, btnFull,
+            h('div', { class: 'doc-tools' }, btnEdit, btnMathRepair, btnReuse, btnRegen, btnShare, btnFull,
               h('div', { class: 'tool-group', role: 'group', 'aria-label': 'Download' }, h('span', { class: 'tool-group-label', text: 'Download' }), h('div', { class: 'tool-pair' }, btnDocx, btnPdf)))),
           noteEl, bodyEl),
         chipsEl, extrasEl, metaEl));
 
-    const tools = [btnEdit, btnReuse, btnRegen, btnShare, btnFull, btnDocx, btnPdf];
+    const tools = [btnEdit, btnMathRepair, btnReuse, btnRegen, btnShare, btnFull, btnDocx, btnPdf];
 
     function fillExtras() {
       if (demoted || (session.params && session.params.mode === 'resources')) { extrasEl.replaceChildren(); return; }
@@ -679,6 +761,10 @@
             chipsEl.replaceChildren(...chips.map((c) => h('button', { type: 'button', class: 'chip-btn', text: c, onclick: () => onChip(c) })));
             fillExtras();
           }
+          const repairable = !!(msg && !msg.preview && !msg.stopped && !msg.demo && !state.config.demo && session.params
+            && /^mathematics$/i.test(String(session.params.subject || '')) && session.params.mode !== 'parent' && accountRole !== 'parent');
+          btnMathRepair.hidden = !repairable || demoted;
+          btnMathRepair.disabled = !repairable || demoted;
           if (msg && msg.warning) api.note(msg.warning);
         }
       },
@@ -687,13 +773,14 @@
         progress.textContent = '';
         bodyEl.replaceChildren(h('div', { class: 'doc-error' }, h('p', { text }), retry ? h('button', { type: 'button', class: 'tool tool-main', onclick: retry }, icon('refresh'), h('span', { text: 'Try again' })) : null));
       },
-      demote() { demoted = true; btnRegen.hidden = true; chipsEl.replaceChildren(); extrasEl.replaceChildren(); },
+      demote() { demoted = true; btnRegen.hidden = true; btnMathRepair.hidden = true; chipsEl.replaceChildren(); extrasEl.replaceChildren(); },
     };
     btnEdit.addEventListener('click', () => {
       if (editor) editor.cancel();
       else if (editBox) { closeEdit(); api.set(api.text, true, api.msg); }
       else startEdit();
     });
+    btnMathRepair.addEventListener('click', () => repairMathematicsNotation(session, api, btnMathRepair));
     btnReuse.addEventListener('click', () => reuseSession());
     btnFull.addEventListener('click', () => api.openFullScreen());
     btnShare.addEventListener('click', () => {

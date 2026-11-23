@@ -2585,3 +2585,22 @@ main[data-view="chat"] .news-bar { display: none; }
 .hero-tip p + p { margin-top: 8px; }
 .hero.tip-open { max-height: none; overflow: visible; }
 [data-view="landing"] .hero-tip { margin-left: 0; }
+
+
+/* Mathematics notation repair review */
+.math-repair-tool { border-color: rgba(27,69,168,.24); }
+.math-repair-sheet { width: min(760px, calc(100vw - 28px)); max-width: 760px; max-height: min(88dvh, 900px); overflow: auto; }
+.math-repair-sheet section { padding: 24px; }
+.math-repair-sheet h2 { margin: 0 0 8px; }
+.math-repair-sheet .as-sub { margin: 0 0 16px; }
+.math-repair-sheet label { display: block; margin: 0 0 8px; font-weight: 700; }
+.math-repair-preview { display: block; width: 100%; min-height: 42vh; max-height: 56vh; resize: vertical; white-space: pre-wrap; font-family: inherit; line-height: 1.55; }
+.math-repair-caution { margin: 12px 0 0; color: var(--muted, #687384); font-size: .88rem; line-height: 1.5; }
+.math-repair-sheet .as-actions { display: flex; gap: 10px; margin-top: 18px; }
+.math-repair-sheet .as-actions > button { flex: 1; }
+@media (max-width: 600px) {
+  .math-repair-sheet { width: calc(100vw - 18px); max-height: 92dvh; }
+  .math-repair-sheet section { padding: 18px; }
+  .math-repair-preview { min-height: 38vh; }
+  .math-repair-sheet .as-actions { flex-direction: column-reverse; }
+}
