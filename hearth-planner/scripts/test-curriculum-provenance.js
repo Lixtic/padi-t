@@ -45,6 +45,23 @@ const reviewed = reconciliation.batches.flatMap(batch => {
 assert.equal(new Set(reviewed).size, reviewed.length, 'no exported indicator is counted twice');
 assert.equal(reviewed.length, reconciliation.reviewedExportedIndicatorCount);
 assert.equal(Object.keys(index.indicators).filter(k => k.startsWith('Computing|B7.')).length, reconciliation.totalExportedIndicatorCount);
+const additional = reconciliation.additionalBatches.flatMap(batch => {
+  assert.ok(batch.id && batch.status.includes('pending_human_review'));
+  for (const code of batch.codes) assert.ok(index.indicators['Computing|' + code], 'additional source-compared code exists: ' + code);
+  for (const anomaly of batch.sourceCodeAnomalies || []) {
+    assert.equal(anomaly.normalizationAllowed, false, 'malformed source codes are never normalized automatically');
+    assert.ok(!index.indicators['Computing|' + anomaly.likelyNormalizedCode], 'unconfirmed normalized source code remains absent');
+  }
+  return batch.codes;
+});
+assert.equal(additional.length, 11, 'first Basic 8 and Basic 9 batches compare 11 more exported records');
+assert.equal(reconciliation.overallComparedExportedIndicatorCount, reviewed.length + additional.length);
+assert.equal(reconciliation.overallRemainingComputingIndicators, 83);
+assert.deepEqual(reconciliation.classComparisonCounts, {
+  'Basic 7': { totalExported: 50, sourceCompared: 28, remaining: 22 },
+  'Basic 8': { totalExported: 37, sourceCompared: 4, remaining: 33 },
+  'Basic 9': { totalExported: 35, sourceCompared: 7, remaining: 28 }
+});
 assert.equal(reconciliation.totalExportedIndicatorCount - reviewed.length, reconciliation.remainingExportedIndicatorCount);
 assert.equal(reconciliation.approval.verified, false);
 assert.equal(reconciliation.approval.approvedManifestEntries, 0);
