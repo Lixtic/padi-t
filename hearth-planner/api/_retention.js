@@ -29,6 +29,7 @@ async function handler(req, res) {
     const results = await Promise.all([
       db.query('delete from otp_codes where expires_at <= $1 returning email', [now]),
       db.query('delete from quota_reservations where expires_at <= $1 returning id', [now]),
+      db.query('delete from free_plan_reservations where expires_at <= $1 returning id', [now]),
       db.query('delete from response_cache where created_at <= $1 returning key', [now - cacheTtlMs()]),
       db.query('delete from rate_limits where window_start <= $1 returning key', [now - DAY])
     ]);
@@ -38,8 +39,9 @@ async function handler(req, res) {
       deleted: {
         expiredOtpCodes: counts[0],
         expiredQuotaReservations: counts[1],
-        expiredResponseCacheEntries: counts[2],
-        staleRateLimitBuckets: counts[3]
+        expiredFreePlanReservations: counts[2],
+        expiredResponseCacheEntries: counts[3],
+        staleRateLimitBuckets: counts[4]
       }
     };
     console.log('[retention] cleanup complete', summary.deleted);
