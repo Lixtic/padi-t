@@ -271,7 +271,7 @@ The source-discovery notes above are now represented in two machine-readable fil
 - `data/curriculum-source-register.json` records the six discovered NaCCA subject documents, official URLs, known edition metadata, source-checksum state and page-mapping state.
 - `data/curriculum-reconciliation.json` records the six Basic 7 Computing comparison batches already described in this audit.
 
-The Computing comparison currently covers **28 of the 50 Basic 7 Computing records** in the export. The remaining 22 Basic 7 Computing records are still queued, followed by the 37 Basic 8 and 35 Basic 9 Computing records. This is a comparison queue, not a verification count.
+The Computing comparison currently covers **28 of 50 Basic 7 records, 4 of 37 Basic 8 records, and 7 of 35 Basic 9 records** — 39 of 122 exported Computing records in total. The first Basic 8 and Basic 9 batches have been recorded, including two malformed source-code strings that are deliberately not normalized. The remaining 83 Computing records are still queued. This is a comparison count, not a verification count.
 
 **Evidence gaps remain explicit:** no downloaded-source SHA-256 checksum has yet been captured in the register; printed-page ranges are recorded for the compared Computing batches, while exact PDF page-index mapping still needs a controlled source-file capture. English Language and Religious and Moral Education also need their full cover metadata confirmed.
 
