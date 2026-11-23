@@ -1,0 +1,16 @@
+'use strict';
+const fs = require('fs'), path = require('path');
+const pdf = require('../public/pdf-export.js');
+const md = fs.readFileSync(path.join(__dirname, 'fixtures', 'plan-meta.md'), 'utf8');
+const dd = pdf.build('Creative Arts and Design – Basic 7 – Week 2', md, { portrait: false });
+const tables = dd.content.filter((n) => n.table);
+const meta = tables[0].table;
+let fail = 0; const check = (n, ok) => { console.log((ok ? 'PASS ' : 'FAIL ') + n); if (!ok) fail++; };
+const text = (n) => JSON.stringify(n);
+const compRow = meta.body.find((r) => /Core Competencies/.test(text(r)));
+const compCell = compRow.find((c) => /Core Competencies/.test(text(c)));
+check('core competencies are one paragraph, not six lines', compCell.stack.length === 1 && /CP:.*CI:.*DL:/.test(text(compCell)));
+const sum = meta.widths.reduce((a, b) => a + b, 0);
+check('metadata table keeps three columns that fit the page', meta.widths.length === 3 && sum > 600 && sum < 800);
+check('metadata right-hand column is the widest', meta.widths[2] > meta.widths[0]);
+if (fail) process.exit(1); console.log('PDF metadata tests passed.');
