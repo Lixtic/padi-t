@@ -1,0 +1,17 @@
+'use strict';
+const assert = require('node:assert/strict');
+const fs = require('node:fs');
+const read = p => fs.readFileSync(require('node:path').join(__dirname, '..', p), 'utf8');
+const token = read('api/export-token.js');
+const endpoint = read('api/export_docx.py');
+const builder = read('lib/ges_docx_export.py');
+const app = read('public/app.js');
+assert.ok(token.includes('A.authed(req)'), 'export token requires a verified account session');
+assert.ok(token.includes('E.resolve(me'), 'export token derives the tier on the server');
+assert.ok(token.includes("createHmac('sha256'"), 'export claim is signed');
+assert.ok(endpoint.includes('hmac.compare_digest'), 'Python export verifies the claim signature');
+assert.ok(endpoint.includes("claims.get('tier') == 'free'"), 'free-tier watermark is selected from signed claims');
+assert.ok(builder.includes("if footer_text:"), 'document builder supports the server-controlled footer');
+assert.ok(app.includes("fetch('/api/export-token'"), 'browser requests a signed export claim');
+assert.ok(app.includes("authorization: 'Bearer ' + claim.token"), 'browser sends the claim to the fallback');
+console.log('Word export security checks passed.');
