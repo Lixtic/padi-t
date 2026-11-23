@@ -8,7 +8,7 @@ const SAVED='guided.career-roadmaps.saved.v1';
 const ROADMAPS='guided.career-roadmaps.plans.v1';
 let roadmaps=[];let syncReady=false;let syncBusy=false;let syncQueue=[];
 const SYNC_QUEUE='guided.career-roadmaps.sync-queue.v1';
-try{syncQueue=JSON.parse(localStorage.getItem(SYNC_QUEUE)||'[]')}catch(e){syncQueue=[]}
+try{const savedQueue=JSON.parse(localStorage.getItem(SYNC_QUEUE)||'[]');syncQueue=Array.isArray(savedQueue)?savedQueue.filter(x=>x&&typeof x.id==='string'&&(x.action==='save'||x.action==='delete')):[]}catch(e){syncQueue=[]}
 function persistQueue(){try{localStorage.setItem(SYNC_QUEUE,JSON.stringify(syncQueue))}catch(e){}}
 function queueSync(action,id,p){syncQueue=syncQueue.filter(x=>x.id!==id);syncQueue.push({action,id,roadmap:p||null});persistQueue();if(syncReady)flushSync()}
 async function flushSync(){if(!syncReady||syncBusy||!window.PadiSync)return;syncBusy=true;try{while(syncQueue.length){const item=syncQueue[0];if(item.action==='delete')await window.PadiSync.deleteCareerRoadmap(item.id);else await window.PadiSync.saveCareerRoadmap(item.roadmap);if(syncQueue[0]===item)syncQueue.shift();else syncQueue=syncQueue.filter(x=>x!==item);persistQueue()}$('#roadmap-sync-note').textContent='Progress synced to your GuidEd account.'}catch(e){$('#roadmap-sync-note').textContent=e.status===401?'Sign in again to sync this roadmap. Your copy remains on this device.':'Could not sync right now. Your changes are saved on this device.'}finally{syncBusy=false}}
