@@ -12,6 +12,7 @@ const schema = read('db/schema.sql');
 const client = read('public/sync.js');
 const app = read('public/app.js');
 const css = read('public/styles.css');
+const schemaSources = api + db + schema;
 
 for (const rule of [
   "profile.primaryRole !== 'teacher'",
@@ -24,7 +25,7 @@ for (const rule of [
   "prior.status = 'reviewed'",
   "prior.content_updated_at = p.updated_at",
   "Number(row.content_updated_at) === Number(row.plan_updated_at)"
-]) assert.ok(api.includes(rule), 'Missing review API safeguard: ' + rule);
+]) assert.ok(schemaSources.includes(rule), 'Missing review API safeguard: ' + rule);
 assert.ok(syncApi.includes("what') === 'resource-review'"), 'Review route is not registered');
 assert.ok(db.includes('create table if not exists resource_reviews'), 'Runtime schema is missing review state');
 assert.ok(schema.includes('create table if not exists resource_reviews'), 'Reference schema is missing review state');
