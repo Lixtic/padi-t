@@ -20,7 +20,7 @@ assert.ok(fabricated.issues.some((issue) => issue.code === 'official_claims' && 
 // 2. Teacher control: saved work has an explicit edit path.
 const app = read('public/app.js');
 assert.ok(app.includes('function editSavedSession'));
-assert.ok(app.includes('data-act=\"edit\"'));
+assert.ok(app.includes('data-act="edit"'));
 
 // 3–4. Parent simplicity and Ghanaian relevance.
 const generation = read('api/generate.js');
@@ -40,8 +40,8 @@ assert.ok(styles.includes('@media'));
 
 // 6. Offline resilience: shell fallback is cached, API calls are never cached.
 const worker = read('public/sw.js');
-assert.ok(worker.includes(\"url.pathname.startsWith('/api/')\"));
-assert.ok(worker.includes(\"caches.match('index.html')\"));
+assert.ok(worker.includes("url.pathname.startsWith('/api/')"));
+assert.ok(worker.includes("caches.match('index.html')"));
 assert.ok(app.includes('localStorage'));
 assert.ok(app.includes('store.save'));
 
