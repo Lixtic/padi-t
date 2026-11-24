@@ -15,13 +15,19 @@
       { icon: '👨‍👩‍👧', title: 'Add your children', text: 'Open the Family tab and add each child with their class. Lessons are matched to their level.' },
       { icon: '🏡', title: 'Plan a home lesson', text: 'Tap “Plan a home lesson”, choose a child and a subject, and GuidEd prepares a lesson you can do together.' },
       { icon: '📈', title: 'Follow progress', text: 'Progress shows what each child has completed, so you always know what to do next.' },
-      { icon: '📁', title: 'Your Library', text: 'Everything you create is saved in Library and follows you to any phone or computer.' }
+      { icon: '📁', title: 'Your Library', text: 'Everything you create is saved in Library and follows you to any phone or computer.' },
+      { icon: '🧭', title: 'Guides and careers', text: 'Open More for free parent guides, such as helping with homework and preparing for the BECE, and Career Roadmaps to explore jobs and the steps to reach them.' }
     ].concat(COMMON_END);
     return [
       { icon: '👋', title: 'Welcome to GuidEd', text: 'Weekly lesson plans for Ghana classes, ready in minutes. Here is a one-minute look around.' },
-      { icon: '🎓', title: 'Choose your class', text: 'Pick your class, subject and week at the top of the planner. GuidEd follows the NaCCA curriculum for that week.' },
-      { icon: '✨', title: 'Create a plan', text: 'GuidEd writes two lessons, study notes, exam practice and a marking guide. Export it to Word when you are happy.' },
-      { icon: '📁', title: 'Your Library', text: 'Plans, notes, worksheets and slides are saved in Library and follow you to any phone or computer.' }
+      { icon: '🏠', title: 'Home', text: 'Home is your teaching space. Use the quick buttons to plan a lesson, prepare study notes, find classroom media or make a worksheet. It also shows your week at a glance and the plan you were working on.' },
+      { icon: '✨', title: 'Create a plan', text: 'In Office, pick your class, subject and week, then tap Create lesson plan. GuidEd follows the NaCCA curriculum and writes two lessons, study notes and a marking guide. The round + button starts a new plan from anywhere.' },
+      { icon: '🎛️', title: 'Options that fit your class', text: 'Under Options you can set your class size, switch the lesson hook on or off, and turn BECE practice on or off. Add a topic or a week-ending date in the box if you need to.' },
+      { icon: '🧰', title: 'Resources and media', text: 'In Office, the Resources tab makes study notes, worksheets, homework packs, BECE practice and teaching slides on their own. The Media tab helps you find pictures and videos for the lesson.' },
+      { icon: '📝', title: 'BECE practice', text: 'For JHS classes, a plan can include 10 multiple-choice questions and 3 structured questions with a marking guide. They are shaped by what the BECE Chief Examiners reported candidates found hard.' },
+      { icon: '📚', title: 'Use your own scheme', text: 'If your school has its own scheme of work, open More, then Use my own scheme, and add it from a spreadsheet or Word table. Planning will follow it. It stays on this device.' },
+      { icon: '📁', title: 'Library, Share and download', text: 'Plans, notes, worksheets and slides are saved in Library and follow you to any phone or computer. Open a plan and use Share to send it as a PDF or Word file, for example on WhatsApp.' },
+      { icon: '🧭', title: 'Guides and Career Roadmaps', text: 'In More you will find free teaching guides, including a scheme of work generator and the BECE report guides. Career Roadmaps lets your learners explore careers and track their own steps with dates.' }
     ].concat(COMMON_END);
   }
 

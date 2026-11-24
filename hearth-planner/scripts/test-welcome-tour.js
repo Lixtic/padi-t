@@ -6,7 +6,8 @@ const index = fs.readFileSync('public/index.html', 'utf8'), sw = fs.readFileSync
 const checks = [
   ['Welcome notification is created once, for accounts under a week old', sync.includes("'welcome'") && sync.includes('7 * 24 * 60 * 60 * 1000') && sync.includes('on conflict (user_id,dedupe_key) do nothing')],
   ['Tour script is loaded and cached for offline', index.includes('src="tour.js"') && sw.includes("'tour.js'")],
-  ['Tour has parent and teacher routes', tour.includes('Add your children') && tour.includes('Choose your class')],
+  ['Tour has parent and teacher routes', tour.includes('Add your children') && tour.includes('Create a plan')],
+  ['Tour covers the newer features', ['BECE practice', 'Use your own scheme', 'Resources and media', 'Library, Share and download', 'Career Roadmaps', 'Guides and careers'].every((t) => tour.includes(t))],
   ['Welcome notification opens the tour', app.includes("item.type === 'welcome'") && app.includes('GuidedTour.start')],
   ['Tour starts after sign-up and from Settings', app.includes('guided.tourPending') && index.includes('id="settingsTour"')],
 ];
