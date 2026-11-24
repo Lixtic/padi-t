@@ -57,6 +57,7 @@ module.exports = async (req, res) => {
          case when $3 in ('reviewed','approved') then $4 else null end,
          case when $3 = 'approved' then $4 else null end
        from plans p where p.user_id = $1 and p.id = $2 and p.deleted = false
+         and ($3 <> 'approved' or exists (select 1 from resource_reviews prior where prior.user_id = p.user_id and prior.id = p.id and prior.status = 'reviewed' and prior.content_updated_at = p.updated_at))
        on conflict (user_id, id) do update set
          status = excluded.status,
          content_updated_at = excluded.content_updated_at,
