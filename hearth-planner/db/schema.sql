@@ -86,3 +86,15 @@ alter table career_roadmaps add column if not exists deleted boolean not null de
 create index if not exists career_roadmaps_recent on career_roadmaps (user_id, updated_at desc);
 create table if not exists feedback (id text primary key, kind text not null, message text not null, email text not null default '', user_id text not null default '', tier text not null default '', context text not null default '', status text not null default 'new', created_at bigint not null);
 create index if not exists feedback_status on feedback (status, created_at);
+
+-- Teacher-controlled review state for saved teaching resources. A status only applies to the exact saved-plan revision.
+create table if not exists resource_reviews (
+  user_id text not null,
+  id text not null,
+  status text not null check (status in ('draft','reviewed','approved')),
+  content_updated_at bigint not null,
+  reviewed_at bigint,
+  approved_at bigint,
+  primary key (user_id, id)
+);
+create index if not exists resource_reviews_recent on resource_reviews (user_id, content_updated_at desc);

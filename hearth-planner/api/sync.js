@@ -19,6 +19,7 @@ module.exports = async (req, res) => {
   if (route.searchParams.get('what') === 'news-image') return require('./_news').image(req, res);                 // /news-image/<slug>
   if (route.searchParams.get('what') === 'news-sitemap') return require('./_news').sitemap(req, res);
   if (route.searchParams.get('what') === 'parent-learning') return require('./_parent-learning')(req, res);
+  if (route.searchParams.get('what') === 'resource-review') return require('./_resource-review')(req, res);
   if (route.searchParams.get('what') === 'career-roadmaps') return require('./_career-roadmaps')(req, res);
   if (route.searchParams.get('what') === 'account-profile') {
     return require('./_account-profile')(req, res);

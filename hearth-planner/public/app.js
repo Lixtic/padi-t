@@ -3184,7 +3184,7 @@
     document.body.classList.toggle('on-page', !!name);
     if (studioLink) studioLink.setAttribute('aria-current', !name && accountRole !== 'parent' ? 'page' : 'false');
     if (!name) updateTopbar();
-    if (name === 'library') renderLibrary();
+    if (name === 'library') { renderLibrary(); refreshResourceReviews(); }
     if (name === 'dashboard') renderDashboard();
   }
   const showSettings = (on) => showPage(on ? 'settings' : null);
@@ -3432,6 +3432,39 @@
 
   /* My Library: a curated, searchable collection of saved teaching materials. */
   let libType = 'all';
+  const resourceReviewStates = Object.create(null);
+  let resourceReviewRequest = 0;
+  async function refreshResourceReviews() {
+    const request = ++resourceReviewRequest;
+    if (accountRole !== 'teacher' || !signedIn() || !window.PadiSync || !window.PadiSync.listResourceReviews) return;
+    try {
+      const rows = await window.PadiSync.listResourceReviews();
+      if (request !== resourceReviewRequest || !Array.isArray(rows)) return;
+      Object.keys(resourceReviewStates).forEach((id) => delete resourceReviewStates[id]);
+      rows.forEach((row) => { if (row && row.id) resourceReviewStates[String(row.id)] = row; });
+      if (pageOpen() && pageOpen()[0] === 'library') renderLibrary();
+    } catch (e) {
+      if (e && e.status !== 401) console.warn('[GuidEd resource review] Could not load review states:', e.message);
+    }
+  }
+  function effectiveResourceReview(session) {
+    const review = resourceReviewStates[session.id];
+    if (!review || Number(review.contentUpdatedAt) !== Number(session.updatedAt)) return 'draft';
+    return ['draft', 'reviewed', 'approved'].includes(review.status) ? review.status : 'draft';
+  }
+  async function setResourceReviewStatus(id, status) {
+    if (accountRole !== 'teacher' || !window.PadiSync || !window.PadiSync.setResourceReview) return;
+    try {
+      const synced = await syncNow(true);
+      if (synced && synced.error) throw synced.error;
+      await window.PadiSync.setResourceReview(id, status);
+      await refreshResourceReviews();
+      renderLibrary();
+      toast(status === 'approved' ? 'Resource approved.' : status === 'reviewed' ? 'Resource marked as reviewed.' : 'Resource returned to draft.');
+    } catch (e) {
+      toast(e && e.status === 404 ? 'Sync this resource before reviewing it.' : (e && e.message) || 'Could not update the review status.');
+    }
+  }
   function renderLibrary() {
     const grid = $('#libGrid'); if (!grid) return;
     const search = $('#libSearch');
@@ -3478,11 +3511,15 @@
           h('span', { class: 'lib-name', text: heading }),
           h('span', { class: 'lib-description', text: s.title && s.title !== heading ? s.title : type === 'plan' ? 'Lesson plan and teaching sequence' : 'Saved teaching resource' }),
           h('span', { class: 'lib-meta', text: meta }),
+          h('span', { class: 'lib-review-status is-' + effectiveResourceReview(s), text: ({ draft: 'Draft · needs review', reviewed: 'Reviewed · awaiting approval', approved: 'Approved for teaching' })[effectiveResourceReview(s)] }),
           h('span', { class: 'lib-card-footer' }, h('span', { class: 'lib-time' }, icon('calendar'), h('span', { text: rel(s.updatedAt) })), h('span', { class: 'lib-open-label' }, 'Open', icon('chevron')))
         ),
         h('div', { class: 'lib-item-menu', hidden: true, role: 'group', 'aria-label': 'Plan actions' },
           h('button', { type: 'button', 'data-lib-action': 'open', 'data-plan-id': s.id, text: 'Open' }),
           h('button', { type: 'button', 'data-lib-action': 'edit', 'data-plan-id': s.id, text: 'Edit' }),
+          accountRole === 'teacher' && effectiveResourceReview(s) === 'draft' ? h('button', { type: 'button', 'data-lib-action': 'review', 'data-review-status': 'reviewed', 'data-plan-id': s.id, text: 'Mark reviewed' }) : null,
+          accountRole === 'teacher' && effectiveResourceReview(s) === 'reviewed' ? h('button', { type: 'button', 'data-lib-action': 'review', 'data-review-status': 'approved', 'data-plan-id': s.id, text: 'Approve for teaching' }) : null,
+          accountRole === 'teacher' && effectiveResourceReview(s) !== 'draft' ? h('button', { type: 'button', 'data-lib-action': 'review', 'data-review-status': 'draft', 'data-plan-id': s.id, text: 'Return to draft' }) : null,
           h('button', { type: 'button', class: 'lib-menu-delete', 'data-lib-action': 'delete', 'data-plan-id': s.id, text: 'Delete' })
         )
       );
@@ -3533,6 +3570,7 @@
         const id = action.dataset.planId, session = state.sessions.find((x) => x.id === id);
         closeLibraryMenus();
         if (!session) return;
+        if (action.dataset.libAction === 'review') { setResourceReviewStatus(id, action.dataset.reviewStatus); return; }
         if (action.dataset.libAction === 'open') openSavedSession(id);
         else if (action.dataset.libAction === 'edit') editSavedSession(id);
         else if (action.dataset.libAction === 'delete' && window.confirm('Delete "' + (session.params ? session.params.subject + ' · ' + session.params.cls + ' · Week ' + session.params.week : session.title) + '"? This cannot be undone.')) { deleteSession(id); renderLibrary(); }
