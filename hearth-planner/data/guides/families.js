@@ -108,5 +108,23 @@ module.exports = [
     ],
     takeaway: 'Find the earliest gap, practise in short and real-life ways, ask your child to explain, and keep your own attitude positive.',
     related: ['helping-your-child-with-homework', 'building-a-study-routine-at-home', 'bece-guide-for-parents']
+  },
+  {
+    slug: 'bece-examiners-reports-2024-2025-what-students-should-revise', audience: 'Parents and students', date: '2026-11-24',
+    title: 'What the 2024 and 2025 BECE Examiners\' Reports Tell Students to Revise',
+    desc: 'The mistakes that BECE candidates repeated in 2024 and 2025 in Mathematics, Science, English, Computing, Creative Arts and French, and how to practise them.',
+    intro: 'After each BECE, the West African Examinations Council publishes a report from each subject\'s Chief Examiner. It says what candidates did well and where they lost marks. Two years of reports show some of the same mistakes again and again. This guide turns them into a short revision list. It cannot tell you which questions will come, but it shows where marks are easy to win back.',
+    sections: [
+      { h: 'Mistakes that appear in many subjects', ul: ['Weak spelling of key terms, such as scientific words and the names of literary devices.', 'Weak grammar, punctuation and expression in written answers.', 'Not showing working, or leaving out units such as GH¢.', 'Not understanding what the question asks, for example copying from the passage instead of answering.', 'Not following the rubric: how many questions to answer and which are compulsory.'] },
+      { h: 'Mathematics', p: ['Show every step of your working and write the unit in the final answer. In 2024 candidates lost marks on probability with two events, scales, enlargement and constructions. In 2025 the weak areas were simplifying algebraic expressions, solving equations, standard form, distance-time graphs and listing sets. Practise a few of each every week.'] },
+      { h: 'Integrated Science', p: ['Both years, candidates spelt scientific terms badly, wrote poor English and found practical questions hard. Learn what the command words ask for: "state" needs a short answer, "explain" needs a reason in a full sentence. Practise describing an experiment: apparatus, steps, what you observe and one precaution.'] },
+      { h: 'English Language', p: ['Write the full essay length, use the correct features of a formal or informal letter, and check grammar, punctuation and spelling. Explain expressions in your own words, and learn the spelling of literary devices and the names of characters in your literature text.'] },
+      { h: 'Computing', p: ['Flowcharts and algorithms, desktop publisher skills and file size were weak. Practise drawing simple flowcharts and listing the steps for a task such as adding text over an image.'] },
+      { h: 'Creative Arts and Design', p: ['Practise hatching and stippling shading, and learn the staff, clefs, note values and time signatures. Know the main traditional dances and where they come from.'] },
+      { h: 'French and the other subjects', p: ['In French, use French words instead of English ones, learn the verb forms, and follow the format of each question. Short answers go in a form, and a letter needs a greeting, a body and a closing. For Social Studies and RME, practise context questions and give reasons in full sentences.'] },
+      { h: 'How to use this list', ul: ['Pick the two weakest areas in each subject and put them in your timetable first.', 'Do timed practice and mark it against a marking guide.', 'Write every wrong answer correctly in a mistakes book.', 'Ask your teacher about the topics you cannot explain.'] }
+    ],
+    takeaway: 'The reports show repeated habits you can fix: show working, spell key terms, answer what is asked, practise the weak topics and follow the rubric.',
+    related: ['bece-revision-timetable-for-jhs-3', 'bece-guide-for-parents', 'building-a-study-routine-at-home', 'bece-2025-chief-examiners-report-what-teachers-should-do']
   }
 ];
