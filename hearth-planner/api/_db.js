@@ -24,6 +24,8 @@ const SCHEMA = [
   "create index if not exists free_plan_reservations_active on free_plan_reservations (subject, period, expires_at)",
   'create table if not exists account_profiles (user_id text primary key, data jsonb not null default \'{}\'::jsonb, updated_at bigint not null)',
   "create table if not exists parent_learning (user_id text not null, id text not null, kind text not null, data jsonb not null default '{}'::jsonb, updated_at bigint not null, deleted boolean not null default false, primary key (user_id, id))",
+  "create table if not exists resource_reviews (user_id text not null, id text not null, status text not null check (status in ('draft','reviewed','approved')), content_updated_at bigint not null, reviewed_at bigint, approved_at bigint, primary key (user_id, id))",
+  'create index if not exists resource_reviews_recent on resource_reviews (user_id, content_updated_at desc)',
   'create index if not exists parent_learning_recent on parent_learning (user_id, updated_at desc)',
   'create index if not exists plans_recent on plans (user_id, updated_at)',
   'create table if not exists response_cache (scope text not null, key text not null, params_key text not null, notes_norm text not null default \'\', response text not null, thread_len int not null default 0, tokens int not null default 0, created_at bigint not null, hits int not null default 0, primary key (scope, key))',
