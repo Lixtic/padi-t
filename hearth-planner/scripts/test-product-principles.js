@@ -14,7 +14,7 @@ const manifest = JSON.parse(read('data/curriculum-verification.json'));
 assert.equal(manifest.status, 'unverified_database_export');
 assert.equal(manifest.verifiedIndicators.length, 0);
 assert.equal(Curriculum.officialFor('Computing', 'B7.1.1.1.1'), null);
-const fabricated = Quality.inspect('# Study Notes\\nOfficial NaCCA exemplar says so.\\n## Summary\\n## Review Questions\\nWhat is this?', { mode: 'resources', resourceType: 'Study notes' });
+const fabricated = Quality.inspect('# Study Notes\nOfficial NaCCA exemplar says so.\n## Summary\n## Review Questions\nWhat is this?', { mode: 'resources', resourceType: 'Study notes' });
 assert.ok(fabricated.issues.some((issue) => issue.code === 'official_claims' && issue.severity === 'blocking'));
 
 // 2. Teacher control: saved work has an explicit edit path.

@@ -23,4 +23,4 @@ assert.match(generatedPrompt, /Mathematical notation must be complete and visibl
 assert.match(generatedPrompt, /multiplication ×/);
 assert.doesNotMatch(prompt, /No LaTeX/);
 
-process.stdout.write('Mathematical notation preservation tests passed.\\n');
+process.stdout.write('Mathematical notation preservation tests passed.\n');
