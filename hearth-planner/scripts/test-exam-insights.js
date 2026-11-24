@@ -10,6 +10,9 @@ const maths = firstMessage(Object.assign({ subject: 'Mathematics', cls: 'Basic 9
 assert.match(maths, /Examiner insights/);
 assert.match(maths, /simplifying algebraic expressions/);
 assert.match(maths, /GH¢/);
+assert.match(maths, /both years/);
+assert.match(maths, /Also weak in 2024/);
+assert.match(maths, /enlargement/);
 assert.doesNotMatch(firstMessage(Object.assign({ subject: 'Mathematics', cls: 'Basic 9', bece: false, mode: 'full' }, base)), /Examiner insights/);
 assert.doesNotMatch(firstMessage(Object.assign({ subject: 'Mathematics', cls: 'Basic 9', bece: true, mode: 'plan' }, base)), /Examiner insights/);
 assert.deepEqual(EI.lines('Mathematics', 'Basic 4'), []);
@@ -20,6 +23,7 @@ assert.match(firstMessage(Object.assign({ subject: 'Integrated Science', cls: 'B
 // Every JHS subject we have insights for names a format, weak areas and a marking tip.
 for (const [name, s] of Object.entries(EI.DATA.subjects)) {
   assert.ok(s.format && s.weak.length >= 3 && s.strong.length >= 1 && s.tip, name + ' insights are incomplete');
+  assert.ok(s.weak2024 && s.weak2024.length >= 3 && Array.isArray(s.repeated), name + ' needs 2024 weak areas and a repeated list');
   assert.ok(!/question\s*\d/i.test(JSON.stringify(s)), name + ' insights must not copy numbered WAEC questions');
 }
 
