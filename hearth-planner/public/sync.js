@@ -298,6 +298,8 @@
     setProfile: function (data, updatedAt) { return call('/api/sync', { method: 'POST', auth: true, body: { what: 'profile', data: data, updated_at: updatedAt } }); },
     getAccountProfile: async function () { var j = await call('/api/account-profile', { auth: true }); return j && j.profile ? j.profile : null; },
     setAccountProfile: function (data) { return call('/api/account-profile', { method: 'POST', auth: true, body: { data: data } }); },
+    listResourceReviews: function () { return call('/api/sync?what=resource-review', { auth: true }); },
+    setResourceReview: function (id, status) { return call('/api/sync?what=resource-review', { method: 'POST', auth: true, body: { id: id, status: status } }); },
     listParentLearning: function (childId) { return call('/api/sync?what=parent-learning' + (childId ? '&childId=' + encodeURIComponent(childId) : ''), { auth: true }); },
     listCareerRoadmaps: function () { return call('/api/sync?what=career-roadmaps', { auth: true }); },
     saveCareerRoadmap: function (roadmap) { return call('/api/sync?what=career-roadmaps', { method: 'POST', auth: true, body: roadmap }); },
