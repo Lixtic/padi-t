@@ -1715,3 +1715,14 @@ html, body { overscroll-behavior-y: contain; }
   .v2-tabbar .v2-tabbar-create, .v2-tabbar .v2-tabbar-search { flex-basis: 52px; width: 52px; height: 52px; min-height: 52px; }
   .v2-tabbar-family .v2-tabbar-create { width: 48px; height: 48px; min-height: 48px; }
 }
+
+/* Landscape phones: the menu is taller than the screen, so make it smaller and let it scroll as one piece. */
+@media (max-height: 520px) and (orientation: landscape) {
+  .sidebar { overflow-y: auto; overscroll-behavior: contain; -webkit-overflow-scrolling: touch; touch-action: pan-y; }
+  .sb-head { min-height: 52px; padding-top: 8px; padding-bottom: 6px; }
+  .sb-actions { padding-top: 4px; padding-bottom: 4px; }
+  .sb-actions .btn { min-height: 40px; height: 40px; }
+  .sb-nav { padding-top: 2px; padding-bottom: 2px; }
+  .sb-nav .foot-link { min-height: 34px; }
+  .sidebar .sb-foot { padding-bottom: calc(10px + env(safe-area-inset-bottom)); }
+}
