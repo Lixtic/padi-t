@@ -2604,3 +2604,8 @@ main[data-view="chat"] .news-bar { display: none; }
   .math-repair-preview { min-height: 38vh; }
   .math-repair-sheet .as-actions { flex-direction: column-reverse; }
 }
+
+/* Teacher resource review workflow */
+.lib-review-status { display: inline-flex; align-self: flex-start; margin-top: 7px; padding: 4px 8px; border-radius: 999px; font-size: 11px; line-height: 1.35; font-weight: 650; background: var(--surface-2, rgba(100,116,139,.10)); color: var(--muted, #667085); }
+.lib-review-status.is-reviewed { background: rgba(22,163,74,.10); color: #16803d; }
+.lib-review-status.is-approved { background: rgba(0,71,171,.10); color: var(--brand, #0047ab); }
