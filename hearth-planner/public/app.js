@@ -2996,6 +2996,7 @@
   let accountProfileRequest = null;
   let accountProfileLoaded = false;
   let accountProfileError = false;
+  let accountProfileRetryTimer = 0, accountRetries = 0;
   /* A parent account never sees the Teaching Studio: its home is the Parent Dashboard. The role is cached so the right
      screen shows on the first paint, before the profile has been fetched. */
   function applyRoleUi() {
@@ -3125,7 +3126,14 @@
       return accountProfile;
     }).catch((error) => {
       console.warn('[GuidEd account profile] could not resolve dashboard role:', error && error.message);
-      accountProfileError = true;
+      // Do not lock the teacher out on a weak connection: open the teacher dashboard and check again shortly.
+      // A parent already has a cached role, so they keep their own dashboard.
+      if (accountRole === 'parent') accountProfileError = true;
+      else { accountProfileError = false; accountProfileLoaded = true; }
+      if (!accountProfileRetryTimer && accountRetries < 3) {
+        accountRetries += 1;
+        accountProfileRetryTimer = setTimeout(() => { accountProfileRetryTimer = 0; if (!accountProfile) refreshAccountProfile(); }, 15000 * accountRetries);
+      }
       if (pageOpen() && pageOpen()[0] === 'dashboard') renderDashboard();
       return null;
     }).finally(() => { accountProfileRequest = null; });
