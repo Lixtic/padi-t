@@ -2505,6 +2505,10 @@
   function setMode(m) {
     mode = m; const up = m === 'signup', forgot = m === 'forgot', reset = m === 'reset', special = forgot || reset;
     if (sheet.social) sheet.social.hidden = special || !(window.PadiSync && window.PadiSync.googleAvailable && window.PadiSync.googleAvailable());
+    const createAccountAction = $('#asCreateAccount');
+    if (createAccountAction) createAccountAction.hidden = up || special;
+    const guestAction = $('#asGuest');
+    if (guestAction) guestAction.hidden = special;
     // With Google or phone sign-in on offer, the email form stays folded behind a Continue with email button until it is wanted.
     const folded = !!sheet.social && !sheet.social.hidden && !emailOpen;
     sheet.panel.classList.toggle('as-email-folded', folded);
@@ -2767,6 +2771,10 @@
     } finally { ep.save.disabled = false; }
   });
   sheet.close.addEventListener('click', closeSheet);
+  const createAccountAction = $('#asCreateAccount');
+  if (createAccountAction) createAccountAction.addEventListener('click', () => { emailOpen = true; setMode('signup'); sheet.email.focus(); });
+  const guestAction = $('#asGuest');
+  if (guestAction) guestAction.addEventListener('click', closeSheet);
   sheet.dlg.addEventListener('click', (e) => {                           // a tap on the dimmed area outside the sheet closes it
     const r = sheet.dlg.getBoundingClientRect();
     if (e.clientX < r.left || e.clientX > r.right || e.clientY < r.top || e.clientY > r.bottom) closeSheet();
