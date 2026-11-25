@@ -2298,7 +2298,7 @@
     who: $('#acctWho'), avatar: $('#acctAvatar'), status: $('#acctStatus'), now: $('#acctSyncNow'), msg: $('#acctMsg'),
   };
   const sheet = {
-    social: $('#asSocial'), google: $('#asGoogle'), dlg: $('#acctSheet'), form: $('#asForm'), acct: $('#asAccount'), panel: $('#asPanel'), close: $('#asClose'),
+    social: $('#asSocial'), google: $('#asGoogle'), emailBtn: $('#asEmailBtn'), dlg: $('#acctSheet'), form: $('#asForm'), acct: $('#asAccount'), panel: $('#asPanel'), close: $('#asClose'),
     tabIn: $('#asTabIn'), tabUp: $('#asTabUp'), title: $('#asTitle'), sub: $('#asSub'),
     email: $('#asEmail'), emailErr: $('#asEmailErr'), pw: $('#asPassword'), pwErr: $('#asPwErr'), pwHint: $('#asPwHint'), show: $('#asShow'),
     banner: $('#asBanner'), bannerText: $('#asBannerText'), bannerAct: $('#asBannerAct'), help: $('#asHelp'), helpList: $('#asHelpList'),
@@ -2307,7 +2307,7 @@
     badge: $('#asBadge'), acctTitle: $('#asAcctTitle'), who: $('#asWho'), result: $('#asResult'), view: $('#asView'), syncNow: $('#asSyncNow'), signOut: $('#asSignOut'),
   };
   const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  let resetToken = '', mode = 'signin', busy = false, problemKind = '', bannerRun = null;
+  let resetToken = '', mode = 'signin', busy = false, problemKind = '', bannerRun = null, emailOpen = false;
   const signedIn = () => !!(window.PadiSync && window.PadiSync.available() && window.PadiSync.user());
   let syncing = false, syncAgain = false, syncTimer = 0, lastSync = 0;
 
@@ -2505,6 +2505,10 @@
   function setMode(m) {
     mode = m; const up = m === 'signup', forgot = m === 'forgot', reset = m === 'reset', special = forgot || reset;
     if (sheet.social) sheet.social.hidden = special || !(window.PadiSync && window.PadiSync.googleAvailable && window.PadiSync.googleAvailable());
+    // With Google or phone sign-in on offer, the email form stays folded behind a Continue with email button until it is wanted.
+    const folded = !!sheet.social && !sheet.social.hidden && !emailOpen;
+    sheet.panel.classList.toggle('as-email-folded', folded);
+    if (sheet.emailBtn) { sheet.emailBtn.hidden = !folded; sheet.emailBtn.setAttribute('aria-expanded', String(!folded)); }
     sheet.tabs.hidden = special; sheet.emailField.hidden = reset; sheet.forgot.hidden = reset || up;
     sheet.pwField.hidden = forgot; sheet.foot.hidden = special;
     sheet.forgot.textContent = forgot ? 'Back to sign in' : 'Forgot password?';
@@ -2571,7 +2575,7 @@
     const P = window.PadiSync;
     if (!P || !P.authConfigured()) return;
     if (isMobile()) setNav(false);
-    if (P.user()) showAccountView(); else { showFormView(); setMode(m || mode); }
+    if (P.user()) showAccountView(); else { showFormView(); emailOpen = false; setMode(m || mode); }
     if (!sheet.dlg.open) sheet.dlg.showModal();
     if (!P.user() && !isMobile()) sheet.email.focus();                   // on a phone the keyboard would hide the form
   }
@@ -2643,6 +2647,7 @@
   }
   if (window.GuidedPhone) {
     window.GuidedPhone.init({ toast });
+    if (sheet.emailBtn) sheet.emailBtn.addEventListener('click', () => { emailOpen = true; setMode(mode); sheet.email.focus(); });
     const phoneBtn = $('#asPhone'); if (phoneBtn) phoneBtn.addEventListener('click', () => window.GuidedPhone.open({ mode: 'signin' }));
     const phoneSet = $('#settingsPhone');
     if (phoneSet) phoneSet.addEventListener('click', () => {
