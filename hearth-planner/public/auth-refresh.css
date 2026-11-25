@@ -1,4 +1,5 @@
 /* GuidEd authentication refresh — calm, full-screen, thumb-friendly. */
+#acctSheet [hidden] { display: none !important; }
 #acctSheet.acct-sheet {
   --auth-ink: #f7f9ff;
   --auth-muted: #b9c6d8;
