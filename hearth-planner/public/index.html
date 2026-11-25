@@ -43,6 +43,7 @@
   <link rel="stylesheet" href="styles.css?v=184">
   <link rel="stylesheet" href="parent-registration.css">
   <link rel="stylesheet" href="v2.css">
+  <link rel="stylesheet" href="auth-refresh.css">
   <link rel="stylesheet" href="family-visuals.css">
   <script src="plan-join.js" defer></script>
   <script src="vendor/neon-realtime.js" defer></script>
@@ -130,12 +131,37 @@
   <button type="button" class="icon-btn as-close" id="asClose" aria-label="Close"><svg class="ico"><use href="#i-x"/></svg></button>
 
   <section id="asForm">
-    <header class="as-welcome">
-      <div class="as-brand-row"><svg class="as-logo" aria-hidden="true"><use href="#i-logo"/></svg><span class="as-brand-name">GuidEd</span></div>
-      <p class="as-kicker">YOUR LEARNING SPACE</p>
-      <h2 id="asTitle">Sign in to GuidEd</h2>
-      <p class="as-sub" id="asSub">Your plans follow you to any phone or computer.</p>
-      <div class="as-promise"><span>Learn</span><i></i><span>Teach</span><i></i><span>Grow</span></div>
+    <header class="as-welcome auth-welcome">
+      <div class="auth-brand">
+        <svg class="as-logo" aria-hidden="true"><use href="#i-logo"/></svg>
+        <span class="as-brand-name">Guid<span>Ed</span></span>
+        <p class="as-kicker">TEACH · PLAN · SHARE · INSPIRE</p>
+      </div>
+      <div class="auth-intro">
+        <h2 id="asTitle">Welcome <span>back.</span></h2>
+        <p class="as-sub" id="asSub">Your teaching space, ready when you are.</p>
+      </div>
+      <svg class="auth-book" viewBox="0 0 360 150" role="img" aria-label="An open book with a tree and a school beneath a rising star">
+        <defs>
+          <linearGradient id="authPage" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#dff8ff"/><stop offset=".55" stop-color="#69c9ed"/><stop offset="1" stop-color="#0875c9"/></linearGradient>
+          <linearGradient id="authGold" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#fff0a5"/><stop offset=".55" stop-color="#ffc33d"/><stop offset="1" stop-color="#e68a16"/></linearGradient>
+          <radialGradient id="authGlow"><stop stop-color="#f8b83f" stop-opacity=".7"/><stop offset="1" stop-color="#f8b83f" stop-opacity="0"/></radialGradient>
+        </defs>
+        <ellipse cx="180" cy="124" rx="158" ry="19" fill="#009ee8" opacity=".18"/>
+        <ellipse cx="180" cy="104" rx="115" ry="45" fill="url(#authGlow)"/>
+        <path d="M22 107Q83 78 170 112Q180 119 180 126Q180 118 190 112Q277 78 338 107L321 124Q255 105 190 133Q180 137 170 133Q105 105 39 124Z" fill="#06162c" stroke="#0b6ba8" stroke-width="2"/>
+        <path d="M28 101Q88 63 174 106L180 123Q110 87 22 113Z" fill="url(#authPage)" stroke="#29c8ff" stroke-width="2"/>
+        <path d="M332 101Q272 63 186 106L180 123Q250 87 338 113Z" fill="url(#authPage)" stroke="#29c8ff" stroke-width="2"/>
+        <path d="M180 119Q180 112 180 102" stroke="#ffd66a" stroke-width="2"/>
+        <path d="M54 99Q91 70 147 99Q113 91 83 105Z" fill="#f6b83d" opacity=".85"/>
+        <path d="M66 98Q68 80 78 71Q84 84 82 98M76 94Q85 74 101 72Q98 88 81 99M77 92Q64 79 52 82Q57 94 77 100" fill="#082d3e"/>
+        <path d="M221 98V82H288V101Z" fill="#142f4d"/>
+        <path d="M215 83L255 65L294 83Z" fill="#18344e"/>
+        <rect x="232" y="86" width="7" height="8" fill="#ffd36a"/><rect x="248" y="86" width="7" height="8" fill="#ffd36a"/><rect x="265" y="86" width="7" height="8" fill="#ffd36a"/>
+        <path d="M281 63V42" stroke="#25384b" stroke-width="2"/><path d="M282 43H306L302 53H282Z" fill="#ce2027"/><path d="M282 48H304L302 57H282Z" fill="#f4c542"/><path d="M282 53H302L300 62H282Z" fill="#168a55"/><path d="M292 50l1.2 2.5 2.8.3-2.1 1.8.7 2.7-2.6-1.4-2.4 1.4.5-2.7-2-1.8 2.8-.3Z" fill="#111827"/>
+        <path d="M181 103C209 53 268 48 309 20" fill="none" stroke="#ffd66a" stroke-width="3" stroke-linecap="round"/>
+        <path d="M309 8l4 9 10 1-7 7 2 10-9-5-9 5 2-10-7-7 10-1Z" fill="#ffd34f"/>
+      </svg>
     </header>
 
     <div class="as-tabs" id="asTabs" role="tablist" aria-label="Account">
@@ -148,7 +174,7 @@
         <button type="button" class="as-google" id="asGoogle"><svg viewBox="0 0 48 48" width="20" height="20" aria-hidden="true"><path fill="#EA4335" d="M24 9.5c3.5 0 6.6 1.2 9.1 3.6l6.8-6.8C35.8 2.4 30.3 0 24 0 14.6 0 6.5 5.4 2.6 13.2l7.9 6.1C12.4 13.6 17.7 9.5 24 9.5z"/><path fill="#4285F4" d="M46.5 24.5c0-1.6-.1-3.1-.4-4.5H24v9h12.7c-.6 3-2.3 5.5-4.8 7.2l7.6 5.9c4.5-4.1 7-10.2 7-17.6z"/><path fill="#FBBC05" d="M10.5 28.7a14.5 14.5 0 0 1 0-9.4l-7.9-6.1a24 24 0 0 0 0 21.6l7.9-6.1z"/><path fill="#34A853" d="M24 48c6.5 0 11.9-2.1 15.9-5.8l-7.6-5.9c-2.1 1.4-4.9 2.3-8.3 2.3-6.3 0-11.6-4.1-13.5-9.8l-7.9 6.1C6.5 42.6 14.6 48 24 48z"/></svg><span id="asGoogleText">Continue with Google</span></button>
         <button type="button" class="as-google as-phone" id="asPhone"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="2" width="12" height="20" rx="3"/><path d="M11 18h2"/></svg><span>Continue with phone</span></button>
         <button type="button" class="as-google as-phone as-email" id="asEmailBtn" aria-expanded="false" aria-controls="asEmailField"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="3"/><path d="m4 8 8 6 8-6"/></svg><span>Continue with email</span></button>
-        <p class="as-or" aria-hidden="true"><span>or use your email</span></p>
+        <p class="as-or" aria-hidden="true"><span>OR</span></p>
       </div>
       <div class="as-field" id="asEmailField">
         <label for="asEmail">Email address</label>
@@ -178,7 +204,9 @@
 
       <button type="submit" class="as-submit" id="asSubmit"><span id="asSubmitText">Sign in</span></button>
     </form>
-    <p class="as-foot" id="asFoot">You can use GuidEd without an account. Signing in only adds sync between your devices. <a href="privacy">Privacy</a> · <a href="about">About</a> · <a href="lesson-plans">Free GES lesson plans</a> · <a href="guides">Guides</a> · <a href="/product">Discover GuidED</a></p>
+    <button type="button" class="auth-create" id="asCreateAccount">Create an account <span aria-hidden="true">›</span></button>
+    <button type="button" class="auth-guest" id="asGuest"><span class="auth-guest-icon" aria-hidden="true">⌑</span> Continue without an account <span aria-hidden="true">›</span></button>
+    <p class="as-foot auth-foot" id="asFoot"><a href="privacy">Privacy</a><span>·</span><a href="guides">Help</a><span>·</span><a href="about">About GuidEd</a></p>
   </section>
 
   <section id="asVerify" hidden>
