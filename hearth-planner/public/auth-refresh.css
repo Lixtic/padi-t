@@ -1,0 +1,146 @@
+/* GuidEd authentication refresh — calm, full-screen, thumb-friendly. */
+#acctSheet.acct-sheet {
+  --auth-ink: #f7f9ff;
+  --auth-muted: #b9c6d8;
+  --auth-line: rgba(171, 197, 225, .32);
+  --auth-cyan: #10c9e8;
+  --auth-navy: #061326;
+  box-sizing: border-box;
+  width: min(100%, 490px);
+  max-width: 490px;
+  max-height: min(94dvh, 900px);
+  padding: 28px 30px 22px;
+  border: 1px solid rgba(123, 164, 207, .24);
+  border-radius: 28px;
+  color: var(--auth-ink);
+  background:
+    radial-gradient(ellipse at 50% 42%, rgba(0, 129, 199, .17), transparent 46%),
+    linear-gradient(160deg, #071a32 0%, #031020 58%, #06182c 100%);
+  box-shadow: 0 30px 90px rgba(0,0,0,.5);
+  scrollbar-width: thin;
+}
+#acctSheet.acct-sheet::backdrop { background: rgba(1, 7, 16, .72); }
+#acctSheet .as-close {
+  z-index: 3; top: 16px; right: 16px; width: 38px; height: 38px;
+  border: 1px solid var(--auth-line); border-radius: 50%;
+  color: var(--auth-ink); background: rgba(255,255,255,.04);
+}
+#acctSheet #asForm { width: 100%; max-width: 430px; margin: 0 auto; }
+#acctSheet .auth-welcome { display: flex; flex-direction: column; align-items: center; text-align: center; }
+#acctSheet .auth-brand { display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 0 9px; }
+#acctSheet .auth-brand .as-logo { width: 42px; height: 42px; margin: 0; color: #08765f; }
+#acctSheet .as-brand-name { color: #fff; font: 750 32px/1 var(--font-ui); letter-spacing: -.055em; }
+#acctSheet .as-brand-name span { color: var(--auth-cyan); }
+#acctSheet .as-kicker {
+  flex-basis: 100%; margin: 11px 0 0; color: #b9c6d8;
+  font: 650 10px/1.4 var(--font-ui); letter-spacing: .24em;
+}
+#acctSheet .auth-intro { margin-top: 22px; }
+#acctSheet .auth-intro h2 {
+  color: #fff; font: 760 clamp(30px, 7vw, 38px)/1.08 var(--font-ui);
+  letter-spacing: -.055em;
+}
+#acctSheet .auth-intro h2 span { color: var(--auth-cyan); }
+#acctSheet .auth-intro .as-sub {
+  margin: 8px 0 0; color: var(--auth-muted); font-size: 14px; line-height: 1.45;
+}
+#acctSheet .auth-book {
+  display: block; width: min(100%, 330px); height: 132px; margin: 10px auto 12px;
+  overflow: visible; filter: drop-shadow(0 9px 18px rgba(0, 155, 228, .13));
+}
+#acctSheet #asTabs { display: none !important; }
+#acctSheet #asPanel { margin: 0; }
+#acctSheet .as-social { display: grid; gap: 9px; margin: 0; }
+#acctSheet .as-google {
+  min-height: 50px; border-radius: 14px; font-size: 15px; font-weight: 680;
+  transition: transform .16s ease, border-color .16s ease, background .16s ease;
+}
+#acctSheet .as-google:active { transform: scale(.985); }
+#acctSheet .as-phone {
+  margin: 0; border: 1px solid var(--auth-line); color: #f7f9ff;
+  background: rgba(255,255,255,.025);
+}
+#acctSheet .as-phone:hover { border-color: rgba(16,201,232,.65); background: rgba(16,201,232,.07); }
+#acctSheet .as-phone svg { width: 19px; height: 19px; }
+#acctSheet .as-or { margin: 14px 0 12px; color: #9eacc1; }
+#acctSheet .as-or::before, #acctSheet .as-or::after { background: var(--auth-line); }
+#acctSheet .as-field { margin-bottom: 12px; }
+#acctSheet .as-field label { color: #e6edf7; }
+#acctSheet .as-field input {
+  border-color: var(--auth-line); color: #fff; background: rgba(255,255,255,.055);
+}
+#acctSheet .as-field input::placeholder { color: #8e9cb0; }
+#acctSheet .as-eye { color: var(--auth-cyan); }
+#acctSheet .as-link { color: var(--auth-cyan); }
+#acctSheet .as-forgot { margin-top: -5px; }
+#acctSheet .as-submit {
+  min-height: 50px; border-radius: 14px; color: #031321;
+  background: linear-gradient(110deg, #1bd3e8, #00aeea);
+  font-weight: 750;
+}
+#acctSheet .auth-create {
+  display: flex; align-items: center; justify-content: center; gap: 9px;
+  width: 100%; min-height: 48px; margin: 14px 0 0; padding: 8px 12px;
+  border: 1px solid rgba(16,201,232,.28); border-radius: 14px;
+  color: #27c8f1; background: rgba(0, 153, 219, .075);
+  font: 700 15px/1.2 var(--font-ui); cursor: pointer;
+}
+#acctSheet .auth-create span, #acctSheet .auth-guest > span:last-child { font-size: 22px; line-height: .8; }
+#acctSheet .auth-guest {
+  display: flex; align-items: center; justify-content: center; gap: 10px;
+  width: 100%; min-height: 48px; margin: 10px 0 0; padding: 8px 10px;
+  border: 0; border-radius: 13px; color: #e5edf8; background: transparent;
+  font: 650 14px/1.3 var(--font-ui); cursor: pointer;
+}
+#acctSheet .auth-guest-icon { color: var(--auth-cyan); font-size: 23px; }
+#acctSheet .auth-foot {
+  display: flex; justify-content: center; flex-wrap: wrap; gap: 9px;
+  margin: 13px 0 0; color: #9eacc1; font-size: 12px;
+}
+#acctSheet .auth-foot a { color: inherit; text-decoration: none; }
+#acctSheet .auth-foot a:hover { color: #fff; }
+#acctSheet #asForm [hidden], #acctSheet #asVerify[hidden], #acctSheet #asAccount[hidden] { display: none !important; }
+#acctSheet #asVerify, #acctSheet #asAccount { color: var(--auth-ink); }
+#acctSheet #asVerify h2, #acctSheet #asAccount h2 { color: #fff; }
+#acctSheet #asVerify .as-sub, #acctSheet #asAccount .as-who { color: var(--auth-muted); }
+#acctSheet #asAccount .as-actions > button { border-color: var(--auth-line); }
+#acctSheet #asAccount .as-second { color: var(--auth-ink); background: rgba(255,255,255,.04); }
+#acctSheet #asAccount .plan-row { color: var(--auth-ink); background: rgba(255,255,255,.06); }
+#acctSheet #asAccount .as-result { color: var(--auth-ink); background: rgba(255,255,255,.06); }
+#acctSheet .as-banner { color: #fff; }
+@media (max-width: 560px) {
+  #acctSheet.acct-sheet {
+    inset: 0; width: 100%; max-width: none; height: 100dvh; max-height: 100dvh;
+    margin: 0; padding: max(38px, calc(env(safe-area-inset-top) + 24px)) 22px calc(16px + env(safe-area-inset-bottom));
+    border: 0; border-radius: 0; box-shadow: none;
+    background:
+      radial-gradient(ellipse at 50% 38%, rgba(0, 129, 199, .16), transparent 44%),
+      linear-gradient(160deg, #071a32 0%, #031020 58%, #06182c 100%);
+  }
+  #acctSheet.acct-sheet::before { display: none; }
+  #acctSheet .as-close { top: max(12px, env(safe-area-inset-top)); right: 16px; }
+  #acctSheet #asForm { min-height: 100%; display: flex; flex-direction: column; justify-content: center; padding: 0; }
+  #acctSheet .auth-intro { margin-top: 18px; }
+  #acctSheet .auth-book { height: 118px; margin: 6px auto 10px; }
+  #acctSheet .as-social { gap: 8px; }
+  #acctSheet .as-google { min-height: 48px; }
+  #acctSheet .auth-create { margin-top: 12px; }
+  #acctSheet .auth-guest { margin-top: 7px; }
+  #acctSheet .auth-foot { margin-top: 8px; }
+}
+@media (max-height: 760px) {
+  #acctSheet .auth-brand .as-logo { width: 36px; height: 36px; }
+  #acctSheet .as-brand-name { font-size: 28px; }
+  #acctSheet .auth-intro { margin-top: 13px; }
+  #acctSheet .auth-book { height: 92px; margin: 3px auto 7px; }
+  #acctSheet .as-google { min-height: 44px; }
+  #acctSheet .auth-create, #acctSheet .auth-guest { min-height: 42px; }
+}
+@media (max-height: 650px) {
+  #acctSheet .auth-book { display: none; }
+  #acctSheet .auth-intro { margin-top: 10px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  #acctSheet .as-google { transition: none; }
+  #acctSheet .as-google:active { transform: none; }
+}
