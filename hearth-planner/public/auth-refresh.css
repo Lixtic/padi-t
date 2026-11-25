@@ -49,7 +49,6 @@
   display: block; width: min(100%, 330px); height: 132px; margin: 10px auto 12px;
   overflow: visible; filter: drop-shadow(0 9px 18px rgba(0, 155, 228, .13));
 }
-#acctSheet #asTabs { display: none !important; }
 #acctSheet #asPanel { margin: 0; }
 #acctSheet .as-social { display: grid; gap: 9px; margin: 0; }
 #acctSheet .as-google {
@@ -79,21 +78,6 @@
   background: linear-gradient(110deg, #1bd3e8, #00aeea);
   font-weight: 750;
 }
-#acctSheet .auth-create {
-  display: flex; align-items: center; justify-content: center; gap: 9px;
-  width: 100%; min-height: 48px; margin: 14px 0 0; padding: 8px 12px;
-  border: 1px solid rgba(16,201,232,.28); border-radius: 14px;
-  color: #27c8f1; background: rgba(0, 153, 219, .075);
-  font: 700 15px/1.2 var(--font-ui); cursor: pointer;
-}
-#acctSheet .auth-create span, #acctSheet .auth-guest > span:last-child { font-size: 22px; line-height: .8; }
-#acctSheet .auth-guest {
-  display: flex; align-items: center; justify-content: center; gap: 10px;
-  width: 100%; min-height: 48px; margin: 10px 0 0; padding: 8px 10px;
-  border: 0; border-radius: 13px; color: #e5edf8; background: transparent;
-  font: 650 14px/1.3 var(--font-ui); cursor: pointer;
-}
-#acctSheet .auth-guest-icon { color: var(--auth-cyan); font-size: 23px; }
 #acctSheet .auth-foot {
   display: flex; justify-content: center; flex-wrap: wrap; gap: 9px;
   margin: 13px 0 0; color: #9eacc1; font-size: 12px;
@@ -125,8 +109,6 @@
   #acctSheet .auth-book { height: 118px; margin: 6px auto 10px; }
   #acctSheet .as-social { gap: 8px; }
   #acctSheet .as-google { min-height: 48px; }
-  #acctSheet .auth-create { margin-top: 12px; }
-  #acctSheet .auth-guest { margin-top: 7px; }
   #acctSheet .auth-foot { margin-top: 8px; }
 }
 @media (max-height: 760px) {
@@ -135,7 +117,6 @@
   #acctSheet .auth-intro { margin-top: 13px; }
   #acctSheet .auth-book { height: 92px; margin: 3px auto 7px; }
   #acctSheet .as-google { min-height: 44px; }
-  #acctSheet .auth-create, #acctSheet .auth-guest { min-height: 42px; }
 }
 @media (max-height: 650px) {
   #acctSheet .auth-book { display: none; }
