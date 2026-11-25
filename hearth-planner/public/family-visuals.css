@@ -270,20 +270,3 @@
   #acctSheet .as-close { top:max(14px,env(safe-area-inset-top)); right:16px; }
 }
 @media (prefers-reduced-motion:reduce) { #acctSheet[open] { animation:none; } }
-
-/* Sign-in sheet: the welcome text sits in one simple card (logo, title, one line) instead of a tall green banner */
-#acctSheet .as-welcome {
-  display: grid; grid-template-columns: auto 1fr; column-gap: 14px; align-items: center;
-  margin: 24px 26px 0; padding: 16px 62px 16px 16px; overflow: visible;
-  color: var(--text); background: var(--card, var(--bg)); border: 1px solid var(--card-line, var(--line)); border-radius: 16px;
-}
-#acctSheet .as-welcome::after, #acctSheet .as-kicker, #acctSheet .as-promise, #acctSheet .as-brand-name { display: none; }
-#acctSheet .as-brand-row { grid-row: 1 / span 2; margin: 0; }
-#acctSheet .as-logo { width: 44px; height: 44px; padding: 6px; border-radius: 12px; }
-#acctSheet h2 { grid-column: 2; margin: 0; color: var(--text); font-size: 20px; line-height: 1.2; letter-spacing: -.02em; }
-#acctSheet .as-sub { grid-column: 2; max-width: none; margin: 3px 0 0; color: var(--muted); font-size: 13.5px; line-height: 1.4; }
-#acctSheet .as-close { top: 32px; right: 40px; color: var(--text); background: transparent; border: 1px solid var(--card-line, var(--line)); }
-@media (max-width: 560px) {
-  #acctSheet .as-welcome { margin: max(18px, calc(env(safe-area-inset-top) + 8px)) 22px 0; padding-right: 58px; }
-  #acctSheet .as-close { top: max(34px, calc(env(safe-area-inset-top) + 24px)); right: 34px; }
-}
